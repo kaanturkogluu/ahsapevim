@@ -191,8 +191,8 @@
             <!-- Frame Image (Background) -->
             <img id="modalFrameImage" src="{{ $product->image ?: '/cerceve.png' }}" class="absolute max-w-full max-h-full object-contain pointer-events-none z-10 mix-blend-multiply opacity-90">
             
-            <!-- STEP 1: Mask Box (White Area) -->
-            <div id="maskBox" class="absolute z-20 cursor-move shadow-lg ring-2 ring-blue-500 bg-white" style="width: 200px; height: 250px; top: 50%; left: 50%; transform: translate(-50%, -50%);" data-rotation="0">
+            <!-- STEP 1: Mask Box (Semi-transparent White Area for precise positioning) -->
+            <div id="maskBox" class="absolute z-20 cursor-move shadow-lg ring-2 ring-blue-500 bg-white/70 backdrop-blur-[1px]" style="width: 200px; height: 250px; top: 50%; left: 50%; transform: translate(-50%, -50%);" data-rotation="0">
                 <!-- Rotate Handle -->
                 <div class="rotate-handle mask-handle w-7 h-7 bg-green-600 hover:bg-green-700 text-white rounded-full absolute -top-9 left-1/2 -translate-x-1/2 cursor-grab active:cursor-grabbing flex items-center justify-center text-xs shadow-lg z-30" title="Açıyı Döndür">
                     <i class="fa-solid fa-rotate-right pointer-events-none"></i>
