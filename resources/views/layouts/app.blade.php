@@ -27,6 +27,9 @@
         body { font-family: 'Inter', sans-serif; background-color: #fafafa; }
         .product-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     </style>
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body class="text-gray-800 flex flex-col min-h-screen">
 
@@ -91,6 +94,7 @@
                     <a href="/products?category=bebek-hediyelik" class="hover:text-brand hover:border-b-[3px] hover:border-brand py-3 transition border-b-[3px] border-transparent uppercase">BEBEK HEDİYELİK</a>
                     <a href="/products?category=masa-ve-gece-lambasi" class="hover:text-brand hover:border-b-[3px] hover:border-brand py-3 transition border-b-[3px] border-transparent uppercase">MASA VE GECE LAMBASI</a>
                 @endif
+                <a href="/3d" class="text-brand hover:text-brand-dark hover:border-b-[3px] hover:border-brand-dark py-3 transition border-b-[3px] border-transparent uppercase flex items-center gap-1.5"><i class="fa-solid fa-cube"></i> 3D STÜDYO</a>
             </div>
         </nav>
     </header>

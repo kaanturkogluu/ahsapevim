@@ -75,6 +75,10 @@ use App\Http\Controllers\CartController;
 Route::get('/cart', [CartController::class, 'index']);
 Route::post('/cart/add', [CartController::class, 'add']);
 
+Route::get('/3d', function () {
+    return view('pages.3d');
+});
+
 // Static Pages
 $staticPages = [
     'iletisim' => [
