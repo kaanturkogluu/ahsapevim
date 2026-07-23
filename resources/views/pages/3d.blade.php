@@ -29,7 +29,7 @@
                     <label class="block text-xs font-bold text-gray-700 mb-1">Veya Hazır Model Seçin:</label>
                     <select id="presetModel" class="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-brand focus:ring focus:ring-brand focus:ring-opacity-50 p-2 border">
                         <option value="">-- Kendi Modelinizi Yükleyin --</option>
-                        <option value="/cereceve.glb">Özel Dönen Çerçeve (cereceve.glb)</option>
+                        <option value="/cerceve.glb">Özel Dönen Çerçeve (cerceve.glb)</option>
                     </select>
                 </div>
             </div>
@@ -137,18 +137,18 @@ const loadingText = document.getElementById('loadingText');
 init3D();
 setupUI();
 
-// Load default model 'cereceve.glb' if it exists
-fetch('/cereceve.glb')
+// Load default model 'cerceve.glb' if it exists
+fetch('/cerceve.glb')
     .then(res => {
         if (!res.ok) throw new Error('Default model not found');
         return res.blob();
     })
     .then(blob => {
-        const file = new File([blob], 'cereceve.glb', { type: '' });
+        const file = new File([blob], 'cerceve.glb', { type: '' });
         handleFile(file);
     })
     .catch(err => {
-        console.log('Varsayılan model (cereceve.glb) yüklenemedi veya bulunamadı, bekleniyor.', err);
+        console.log('Varsayılan model (cerceve.glb) yüklenemedi veya bulunamadı, bekleniyor.', err);
     });
 
 function init3D() {
@@ -390,16 +390,61 @@ function handlePhotoUpload(event, targetMesh) {
 
     const reader = new FileReader();
     reader.onload = function(e) {
-        const texture = new THREE.TextureLoader().load(e.target.result);
-        texture.flipY = false;
-        
-        // Retain other material properties or create a new StandardMaterial
-        targetMesh.material = new THREE.MeshStandardMaterial({
-            map: texture,
-            roughness: 0.5,
-            metalness: 0.1
-        });
-        targetMesh.material.needsUpdate = true;
+        const img = new Image();
+        img.onload = function() {
+            // Create a canvas to draw the image and add artificial edge shadows
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            
+            // Draw original image
+            ctx.drawImage(img, 0, 0);
+            
+            // Calculate shadow size based on image resolution (approx 4%)
+            const shadowSize = Math.max(img.width, img.height) * 0.04;
+            
+            // Draw Top Shadow
+            let topGrad = ctx.createLinearGradient(0, 0, 0, shadowSize);
+            topGrad.addColorStop(0, 'rgba(0,0,0,0.6)');
+            topGrad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = topGrad;
+            ctx.fillRect(0, 0, img.width, shadowSize);
+
+            // Draw Bottom Shadow
+            let botGrad = ctx.createLinearGradient(0, img.height, 0, img.height - shadowSize);
+            botGrad.addColorStop(0, 'rgba(0,0,0,0.6)');
+            botGrad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = botGrad;
+            ctx.fillRect(0, img.height - shadowSize, img.width, shadowSize);
+
+            // Draw Left Shadow
+            let leftGrad = ctx.createLinearGradient(0, 0, shadowSize, 0);
+            leftGrad.addColorStop(0, 'rgba(0,0,0,0.6)');
+            leftGrad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = leftGrad;
+            ctx.fillRect(0, 0, shadowSize, img.height);
+
+            // Draw Right Shadow
+            let rightGrad = ctx.createLinearGradient(img.width, 0, img.width - shadowSize, 0);
+            rightGrad.addColorStop(0, 'rgba(0,0,0,0.6)');
+            rightGrad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = rightGrad;
+            ctx.fillRect(img.width - shadowSize, 0, shadowSize, img.height);
+            
+            // Create texture from the canvas
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.flipY = false;
+            
+            targetMesh.material = new THREE.MeshStandardMaterial({
+                map: texture,
+                roughness: 0.2,    // Parlak fotoğraf hissi
+                metalness: 0.05,
+                envMapIntensity: 1.2
+            });
+            targetMesh.material.needsUpdate = true;
+        };
+        img.src = e.target.result;
     };
     reader.readAsDataURL(file);
 }
