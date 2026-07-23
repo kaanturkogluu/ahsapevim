@@ -56,6 +56,15 @@
                 <h2 class="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2"><i class="fa-solid fa-sliders text-brand mr-2"></i>Görünüm Ayarları</h2>
                 
                 <div class="space-y-4">
+                    <!-- Renk Kontrolleri -->
+                    <div id="colorControls" class="hidden space-y-3 mb-4 pb-4 border-b border-gray-100">
+                        <label class="block text-xs font-bold text-gray-700">Gövde Rengi (Ahşap Doku)</label>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-medium text-gray-600">Dış Çerçeve</span>
+                            <input type="color" id="outerFrameColor" value="#4a2e1b" class="w-8 h-8 rounded cursor-pointer border-0 p-0">
+                        </div>
+                    </div>
+
                     <!-- Background -->
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-2">Arka Plan</label>
@@ -129,6 +138,9 @@ let currentBgColor = '#f9fafb';
 let customRotatingFrame = null;
 let customPhotoFront = null;
 let customPhotoBack = null;
+let customOuterMeshes = [];
+let customInnerMeshes = [];
+let customLampMeshes = [];
 
 const container = document.getElementById('studio3DContainer');
 const loadingOverlay = document.getElementById('loadingOverlay');
@@ -360,6 +372,49 @@ function setupUI() {
     document.getElementById('photoBackInput').addEventListener('change', (e) => {
         handlePhotoUpload(e, customPhotoBack);
     });
+
+    // Custom Color Inputs
+    const applyWoodTexture = (meshes, hexColor) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+        
+        ctx.fillStyle = hexColor;
+        ctx.fillRect(0, 0, 512, 512);
+        
+        ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+        for(let i=0; i<400; i++) {
+            const x = Math.random() * 512;
+            ctx.beginPath();
+            ctx.lineWidth = Math.random() * 2 + 0.5;
+            ctx.moveTo(x, 0);
+            ctx.bezierCurveTo(x + (Math.random()*40-20), 170, x + (Math.random()*40-20), 340, x + (Math.random()*20-10), 512);
+            ctx.stroke();
+        }
+        
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set(2, 2);
+
+        meshes.forEach(mesh => {
+            const applyToMat = (m) => {
+                m.map = texture;
+                m.color.set('#ffffff'); // Reset base color so texture shows naturally
+                m.roughness = 0.8;
+                m.metalness = 0.05;
+                m.needsUpdate = true;
+            };
+            if(Array.isArray(mesh.material)) {
+                mesh.material.forEach(applyToMat);
+            } else if (mesh.material) {
+                applyToMat(mesh.material);
+            }
+        });
+    };
+    
+    document.getElementById('outerFrameColor').addEventListener('input', (e) => applyWoodTexture(customOuterMeshes, e.target.value));
 }
 
 function showLoading(text) {
@@ -380,7 +435,11 @@ function clearModel() {
     customRotatingFrame = null;
     customPhotoFront = null;
     customPhotoBack = null;
+    customOuterMeshes = [];
+    customInnerMeshes = [];
+    customLampMeshes = [];
     document.getElementById('customPhotoControls').classList.add('hidden');
+    document.getElementById('colorControls').classList.add('hidden');
 }
 
 function handlePhotoUpload(event, targetMesh) {
@@ -453,9 +512,18 @@ function scanModelForCustomMeshes(object) {
     let foundAny = false;
     object.traverse((child) => {
         if (child.isMesh || child.isGroup) {
+            // Clone material so each mesh can be colored independently
+            if (child.isMesh && child.material) {
+                if(Array.isArray(child.material)) {
+                    child.material = child.material.map(m => m.clone());
+                } else {
+                    child.material = child.material.clone();
+                }
+            }
             const name = child.name.toLowerCase();
             if (name.includes('rotatingframe') || name.includes('rotating_frame')) {
                 customRotatingFrame = child;
+                if(child.isMesh) customInnerMeshes.push(child);
                 foundAny = true;
             }
             if (name.includes('photofront') || name.includes('photo_front')) {
@@ -466,17 +534,115 @@ function scanModelForCustomMeshes(object) {
                 customPhotoBack = child;
                 foundAny = true;
             }
+            
+            // Lamba (Lamp) ve Işık Kaynağı
+            if (name.includes('lamba') || name.includes('lamp') || name.includes('light')) {
+                if (child.isMesh) customLampMeshes.push(child);
+                
+                if (child.isMesh && child.material) {
+                    const lampColor = '#d4af37'; // Altın / Pirinç rengi
+                    const emissiveColor = '#ffeedd'; // Sıcak ışık
+                    let setMat = (m) => {
+                        if(m.color) m.color.set(lampColor);
+                        if(m.emissive) m.emissive.set(emissiveColor);
+                        if(m.emissiveIntensity !== undefined) m.emissiveIntensity = 0.8;
+                        if(m.metalness !== undefined) m.metalness = 0.9;
+                        if(m.roughness !== undefined) m.roughness = 0.1;
+                    };
+                    if(Array.isArray(child.material)) {
+                        child.material.forEach(setMat);
+                    } else {
+                        setMat(child.material);
+                    }
+                }
+                
+                if (!child.userData.hasLight) {
+                    child.userData.hasLight = true;
+                    // Işık kaynağını oluştur (SpotLight)
+                    const spotLight = new THREE.SpotLight(0xffeedd, 2.0);
+                    
+                    // Pozisyonu lambanın merkezine al
+                    const box = new THREE.Box3().setFromObject(child);
+                    const center = box.getCenter(new THREE.Vector3());
+                    const size = box.getSize(new THREE.Vector3());
+                    
+                    spotLight.position.copy(center);
+                    // Lambanın altından başlasın
+                    spotLight.position.y -= size.y / 2;
+                    
+                    // Tam aşağıya doğru baksın
+                    const targetObject = new THREE.Object3D();
+                    targetObject.position.copy(center);
+                    targetObject.position.y -= (size.y + 10);
+                    currentModelGroup.add(targetObject);
+                    
+                    spotLight.target = targetObject;
+                    spotLight.angle = Math.PI / 3;
+                    spotLight.penumbra = 0.5;
+                    spotLight.castShadow = true;
+                    
+                    currentModelGroup.add(spotLight);
+                }
+            }
+            // Dış Çerçeve / Ana Gövde (Ceviz Rengi ve Ahşap Doku)
+            else if (child.isMesh && !name.includes('photo')) {
+                if (!name.includes('rotating')) {
+                    customOuterMeshes.push(child);
+                }
+            }
         }
     });
 
     if (foundAny) {
+        // Apply initial wood texture to outer frame
+        if (customOuterMeshes.length > 0) {
+            applyInitialWoodTexture(customOuterMeshes, '#4a2e1b');
+        }
+
         document.getElementById('customPhotoControls').classList.remove('hidden');
+        document.getElementById('colorControls').classList.remove('hidden');
         console.log("Custom meshes detected:", {
             RotatingFrame: !!customRotatingFrame,
             PhotoFront: !!customPhotoFront,
             PhotoBack: !!customPhotoBack
         });
     }
+}
+
+function applyInitialWoodTexture(meshes, hexColor) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = hexColor;
+    ctx.fillRect(0, 0, 512, 512);
+    ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+    for(let i=0; i<400; i++) {
+        const x = Math.random() * 512;
+        ctx.beginPath();
+        ctx.lineWidth = Math.random() * 2 + 0.5;
+        ctx.moveTo(x, 0);
+        ctx.bezierCurveTo(x + (Math.random()*40-20), 170, x + (Math.random()*40-20), 340, x + (Math.random()*20-10), 512);
+        ctx.stroke();
+    }
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(2, 2);
+
+    meshes.forEach(mesh => {
+        const applyToMat = (m) => {
+            m.map = texture;
+            m.color.set('#ffffff');
+            m.roughness = 0.8;
+            m.needsUpdate = true;
+        };
+        if(Array.isArray(mesh.material)) {
+            mesh.material.forEach(applyToMat);
+        } else if (mesh.material) {
+            applyToMat(mesh.material);
+        }
+    });
 }
 
 function handleFile(file) {
