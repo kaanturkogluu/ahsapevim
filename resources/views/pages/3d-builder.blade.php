@@ -136,7 +136,6 @@
                     </button>
                 </div>
             </div>
-
             <!-- Custom Photo Upload -->
             <div id="customPhotoControls" class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hidden">
                 <h2 class="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2"><i class="fa-solid fa-image text-brand mr-2"></i>Fotoğraflar</h2>
@@ -181,8 +180,26 @@
                                 <input type="color" id="outerFrameColor" value="#4a2e1b" class="w-full h-8 rounded cursor-pointer border-0 p-0">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-bold text-gray-600 mb-1">İç Çerçeve</label>
+                                <label class="block text-[10px] font-bold text-gray-600 mb-1">İç Çerçeve Rengi</label>
                                 <input type="color" id="innerFrameColor" value="#5c3a21" class="w-full h-8 rounded cursor-pointer border-0 p-0">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mt-2">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-600 mb-1">Dış Özel Doku (Resim)</label>
+                                <input type="file" id="outerFrameTexInput" class="text-[10px] w-full" accept="image/*">
+                                <div id="outerTexControls" class="hidden mt-1 bg-gray-50 p-1 rounded">
+                                    <label class="block text-[9px] text-gray-500">Ölçek (Büyüklük)</label>
+                                    <input type="range" id="outerTexScale" min="0.1" max="5" step="0.1" value="1" class="w-full h-1 bg-gray-200">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-600 mb-1">İç Özel Doku (Resim)</label>
+                                <input type="file" id="innerFrameTexInput" class="text-[10px] w-full" accept="image/*">
+                                <div id="innerTexControls" class="hidden mt-1 bg-gray-50 p-1 rounded">
+                                    <label class="block text-[9px] text-gray-500">Ölçek (Büyüklük)</label>
+                                    <input type="range" id="innerTexScale" min="0.1" max="5" step="0.1" value="1" class="w-full h-1 bg-gray-200">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -206,7 +223,7 @@
             </div>
             
         </div>
-        
+
         <!-- 3D Viewport -->
         <div class="flex-1 bg-white rounded-xl border border-gray-200 shadow-sm relative overflow-hidden flex flex-col min-h-[500px]">
             <div class="absolute top-4 right-4 z-10">
@@ -388,13 +405,16 @@ document.getElementById('btnBuildOuter').addEventListener('click', () => {
     // Sol
     const sideH = height - (thickness * 2);
     if(document.getElementById('partLeft').checked) {
-        const mesh = new THREE.Mesh(new THREE.BoxGeometry(thickness, sideH, depth), materialObj);
+        // Build horizontally, rotate mesh so texture aligns naturally
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(sideH, thickness, depth), materialObj);
+        mesh.rotation.z = Math.PI / 2;
         mesh.position.x = -width/2 + thickness/2;
         outerGroup.add(mesh); outerFrameMeshes.push(mesh);
     }
     // Sağ
     if(document.getElementById('partRight').checked) {
-        const mesh = new THREE.Mesh(new THREE.BoxGeometry(thickness, sideH, depth), materialObj);
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(sideH, thickness, depth), materialObj);
+        mesh.rotation.z = Math.PI / 2;
         mesh.position.x = width/2 - thickness/2;
         outerGroup.add(mesh); outerFrameMeshes.push(mesh);
     }
@@ -455,43 +475,33 @@ document.getElementById('btnBuildInner').addEventListener('click', () => {
     customRotatingFrame.name = "rotating_frame";
     const materialObj = new THREE.MeshStandardMaterial({ color: 0x5c3a21, roughness: 0.8 });
 
-    // Create a 2D Shape with a hole for the inner frame to create a visible photo recess
-    const shape = new THREE.Shape();
-    const hw = inWidth / 2;
-    const hh = inHeight / 2;
-    shape.moveTo(-hw, -hh);
-    shape.lineTo(hw, -hh);
-    shape.lineTo(hw, hh);
-    shape.lineTo(-hw, hh);
-    shape.lineTo(-hw, -hh);
+    const innerGroup = new THREE.Group();
+    innerGroup.name = "inner_frame_meshes";
 
-    // Hole
-    if (innerBorder * 2 < inWidth && innerBorder * 2 < inHeight) {
-        const holeW = hw - innerBorder;
-        const holeH = hh - innerBorder;
-        const hole = new THREE.Path();
-        hole.moveTo(-holeW, -holeH);
-        hole.lineTo(holeW, -holeH);
-        hole.lineTo(holeW, holeH);
-        hole.lineTo(-holeW, holeH);
-        hole.lineTo(-holeW, -holeH);
-        shape.holes.push(hole);
-    }
+    // Create inner frame out of 4 boxes so textures map perfectly along their length
+    const topMesh = new THREE.Mesh(new THREE.BoxGeometry(inWidth, innerBorder, inDepth), materialObj);
+    topMesh.position.y = (inHeight/2) - (innerBorder/2);
+    
+    const botMesh = new THREE.Mesh(new THREE.BoxGeometry(inWidth, innerBorder, inDepth), materialObj);
+    botMesh.position.y = -(inHeight/2) + (innerBorder/2);
+    
+    const sideInH = inHeight - (innerBorder * 2);
+    const leftMesh = new THREE.Mesh(new THREE.BoxGeometry(sideInH, innerBorder, inDepth), materialObj);
+    leftMesh.rotation.z = Math.PI / 2;
+    leftMesh.position.x = -(inWidth/2) + (innerBorder/2);
+    
+    const rightMesh = new THREE.Mesh(new THREE.BoxGeometry(sideInH, innerBorder, inDepth), materialObj);
+    rightMesh.rotation.z = Math.PI / 2;
+    rightMesh.position.x = (inWidth/2) - (innerBorder/2);
 
-    const extrudeSettings = { depth: inDepth, bevelEnabled: false, curveSegments: 4 };
-    const innerGeom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    innerGeom.computeBoundingBox();
-    const izOffset = -0.5 * (innerGeom.boundingBox.max.z - innerGeom.boundingBox.min.z);
-    innerGeom.translate(0, 0, izOffset);
-
-    const innerMesh = new THREE.Mesh(innerGeom, materialObj);
-    customRotatingFrame.add(innerMesh);
-    innerFrameMeshes.push(innerMesh);
+    innerGroup.add(topMesh, botMesh, leftMesh, rightMesh);
+    innerFrameMeshes.push(topMesh, botMesh, leftMesh, rightMesh);
+    customRotatingFrame.add(innerGroup);
 
     // Center divider so we can't see through the hole, this acts as the photo backing
     const divGeom = new THREE.BoxGeometry(inWidth - innerBorder * 1.5, inHeight - innerBorder * 1.5, 0.1);
     const divMesh = new THREE.Mesh(divGeom, materialObj);
-    customRotatingFrame.add(divMesh);
+    innerGroup.add(divMesh);
     innerFrameMeshes.push(divMesh);
 
     // Photos fit inside the recess
@@ -505,13 +515,13 @@ document.getElementById('btnBuildInner').addEventListener('click', () => {
     customPhotoFront = new THREE.Mesh(new THREE.PlaneGeometry(photoW, photoH), photoMat);
     customPhotoFront.name = "photo_front";
     customPhotoFront.position.z = frontZ;
-    customRotatingFrame.add(customPhotoFront);
+    innerGroup.add(customPhotoFront);
 
     customPhotoBack = new THREE.Mesh(new THREE.PlaneGeometry(photoW, photoH), photoMat);
     customPhotoBack.name = "photo_back";
     customPhotoBack.rotation.y = Math.PI;
     customPhotoBack.position.z = backZ;
-    customRotatingFrame.add(customPhotoBack);
+    innerGroup.add(customPhotoBack);
 
     // Rotation Pins (Menteşe/Pim)
     const pinMat = new THREE.MeshStandardMaterial({ color: 0x888888, metalness: 0.9, roughness: 0.2 });
@@ -577,10 +587,7 @@ document.getElementById('btnBuildInner').addEventListener('click', () => {
     // We move the entire group by (pivotX + posX, pivotY + posY, pivotOffset), 
     // and move all its children backwards by (-pivotX, -pivotY, -pivotOffset) to maintain visual origin relative to group center
     customRotatingFrame.position.set(pivotX + posX, pivotY + posY, pivotOffset);
-    innerMesh.position.set(-pivotX, -pivotY, -pivotOffset);
-    divMesh.position.set(-pivotX, -pivotY, -pivotOffset);
-    customPhotoFront.position.set(-pivotX, -pivotY, frontZ - pivotOffset);
-    customPhotoBack.position.set(-pivotX, -pivotY, backZ - pivotOffset);
+    innerGroup.position.set(-pivotX, -pivotY, -pivotOffset);
 
     currentModelGroup.add(customRotatingFrame);
     applyInitialWoodTexture(innerFrameMeshes, document.getElementById('innerFrameColor').value);
@@ -662,6 +669,61 @@ function handlePhotoUpload(event, targetMesh, rotId) {
     };
     reader.readAsDataURL(file);
 }
+
+// Frame Texture Upload Logic
+let activeOuterTexture = null;
+let activeInnerTexture = null;
+
+function handleFrameTextureUpload(event, meshes, type) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            const texture = new THREE.Texture(img);
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.needsUpdate = true;
+            
+            if(type === 'outer') {
+                activeOuterTexture = texture;
+                document.getElementById('outerTexControls').classList.remove('hidden');
+                document.getElementById('outerTexScale').value = 1;
+            } else {
+                activeInnerTexture = texture;
+                document.getElementById('innerTexControls').classList.remove('hidden');
+                document.getElementById('innerTexScale').value = 1;
+            }
+            
+            meshes.forEach(mesh => {
+                if (mesh && mesh.material) {
+                    mesh.material.map = texture;
+                    mesh.material.color.set('#ffffff'); // reset color
+                    mesh.material.needsUpdate = true;
+                }
+            });
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+document.getElementById('outerFrameTexInput').addEventListener('change', e => handleFrameTextureUpload(e, outerFrameMeshes, 'outer'));
+document.getElementById('innerFrameTexInput').addEventListener('change', e => handleFrameTextureUpload(e, innerFrameMeshes, 'inner'));
+
+document.getElementById('outerTexScale').addEventListener('input', e => {
+    if(activeOuterTexture) {
+        activeOuterTexture.repeat.set(e.target.value, e.target.value);
+        activeOuterTexture.needsUpdate = true;
+    }
+});
+document.getElementById('innerTexScale').addEventListener('input', e => {
+    if(activeInnerTexture) {
+        activeInnerTexture.repeat.set(e.target.value, e.target.value);
+        activeInnerTexture.needsUpdate = true;
+    }
+});
 
 function applyInitialWoodTexture(meshes, hexColor) {
     const canvasTex = document.createElement('canvas');
