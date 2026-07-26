@@ -1,0 +1,14 @@
+Scene (Ana Sahne)
+ │
+ ├── outer_frame (Ana dış gövde ve ayaklar)
+ │    ├── anchor_sol   (Aksesuar Ekleme Noktası 1 - Kenarda/Dış çerçevede)
+ │    ├── anchor_sag   (Aksesuar Ekleme Noktası 2 - Kenarda/Dış çerçevede)
+ │    └── anchor_3     (Eğer istenirse başka bir noktada)
+ │
+ └── rotating_frame (Dönen İç Çerçeve gövdesi)
+      ├── photo_front  (Ön Fotoğraf Yüzeyi - İç çerçevenin çocuğu olmalı)
+      └── photo_back   (Arka Fotoğraf Yüzeyi - İç çerçevenin çocuğu olmalı)
+İsimlendirme: anchor_1, anchor_sol, aksesuar_sag vb. (İsminin içinde anchor veya aksesuar kelimesi
+Özellik: Model üzerinde istenildiği kadar (birden fazla) eklenti noktası belirlenebilir. Bu noktalar için Null Object, Empty veya çok ufak (görünmez) bir küp (Mesh) kullanılmalıdır.
+Hiyerarşi: Bu noktalar dış çerçevede veya modelin kenarlarında olacağı için ana dizinde veya outer_frame içinde olmalıdır. Kesinlikle dönen çerçevenin (rotating_frame) içine konmamalıdır.
+Özellik: Tek yüzeyli Plane olmalı, UV Map'leri açılmış olmalı ve rotating_frame'in içine (child) konulmalıdır.

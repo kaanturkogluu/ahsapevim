@@ -95,6 +95,7 @@
                     <a href="/products?category=masa-ve-gece-lambasi" class="hover:text-brand hover:border-b-[3px] hover:border-brand py-3 transition border-b-[3px] border-transparent uppercase">MASA VE GECE LAMBASI</a>
                 @endif
                 <a href="/3d" class="text-brand hover:text-brand-dark hover:border-b-[3px] hover:border-brand-dark py-3 transition border-b-[3px] border-transparent uppercase flex items-center gap-1.5"><i class="fa-solid fa-cube"></i> 3D STÜDYO</a>
+                <a href="/builder" class="text-orange-500 hover:text-orange-700 hover:border-b-[3px] hover:border-orange-700 py-3 transition border-b-[3px] border-transparent uppercase flex items-center gap-1.5"><i class="fa-solid fa-hammer"></i> 3D OLUŞTURUCU</a>
             </div>
         </nav>
     </header>

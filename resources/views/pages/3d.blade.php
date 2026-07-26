@@ -34,6 +34,15 @@
                 </div>
             </div>
 
+            <!-- Accessory Selection (Dynamic) -->
+            <div id="customAccessoryControls" class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hidden mb-4">
+                <h2 class="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2"><i class="fa-solid fa-shapes text-brand mr-2"></i>Aksesuarlar</h2>
+                <p class="text-xs text-gray-500 mb-4">Bu çerçeve üzerindeki özel noktalara aksesuar ekleyebilirsiniz.</p>
+                <div id="accessoryList" class="space-y-4">
+                    <!-- Dinamik dropdownlar buraya gelecek -->
+                </div>
+            </div>
+
             <!-- Custom Photo Upload for Specific Meshes -->
             <div id="customPhotoControls" class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hidden">
                 <h2 class="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2"><i class="fa-solid fa-image text-brand mr-2"></i>Özel Fotoğraflar</h2>
@@ -141,6 +150,8 @@ let customPhotoBack = null;
 let customOuterMeshes = [];
 let customInnerMeshes = [];
 let customLampMeshes = [];
+let customAnchorPoints = [];
+let loadedAccessories = {};
 
 const container = document.getElementById('studio3DContainer');
 const loadingOverlay = document.getElementById('loadingOverlay');
@@ -438,8 +449,12 @@ function clearModel() {
     customOuterMeshes = [];
     customInnerMeshes = [];
     customLampMeshes = [];
+    customAnchorPoints = [];
+    loadedAccessories = {};
     document.getElementById('customPhotoControls').classList.add('hidden');
     document.getElementById('colorControls').classList.add('hidden');
+    document.getElementById('customAccessoryControls').classList.add('hidden');
+    document.getElementById('accessoryList').innerHTML = '';
 }
 
 function handlePhotoUpload(event, targetMesh) {
@@ -535,6 +550,12 @@ function scanModelForCustomMeshes(object) {
                 foundAny = true;
             }
             
+            // Alanlar (Anchor / Aksesuar noktaları)
+            if (name.includes('anchor') || name.includes('aksesuar')) {
+                customAnchorPoints.push(child);
+                foundAny = true;
+            }
+            
             // Lamba (Lamp) ve Işık Kaynağı
             if (name.includes('lamba') || name.includes('lamp') || name.includes('light')) {
                 if (child.isMesh) customLampMeshes.push(child);
@@ -586,7 +607,7 @@ function scanModelForCustomMeshes(object) {
             }
             // Dış Çerçeve / Ana Gövde (Ceviz Rengi ve Ahşap Doku)
             else if (child.isMesh && !name.includes('photo')) {
-                if (!name.includes('rotating')) {
+                if (!name.includes('rotating') && !name.includes('anchor') && !name.includes('aksesuar')) {
                     customOuterMeshes.push(child);
                 }
             }
@@ -601,12 +622,85 @@ function scanModelForCustomMeshes(object) {
 
         document.getElementById('customPhotoControls').classList.remove('hidden');
         document.getElementById('colorControls').classList.remove('hidden');
+        
+        if (customAnchorPoints.length > 0) {
+            buildAccessoryUI();
+        }
+
         console.log("Custom meshes detected:", {
             RotatingFrame: !!customRotatingFrame,
             PhotoFront: !!customPhotoFront,
-            PhotoBack: !!customPhotoBack
+            PhotoBack: !!customPhotoBack,
+            AnchorPoints: customAnchorPoints.length
         });
     }
+}
+
+function buildAccessoryUI() {
+    const container = document.getElementById('accessoryList');
+    container.innerHTML = '';
+    
+    customAnchorPoints.forEach((anchor, index) => {
+        const div = document.createElement('div');
+        div.className = 'mb-3 p-3 bg-gray-50 border border-gray-100 rounded-lg';
+        div.innerHTML = `
+            <label class="block text-xs font-bold text-gray-700 mb-2">Alan ${index + 1} (${anchor.name})</label>
+            <select class="accessory-select w-full text-sm border-gray-300 rounded-md shadow-sm p-2 border focus:border-brand" data-index="${index}">
+                <option value="">-- Aksesuar Yok --</option>
+                <option value="/models/lamba.glb">Örnek: Lamba</option>
+                <option value="/models/saksi.glb">Örnek: Küçük Saksı</option>
+                <option value="/models/kalemlik.glb">Örnek: Kalemlik</option>
+            </select>
+        `;
+        container.appendChild(div);
+    });
+
+    document.getElementById('customAccessoryControls').classList.remove('hidden');
+
+    document.querySelectorAll('.accessory-select').forEach(select => {
+        select.addEventListener('change', (e) => {
+            const idx = e.target.getAttribute('data-index');
+            const url = e.target.value;
+            loadAccessoryToAnchor(customAnchorPoints[idx], idx, url);
+        });
+    });
+}
+
+function loadAccessoryToAnchor(anchorNode, anchorIndex, url) {
+    // Önceki objeyi temizle
+    if (loadedAccessories[anchorIndex]) {
+        anchorNode.remove(loadedAccessories[anchorIndex]);
+        loadedAccessories[anchorIndex] = null;
+    }
+
+    if (!url) return;
+
+    showLoading('Aksesuar Yükleniyor...');
+    const loader = new THREE.GLTFLoader();
+    loader.load(url, (gltf) => {
+        const obj = gltf.scene;
+        
+        // Nesneyi merkezle
+        const box = new THREE.Box3().setFromObject(obj);
+        const center = box.getCenter(new THREE.Vector3());
+        obj.position.x = -center.x;
+        obj.position.y = -center.y;
+        obj.position.z = -center.z;
+        
+        // Wrapper içine al ki boyutlandırma veya döndürme kolay olsun
+        const wrapper = new THREE.Group();
+        // İsteğe bağlı ölçeklendirme yapılabilir (örneğin objeler çok büyükse)
+        // wrapper.scale.set(0.5, 0.5, 0.5); 
+        wrapper.add(obj);
+
+        anchorNode.add(wrapper);
+        loadedAccessories[anchorIndex] = wrapper;
+        hideLoading();
+    }, undefined, (err) => {
+        console.error('Aksesuar yüklenemedi:', err);
+        alert('Seçilen aksesuar sunucuda bulunamadı veya yüklenemedi.');
+        hideLoading();
+    });
 }
 
 function applyInitialWoodTexture(meshes, hexColor) {

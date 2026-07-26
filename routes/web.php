@@ -79,6 +79,10 @@ Route::get('/3d', function () {
     return view('pages.3d');
 });
 
+Route::get('/builder', function () {
+    return view('pages.3d-builder');
+});
+
 // Static Pages
 $staticPages = [
     'iletisim' => [
