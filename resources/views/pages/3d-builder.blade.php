@@ -362,6 +362,38 @@ function init3D() {
     container3D.addEventListener('pointerleave', stopDrag);
 }
 
+function createMiteredFramePiece(L, T, D, miterLeft, miterRight) {
+    const shape = new THREE.Shape();
+    const halfL = L / 2;
+    const halfT = T / 2;
+    
+    // Top edge (Outer)
+    shape.moveTo(-halfL, halfT);
+    shape.lineTo(halfL, halfT);
+    
+    // Bottom-Right (Inner)
+    const rightInnerX = miterRight ? (halfL - T) : halfL;
+    shape.lineTo(rightInnerX, -halfT);
+    
+    // Bottom-Left (Inner)
+    const leftInnerX = miterLeft ? (-halfL + T) : -halfL;
+    shape.lineTo(leftInnerX, -halfT);
+    
+    shape.lineTo(-halfL, halfT);
+
+    const extrudeSettings = { depth: D, bevelEnabled: false, curveSegments: 1 };
+    const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    
+    // Center Z manually
+    geom.computeBoundingBox();
+    const zOffset = -0.5 * (geom.boundingBox.max.z - geom.boundingBox.min.z);
+    geom.translate(0, 0, zOffset);
+    
+    // UV Mapping is handled reasonably well by ExtrudeGeometry for planar textures.
+    // The user has Scale controls to fix any stretching.
+    return geom;
+}
+
 // STEP 1: Build Outer Frame
 document.getElementById('btnBuildOuter').addEventListener('click', () => {
     // Clear old model
@@ -390,31 +422,35 @@ document.getElementById('btnBuildOuter').addEventListener('click', () => {
 
     const materialObj = new THREE.MeshStandardMaterial({ color: 0x8b5a2b, roughness: 0.8 });
 
+    const hasTop = document.getElementById('partTop').checked;
+    const hasBottom = document.getElementById('partBottom').checked;
+    const hasLeft = document.getElementById('partLeft').checked;
+    const hasRight = document.getElementById('partRight').checked;
+
     // Üst
-    if(document.getElementById('partTop').checked) {
-        const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, thickness, depth), materialObj);
+    if(hasTop) {
+        const mesh = new THREE.Mesh(createMiteredFramePiece(width, thickness, depth, hasLeft, hasRight), materialObj);
         mesh.position.y = height/2 - thickness/2;
         outerGroup.add(mesh); outerFrameMeshes.push(mesh);
     }
     // Alt
-    if(document.getElementById('partBottom').checked) {
-        const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, thickness, depth), materialObj);
+    if(hasBottom) {
+        const mesh = new THREE.Mesh(createMiteredFramePiece(width, thickness, depth, hasRight, hasLeft), materialObj);
+        mesh.rotation.z = Math.PI; // flip 180 so long edge is at bottom
         mesh.position.y = -height/2 + thickness/2;
         outerGroup.add(mesh); outerFrameMeshes.push(mesh);
     }
     // Sol
-    const sideH = height - (thickness * 2);
-    if(document.getElementById('partLeft').checked) {
-        // Build horizontally, rotate mesh so texture aligns naturally
-        const mesh = new THREE.Mesh(new THREE.BoxGeometry(sideH, thickness, depth), materialObj);
+    if(hasLeft) {
+        const mesh = new THREE.Mesh(createMiteredFramePiece(height, thickness, depth, hasBottom, hasTop), materialObj);
         mesh.rotation.z = Math.PI / 2;
         mesh.position.x = -width/2 + thickness/2;
         outerGroup.add(mesh); outerFrameMeshes.push(mesh);
     }
     // Sağ
-    if(document.getElementById('partRight').checked) {
-        const mesh = new THREE.Mesh(new THREE.BoxGeometry(sideH, thickness, depth), materialObj);
-        mesh.rotation.z = Math.PI / 2;
+    if(hasRight) {
+        const mesh = new THREE.Mesh(createMiteredFramePiece(height, thickness, depth, hasTop, hasBottom), materialObj);
+        mesh.rotation.z = -Math.PI / 2;
         mesh.position.x = width/2 - thickness/2;
         outerGroup.add(mesh); outerFrameMeshes.push(mesh);
     }
@@ -478,20 +514,20 @@ document.getElementById('btnBuildInner').addEventListener('click', () => {
     const innerGroup = new THREE.Group();
     innerGroup.name = "inner_frame_meshes";
 
-    // Create inner frame out of 4 boxes so textures map perfectly along their length
-    const topMesh = new THREE.Mesh(new THREE.BoxGeometry(inWidth, innerBorder, inDepth), materialObj);
+    // Create inner frame out of 4 mitered pieces
+    const topMesh = new THREE.Mesh(createMiteredFramePiece(inWidth, innerBorder, inDepth, true, true), materialObj);
     topMesh.position.y = (inHeight/2) - (innerBorder/2);
     
-    const botMesh = new THREE.Mesh(new THREE.BoxGeometry(inWidth, innerBorder, inDepth), materialObj);
+    const botMesh = new THREE.Mesh(createMiteredFramePiece(inWidth, innerBorder, inDepth, true, true), materialObj);
+    botMesh.rotation.z = Math.PI;
     botMesh.position.y = -(inHeight/2) + (innerBorder/2);
     
-    const sideInH = inHeight - (innerBorder * 2);
-    const leftMesh = new THREE.Mesh(new THREE.BoxGeometry(sideInH, innerBorder, inDepth), materialObj);
+    const leftMesh = new THREE.Mesh(createMiteredFramePiece(inHeight, innerBorder, inDepth, true, true), materialObj);
     leftMesh.rotation.z = Math.PI / 2;
     leftMesh.position.x = -(inWidth/2) + (innerBorder/2);
     
-    const rightMesh = new THREE.Mesh(new THREE.BoxGeometry(sideInH, innerBorder, inDepth), materialObj);
-    rightMesh.rotation.z = Math.PI / 2;
+    const rightMesh = new THREE.Mesh(createMiteredFramePiece(inHeight, innerBorder, inDepth, true, true), materialObj);
+    rightMesh.rotation.z = -Math.PI / 2;
     rightMesh.position.x = (inWidth/2) - (innerBorder/2);
 
     innerGroup.add(topMesh, botMesh, leftMesh, rightMesh);
