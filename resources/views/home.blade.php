@@ -606,28 +606,10 @@ function createArtisticPhotoTexture(title, subtitle, bgColor, accentColor) {
     return texture;
 }
 
-// Try loading Unsplash artwork asynchronously
+// External photo enhancement disabled — canvas textures used as reliable fallback
 function enhanceWithExternalPhotos() {
-    const loader = new THREE.TextureLoader();
-    loader.setCrossOrigin('anonymous');
-
-    loader.load('https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&auto=format&fit=crop&q=80', tex => {
-        tex.needsUpdate = true;
-        sampleFrontTexture = tex;
-        if (currentStep === 3 && !userUploadedTexture1) {
-            customPhotoFront.material.map = sampleFrontTexture;
-            customPhotoFront.material.needsUpdate = true;
-        }
-    });
-
-    loader.load('https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&auto=format&fit=crop&q=80', tex => {
-        tex.needsUpdate = true;
-        sampleBackTexture = tex;
-        if (currentStep === 3 && !userUploadedTexture2) {
-            customPhotoBack.material.map = sampleBackTexture;
-            customPhotoBack.material.needsUpdate = true;
-        }
-    });
+    // Unsplash requests removed: they caused the browser tab to keep spinning
+    // and caused slow page transitions. Canvas-generated textures are used instead.
 }
 
 // --- PHOTO UPLOAD HANDLERS FOR FRONT (1. RESİM) & BACK (2. RESİM) ---

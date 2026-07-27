@@ -22,80 +22,133 @@
         }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #fafafa; }
-        .product-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ede3d5;
+            background-image: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 5px,
+                rgba(100, 50, 0, 0.045) 5px,
+                rgba(100, 50, 0, 0.045) 6px
+            );
+            min-height: 100vh;
+        }
+        /* Card framed look: white cards pop against wood grain background */
+        .product-card {
+            background: #ffffff;
+            border: none;
+            box-shadow: 0 2px 16px rgba(120,60,0,0.10);
+        }
+        .product-card:hover {
+            box-shadow: 0 12px 36px rgba(120,60,0,0.16), 0 2px 8px rgba(242,122,26,0.08);
+        }
+        /* Topbar wood grain: same as body background */
+        .topbar-wood {
+            background-color: #ede3d5;
+            background-image: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 5px,
+                rgba(100, 50, 0, 0.045) 5px,
+                rgba(100, 50, 0, 0.045) 6px
+            );
+            border-bottom: 1px solid rgba(160, 100, 40, 0.18);
+        }
     </style>
-    <!-- Three.js CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Page-specific head assets (e.g. Three.js only on home) -->
+    @stack('head_scripts')
 </head>
 <body class="text-gray-800 flex flex-col min-h-screen">
 
-    <!-- Header Top -->
-    <div class="bg-gray-100 text-[12px] text-gray-500 py-1.5 hidden md:block border-b border-gray-200">
+    <!-- Header Top Bar: Wood Grain Texture -->
+    <div class="topbar-wood text-[12px] text-amber-900 py-1.5 hidden md:block">
         <div class="container mx-auto px-4 flex justify-between items-center font-medium">
-            <!-- Left Side -->
-            <div class="flex gap-4">
-                <a href="tel:+90850xxxxxxx" class="hover:text-brand transition flex items-center gap-1.5"><i class="fa-solid fa-phone"></i> 0850 XXX XX XX</a>
-                <a href="https://wa.me/905xxxxxxxxx" target="_blank" class="hover:text-green-600 transition flex items-center gap-1.5 text-green-700"><i class="fa-brands fa-whatsapp text-[14px]"></i> WhatsApp Destek</a>
-                <a href="#" class="hover:text-gray-800 transition flex items-center gap-1.5"><i class="fa-solid fa-circle-question"></i> Sıkça Sorulanlar</a>
+            <!-- Left: Contact -->
+            <div class="flex gap-5">
+                <a href="tel:+90850xxxxxxx" class="hover:text-brand transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-phone text-amber-700"></i> 0850 XXX XX XX
+                </a>
+                <a href="https://wa.me/905xxxxxxxxx" target="_blank" class="hover:text-brand transition flex items-center gap-1.5 text-green-700">
+                    <i class="fa-brands fa-whatsapp"></i> WhatsApp Destek
+                </a>
+                <a href="#" class="hover:text-brand transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-question text-amber-700"></i> Sıkça Sorulanlar
+                </a>
             </div>
-            <!-- Right Side (Removed) -->
+            <!-- Right: Trust signals -->
+            <div class="flex gap-5 text-amber-800">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-truck-fast text-amber-600"></i> Ücretsiz Kargo</span>
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-rotate-left text-amber-600"></i> 14 Gün İade</span>
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-hammer text-amber-600"></i> El İşçiliği Garantisi</span>
+            </div>
+        </div>
     </div>
-    
-    <header class="bg-white sticky top-0 z-40 shadow-sm border-b border-gray-200">
-        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-6">
+
+    <!-- Main Header: Warm Cream -->
+    <header class="bg-[#fffbf5] sticky top-0 z-40 shadow-sm border-b border-amber-100">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-5">
+
             <!-- Logo -->
-            <a href="/" class="text-3xl font-extrabold text-brand flex items-center gap-1 tracking-tight w-48 lowercase">
-                ahşapevim
+            <a href="/" class="flex items-center gap-2.5 shrink-0">
+                <div class="w-10 h-10 rounded-xl bg-brand flex items-center justify-center text-white font-black text-xl shadow-md shadow-brand/20">A</div>
+                <div class="flex flex-col leading-none">
+                    <span class="text-xl font-extrabold text-gray-900 tracking-tight">Ahşap<span class="text-brand">Evim</span></span>
+                    <span class="text-[10px] font-semibold text-amber-700 uppercase tracking-wider mt-0.5">Manisa El Yapımı Atölye</span>
+                </div>
             </a>
 
             <!-- Search Bar -->
-            <div class="flex-1 w-full max-w-3xl">
-                <div class="relative flex items-center w-full bg-gray-50 border-2 border-transparent focus-within:border-brand rounded-md transition-colors">
-                    <input type="text" placeholder="Aradığınız ürün, kategori veya markayı yazınız" class="w-full bg-transparent py-2.5 px-4 pr-10 outline-none text-sm text-gray-700">
-                    <button class="absolute right-0 h-full px-4 text-brand text-lg flex items-center justify-center">
+            <div class="flex-1 w-full max-w-2xl">
+                <div class="relative flex items-center w-full bg-amber-50 border-2 border-amber-100 focus-within:border-brand focus-within:bg-white rounded-xl transition-all">
+                    <input type="text" placeholder="Ürün, kategori veya tasarım arayın…" class="w-full bg-transparent py-2.5 px-4 pr-12 outline-none text-sm text-gray-700 placeholder-amber-400">
+                    <button class="absolute right-0 h-full px-4 bg-brand hover:bg-brand-dark rounded-r-xl text-white text-base flex items-center justify-center transition">
                         <i class="fa-solid fa-search"></i>
                     </button>
                 </div>
             </div>
 
             <!-- User Actions -->
-            <div class="flex items-center gap-6 text-[13px] font-semibold text-gray-700 shrink-0">
-                <a href="#" class="hover:text-brand flex flex-row items-center gap-2 group transition">
-                    <i class="fa-regular fa-user text-lg group-hover:text-brand"></i>
-                    <span class="hidden md:inline">Giriş Yap</span>
+            <div class="flex items-center gap-5 text-[13px] font-semibold text-gray-700 shrink-0">
+                <a href="#" class="hover:text-brand flex flex-col items-center gap-0.5 group transition">
+                    <i class="fa-regular fa-user text-xl group-hover:text-brand"></i>
+                    <span class="hidden md:inline text-[11px]">Giriş Yap</span>
                 </a>
-                <a href="#" class="hover:text-brand flex flex-row items-center gap-2 group transition">
-                    <i class="fa-regular fa-heart text-lg group-hover:text-brand"></i>
-                    <span class="hidden md:inline">Favorilerim</span>
+                <a href="#" class="hover:text-brand flex flex-col items-center gap-0.5 group transition">
+                    <i class="fa-regular fa-heart text-xl group-hover:text-brand"></i>
+                    <span class="hidden md:inline text-[11px]">Favorilerim</span>
                 </a>
-                <a href="/cart" class="hover:text-brand flex flex-row items-center gap-2 group transition relative">
-                    <i class="fa-solid fa-shopping-cart text-lg group-hover:text-brand"></i>
-                    <span class="hidden md:inline">Sepetim</span>
-                    <span class="absolute -top-2 -right-2 bg-brand text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                <a href="/cart" class="hover:text-brand flex flex-col items-center gap-0.5 group transition relative">
+                    <i class="fa-solid fa-shopping-bag text-xl group-hover:text-brand"></i>
+                    <span class="hidden md:inline text-[11px]">Sepetim</span>
+                    <span class="absolute -top-1.5 -right-2 bg-brand text-white text-[10px] font-bold rounded-full h-4.5 w-4.5 min-w-[18px] min-h-[18px] flex items-center justify-center">
                         {{ session('cart') ? count(session('cart')) : 0 }}
                     </span>
                 </a>
             </div>
         </div>
 
-        <!-- Categories Nav -->
-        <nav>
-            <div class="container mx-auto px-4 flex justify-center md:justify-start gap-8 overflow-x-auto text-[13px] font-bold text-gray-700 whitespace-nowrap">
+        <!-- Categories Nav: Warm Underline Style -->
+        <nav class="border-t border-amber-100 bg-[#fffbf5]">
+            <div class="container mx-auto px-4 flex items-center justify-start gap-1 overflow-x-auto text-[12.5px] font-bold text-gray-600 whitespace-nowrap pb-0">
                 @if(isset($navCategories) && $navCategories->count())
                     @foreach($navCategories as $cat)
-                        <a href="/products?category={{ $cat->slug }}" class="hover:text-brand hover:border-b-[3px] hover:border-brand py-3 transition border-b-[3px] border-transparent uppercase">{{ $cat->name }}</a>
+                        <a href="/products?category={{ $cat->slug }}" class="hover:text-brand hover:bg-amber-50 px-4 py-3 transition rounded-t-lg border-b-2 border-transparent hover:border-brand uppercase tracking-wide">{{ $cat->name }}</a>
                     @endforeach
                 @else
-                    <a href="/products?category=cerceve" class="hover:text-brand hover:border-b-[3px] hover:border-brand py-3 transition border-b-[3px] border-transparent uppercase">ÇERCEVE</a>
-                    <a href="/products?category=bebek-hediyelik" class="hover:text-brand hover:border-b-[3px] hover:border-brand py-3 transition border-b-[3px] border-transparent uppercase">BEBEK HEDİYELİK</a>
-                    <a href="/products?category=masa-ve-gece-lambasi" class="hover:text-brand hover:border-b-[3px] hover:border-brand py-3 transition border-b-[3px] border-transparent uppercase">MASA VE GECE LAMBASI</a>
+                    <a href="/products?category=cerceve" class="hover:text-brand hover:bg-amber-50 px-4 py-3 transition border-b-2 border-transparent hover:border-brand uppercase tracking-wide">Çerçeve</a>
+                    <a href="/products?category=bebek-hediyelik" class="hover:text-brand hover:bg-amber-50 px-4 py-3 transition border-b-2 border-transparent hover:border-brand uppercase tracking-wide">Bebek Hediyelik</a>
+                    <a href="/products?category=masa-ve-gece-lambasi" class="hover:text-brand hover:bg-amber-50 px-4 py-3 transition border-b-2 border-transparent hover:border-brand uppercase tracking-wide">Masa & Gece Lambası</a>
                 @endif
-                <a href="/3d" class="text-brand hover:text-brand-dark hover:border-b-[3px] hover:border-brand-dark py-3 transition border-b-[3px] border-transparent uppercase flex items-center gap-1.5"><i class="fa-solid fa-cube"></i> 3D STÜDYO</a>
-                <a href="/builder" class="text-orange-500 hover:text-orange-700 hover:border-b-[3px] hover:border-orange-700 py-3 transition border-b-[3px] border-transparent uppercase flex items-center gap-1.5"><i class="fa-solid fa-hammer"></i> 3D OLUŞTURUCU</a>
+                <div class="w-px h-5 bg-amber-200 mx-2"></div>
+                <a href="/3d" class="text-brand hover:bg-brand/10 px-4 py-3 transition border-b-2 border-transparent hover:border-brand uppercase tracking-wide flex items-center gap-1.5">
+                    <i class="fa-solid fa-cube"></i> 3D Stüdyo
+                </a>
+                <a href="/builder" class="text-amber-700 hover:bg-amber-50 px-4 py-3 transition border-b-2 border-transparent hover:border-amber-700 uppercase tracking-wide flex items-center gap-1.5">
+                    <i class="fa-solid fa-hammer"></i> 3D Oluşturucu
+                </a>
             </div>
         </nav>
     </header>

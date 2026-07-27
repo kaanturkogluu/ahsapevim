@@ -5,9 +5,9 @@
 @section('content')
 
 {{-- Warm Hero Banner (Atölye & El İşçiliği Teması) --}}
-<div class="relative overflow-hidden bg-[#fdf6ec] border-b border-amber-100">
-    {{-- Wood grain texture overlay --}}
-    <div class="absolute inset-0 opacity-[0.04]" style="background-image: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(120,60,0,0.5) 3px, rgba(120,60,0,0.5) 4px);"></div>
+<div class="relative overflow-hidden bg-white/80 backdrop-blur-sm">
+    {{-- Overlay to tone down the body pattern inside the hero --}}
+    <div class="absolute inset-0 bg-white/60"></div>
     <div class="container mx-auto px-4 py-9 relative z-10">
         <div class="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
@@ -27,10 +27,10 @@
                     <span class="hidden sm:flex items-center gap-1.5"><i class="fa-solid fa-rotate-left text-blue-600"></i> 14 Gün İade</span>
                 </div>
             </div>
-            {{-- Atölye ambiyansı ikonu --}}
+            {{-- Atölye ürün görseli --}}
             <div class="hidden lg:flex flex-col items-center gap-2 shrink-0">
-                <div class="w-28 h-28 rounded-2xl bg-white border border-amber-200 shadow-md flex items-center justify-center">
-                    <i class="fa-solid fa-tree text-6xl text-amber-700/60"></i>
+                <div class="w-36 h-36 rounded-2xl overflow-hidden shadow-xl">
+                    <img src="/artisan_frame_hero.png" alt="El Yapımı Masif Ahşap Çerçeve" class="w-full h-full object-cover">
                 </div>
                 <span class="text-[11px] text-amber-700 font-bold uppercase tracking-wider">El yapımı atölye ürünü</span>
             </div>
@@ -38,46 +38,14 @@
     </div>
 </div>
 
-<div class="bg-[#fdf9f4] min-h-screen pb-16 pt-8">
-    <div class="container mx-auto px-4 flex gap-7">
-        
-        {{-- Sidebar --}}
-        <div class="hidden lg:block w-60 flex-shrink-0">
-            <div class="bg-white border border-amber-100 rounded-2xl p-5 sticky top-24 shadow-sm">
-                <div class="flex items-center gap-2 mb-4">
-                    <i class="fa-solid fa-layer-group text-brand text-sm"></i>
-                    <h3 class="font-bold text-gray-800 text-sm">Kategoriler</h3>
-                </div>
-                <ul class="text-[13px] text-gray-600 space-y-1">
-                    <li>
-                        <a href="/products" class="flex justify-between items-center px-3 py-2 rounded-xl transition {{ !request('category') ? 'bg-brand/10 text-brand font-bold' : 'hover:bg-amber-50 hover:text-brand' }}">
-                            <span>✦ Tüm Ürünler</span>
-                        </a>
-                    </li>
-                    @foreach($categories as $cat)
-                        <li>
-                            <a href="/products?category={{ $cat->slug }}" class="flex justify-between items-center px-3 py-2 rounded-xl transition {{ request('category') === $cat->slug ? 'bg-brand/10 text-brand font-bold' : 'hover:bg-amber-50 hover:text-brand' }}">
-                                <span>{{ $cat->name }}</span>
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
-
-                {{-- Atölye Notu --}}
-                <div class="mt-5 pt-4 border-t border-amber-100">
-                    <div class="bg-amber-50 rounded-xl p-3.5 text-xs text-amber-800 leading-relaxed">
-                        <div class="font-bold mb-1 flex items-center gap-1.5"><i class="fa-solid fa-circle-info text-amber-600"></i> Atölye Notu</div>
-                        Tüm ürünlerimiz sipariş üzerine özel olarak üretilmektedir. Kargo süresi 3–5 iş günüdür.
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="min-h-screen pb-16 pt-8">
+    <div class="container mx-auto px-4">
 
         {{-- Product Grid --}}
-        <div class="flex-1">
+        <div class="w-full">
 
             {{-- Top Bar --}}
-            <div class="flex justify-between items-center mb-5 bg-white px-5 py-3.5 rounded-2xl border border-amber-100 shadow-sm">
+            <div class="flex justify-between items-center mb-5 bg-white px-5 py-3.5 rounded-2xl shadow-sm">
                 <div class="flex items-center gap-2.5">
                     <span class="text-base font-extrabold text-gray-900">
                         {{ request('category') ? ($categories->where('slug', request('category'))->first()->name ?? 'Ürünler') : 'Tüm El Yapımı Ürünler' }}
@@ -90,7 +58,7 @@
             </div>
 
             {{-- Warm Products Grid --}}
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 @forelse($products as $product)
                     @php
                         $addImgs = is_array($product->features['images'] ?? null) ? $product->features['images'] : [];
@@ -98,7 +66,7 @@
                     @endphp
 
                     {{-- Product Card (Warm Artisan Style) --}}
-                    <a href="/product/{{ $product->id }}" class="product-card group flex flex-col bg-white rounded-2xl overflow-hidden border border-amber-100 hover:border-brand/30 hover:shadow-xl hover:shadow-brand/10 transition-all duration-300 relative">
+                    <a href="/product/{{ $product->id }}" class="product-card group flex flex-col rounded-2xl overflow-hidden transition-all duration-300 relative">
                         
                         {{-- Favorite --}}
                         <button class="absolute top-3 right-3 z-20 w-8 h-8 bg-white/95 rounded-full shadow flex items-center justify-center text-gray-300 hover:text-brand transition" onclick="event.preventDefault();">
