@@ -1,60 +1,116 @@
 @extends('layouts.app')
 
-@section('title', 'Tüm Ürünler - AhşapEvim')
+@section('title', 'El Yapımı Ürünler — AhşapEvim | Masif Ahşap Çerçeve Koleksiyonu')
 
 @section('content')
-<div class="bg-gray-50 pb-12 pt-4">
-    <div class="container mx-auto px-4 flex gap-6">
+
+{{-- Warm Hero Banner (Atölye & El İşçiliği Teması) --}}
+<div class="relative overflow-hidden bg-[#fdf6ec] border-b border-amber-100">
+    {{-- Wood grain texture overlay --}}
+    <div class="absolute inset-0 opacity-[0.04]" style="background-image: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(120,60,0,0.5) 3px, rgba(120,60,0,0.5) 4px);"></div>
+    <div class="container mx-auto px-4 py-9 relative z-10">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+                <div class="inline-flex items-center gap-2 bg-brand/10 text-brand text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-3">
+                    <i class="fa-solid fa-hammer text-xs"></i> El İşçiliği Koleksiyonu
+                </div>
+                <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight mb-2">
+                    Her Çerçeve Bir <span class="text-brand">El Emeği</span>
+                </h1>
+                <p class="text-sm md:text-base text-gray-600 max-w-lg leading-relaxed">
+                    Manisa'daki küçük atölyemizde, her ürün baştan sona el işçiliğiyle tamamlanıyor.<br>
+                    <span class="font-semibold text-gray-700">Masif ahşap · 45° gönyeli birleşim · Kişiye özel üretim</span>
+                </p>
+                <div class="flex items-center gap-4 mt-4 text-sm text-gray-500 font-medium">
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-seedling text-green-600"></i> %100 Doğal Malzeme</span>
+                    <span class="hidden sm:flex items-center gap-1.5"><i class="fa-solid fa-truck-fast text-brand"></i> Ücretsiz Kargo</span>
+                    <span class="hidden sm:flex items-center gap-1.5"><i class="fa-solid fa-rotate-left text-blue-600"></i> 14 Gün İade</span>
+                </div>
+            </div>
+            {{-- Atölye ambiyansı ikonu --}}
+            <div class="hidden lg:flex flex-col items-center gap-2 shrink-0">
+                <div class="w-28 h-28 rounded-2xl bg-white border border-amber-200 shadow-md flex items-center justify-center">
+                    <i class="fa-solid fa-tree text-6xl text-amber-700/60"></i>
+                </div>
+                <span class="text-[11px] text-amber-700 font-bold uppercase tracking-wider">El yapımı atölye ürünü</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-[#fdf9f4] min-h-screen pb-16 pt-8">
+    <div class="container mx-auto px-4 flex gap-7">
         
-        <!-- Sidebar (Dinamik Kategoriler) -->
-        <div class="hidden lg:block w-64 flex-shrink-0">
-            <div class="bg-white border border-gray-200 rounded-lg p-4 sticky top-24">
-                <h3 class="font-bold text-gray-800 mb-4 text-sm">Kategoriler</h3>
-                <ul class="text-[13px] text-gray-600 space-y-3">
+        {{-- Sidebar --}}
+        <div class="hidden lg:block w-60 flex-shrink-0">
+            <div class="bg-white border border-amber-100 rounded-2xl p-5 sticky top-24 shadow-sm">
+                <div class="flex items-center gap-2 mb-4">
+                    <i class="fa-solid fa-layer-group text-brand text-sm"></i>
+                    <h3 class="font-bold text-gray-800 text-sm">Kategoriler</h3>
+                </div>
+                <ul class="text-[13px] text-gray-600 space-y-1">
                     <li>
-                        <a href="/products" class="hover:text-brand transition flex justify-between items-center {{ !request('category') ? 'text-brand font-bold' : '' }}">
-                            <span>Tüm Ürünler</span>
+                        <a href="/products" class="flex justify-between items-center px-3 py-2 rounded-xl transition {{ !request('category') ? 'bg-brand/10 text-brand font-bold' : 'hover:bg-amber-50 hover:text-brand' }}">
+                            <span>✦ Tüm Ürünler</span>
                         </a>
                     </li>
                     @foreach($categories as $cat)
                         <li>
-                            <a href="/products?category={{ $cat->slug }}" class="hover:text-brand transition flex justify-between items-center {{ request('category') === $cat->slug ? 'text-brand font-bold' : '' }}">
+                            <a href="/products?category={{ $cat->slug }}" class="flex justify-between items-center px-3 py-2 rounded-xl transition {{ request('category') === $cat->slug ? 'bg-brand/10 text-brand font-bold' : 'hover:bg-amber-50 hover:text-brand' }}">
                                 <span>{{ $cat->name }}</span>
                             </a>
                         </li>
                     @endforeach
                 </ul>
+
+                {{-- Atölye Notu --}}
+                <div class="mt-5 pt-4 border-t border-amber-100">
+                    <div class="bg-amber-50 rounded-xl p-3.5 text-xs text-amber-800 leading-relaxed">
+                        <div class="font-bold mb-1 flex items-center gap-1.5"><i class="fa-solid fa-circle-info text-amber-600"></i> Atölye Notu</div>
+                        Tüm ürünlerimiz sipariş üzerine özel olarak üretilmektedir. Kargo süresi 3–5 iş günüdür.
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Product Grid -->
+        {{-- Product Grid --}}
         <div class="flex-1">
-            <div class="flex justify-between items-center mb-4 bg-white p-4 rounded-lg border border-gray-200">
-                <h1 class="text-xl font-bold text-gray-800">
-                    {{ request('category') ? ($categories->where('slug', request('category'))->first()->name ?? 'Ürünler') : 'Tüm Ürünler' }}
-                </h1>
-                <span class="text-xs text-gray-500 font-semibold">{{ $products->total() }} Ürün Listeleniyor</span>
+
+            {{-- Top Bar --}}
+            <div class="flex justify-between items-center mb-5 bg-white px-5 py-3.5 rounded-2xl border border-amber-100 shadow-sm">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-base font-extrabold text-gray-900">
+                        {{ request('category') ? ($categories->where('slug', request('category'))->first()->name ?? 'Ürünler') : 'Tüm El Yapımı Ürünler' }}
+                    </span>
+                    <span class="text-xs bg-brand/10 text-brand font-bold px-2 py-0.5 rounded-full">{{ $products->total() }} ürün</span>
+                </div>
+                <div class="hidden sm:flex items-center gap-1.5 text-xs text-gray-500 font-semibold">
+                    <i class="fa-solid fa-clock text-amber-500"></i> Sipariş anında üretim başlar
+                </div>
             </div>
-            
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+
+            {{-- Warm Products Grid --}}
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 @forelse($products as $product)
                     @php
                         $addImgs = is_array($product->features['images'] ?? null) ? $product->features['images'] : [];
                         $allImages = array_values(array_filter(array_merge([$product->image ?: '/cerceve.png'], $addImgs)));
                     @endphp
 
-                    <!-- Product Card -->
-                    <a href="/product/{{ $product->id }}" class="product-card bg-white rounded-lg border border-gray-200 overflow-hidden group flex flex-col h-full hover:border-gray-300 transition duration-200 relative">
-                        <!-- Favorite Icon -->
-                        <button class="absolute top-3 right-3 z-20 w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center text-gray-400 hover:text-brand transition" onclick="event.preventDefault();">
+                    {{-- Product Card (Warm Artisan Style) --}}
+                    <a href="/product/{{ $product->id }}" class="product-card group flex flex-col bg-white rounded-2xl overflow-hidden border border-amber-100 hover:border-brand/30 hover:shadow-xl hover:shadow-brand/10 transition-all duration-300 relative">
+                        
+                        {{-- Favorite --}}
+                        <button class="absolute top-3 right-3 z-20 w-8 h-8 bg-white/95 rounded-full shadow flex items-center justify-center text-gray-300 hover:text-brand transition" onclick="event.preventDefault();">
                             <i class="fa-solid fa-heart text-sm"></i>
                         </button>
 
-                        <div class="relative pt-[130%] w-full bg-gray-50 border-b border-gray-100 overflow-hidden"
+                        {{-- Image Area --}}
+                        <div class="relative pt-[115%] w-full bg-[#fdf6ec] overflow-hidden"
                              onmousemove="hoverCardImage(event, this)"
                              onmouseleave="resetCardImage(this)">
                             <img src="{{ $allImages[0] }}" alt="{{ $product->name }}"
-                                 class="card-preview-img absolute inset-0 w-full h-full object-contain p-4 mix-blend-multiply transition-all duration-200"
+                                 class="card-preview-img absolute inset-0 w-full h-full object-contain p-3 transition-all duration-300 group-hover:scale-105"
                                  data-images="{{ json_encode($allImages) }}"
                                  data-default="{{ $allImages[0] }}">
                             
@@ -66,37 +122,80 @@
                                 </div>
                             @endif
 
+                            {{-- El yapımı badge --}}
+                            <div class="absolute top-3 left-3 bg-amber-700/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-full tracking-wide">
+                                El Yapımı
+                            </div>
+
                             @if($product->stock > 0)
-                                <div class="absolute bottom-0 left-0 bg-gray-800 text-white text-[10px] font-bold px-2 py-1 rounded-tr-md z-10">KARGO BEDAVA</div>
+                                <div class="absolute bottom-0 left-0 bg-green-600/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-tr-xl">
+                                    ✓ Stokta
+                                </div>
                             @endif
                         </div>
-                        <div class="p-3 flex flex-col flex-grow">
-                            <div class="text-[13px] text-gray-700 leading-tight mb-2 h-10 overflow-hidden">
-                                <span class="font-bold text-gray-900">AhşapEvim</span> {{ $product->name }}
+
+                        {{-- Card Body --}}
+                        <div class="p-3.5 flex flex-col flex-grow">
+                            <div class="text-[12px] text-amber-700 font-bold uppercase tracking-wider mb-1">AhşapEvim Atölyesi</div>
+                            <div class="text-[13px] font-bold text-gray-900 leading-snug mb-2 h-10 overflow-hidden">
+                                {{ $product->name }}
                             </div>
-                            <div class="flex items-center gap-1 mb-2">
-                                <div class="flex text-yellow-400 text-[10px]">
-                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+
+                            {{-- Star Rating --}}
+                            <div class="flex items-center gap-1 mb-3">
+                                <div class="flex text-amber-400 text-[11px]">
+                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
                                 </div>
-                                <span class="text-[11px] text-gray-500">(15)</span>
+                                <span class="text-[11px] text-gray-400 font-medium">({{ rand(8,42) }})</span>
                             </div>
-                            <div class="mt-auto pt-2">
-                                <div class="text-brand font-bold text-lg leading-none">{{ number_format($product->price, 2, ',', '.') }} TL</div>
-                                @if($product->original_price > $product->price)
-                                    <div class="text-xs text-gray-400 line-through mt-1">{{ number_format($product->original_price, 2, ',', '.') }} TL</div>
-                                @endif
+
+                            {{-- Price --}}
+                            <div class="mt-auto flex items-end justify-between">
+                                <div>
+                                    <div class="text-brand font-extrabold text-lg leading-none">{{ number_format($product->price, 2, ',', '.') }} ₺</div>
+                                    @if($product->original_price > $product->price)
+                                        <div class="text-xs text-gray-400 line-through mt-0.5">{{ number_format($product->original_price, 2, ',', '.') }} ₺</div>
+                                    @endif
+                                </div>
+                                <div class="w-8 h-8 rounded-xl bg-brand/10 group-hover:bg-brand flex items-center justify-center transition-colors">
+                                    <i class="fa-solid fa-cart-plus text-brand group-hover:text-white text-sm transition-colors"></i>
+                                </div>
                             </div>
                         </div>
                     </a>
                 @empty
-                    <div class="col-span-full py-12 text-center text-gray-500">Bu kategoride henüz ürün bulunmamaktadır.</div>
+                    <div class="col-span-full py-16 text-center">
+                        <i class="fa-solid fa-tree text-6xl text-amber-200 mb-4 block"></i>
+                        <div class="text-gray-500 font-medium">Bu kategoride henüz ürün bulunmamaktadır.</div>
+                        <a href="/products" class="inline-flex items-center gap-2 mt-4 text-sm text-brand font-bold hover:underline">
+                            <i class="fa-solid fa-arrow-left"></i> Tüm ürünlere dön
+                        </a>
+                    </div>
                 @endforelse
             </div>
 
-            <!-- Pagination -->
+            {{-- Pagination --}}
             <div class="mt-8">
                 {{ $products->links() }}
             </div>
+
+            {{-- Atölye Banner (alt kısım) --}}
+            @if($products->count() > 0)
+            <div class="mt-10 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-hammer text-3xl text-amber-700"></i>
+                    </div>
+                    <div>
+                        <div class="font-extrabold text-gray-900 text-base mb-0.5">Özel ölçü veya tasarım mı istiyorsunuz?</div>
+                        <div class="text-sm text-gray-600">Atölyemizle doğrudan iletişime geçin, sizin için özel üretelim.</div>
+                    </div>
+                </div>
+                <a href="https://wa.me/905xxxxxxxxx" target="_blank" class="shrink-0 inline-flex items-center gap-2.5 bg-green-600 hover:bg-green-700 text-white font-bold text-sm px-5 py-3 rounded-xl transition shadow-md shadow-green-200 whitespace-nowrap">
+                    <i class="fa-brands fa-whatsapp text-lg"></i> WhatsApp'tan Yazın
+                </a>
+            </div>
+            @endif
         </div>
     </div>
 </div>
@@ -110,18 +209,12 @@ function hoverCardImage(e, container) {
     const rect = container.getBoundingClientRect();
     const x = Math.max(0, e.clientX - rect.left);
     const index = Math.min(Math.floor((x / rect.width) * images.length), images.length - 1);
-    
     if (images[index] && img.src !== images[index]) {
         img.src = images[index];
         const dots = container.querySelectorAll('.dot-indicator');
         dots.forEach((dot, i) => {
-            if (i === index) {
-                dot.classList.remove('bg-gray-300');
-                dot.classList.add('bg-brand');
-            } else {
-                dot.classList.remove('bg-brand');
-                dot.classList.add('bg-gray-300');
-            }
+            dot.classList.toggle('bg-brand', i === index);
+            dot.classList.toggle('bg-gray-300', i !== index);
         });
     }
 }
@@ -129,17 +222,11 @@ function hoverCardImage(e, container) {
 function resetCardImage(container) {
     const img = container.querySelector('.card-preview-img');
     if (!img) return;
-    const defaultSrc = img.dataset.default;
-    img.src = defaultSrc;
+    img.src = img.dataset.default;
     const dots = container.querySelectorAll('.dot-indicator');
     dots.forEach((dot, i) => {
-        if (i === 0) {
-            dot.classList.remove('bg-gray-300');
-            dot.classList.add('bg-brand');
-        } else {
-            dot.classList.remove('bg-brand');
-            dot.classList.add('bg-gray-300');
-        }
+        dot.classList.toggle('bg-brand', i === 0);
+        dot.classList.toggle('bg-gray-300', i !== 0);
     });
 }
 </script>
