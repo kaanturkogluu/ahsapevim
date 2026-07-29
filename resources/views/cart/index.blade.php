@@ -18,7 +18,7 @@
                 <i class="fa-solid fa-cart-arrow-down text-6xl text-gray-300 mb-4"></i>
                 <h2 class="text-2xl font-bold text-gray-700 mb-2">Sepetiniz Boş</h2>
                 <p class="text-gray-500 mb-6">Sepetinizde henüz ürün bulunmamaktadır.</p>
-                <a href="/products" class="inline-block bg-brand hover:bg-brand-dark text-white font-bold py-3 px-8 rounded-lg transition shadow-md">
+                <a href="{{ url('/urunler') }}" class="inline-block bg-brand hover:bg-brand-dark text-white font-bold py-3 px-8 rounded-lg transition shadow-md">
                     Alışverişe Başla
                 </a>
             </div>
@@ -46,7 +46,7 @@
                                 <!-- Details -->
                                 <div class="flex-1 text-center sm:text-left">
                                     <h3 class="text-lg font-bold text-gray-800 mb-1">
-                                        <a href="/products/{{ $item['product_id'] }}" class="hover:text-brand transition">{{ $item['name'] }}</a>
+                                        <a href="{{ url('/urun/' . $item['product_id']) }}" class="hover:text-brand transition">{{ $item['name'] }}</a>
                                     </h3>
                                     
                                     @if(isset($item['custom_image']) && $item['custom_image'])

@@ -7,9 +7,9 @@
     <div class="container mx-auto px-4 py-4">
         <!-- Breadcrumb -->
         <nav class="flex text-[13px] text-gray-500 mb-6">
-            <a href="/" class="hover:underline">Anasayfa</a>
+            <a href="{{ url('/') }}" class="hover:underline">Anasayfa</a>
             <span class="mx-2">></span>
-            <a href="/products?category={{ $product->category->slug ?? '' }}" class="hover:underline">{{ $product->category->name ?? 'Kategori' }}</a>
+            <a href="{{ url('/urunler') }}?category={{ $product->category->slug ?? '' }}" class="hover:underline">{{ $product->category->name ?? 'Kategori' }}</a>
             <span class="mx-2">></span>
             <span class="text-gray-800">{{ $product->name }}</span>
         </nav>
@@ -52,7 +52,7 @@
                             <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
                         </div>
                     </div>
-                    <a href="#" class="text-blue-600 hover:underline">15 Değerlendirme</a>
+                    <a href="#" class="text-brand hover:underline">15 Değerlendirme</a>
                 </div>
 
                 <hr class="border-gray-200 mb-4">
@@ -74,8 +74,8 @@
                         <p>{{ $product->description ?: 'Özel ahşap işçiliği ile hazırlanmış yüksek kaliteli dekoratif ürün.' }}</p>
                     </div>
                     
-                    <button type="button" onclick="openCustomizationModal()" class="bg-blue-50 border-2 border-blue-100 hover:bg-blue-100 text-brand font-bold py-4 px-6 rounded-xl transition-colors flex items-center justify-center gap-3 w-full md:w-auto shadow-sm">
-                        <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
+                    <button type="button" onclick="openCustomizationModal()" class="bg-brand/5 border-2 border-brand/20 hover:bg-brand/10 text-brand font-bold py-4 px-6 rounded-xl transition-colors flex items-center justify-center gap-3 w-full md:w-auto shadow-sm">
+                        <i class="fa-solid fa-sliders text-xl"></i>
                         Kişiselleştir ve Ön İzle
                     </button>
                 </div>
@@ -83,7 +83,7 @@
 
             <!-- Right Side: Buybox -->
             <div class="w-full lg:w-[25%]">
-                <form id="addToCartForm" action="/cart/add" method="POST" enctype="multipart/form-data" class="border border-gray-200 rounded-xl p-5 bg-white shadow-sm sticky top-24" onsubmit="return checkCustomization(event)">
+                <form id="addToCartForm" action="{{ url('/sepet/ekle') }}" method="POST" enctype="multipart/form-data" class="border border-gray-200 rounded-xl p-5 bg-white shadow-sm sticky top-24" onsubmit="return checkCustomization(event)">
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
                     
@@ -131,12 +131,12 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                 @foreach($similarProducts as $simProduct)
                 <div class="bg-white border border-gray-200 rounded-xl p-3 hover:shadow-lg transition-all product-card flex flex-col h-full group relative">
-                    <a href="/product/{{ $simProduct->id }}" class="block mb-3 relative overflow-hidden rounded-lg bg-gray-50 pt-[100%]">
+                    <a href="{{ url('/urun/' . $simProduct->id) }}" class="block mb-3 relative overflow-hidden rounded-lg bg-gray-50 pt-[100%]">
                         <img src="{{ $simProduct->image ?: '/cerceve.png' }}" alt="{{ $simProduct->name }}" class="absolute inset-0 w-full h-full object-contain mix-blend-multiply p-2 transition-transform duration-500 group-hover:scale-105">
                     </a>
                     <div class="flex-grow flex flex-col">
                         <div class="text-xs text-brand font-semibold mb-1">{{ $simProduct->category->name ?? '' }}</div>
-                        <h3 class="text-sm font-medium text-gray-800 mb-2 line-clamp-2 leading-tight group-hover:text-brand transition"><a href="/product/{{ $simProduct->id }}">{{ $simProduct->name }}</a></h3>
+                        <h3 class="text-sm font-medium text-gray-800 mb-2 line-clamp-2 leading-tight group-hover:text-brand transition"><a href="{{ url('/urun/' . $simProduct->id) }}">{{ $simProduct->name }}</a></h3>
                         <div class="mt-auto pt-2 flex items-center justify-between">
                             <div class="text-lg font-extrabold text-brand">{{ number_format($simProduct->price, 2, ',', '.') }} TL</div>
                         </div>
@@ -154,11 +154,11 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                 @foreach($recentlyViewed as $recentProduct)
                 <div class="bg-white border border-gray-200 rounded-xl p-3 hover:shadow-lg transition-all product-card flex flex-col h-full group relative">
-                    <a href="/product/{{ $recentProduct->id }}" class="block mb-3 relative overflow-hidden rounded-lg bg-gray-50 pt-[100%]">
+                    <a href="{{ url('/urun/' . $recentProduct->id) }}" class="block mb-3 relative overflow-hidden rounded-lg bg-gray-50 pt-[100%]">
                         <img src="{{ $recentProduct->image ?: '/cerceve.png' }}" alt="{{ $recentProduct->name }}" class="absolute inset-0 w-full h-full object-contain mix-blend-multiply p-2 transition-transform duration-500 group-hover:scale-105">
                     </a>
                     <div class="flex-grow flex flex-col">
-                        <h3 class="text-sm font-medium text-gray-800 mb-2 line-clamp-2 leading-tight group-hover:text-brand transition"><a href="/product/{{ $recentProduct->id }}">{{ $recentProduct->name }}</a></h3>
+                        <h3 class="text-sm font-medium text-gray-800 mb-2 line-clamp-2 leading-tight group-hover:text-brand transition"><a href="{{ url('/urun/' . $recentProduct->id) }}">{{ $recentProduct->name }}</a></h3>
                         <div class="mt-auto pt-2 flex items-center justify-between">
                             <div class="text-lg font-extrabold text-brand">{{ number_format($recentProduct->price, 2, ',', '.') }} TL</div>
                         </div>

@@ -22,7 +22,7 @@ Route::get('/', function () {
     return view('home', compact('products', 'categories'));
 });
 
-Route::get('/product/{id}', function ($id) {
+Route::get('/urun/{id}', function ($id) {
     $product = Product::with('category')->where('id', $id)->orWhere('slug', $id)->firstOrFail();
     
     // Similar Products
@@ -57,7 +57,7 @@ Route::get('/product/{id}', function ($id) {
     return view('products.show', compact('product', 'similarProducts', 'recentlyViewed'));
 });
 
-Route::get('/products', function () {
+Route::get('/urunler', function () {
     $query = Product::where('is_active', true);
     if (request('category')) {
         $categorySlug = request('category');
@@ -72,14 +72,14 @@ Route::get('/products', function () {
 
 use App\Http\Controllers\CartController;
 
-Route::get('/cart', [CartController::class, 'index']);
-Route::post('/cart/add', [CartController::class, 'add']);
+Route::get('/sepet', [CartController::class, 'index']);
+Route::post('/sepet/ekle', [CartController::class, 'add']);
 
-Route::get('/3d', function () {
+Route::get('/3d-studyo', function () {
     return view('pages.3d');
 });
 
-Route::get('/builder', function () {
+Route::get('/3d-olusturucu', function () {
     return view('pages.3d-builder');
 });
 
@@ -158,21 +158,21 @@ foreach ($staticPages as $slug => $page) {
 }
 
 // Admin Routes
-Route::prefix('admin')->group(function () {
+Route::prefix('yonetim')->group(function () {
     Route::get('/', function () {
-        return redirect('/admin/products');
+        return redirect('/yonetim/urunler');
     });
 
-    Route::get('/products', function () {
+    Route::get('/urunler', function () {
         // Dummy logic
         return view('admin.products.index');
     });
 
-    Route::get('/orders', function () {
+    Route::get('/siparisler', function () {
         return view('admin.orders.index');
     });
 
-    Route::get('/categories', function () {
+    Route::get('/kategoriler', function () {
         return view('admin.categories.index');
     });
 });

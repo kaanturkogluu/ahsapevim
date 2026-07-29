@@ -14,19 +14,19 @@
                         Bilgilendirme
                     </div>
                     <nav class="flex flex-col text-[14px] font-medium">
-                        <a href="/iletisim" class="px-5 py-3 border-b border-gray-50 hover:bg-orange-50 hover:text-brand transition {{ request()->is('iletisim') ? 'bg-orange-50 text-brand border-l-4 border-l-brand' : 'text-gray-600 border-l-4 border-l-transparent' }}">
+                        <a href="{{ url('/iletisim') }}" class="px-5 py-3 border-b border-gray-50 hover:bg-orange-50 hover:text-brand transition {{ request()->is('iletisim') ? 'bg-orange-50 text-brand border-l-4 border-l-brand' : 'text-gray-600 border-l-4 border-l-transparent' }}">
                             İletişim
                         </a>
-                        <a href="/sikca-sorulanlar" class="px-5 py-3 border-b border-gray-50 hover:bg-orange-50 hover:text-brand transition {{ request()->is('sikca-sorulanlar') ? 'bg-orange-50 text-brand border-l-4 border-l-brand' : 'text-gray-600 border-l-4 border-l-transparent' }}">
+                        <a href="{{ url('/sikca-sorulanlar') }}" class="px-5 py-3 border-b border-gray-50 hover:bg-orange-50 hover:text-brand transition {{ request()->is('sikca-sorulanlar') ? 'bg-orange-50 text-brand border-l-4 border-l-brand' : 'text-gray-600 border-l-4 border-l-transparent' }}">
                             Sıkça Sorulanlar
                         </a>
-                        <a href="/mesafeli-satis-sozlesmesi" class="px-5 py-3 border-b border-gray-50 hover:bg-orange-50 hover:text-brand transition {{ request()->is('mesafeli-satis-sozlesmesi') ? 'bg-orange-50 text-brand border-l-4 border-l-brand' : 'text-gray-600 border-l-4 border-l-transparent' }}">
+                        <a href="{{ url('/mesafeli-satis-sozlesmesi') }}" class="px-5 py-3 border-b border-gray-50 hover:bg-orange-50 hover:text-brand transition {{ request()->is('mesafeli-satis-sozlesmesi') ? 'bg-orange-50 text-brand border-l-4 border-l-brand' : 'text-gray-600 border-l-4 border-l-transparent' }}">
                             Mesafeli Satış Sözleşmesi
                         </a>
-                        <a href="/gizlilik-politikasi" class="px-5 py-3 border-b border-gray-50 hover:bg-orange-50 hover:text-brand transition {{ request()->is('gizlilik-politikasi') ? 'bg-orange-50 text-brand border-l-4 border-l-brand' : 'text-gray-600 border-l-4 border-l-transparent' }}">
+                        <a href="{{ url('/gizlilik-politikasi') }}" class="px-5 py-3 border-b border-gray-50 hover:bg-orange-50 hover:text-brand transition {{ request()->is('gizlilik-politikasi') ? 'bg-orange-50 text-brand border-l-4 border-l-brand' : 'text-gray-600 border-l-4 border-l-transparent' }}">
                             Gizlilik Politikası
                         </a>
-                        <a href="/teslimat-ve-iade" class="px-5 py-3 hover:bg-orange-50 hover:text-brand transition {{ request()->is('teslimat-ve-iade') ? 'bg-orange-50 text-brand border-l-4 border-l-brand' : 'text-gray-600 border-l-4 border-l-transparent' }}">
+                        <a href="{{ url('/teslimat-ve-iade') }}" class="px-5 py-3 hover:bg-orange-50 hover:text-brand transition {{ request()->is('teslimat-ve-iade') ? 'bg-orange-50 text-brand border-l-4 border-l-brand' : 'text-gray-600 border-l-4 border-l-transparent' }}">
                             Teslimat ve İade Şartları
                         </a>
                     </nav>

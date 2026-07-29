@@ -11,15 +11,15 @@
 <body class="bg-gray-100 flex h-screen overflow-hidden">
 
     <!-- Sidebar -->
-    <div class="w-64 bg-slate-800 text-white flex flex-col">
-        <div class="p-4 bg-slate-900 text-center font-bold text-xl border-b border-slate-700">
+    <div class="w-64 bg-[#29221C] text-white flex flex-col">
+        <div class="p-4 bg-[#1D1713] text-center font-bold text-xl border-b border-[#3D332B]">
             Ahşap Evim Admin
         </div>
         <nav class="flex-1 overflow-y-auto mt-4">
-            <a href="/admin/orders" class="block p-4 hover:bg-slate-700"><i class="fa-solid fa-shopping-cart mr-2"></i> Siparişler</a>
-            <a href="/admin/products" class="block p-4 hover:bg-slate-700"><i class="fa-solid fa-box mr-2"></i> Ürünler</a>
-            <a href="/admin/categories" class="block p-4 hover:bg-slate-700"><i class="fa-solid fa-list mr-2"></i> Kategoriler</a>
-            <a href="/" class="block p-4 hover:bg-slate-700 mt-4 border-t border-slate-700"><i class="fa-solid fa-eye mr-2"></i> Siteyi Görüntüle</a>
+            <a href="{{ url('/yonetim/siparisler') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-shopping-cart mr-2"></i> Siparişler</a>
+            <a href="{{ url('/yonetim/urunler') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-box mr-2"></i> Ürünler</a>
+            <a href="{{ url('/yonetim/kategoriler') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-list mr-2"></i> Kategoriler</a>
+            <a href="{{ url('/') }}" class="block p-4 hover:bg-[#3D332B] mt-4 border-t border-[#3D332B]"><i class="fa-solid fa-eye mr-2"></i> Siteyi Görüntüle</a>
         </nav>
     </div>
 
