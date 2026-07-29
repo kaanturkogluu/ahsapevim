@@ -2,6 +2,13 @@
 
 @section('title', ($product->name ?? 'Ürün Detayı') . ' - AhşapEvim')
 
+@if($product->threeDTemplate)
+    @push('head_scripts')
+        <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    @endpush
+@endif
+
 @section('content')
 <div class="bg-white pb-12">
     <div class="container mx-auto px-4 py-4">
@@ -32,9 +39,14 @@
                     @endif
                 </div>
                 
-                <!-- Main Image -->
+                <!-- Main Image / 3D Showcase -->
                 <div id="mainImageContainer" class="flex-1 bg-gray-50 border border-gray-100 rounded-xl relative overflow-hidden flex items-center justify-center h-[480px]">
-                    <img id="mainProductImage" src="{{ $product->image ?: '/cerceve.png' }}" alt="{{ $product->name }}" class="w-full h-full object-contain mix-blend-multiply p-4 transition-all duration-300 z-10">
+                    @if($product->threeDTemplate)
+                        <div id="productShowcase3D" class="w-full h-full cursor-grab active:cursor-grabbing absolute inset-0 z-20"></div>
+                        <img id="mainProductImage" src="{{ $product->image ?: '/cerceve.png' }}" alt="{{ $product->name }}" class="w-full h-full object-contain mix-blend-multiply p-4 transition-all duration-300 z-10 opacity-0 pointer-events-none">
+                    @else
+                        <img id="mainProductImage" src="{{ $product->image ?: '/cerceve.png' }}" alt="{{ $product->name }}" class="w-full h-full object-contain mix-blend-multiply p-4 transition-all duration-300 z-10">
+                    @endif
                 </div>
             </div>
 
@@ -489,5 +501,368 @@ function checkCustomization(e) {
     }
     return true;
 }
+
+@if($product->threeDTemplate)
+<script>
+    // --- WOOD TEXTURE GENERATOR ---
+    function generateWoodTexture(woodType, rendererInstance) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1024;
+        canvas.height = 1024;
+        const ctx = canvas.getContext('2d');
+
+        let baseColor, lineColor, poreColor;
+        if (woodType === 'Ceviz') {
+            baseColor = '#4a3319';
+            lineColor = '#2b1b0e';
+            poreColor = '#1d1209';
+        } else if (woodType === 'Meşe') {
+            baseColor = '#a8896c';
+            lineColor = '#72553b';
+            poreColor = '#503a27';
+        } else if (woodType === 'Çam') {
+            baseColor = '#e3d3bd';
+            lineColor = '#ba9e7d';
+            poreColor = '#a68865';
+        } else if (woodType === 'Kiraz') {
+            baseColor = '#8c462b';
+            lineColor = '#562512';
+            poreColor = '#3c180a';
+        } else {
+            baseColor = '#ead9c3';
+            lineColor = '#c7b095';
+            poreColor = '#b59d81';
+        }
+
+        // Base color
+        ctx.fillStyle = baseColor;
+        ctx.fillRect(0, 0, 1024, 1024);
+
+        // 1. Dark micro-pores (fibers)
+        ctx.fillStyle = poreColor;
+        ctx.globalAlpha = 0.25;
+        for (let i = 0; i < 60000; i++) {
+            let px = Math.random() * 1024;
+            let py = Math.random() * 1024;
+            let pw = 2 + Math.random() * 4;
+            let ph = 1 + Math.random() * 1.2;
+            ctx.fillRect(px, py, pw, ph);
+        }
+
+        // 2. Light wood fibers for realistic raw roughness
+        ctx.fillStyle = '#ffffff';
+        ctx.globalAlpha = 0.12;
+        for (let i = 0; i < 25000; i++) {
+            let px = Math.random() * 1024;
+            let py = Math.random() * 1024;
+            let pw = 3 + Math.random() * 6;
+            let ph = 0.8 + Math.random() * 0.8;
+            ctx.fillRect(px, py, pw, ph);
+        }
+        ctx.globalAlpha = 1.0;
+
+        // Soft grain variation rings (horizontal waves)
+        ctx.strokeStyle = poreColor;
+        ctx.globalAlpha = 0.12;
+        ctx.lineWidth = 16;
+        for (let i = -200; i < 1224; i += 45) {
+            ctx.beginPath();
+            let y = i;
+            ctx.moveTo(0, y);
+            let freq = 0.003;
+            let amp = 35;
+            let phase = i * 0.05;
+            for (let x = 0; x <= 1024; x += 30) {
+                let offset = Math.sin(x * freq + phase) * amp;
+                ctx.lineTo(x, y + offset);
+            }
+            ctx.stroke();
+        }
+        ctx.globalAlpha = 1.0;
+
+        // Sharp horizontal grain lines
+        ctx.strokeStyle = lineColor;
+        ctx.lineWidth = 2.4;
+        for (let i = -200; i < 1224; i += 12) {
+            ctx.beginPath();
+            let y = i;
+            ctx.moveTo(0, y);
+            
+            let frequency = 0.004 + Math.random() * 0.003;
+            let amplitude = 22 + Math.random() * 22;
+            let phase = Math.random() * Math.PI;
+
+            for (let x = 0; x <= 1024; x += 15) {
+                let offset = Math.sin(x * frequency + phase) * amplitude;
+                offset += (Math.random() - 0.5) * 1.5;
+                ctx.lineTo(x, y + offset);
+            }
+            ctx.stroke();
+        }
+
+        // Horizontal knots (budaklar)
+        ctx.lineWidth = 1.6;
+        for (let k = 0; k < 3; k++) {
+            let knotX = Math.random() * 624 + 200;
+            let knotY = Math.random() * 624 + 200;
+            let knotR = 30 + Math.random() * 40;
+            
+            for (let r = 8; r < knotR; r += 8) {
+                ctx.beginPath();
+                ctx.ellipse(knotX, knotY, r * 2.3, r, Math.PI / (6 + Math.random() * 4), 0, Math.PI * 2);
+                ctx.stroke();
+            }
+        }
+
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        if (rendererInstance && rendererInstance.capabilities) {
+            texture.anisotropy = rendererInstance.capabilities.getMaxAnisotropy();
+        }
+        return texture;
+    }
+
+    // --- 3D SHOWCASE ENGINE FOR PRODUCT PAGE ---
+    let scene, camera, renderer, controls;
+    let currentModelGroup = new THREE.Group();
+    let outerGroup = null;
+    let customRotatingFrame = null;
+    let customPhotoFront = null;
+    let customPhotoBack = null;
+    let outerFrameMeshes = [];
+    let innerFrameMeshes = [];
+
+    const container3D = document.getElementById('productShowcase3D');
+
+    if(container3D) {
+        // Wait for page load and styling
+        setTimeout(initProduct3D, 200);
+    }
+
+    function initProduct3D() {
+        scene = new THREE.Scene();
+        const rect = container3D.getBoundingClientRect();
+        camera = new THREE.PerspectiveCamera(40, rect.width / (rect.height || 480), 0.1, 1000);
+        camera.position.set(0, 0, 50);
+
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(rect.width, rect.height || 480);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        container3D.appendChild(renderer.domElement);
+
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.maxPolarAngle = Math.PI / 2 + 0.1;
+        controls.minDistance = 15;
+        controls.maxDistance = 75;
+
+        scene.add(currentModelGroup);
+
+        const ambient = new THREE.AmbientLight(0xffffff, 0.65);
+        const keyLight = new THREE.DirectionalLight(0xffffff, 0.85);
+        keyLight.position.set(25, 45, 30);
+        keyLight.castShadow = true;
+        scene.add(ambient, keyLight);
+
+        buildProductFrame();
+
+        const animate = () => {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        };
+        animate();
+
+        window.addEventListener('resize', () => {
+            const r = container3D.getBoundingClientRect();
+            camera.aspect = r.width / r.height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(r.width, r.height);
+        });
+
+        // Spin decoration
+        setTimeout(() => {
+            if(customRotatingFrame) {
+                let startRot = 0;
+                const spin = () => {
+                    if(startRot < Math.PI * 2) {
+                        customRotatingFrame.rotation.y += 0.03;
+                        startRot += 0.03;
+                        requestAnimationFrame(spin);
+                    }
+                };
+                spin();
+            }
+        }, 1200);
+    }
+
+    function createMiteredFramePiece(L, T, D, miterLeft, miterRight) {
+        const shape = new THREE.Shape();
+        const halfL = L / 2;
+        const halfT = T / 2;
+        
+        shape.moveTo(-halfL, halfT);
+        shape.lineTo(halfL, halfT);
+        
+        const rightInnerX = miterRight ? (halfL - T) : halfL;
+        shape.lineTo(rightInnerX, -halfT);
+        
+        const leftInnerX = miterLeft ? (-halfL + T) : -halfL;
+        shape.lineTo(leftInnerX, -halfT);
+        
+        shape.lineTo(-halfL, halfT);
+
+        const geom = new THREE.ExtrudeGeometry(shape, { depth: D, bevelEnabled: false, curveSegments: 1 });
+        geom.computeBoundingBox();
+        const zOffset = -0.5 * (geom.boundingBox.max.z - geom.boundingBox.min.z);
+        geom.translate(0, 0, zOffset);
+        return geom;
+    }
+
+    function buildProductFrame() {
+        const width = {{ $product->threeDTemplate->width }};
+        const height = {{ $product->threeDTemplate->height }};
+        const depth = {{ $product->threeDTemplate->depth }};
+        const thickness = {{ $product->threeDTemplate->thickness }};
+
+        const innerW = {{ $product->threeDTemplate->inner_width }};
+        const innerH = {{ $product->threeDTemplate->inner_height }};
+        const innerD = {{ $product->threeDTemplate->inner_depth }};
+        const innerB = {{ $product->threeDTemplate->inner_border }};
+
+        const px = {{ $product->threeDTemplate->pos_x }};
+        const py = {{ $product->threeDTemplate->pos_y }};
+
+        const woodType = "{{ $product->threeDTemplate->wood_type }}";
+
+        const woodTexture = generateWoodTexture(woodType, renderer);
+        const bScale = {{ $product->threeDTemplate->bump_scale ?: 0.08 }};
+        const materialObj = new THREE.MeshStandardMaterial({ 
+            map: woodTexture, 
+            bumpMap: woodTexture,
+            bumpScale: bScale,
+            roughness: 0.88,
+            metalness: 0.0
+        });
+
+        const hasTop = {{ $product->threeDTemplate->has_top ? 'true' : 'false' }};
+        const hasBottom = {{ $product->threeDTemplate->has_bottom ? 'true' : 'false' }};
+        const hasLeft = {{ $product->threeDTemplate->has_left ? 'true' : 'false' }};
+        const hasRight = {{ $product->threeDTemplate->has_right ? 'true' : 'false' }};
+
+        outerGroup = new THREE.Group();
+
+        if(hasTop) {
+            const mesh = new THREE.Mesh(createMiteredFramePiece(width, thickness, depth, hasLeft, hasRight), materialObj);
+            mesh.position.y = height/2 - thickness/2;
+            outerGroup.add(mesh);
+        }
+        if(hasBottom) {
+            const mesh = new THREE.Mesh(createMiteredFramePiece(width, thickness, depth, hasRight, hasLeft), materialObj);
+            mesh.rotation.z = Math.PI;
+            mesh.position.y = -height/2 + thickness/2;
+            outerGroup.add(mesh);
+        }
+        if(hasLeft) {
+            const mesh = new THREE.Mesh(createMiteredFramePiece(height, thickness, depth, hasBottom, hasTop), materialObj);
+            mesh.rotation.z = Math.PI / 2;
+            mesh.position.x = -width/2 + thickness/2;
+            outerGroup.add(mesh);
+        }
+        if(hasRight) {
+            const mesh = new THREE.Mesh(createMiteredFramePiece(height, thickness, depth, hasTop, hasBottom), materialObj);
+            mesh.rotation.z = -Math.PI / 2;
+            mesh.position.x = width/2 - thickness/2;
+            outerGroup.add(mesh);
+        }
+
+        currentModelGroup.add(outerGroup);
+
+        customRotatingFrame = new THREE.Group();
+        customRotatingFrame.position.set(px, py, 0);
+
+        const topIn = new THREE.Mesh(createMiteredFramePiece(innerW, innerB, innerD, true, true), materialObj);
+        topIn.position.y = innerH/2 - innerB/2;
+        customRotatingFrame.add(topIn);
+
+        const botIn = new THREE.Mesh(createMiteredFramePiece(innerW, innerB, innerD, true, true), materialObj);
+        botIn.rotation.z = Math.PI;
+        botIn.position.y = -innerH/2 + innerB/2;
+        customRotatingFrame.add(botIn);
+
+        const leftIn = new THREE.Mesh(createMiteredFramePiece(innerH, innerB, innerD, true, true), materialObj);
+        leftIn.rotation.z = Math.PI / 2;
+        leftIn.position.x = -innerW/2 + innerB/2;
+        customRotatingFrame.add(leftIn);
+
+        const rightIn = new THREE.Mesh(createMiteredFramePiece(innerH, innerB, innerD, true, true), materialObj);
+        rightIn.rotation.z = -Math.PI / 2;
+        rightIn.position.x = innerW/2 - innerB/2;
+        customRotatingFrame.add(rightIn);
+
+        // Photo planes
+        const photoW = innerW - innerB * 1.5;
+        const photoH = innerH - innerB * 1.5;
+
+        const photoMatFront = new THREE.MeshStandardMaterial({ 
+            color: 0xefefef, 
+            roughness: 0.35, 
+            metalness: 0.1 
+        });
+        const photoMatBack = new THREE.MeshStandardMaterial({ 
+            color: 0xefefef, 
+            roughness: 0.35, 
+            metalness: 0.1 
+        });
+
+        customPhotoFront = new THREE.Mesh(new THREE.PlaneGeometry(photoW, photoH), photoMatFront);
+        customPhotoFront.position.z = 0.1;
+        customRotatingFrame.add(customPhotoFront);
+
+        customPhotoBack = new THREE.Mesh(new THREE.PlaneGeometry(photoW, photoH), photoMatBack);
+        customPhotoBack.rotation.y = Math.PI;
+        customPhotoBack.position.z = -0.1;
+        customRotatingFrame.add(customPhotoBack);
+
+        const backingGeom = new THREE.BoxGeometry(photoW, photoH, 0.08);
+        const backing = new THREE.Mesh(backingGeom, materialObj);
+        customRotatingFrame.add(backing);
+
+        currentModelGroup.add(customRotatingFrame);
+    }
+
+    // Connect image upload handle to load image directly onto 3D model
+    const originalHandleUpload = window.handleImageUpload;
+    window.handleImageUpload = function(event) {
+        if(originalHandleUpload) {
+            originalHandleUpload(event);
+        }
+        
+        const file = event.target.files[0];
+        if (file && customPhotoFront && customPhotoBack) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const texture = new THREE.Texture(img);
+                    texture.needsUpdate = true;
+                    customPhotoFront.material.map = texture;
+                    customPhotoFront.material.color.set('#ffffff');
+                    customPhotoFront.material.needsUpdate = true;
+
+                    customPhotoBack.material.map = texture;
+                    customPhotoBack.material.color.set('#ffffff');
+                    customPhotoBack.material.needsUpdate = true;
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+</script>
+@endif
 </script>
 @endsection

@@ -1,6 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', '3D Stüdyo - AhşapEvim')
+
+@section('header', '3D Stüdyo Önizleme')
 
 @section('content')
 <!-- Three.js Loaders -->

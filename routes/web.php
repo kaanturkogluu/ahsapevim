@@ -75,13 +75,7 @@ use App\Http\Controllers\CartController;
 Route::get('/sepet', [CartController::class, 'index']);
 Route::post('/sepet/ekle', [CartController::class, 'add']);
 
-Route::get('/3d-studyo', function () {
-    return view('pages.3d');
-});
 
-Route::get('/3d-olusturucu', function () {
-    return view('pages.3d-builder');
-});
 
 // Static Pages
 $staticPages = [
@@ -157,22 +151,34 @@ foreach ($staticPages as $slug => $page) {
     });
 }
 
-// Admin Routes
-Route::prefix('yonetim')->group(function () {
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ThreeDTemplateController;
+use App\Http\Controllers\Admin\LoginController;
+
+// Admin Auth Routes
+Route::get('/yonetim/giris', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/yonetim/giris', [LoginController::class, 'login']);
+Route::post('/yonetim/cikis', [LoginController::class, 'logout'])->name('admin.logout');
+
+// Admin Redirects
+Route::get('/admin', function () {
+    return redirect()->route('admin.products.index');
+});
+
+// Admin Routes (Protected)
+Route::prefix('yonetim')->middleware('auth')->group(function () {
     Route::get('/', function () {
-        return redirect('/yonetim/urunler');
+        return redirect()->route('admin.products.index');
     });
 
-    Route::get('/urunler', function () {
-        // Dummy logic
-        return view('admin.products.index');
-    });
+    Route::resource('kategoriler', CategoryController::class)->except(['create', 'show', 'edit'])->names('admin.categories');
+    Route::resource('urunler', ProductController::class)->names('admin.products');
+    Route::resource('3d-sablonlar', ThreeDTemplateController::class)->parameters(['3d-sablonlar' => 'template'])->names('admin.templates');
+    Route::get('/3d-studyo', [ThreeDTemplateController::class, 'studio'])->name('admin.3d.studio');
+    Route::get('/3d-olusturucu', [ThreeDTemplateController::class, 'builder'])->name('admin.3d.builder');
 
     Route::get('/siparisler', function () {
         return view('admin.orders.index');
-    });
-
-    Route::get('/kategoriler', function () {
-        return view('admin.categories.index');
-    });
+    })->name('admin.orders');
 });

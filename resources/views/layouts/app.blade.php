@@ -193,15 +193,7 @@
                         class="hover:text-brand hover:bg-amber-50 px-4 py-3 transition border-b-2 border-transparent hover:border-brand uppercase tracking-wide">Masa
                         & Gece Lambası</a>
                 @endif
-                <div class="w-px h-5 bg-amber-200 mx-2"></div>
-                <a href="{{ url('/3d-studyo') }}"
-                    class="text-brand hover:bg-brand/10 px-4 py-3 transition border-b-2 border-transparent hover:border-brand uppercase tracking-wide flex items-center gap-1.5">
-                    <i class="fa-solid fa-cube"></i> 3D Stüdyo
-                </a>
-                <a href="{{ url('/3d-olusturucu') }}"
-                    class="text-amber-700 hover:bg-amber-50 px-4 py-3 transition border-b-2 border-transparent hover:border-amber-700 uppercase tracking-wide flex items-center gap-1.5">
-                    <i class="fa-solid fa-hammer"></i> 3D Oluşturucu
-                </a>
+
             </div>
         </nav>
     </header>

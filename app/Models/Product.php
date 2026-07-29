@@ -19,4 +19,9 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function threeDTemplate()
+    {
+        return $this->belongsTo(ThreeDTemplate::class, 'three_d_template_id');
+    }
 }

@@ -1,6 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', '3D Çerçeve Oluşturucu - AhşapEvim')
+
+@section('header', '3D Çerçeve Oluşturucu')
 
 @section('content')
 <!-- Three.js Loaders -->

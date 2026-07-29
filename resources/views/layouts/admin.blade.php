@@ -10,7 +10,6 @@
 </head>
 <body class="bg-gray-100 flex h-screen overflow-hidden">
 
-    <!-- Sidebar -->
     <div class="w-64 bg-[#29221C] text-white flex flex-col">
         <div class="p-4 bg-[#1D1713] text-center font-bold text-xl border-b border-[#3D332B]">
             Ahşap Evim Admin
@@ -19,7 +18,15 @@
             <a href="{{ url('/yonetim/siparisler') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-shopping-cart mr-2"></i> Siparişler</a>
             <a href="{{ url('/yonetim/urunler') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-box mr-2"></i> Ürünler</a>
             <a href="{{ url('/yonetim/kategoriler') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-list mr-2"></i> Kategoriler</a>
+            <a href="{{ url('/yonetim/3d-sablonlar') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-cube mr-2"></i> 3D Şablonlar</a>
+            <a href="{{ url('/yonetim/3d-studyo') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-camera mr-2"></i> 3D Stüdyo</a>
+            <a href="{{ url('/yonetim/3d-olusturucu') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-hammer mr-2"></i> 3D Oluşturucu</a>
             <a href="{{ url('/') }}" class="block p-4 hover:bg-[#3D332B] mt-4 border-t border-[#3D332B]"><i class="fa-solid fa-eye mr-2"></i> Siteyi Görüntüle</a>
+            
+            <form action="{{ route('admin.logout') }}" method="POST" class="block w-full border-t border-[#3D332B]">
+                @csrf
+                <button type="submit" class="w-full text-left p-4 hover:bg-red-950/40 text-red-350 hover:text-red-200 transition-colors flex items-center"><i class="fa-solid fa-sign-out-alt mr-2"></i> Güvenli Çıkış</button>
+            </form>
         </nav>
     </div>
 
