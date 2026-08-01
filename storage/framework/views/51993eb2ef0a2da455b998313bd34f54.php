@@ -6,16 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AhşapEvim - Kişiye Özel 3D Dönen Çerçeve | Masif Ahşap El İşçiliği</title>
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ url('/favicon.ico') }}">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ url('/favicon.ico') }}">
-    <link rel="apple-touch-icon" href="{{ url('/ahsaplogo_yataybg.png') }}">
+    <link rel="icon" type="image/x-icon" href="<?php echo e(url('/favicon.ico')); ?>">
+    <link rel="shortcut icon" type="image/x-icon" href="<?php echo e(url('/favicon.ico')); ?>">
+    <link rel="apple-touch-icon" href="<?php echo e(url('/ahsaplogo_yataybg.png')); ?>">
 
-    {{-- Mobil kullanıcıları ürünler sayfasına yönlendir --}}
+    
     <script>
         (function () {
             // 1024px = Tailwind lg breakpoint (masaüstü sınırı)
             if (window.innerWidth < 1024) {
-                window.location.replace('{{ url('/urunler') }}');
+                window.location.replace('<?php echo e(url('/urunler')); ?>');
             }
         })();
     </script>
@@ -70,15 +70,15 @@
 
     <!-- Minimal Brand Logo (No Navbar/Topbar) -->
     <div class="fixed top-6 left-6 lg:top-8 lg:left-14 z-50 pointer-events-auto">
-        <a href="{{ url('/') }}" class="flex items-center gap-2.5">
-            <img src="{{ url('/ahsaplogo_yataybg.png') }}" alt="AhşapEvim Logo"
+        <a href="<?php echo e(url('/')); ?>" class="flex items-center gap-2.5">
+            <img src="<?php echo e(url('/ahsaplogo_yataybg.png')); ?>" alt="AhşapEvim Logo"
                 class="h-12 lg:h-16 w-auto object-contain">
         </a>
     </div>
 
     <!-- Fixed Top-Right "Ürünleri Keşfet" Button (Sayfayla beraber kaysın/her an erişilebilsin) -->
     <div class="fixed top-6 right-6 lg:top-8 lg:right-14 z-50 pointer-events-auto">
-        <a href="{{ url('/urunler') }}"
+        <a href="<?php echo e(url('/urunler')); ?>"
             class="inline-flex items-center gap-2.5 py-3 px-6 bg-white/95 hover:bg-brand text-gray-900 hover:text-white font-extrabold text-xs lg:text-sm rounded-2xl shadow-xl shadow-gray-200/50 hover:shadow-brand/25 border border-gray-200/80 hover:border-brand transition-all duration-300 transform hover:-translate-y-0.5 group">
             <i class="fa-solid fa-store text-brand group-hover:text-white transition"></i>
             <span>Ürünleri Keşfet</span>
@@ -252,7 +252,7 @@
 
                 <!-- Clean E-Commerce CTA Button -->
                 <div class="mt-2">
-                    <a href="{{ url('/urunler') }}"
+                    <a href="<?php echo e(url('/urunler')); ?>"
                         class="inline-flex items-center justify-center gap-3 py-4 px-8 bg-brand hover:bg-brand-dark text-white font-extrabold text-base rounded-2xl shadow-xl shadow-brand/25 hover:shadow-2xl hover:shadow-brand/40 transition-all transform hover:-translate-y-0.5">
                         <span>Ürünleri Keşfet</span>
                         <i class="fa-solid fa-arrow-right"></i>
@@ -886,4 +886,4 @@
     </script>
 </body>
 
-</html>
+</html><?php /**PATH C:\xampp\htdocs\ahsapevim\resources\views/home.blade.php ENDPATH**/ ?>

@@ -106,7 +106,7 @@
                             <div class="grid grid-cols-4 gap-2">
                                 @foreach($product->features['images'] as $gImg)
                                     <div class="relative group border border-gray-200 rounded-lg p-1 bg-white flex flex-col items-center">
-                                        <img src="{{ $gImg }}" class="h-16 w-full object-contain rounded" alt="gallery image">
+                                        <img src="{{ str_starts_with($gImg, 'http') ? $gImg : url($gImg) }}" class="h-16 w-full object-contain rounded" alt="gallery image">
                                         <label class="mt-1 flex items-center gap-1 text-[11px] text-red-600 font-bold cursor-pointer">
                                             <input type="checkbox" name="remove_gallery[]" value="{{ $gImg }}" class="rounded text-red-600 focus:ring-red-500">
                                             Sil

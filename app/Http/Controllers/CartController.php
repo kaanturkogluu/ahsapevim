@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class CartController extends Controller
 {
@@ -18,15 +20,36 @@ class CartController extends Controller
         
         $customImagePath = null;
         if ($request->hasFile('custom_image')) {
-            $customName = time() . '_' . \Illuminate\Support\Str::random(10) . '.' . $request->file('custom_image')->extension();
+            $customName = time() . '_' . Str::random(10) . '.' . $request->file('custom_image')->extension();
             $request->file('custom_image')->move(public_path('uploads/customizations'), $customName);
             $customImagePath = '/uploads/customizations/' . $customName;
+        }
+
+        // Handle 3D canvas snapshot base64 image
+        $customPreviewPath = null;
+        if ($request->filled('custom_preview_base64')) {
+            $base64Data = $request->custom_preview_base64;
+            if (preg_match('/^data:image\/(\w+);base64,/', $base64Data, $type)) {
+                $data = substr($base64Data, strpos($base64Data, ',') + 1);
+                $data = base64_decode($data);
+                if ($data !== false) {
+                    $previewName = '3d_preview_' . time() . '_' . Str::random(8) . '.png';
+                    File::ensureDirectoryExists(public_path('uploads/customizations'));
+                    file_put_contents(public_path('uploads/customizations/' . $previewName), $data);
+                    $customPreviewPath = '/uploads/customizations/' . $previewName;
+                }
+            }
         }
 
         $cart = session()->get('cart', []);
 
         // Unique cart key so custom image products don't merge with plain ones
-        $cartKey = $product->id . ($customImagePath ? '_' . md5($customImagePath) : '');
+        $uniqueSeed = ($customPreviewPath ?: '') . ($customImagePath ?: '');
+        $cartKey = $product->id . ($uniqueSeed ? '_' . md5($uniqueSeed) : '');
+
+        $displayImage = $customPreviewPath 
+            ? url($customPreviewPath) 
+            : ($customImagePath ? url($customImagePath) : $product->image);
 
         if (isset($cart[$cartKey])) {
             $cart[$cartKey]['quantity']++;
@@ -36,8 +59,9 @@ class CartController extends Controller
                 'name' => $product->name,
                 'price' => $product->price,
                 'quantity' => 1,
-                'image' => $product->image,
-                'custom_image' => $customImagePath
+                'image' => $displayImage,
+                'custom_image' => $customImagePath ? url($customImagePath) : null,
+                'custom_preview' => $customPreviewPath ? url($customPreviewPath) : null,
             ];
         }
 

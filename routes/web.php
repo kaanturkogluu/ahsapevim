@@ -72,6 +72,22 @@ Route::get('/urunler', function () {
 
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FavoriteController;
+
+// User Auth Routes
+Route::get('/giris', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/giris', [AuthController::class, 'login'])->name('login.post');
+Route::get('/kayit', [AuthController::class, 'showRegisterForm'])->name('register');
+Route::post('/kayit', [AuthController::class, 'register'])->name('register.post');
+Route::get('/auth/google', [AuthController::class, 'googleLogin']);
+Route::post('/auth/google', [AuthController::class, 'googleLogin'])->name('auth.google');
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+Route::post('/cikis', [AuthController::class, 'logout'])->name('logout');
+
+// Favorites Routes
+Route::get('/favoriler', [FavoriteController::class, 'index'])->name('favorites.index');
+Route::post('/favori-toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
 
 Route::get('/sepet', [CartController::class, 'index'])->name('cart.index');
 Route::post('/sepet/ekle', [CartController::class, 'add'])->name('cart.add');

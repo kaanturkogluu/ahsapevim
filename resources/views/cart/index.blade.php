@@ -31,30 +31,27 @@
                         @foreach($cart as $key => $item)
                             @php 
                                 $total += $item['price'] * $item['quantity']; 
-                                $customImgUrl = null;
-                                if (!empty($item['custom_image'])) {
-                                    $cImg = $item['custom_image'];
-                                    $customImgUrl = (str_starts_with($cImg, '/') || str_starts_with($cImg, 'http')) 
-                                        ? $cImg 
-                                        : asset('storage/' . $cImg);
-                                }
+                                $customImgUrl = !empty($item['custom_image']) ? (str_starts_with($item['custom_image'], 'http') ? $item['custom_image'] : url($item['custom_image'])) : null;
+                                $baseFrameImg = !empty($item['base_image']) 
+                                    ? (str_starts_with($item['base_image'], 'http') ? $item['base_image'] : url($item['base_image']))
+                                    : url('/cerceve.png');
                             @endphp
                             <div class="flex flex-col sm:flex-row items-center gap-6 p-6 border-b border-gray-100 last:border-b-0">
                                 
-                                <!-- Product Image & Customization Overlay -->
-                                <div class="w-32 h-36 flex-shrink-0 bg-stone-100 rounded-xl relative overflow-hidden border border-gray-200 p-2 flex items-center justify-center group shadow-inner">
-                                    <img src="{{ $item['image'] ?: '/cerceve.png' }}" alt="{{ $item['name'] }}" class="w-full h-full object-contain relative z-0 mix-blend-multiply">
+                                <!-- Product Image (Frame Template + Applied Custom Photo Overlay) -->
+                                <div class="w-32 h-36 flex-shrink-0 bg-stone-100 rounded-xl relative overflow-hidden border border-gray-200 p-2 flex items-center justify-center group shadow-inner cursor-pointer" onclick="openCartPreviewModal('{{ $customImgUrl ?: $baseFrameImg }}', '{{ addslashes($item['name']) }}', '{{ $key }}')">
+                                    <img src="{{ $baseFrameImg }}" alt="{{ $item['name'] }}" class="w-full h-full object-contain relative z-0 mix-blend-multiply">
                                     
                                     @if($customImgUrl)
                                         <!-- Overlaid Custom Photo inside inner frame area -->
-                                        <div class="absolute inset-0 flex items-center justify-center p-3 z-10 pointer-events-none">
+                                        <div class="absolute inset-0 flex items-center justify-center p-3.5 z-10 pointer-events-none">
                                             <div class="w-[58%] h-[58%] relative overflow-hidden rounded-xs shadow-md border border-black/20 bg-white">
                                                 <img src="{{ $customImgUrl }}" alt="Özel Fotoğraf" class="w-full h-full object-cover">
                                             </div>
                                         </div>
                                         
                                         <!-- Interactive Preview Zoom Icon -->
-                                        <button type="button" onclick="openCartPreviewModal('{{ $customImgUrl }}', '{{ addslashes($item['name']) }}')" class="absolute bottom-1.5 right-1.5 z-20 w-6 h-6 bg-[#C87A53] text-white rounded-full flex items-center justify-center text-[10px] shadow hover:scale-110 transition" title="Kişiselleştirilmiş Fotoğrafı Büyüt">
+                                        <button type="button" onclick="event.stopPropagation(); openCartPreviewModal('{{ $customImgUrl }}', '{{ addslashes($item['name']) }}', '{{ $key }}')" class="absolute bottom-1.5 right-1.5 z-20 w-6 h-6 bg-[#C87A53] text-white rounded-full flex items-center justify-center text-[10px] shadow hover:scale-110 transition" title="Fotoğrafı Büyüt">
                                             <i class="fa-solid fa-magnifying-glass-plus"></i>
                                         </button>
                                     @endif
@@ -70,9 +67,9 @@
                                         <div class="inline-flex items-center gap-2 bg-amber-50 text-amber-900 border border-amber-200/80 text-xs font-bold px-2.5 py-1 rounded-md mb-2">
                                             <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i>
                                             <span>Yüklenen Fotoğraf:</span>
-                                            <img src="{{ $customImgUrl }}" class="w-5 h-5 object-cover rounded border border-amber-300 cursor-pointer" onclick="openCartPreviewModal('{{ $customImgUrl }}', '{{ addslashes($item['name']) }}')">
-                                            <button type="button" onclick="openCartPreviewModal('{{ $customImgUrl }}', '{{ addslashes($item['name']) }}')" class="text-brand hover:underline font-extrabold ml-1">
-                                                (Ön İzle)
+                                            <img src="{{ $customImgUrl }}" class="w-5 h-5 object-cover rounded border border-amber-300 cursor-pointer" onclick="openCartPreviewModal('{{ $customImgUrl }}', 'Orijinal Yüklenen Fotoğraf')">
+                                            <button type="button" onclick="openCartPreviewModal('{{ $customImgUrl }}', 'Orijinal Yüklenen Fotoğraf')" class="text-brand hover:underline font-extrabold ml-1">
+                                                (Orijinal Fotoğrafı İncele)
                                             </button>
                                         </div>
                                     @endif

@@ -48,4 +48,10 @@ return [
         'admin_phone' => env('ADMIN_PHONE_NUMBER'),
     ],
 
+    'google' => [
+        'client_id'     => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect'      => env('GOOGLE_REDIRECT_URI', 'http://localhost/ahsapevim/public/auth/google/callback'),
+    ],
+
 ];

@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Ahşap Evim Manisa')</title>
+    <title><?php echo $__env->yieldContent('title', 'Ahşap Evim Manisa'); ?></title>
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ url('/favicon.ico') }}">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ url('/favicon.ico') }}">
-    <link rel="apple-touch-icon" href="{{ url('/ahsaplogo_yataybg.png') }}">
+    <link rel="icon" type="image/x-icon" href="<?php echo e(url('/favicon.ico')); ?>">
+    <link rel="shortcut icon" type="image/x-icon" href="<?php echo e(url('/favicon.ico')); ?>">
+    <link rel="apple-touch-icon" href="<?php echo e(url('/ahsaplogo_yataybg.png')); ?>">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -45,7 +45,7 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #F7F5F0;
             /* Soft organic linen background fallback */
-            background-image: url('{{ url('/light_wood_bg.jpg') }}');
+            background-image: url('<?php echo e(url('/light_wood_bg.jpg')); ?>');
             background-repeat: repeat;
             background-size: 320px 320px;
             min-height: 100vh;
@@ -100,7 +100,7 @@
         }
     </style>
     <!-- Page-specific head assets (e.g. Three.js only on home) -->
-    @stack('head_scripts')
+    <?php echo $__env->yieldPushContent('head_scripts'); ?>
 </head>
 
 <body class="text-gray-800 flex flex-col min-h-screen">
@@ -138,8 +138,8 @@
         <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-5">
 
             <!-- Logo -->
-            <a href="{{ url('/') }}" class="flex items-center gap-2.5 shrink-0">
-                <img src="{{ url('/ahsaplogo_yataybg.png') }}" alt="AhşapEvim Logo"
+            <a href="<?php echo e(url('/')); ?>" class="flex items-center gap-2.5 shrink-0">
+                <img src="<?php echo e(url('/ahsaplogo_yataybg.png')); ?>" alt="AhşapEvim Logo"
                     class="h-12 md:h-16 w-auto object-contain">
             </a>
 
@@ -158,26 +158,27 @@
 
             <!-- User Actions -->
             <div class="flex items-center gap-5 text-[13px] font-semibold text-gray-700 shrink-0">
-                @auth
+                <?php if(auth()->guard()->check()): ?>
                     <!-- User Dropdown -->
                     <div class="relative group" id="userMenuDropdown">
                         <button type="button" onclick="toggleUserDropdown(event)" class="hover:text-brand flex flex-col items-center gap-0.5 transition outline-none">
                             <i class="fa-solid fa-user-check text-xl text-[#C87A53]"></i>
-                            <span class="hidden md:inline text-[11px] truncate max-w-[90px]">{{ auth()->user()->name }}</span>
+                            <span class="hidden md:inline text-[11px] truncate max-w-[90px]"><?php echo e(auth()->user()->name); ?></span>
                         </button>
                         
                         <!-- Dropdown Menu with pt-2 hover bridge -->
                         <div id="userDropdownContent" class="absolute right-0 top-full pt-1.5 w-48 hidden group-hover:block z-50">
                             <div class="bg-white rounded-xl shadow-2xl border border-amber-100 py-2">
                                 <div class="px-4 py-2 border-b border-gray-100 font-bold text-gray-800 text-xs">
-                                    {{ auth()->user()->name }}
-                                    <span class="block font-normal text-[10px] text-gray-400 truncate">{{ auth()->user()->email }}</span>
+                                    <?php echo e(auth()->user()->name); ?>
+
+                                    <span class="block font-normal text-[10px] text-gray-400 truncate"><?php echo e(auth()->user()->email); ?></span>
                                 </div>
-                                <a href="{{ route('favorites.index') }}" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
+                                <a href="<?php echo e(route('favorites.index')); ?>" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
                                     <i class="fa-solid fa-heart text-red-500"></i> Favorilerim
                                 </a>
-                                <form action="{{ route('logout') }}" method="POST" class="block">
-                                    @csrf
+                                <form action="<?php echo e(route('logout')); ?>" method="POST" class="block">
+                                    <?php echo csrf_field(); ?>
                                     <button type="submit" class="w-full text-left px-4 py-2 hover:bg-red-50 text-xs text-red-600 font-semibold flex items-center gap-2">
                                         <i class="fa-solid fa-sign-out-alt"></i> Çıkış Yap
                                     </button>
@@ -185,28 +186,30 @@
                             </div>
                         </div>
                     </div>
-                @else
-                    <a href="{{ route('login') }}" class="hover:text-brand flex flex-col items-center gap-0.5 group transition">
+                <?php else: ?>
+                    <a href="<?php echo e(route('login')); ?>" class="hover:text-brand flex flex-col items-center gap-0.5 group transition">
                         <i class="fa-regular fa-user text-xl group-hover:text-brand"></i>
                         <span class="hidden md:inline text-[11px]">Giriş Yap</span>
                     </a>
-                @endauth
+                <?php endif; ?>
 
                 <!-- Favorites Link -->
-                <a href="{{ route('favorites.index') }}" class="hover:text-brand flex flex-col items-center gap-0.5 group transition relative">
+                <a href="<?php echo e(route('favorites.index')); ?>" class="hover:text-brand flex flex-col items-center gap-0.5 group transition relative">
                     <i class="fa-regular fa-heart text-xl group-hover:text-brand"></i>
                     <span class="hidden md:inline text-[11px]">Favorilerim</span>
                     <span id="favCounterBadge" class="absolute -top-1.5 -right-2 bg-[#C87A53] text-white text-[10px] font-bold rounded-full h-4.5 w-4.5 min-w-[18px] min-h-[18px] flex items-center justify-center">
-                        {{ auth()->check() ? auth()->user()->favorites()->count() : 0 }}
+                        <?php echo e(auth()->check() ? auth()->user()->favorites()->count() : 0); ?>
+
                     </span>
                 </a>
 
                 <!-- Cart Link -->
-                <a href="{{ url('/sepet') }}" class="hover:text-brand flex flex-col items-center gap-0.5 group transition relative">
+                <a href="<?php echo e(url('/sepet')); ?>" class="hover:text-brand flex flex-col items-center gap-0.5 group transition relative">
                     <i class="fa-solid fa-shopping-bag text-xl group-hover:text-brand"></i>
                     <span class="hidden md:inline text-[11px]">Sepetim</span>
                     <span class="absolute -top-1.5 -right-2 bg-brand text-white text-[10px] font-bold rounded-full h-4.5 w-4.5 min-w-[18px] min-h-[18px] flex items-center justify-center">
-                        {{ session('cart') ? count(session('cart')) : 0 }}
+                        <?php echo e(session('cart') ? count(session('cart')) : 0); ?>
+
                     </span>
                 </a>
             </div>
@@ -216,21 +219,21 @@
         <nav class="border-t border-amber-100 bg-[#fffbf5]">
             <div
                 class="container mx-auto px-4 flex items-center justify-start gap-1 overflow-x-auto text-[12.5px] font-bold text-gray-600 whitespace-nowrap pb-0">
-                @if(isset($navCategories) && $navCategories->count())
-                    @foreach($navCategories as $cat)
-                        <a href="{{ url('/urunler') }}?category={{ $cat->slug }}"
-                            class="hover:text-brand hover:bg-amber-50 px-4 py-3 transition rounded-t-lg border-b-2 border-transparent hover:border-brand uppercase tracking-wide">{{ $cat->name }}</a>
-                    @endforeach
-                @else
-                    <a href="{{ url('/urunler') }}?category=cerceve"
+                <?php if(isset($navCategories) && $navCategories->count()): ?>
+                    <?php $__currentLoopData = $navCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <a href="<?php echo e(url('/urunler')); ?>?category=<?php echo e($cat->slug); ?>"
+                            class="hover:text-brand hover:bg-amber-50 px-4 py-3 transition rounded-t-lg border-b-2 border-transparent hover:border-brand uppercase tracking-wide"><?php echo e($cat->name); ?></a>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php else: ?>
+                    <a href="<?php echo e(url('/urunler')); ?>?category=cerceve"
                         class="hover:text-brand hover:bg-amber-50 px-4 py-3 transition border-b-2 border-transparent hover:border-brand uppercase tracking-wide">Çerçeve</a>
-                    <a href="{{ url('/urunler') }}?category=bebek-hediyelik"
+                    <a href="<?php echo e(url('/urunler')); ?>?category=bebek-hediyelik"
                         class="hover:text-brand hover:bg-amber-50 px-4 py-3 transition border-b-2 border-transparent hover:border-brand uppercase tracking-wide">Bebek
                         Hediyelik</a>
-                    <a href="{{ url('/urunler') }}?category=masa-ve-gece-lambasi"
+                    <a href="<?php echo e(url('/urunler')); ?>?category=masa-ve-gece-lambasi"
                         class="hover:text-brand hover:bg-amber-50 px-4 py-3 transition border-b-2 border-transparent hover:border-brand uppercase tracking-wide">Masa
                         & Gece Lambası</a>
-                @endif
+                <?php endif; ?>
 
             </div>
         </nav>
@@ -238,12 +241,12 @@
 
     <!-- Main Content -->
     <main class="flex-grow pt-6 pb-12">
-        @if(session('success'))
+        <?php if(session('success')): ?>
             <div id="toast-success"
                 class="fixed top-4 right-4 z-[9999] bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg transition-opacity duration-500 flex items-center justify-between min-w-[300px]">
                 <div class="flex items-center gap-3">
                     <i class="fa-solid fa-circle-check text-green-500 text-xl"></i>
-                    <span class="font-medium">{{ session('success') }}</span>
+                    <span class="font-medium"><?php echo e(session('success')); ?></span>
                 </div>
                 <button onclick="document.getElementById('toast-success').style.display='none'"
                     class="text-green-700 hover:text-green-900 focus:outline-none">
@@ -259,8 +262,8 @@
                     }
                 }, 3000);
             </script>
-        @endif
-        @yield('content')
+        <?php endif; ?>
+        <?php echo $__env->yieldContent('content'); ?>
     </main>
 
     <!-- Footer -->
@@ -293,8 +296,8 @@
                 <div>
                     <h3 class="font-bold text-gray-800 text-base mb-4">Kurumsal</h3>
                     <ul class="text-gray-600 space-y-2">
-                        <li><a href="{{ url('/iletisim') }}" class="hover:text-brand transition">İletişim</a></li>
-                        <li><a href="{{ url('/sikca-sorulanlar') }}" class="hover:text-brand transition">Sıkça
+                        <li><a href="<?php echo e(url('/iletisim')); ?>" class="hover:text-brand transition">İletişim</a></li>
+                        <li><a href="<?php echo e(url('/sikca-sorulanlar')); ?>" class="hover:text-brand transition">Sıkça
                                 Sorulanlar</a></li>
                     </ul>
                 </div>
@@ -303,11 +306,11 @@
                 <div>
                     <h3 class="font-bold text-gray-800 text-base mb-4">Sözleşmeler ve Politikalar</h3>
                     <ul class="text-gray-600 space-y-2">
-                        <li><a href="{{ url('/mesafeli-satis-sozlesmesi') }}"
+                        <li><a href="<?php echo e(url('/mesafeli-satis-sozlesmesi')); ?>"
                                 class="hover:text-brand transition">Mesafeli Satış Sözleşmesi</a></li>
-                        <li><a href="{{ url('/gizlilik-politikasi') }}" class="hover:text-brand transition">Gizlilik
+                        <li><a href="<?php echo e(url('/gizlilik-politikasi')); ?>" class="hover:text-brand transition">Gizlilik
                                 Politikası</a></li>
-                        <li><a href="{{ url('/teslimat-ve-iade') }}" class="hover:text-brand transition">Teslimat ve
+                        <li><a href="<?php echo e(url('/teslimat-ve-iade')); ?>" class="hover:text-brand transition">Teslimat ve
                                 İade Şartları</a></li>
                     </ul>
                 </div>
@@ -341,24 +344,24 @@
 
             <!-- Bottom Footer: Copyright -->
             <div class="pt-6 border-t border-gray-200 text-center text-xs text-gray-500 font-semibold">
-                &copy; {{ date('Y') }} ahsapevimmanisa tüm hakları saklıdır
+                &copy; <?php echo e(date('Y')); ?> ahsapevimmanisa tüm hakları saklıdır
             </div>
         </div>
     </footer>
 
     <script>
     function toggleFavorite(productId, btnElement) {
-        fetch('{{ route("favorites.toggle") }}', {
+        fetch('<?php echo e(route("favorites.toggle")); ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
             },
             body: JSON.stringify({ product_id: productId })
         })
         .then(res => {
             if (res.status === 401) {
-                window.location.href = '{{ route("login") }}';
+                window.location.href = '<?php echo e(route("login")); ?>';
                 return;
             }
             return res.json();
@@ -410,4 +413,4 @@
     </script>
 </body>
 
-</html>
+</html><?php /**PATH C:\xampp\htdocs\ahsapevim\resources\views/layouts/app.blade.php ENDPATH**/ ?>

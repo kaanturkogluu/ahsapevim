@@ -73,22 +73,12 @@
                         @foreach($cart as $item)
                             @php 
                                 $total += $item['price'] * $item['quantity']; 
-                                $customImgUrl = null;
-                                if (!empty($item['custom_image'])) {
-                                    $cImg = $item['custom_image'];
-                                    $customImgUrl = (str_starts_with($cImg, '/') || str_starts_with($cImg, 'http')) 
-                                        ? $cImg 
-                                        : asset('storage/' . $cImg);
-                                }
+                                $customImgUrl = !empty($item['custom_image']) ? (str_starts_with($item['custom_image'], 'http') ? $item['custom_image'] : url($item['custom_image'])) : null;
+                                $itemImgUrl = !empty($item['image']) ? (str_starts_with($item['image'], 'http') ? $item['image'] : url($item['image'])) : url('/cerceve.png');
                             @endphp
                             <div class="py-3 flex items-center gap-4">
                                 <div class="w-14 h-14 bg-stone-100 rounded-lg border border-gray-200 flex-shrink-0 p-1 relative flex items-center justify-center overflow-hidden">
-                                    <img src="{{ $item['image'] ?: '/cerceve.png' }}" alt="{{ $item['name'] }}" class="max-w-full max-h-full object-contain mix-blend-multiply">
-                                    @if($customImgUrl)
-                                        <div class="absolute inset-0 flex items-center justify-center p-1.5 pointer-events-none">
-                                            <img src="{{ $customImgUrl }}" class="w-[55%] h-[55%] object-cover rounded-xs border border-black/20 shadow-xs">
-                                        </div>
-                                    @endif
+                                    <img src="{{ $itemImgUrl }}" alt="{{ $item['name'] }}" class="max-w-full max-h-full object-contain">
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <div class="text-sm font-bold text-gray-800 truncate">{{ $item['name'] }}</div>
