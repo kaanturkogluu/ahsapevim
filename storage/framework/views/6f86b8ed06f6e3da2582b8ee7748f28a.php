@@ -595,18 +595,13 @@ function submitCustomizedForm() {
 function confirmAddToCart(event) {
     capture3DSnapshot();
     const fileInput = document.getElementById('customImageInput');
-    if (!fileInput.files || !fileInput.files.length) {
+    const hiddenBase64 = document.getElementById('customPreviewBase64Input');
+    const hasPhoto = (fileInput && fileInput.files && fileInput.files.length > 0) || (hiddenBase64 && hiddenBase64.value);
+
+    if (!hasPhoto) {
         event.preventDefault();
-        const confirmVal = confirm('Ürününüzü kişiselleştirmediniz. Kişiselleştirmeden sepetinize eklemek istediğinize emin misiniz?\n\n(Fotoğraf ekleyerek kişiselleştirmek için İptal\'e tıklayabilirsiniz.)');
-        if (confirmVal) {
-            const form = document.getElementById('addToCartForm');
-            if (form) {
-                form.onsubmit = null;
-                form.submit();
-            }
-        } else {
-            openCustomizationModal();
-        }
+        alert('Lütfen sipariş vermeden önce çerçeve içerisine yerleştirilecek bir fotoğraf yükleyiniz!');
+        openCustomizationModal();
         return false;
     }
     return true;

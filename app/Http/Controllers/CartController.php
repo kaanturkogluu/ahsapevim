@@ -18,6 +18,10 @@ class CartController extends Controller
 
         $product = Product::findOrFail($request->product_id);
         
+        if (!$request->hasFile('custom_image') && !$request->filled('custom_preview_base64')) {
+            return redirect()->back()->with('error', 'Lütfen çerçeve içerisine yerleştirilecek bir fotoğraf yükleyiniz!');
+        }
+
         $customImagePath = null;
         if ($request->hasFile('custom_image')) {
             $customName = time() . '_' . Str::random(10) . '.' . $request->file('custom_image')->extension();
