@@ -7,7 +7,7 @@
     <div class="mb-6 pb-4 border-b border-gray-100 flex justify-between items-center">
         <div>
             <h3 class="text-lg font-bold text-gray-800">Ürün Bilgileri</h3>
-            <p class="text-xs text-gray-500 mt-1">Eklenecek ürünün temel ve 3D özelliklerini tanımlayın.</p>
+            <p class="text-xs text-gray-500 mt-1">Eklenecek ürünün temel, indirim, galeri ve 3D özelliklerini tanımlayın.</p>
         </div>
         <a href="{{ route('admin.products.index') }}" class="text-sm font-bold text-gray-500 hover:text-gray-700 transition">
             <i class="fa-solid fa-arrow-left mr-1"></i> Geri Dön
@@ -18,7 +18,7 @@
         @csrf
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <!-- Left Side: Basic Info -->
+            <!-- Left Side: Basic Info & Pricing -->
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Ürün Adı *</label>
@@ -41,52 +41,26 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <!-- Price & Discount Section -->
+                <div class="p-4 bg-red-50/40 border border-red-200/50 rounded-xl space-y-3">
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Satış Fiyatı (TL) *</label>
-                        <input type="number" name="price" required step="0.01" value="{{ old('price') }}" min="0" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="0.00">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Normal Fiyat (TL) *</label>
+                        <input type="number" id="normalPrice" name="price" required step="0.01" value="{{ old('price') }}" min="0" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: 500.00" oninput="calculateDiscount()">
                     </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">İndirim Öncesi Fiyat (TL)</label>
-                        <input type="number" name="original_price" step="0.01" value="{{ old('original_price') }}" min="0" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="0.00">
-                    </div>
-                </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Ürün Kodu</label>
-                        <input type="text" name="model_code" value="{{ old('model_code') }}" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: AE-360-CEV">
+                    <div class="flex items-center gap-2 pt-1">
+                        <input type="checkbox" name="has_discount" id="hasDiscount" value="1" {{ old('has_discount') ? 'checked' : '' }} onchange="toggleDiscountBlock()" class="rounded text-red-600 focus:ring-red-500 w-4 h-4 cursor-pointer">
+                        <label for="hasDiscount" class="text-sm font-bold text-red-700 cursor-pointer select-none">Bu Üründe İndirim Var</label>
                     </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Barkod</label>
-                        <input type="text" name="barcode" value="{{ old('barcode') }}" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: 8680000000">
-                    </div>
-                </div>
-            </div>
 
-            <!-- Right Side: Design & 3D Settings -->
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ürün Ana Görseli *</label>
-                    <input type="file" name="image" class="w-full text-sm border-gray-300 rounded-lg p-2 border focus:border-brand focus:ring-0 outline-none bg-gray-50">
-                    <p class="text-[10px] text-gray-500 mt-1">Önerilen ebat kare veya 3:4 dikey masif çerçeve görselidir.</p>
-                </div>
-
-                <div class="p-4 bg-amber-50/50 border border-amber-200/50 rounded-xl">
-                    <h4 class="text-sm font-bold text-amber-900 mb-3 flex items-center gap-1.5">
-                        <i class="fa-solid fa-cube text-brand"></i> 3D Model Entegrasyonu (Şablon)
-                    </h4>
-                    
-                    <div class="mb-3">
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Ürün 3D Şablonu</label>
-                        <select name="three_d_template_id" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none bg-white">
-                            <option value="">-- Şablon Yok (Yalnızca 2D Görsel) --</option>
-                            @foreach($templates as $tpl)
-                                <option value="{{ $tpl->id }}" {{ old('three_d_template_id') == $tpl->id ? 'selected' : '' }}>{{ $tpl->name }} ({{ $tpl->wood_type }})</option>
-                            @endforeach
-                        </select>
+                    <div id="discountBlock" class="{{ old('has_discount') ? '' : 'hidden' }} space-y-2 pt-1 border-t border-red-100">
+                        <div class="flex items-center justify-between">
+                            <label class="block text-sm font-semibold text-gray-700">İndirimli Satış Fiyatı (TL) *</label>
+                            <span id="discountBadge" class="hidden text-xs bg-red-600 text-white font-extrabold px-2 py-0.5 rounded-full"></span>
+                        </div>
+                        <input type="number" id="discountedPrice" name="discounted_price" step="0.01" value="{{ old('discounted_price') }}" min="0" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: 350.00" oninput="calculateDiscount()">
+                        <p class="text-[11px] text-gray-500">Müşteriye <strong>Normal Fiyat</strong> çizili olarak, <strong>İndirimli Fiyat</strong> ve indirim oranı rozeti olarak gösterilecektir.</p>
                     </div>
-                    <p class="text-[10px] text-gray-500">Bu ürünü anasayfadaki veya ürün detayındaki 3D Stüdyo/Önizleme ile bağdaştırmak için bir 3D çerçeve şablonu atayın. Yeni şablon oluşturmak için <a href="{{ route('admin.templates.create') }}" target="_blank" class="text-brand font-bold hover:underline">3D Şablon Oluşturucu</a> sayfasını kullanabilirsiniz.</p>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
@@ -98,6 +72,46 @@
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Ölçü/Boyut</label>
                         <input type="text" name="size" value="{{ old('size', '20x25 cm') }}" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: 15x21 cm">
                     </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Media & 3D Settings -->
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ürün Ana Görseli *</label>
+                    <input type="file" name="image" class="w-full text-sm border-gray-300 rounded-lg p-2 border focus:border-brand focus:ring-0 outline-none bg-gray-50">
+                    <p class="text-[10px] text-gray-500 mt-1">Önerilen ebat kare veya 3:4 dikey masif çerçeve görselidir.</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ek Ürün Görselleri (Galeri)</label>
+                    <input type="file" name="gallery[]" multiple accept="image/*" class="w-full text-sm border-gray-300 rounded-lg p-2 border focus:border-brand focus:ring-0 outline-none bg-gray-50">
+                    <p class="text-[10px] text-gray-500 mt-1">Birden fazla görsel seçerek ürün detayındaki galeriye ekleyebilirsiniz.</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1">
+                        <i class="fa-brands fa-youtube text-red-600 text-base"></i> YouTube Tanıtım Video Linki (Opsiyonel)
+                    </label>
+                    <input type="url" name="youtube_url" value="{{ old('youtube_url') }}" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: https://www.youtube.com/watch?v=XXXXXX">
+                    <p class="text-[10px] text-gray-500 mt-1">Eklenirse ürün detay galerisinin sonuna video kapak resmi eklenir ve tıklanınca video açılır.</p>
+                </div>
+
+                <div class="p-4 bg-amber-50/50 border border-amber-200/50 rounded-xl">
+                    <h4 class="text-sm font-bold text-amber-900 mb-3 flex items-center gap-1.5">
+                        <i class="fa-solid fa-cube text-brand"></i> 3D Model Entegrasyonu (Şablon)
+                    </h4>
+                    
+                    <div class="mb-3">
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Ürün 3D Şablonu</label>
+                        <select name="three_d_template_id" required class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none bg-white">
+                            <option value="">-- Lütfen bir 3D Şablon seçin (Zorunlu) --</option>
+                            @foreach($templates as $tpl)
+                                <option value="{{ $tpl->id }}" {{ old('three_d_template_id') == $tpl->id ? 'selected' : '' }}>{{ $tpl->name }} ({{ $tpl->wood_type }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <p class="text-[10px] text-gray-500">Bu ürünü anasayfadaki veya ürün detayındaki 3D Stüdyo/Önizleme ile bağdaştırmak için bir 3D çerçeve şablonu atayın.</p>
                 </div>
             </div>
         </div>
@@ -115,4 +129,32 @@
         <button type="submit" class="py-3 px-8 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-lg text-sm transition">Ürünü Kaydet</button>
     </form>
 </div>
+
+<script>
+function toggleDiscountBlock() {
+    const hasDiscount = document.getElementById('hasDiscount').checked;
+    const block = document.getElementById('discountBlock');
+    if (hasDiscount) {
+        block.classList.remove('hidden');
+    } else {
+        block.classList.add('hidden');
+    }
+    calculateDiscount();
+}
+
+function calculateDiscount() {
+    const hasDiscount = document.getElementById('hasDiscount').checked;
+    const normalPrice = parseFloat(document.getElementById('normalPrice').value) || 0;
+    const discountedPrice = parseFloat(document.getElementById('discountedPrice').value) || 0;
+    const badge = document.getElementById('discountBadge');
+
+    if (hasDiscount && normalPrice > 0 && discountedPrice > 0 && discountedPrice < normalPrice) {
+        const percent = Math.round((1 - (discountedPrice / normalPrice)) * 100);
+        badge.innerText = '%' + percent + ' İNDİRİM';
+        badge.classList.remove('hidden');
+    } else {
+        badge.classList.add('hidden');
+    }
+}
+</script>
 @endsection

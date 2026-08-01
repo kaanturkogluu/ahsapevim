@@ -5,6 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AhşapEvim - Kişiye Özel 3D Dönen Çerçeve | Masif Ahşap El İşçiliği</title>
+
+    {{-- Mobil kullanıcıları ürünler sayfasına yönlendir --}}
+    <script>
+        (function () {
+            // 1024px = Tailwind lg breakpoint (masaüstü sınırı)
+            if (window.innerWidth < 1024) {
+                window.location.replace('{{ url('/urunler') }}');
+            }
+        })();
+    </script>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>

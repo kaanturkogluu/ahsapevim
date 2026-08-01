@@ -35,4 +35,17 @@ return [
         ],
     ],
 
+    'iyzico' => [
+        'api_key'    => env('IYZICO_API_KEY'),
+        'secret_key' => env('IYZICO_SECRET_KEY'),
+        'base_url'   => env('IYZICO_BASE_URL', 'https://sandbox-api.iyzipay.com'),
+    ],
+
+    'netgsm' => [
+        'usercode'    => env('NETGSM_USERCODE'),
+        'password'    => env('NETGSM_PASSWORD'),
+        'header'      => env('NETGSM_HEADER'),
+        'admin_phone' => env('ADMIN_PHONE_NUMBER'),
+    ],
+
 ];

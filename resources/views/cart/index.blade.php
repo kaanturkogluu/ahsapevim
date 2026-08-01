@@ -29,17 +29,34 @@
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                         @php $total = 0; @endphp
                         @foreach($cart as $key => $item)
-                            @php $total += $item['price'] * $item['quantity']; @endphp
+                            @php 
+                                $total += $item['price'] * $item['quantity']; 
+                                $customImgUrl = null;
+                                if (!empty($item['custom_image'])) {
+                                    $cImg = $item['custom_image'];
+                                    $customImgUrl = (str_starts_with($cImg, '/') || str_starts_with($cImg, 'http')) 
+                                        ? $cImg 
+                                        : asset('storage/' . $cImg);
+                                }
+                            @endphp
                             <div class="flex flex-col sm:flex-row items-center gap-6 p-6 border-b border-gray-100 last:border-b-0">
                                 
-                                <!-- Product Image & Customization -->
-                                <div class="w-32 h-32 flex-shrink-0 bg-gray-50 rounded-lg relative overflow-hidden border border-gray-100 p-2">
-                                    <img src="{{ $item['image'] ?: '/cerceve.png' }}" alt="{{ $item['name'] }}" class="w-full h-full object-contain mix-blend-multiply">
+                                <!-- Product Image & Customization Overlay -->
+                                <div class="w-32 h-36 flex-shrink-0 bg-stone-100 rounded-xl relative overflow-hidden border border-gray-200 p-2 flex items-center justify-center group shadow-inner">
+                                    <img src="{{ $item['image'] ?: '/cerceve.png' }}" alt="{{ $item['name'] }}" class="w-full h-full object-contain relative z-0 mix-blend-multiply">
                                     
-                                    @if(isset($item['custom_image']) && $item['custom_image'])
-                                        <div class="absolute inset-0 flex items-center justify-center p-2 z-10 pointer-events-none">
-                                            <img src="{{ asset('storage/' . $item['custom_image']) }}" class="max-w-[80%] max-h-[80%] object-contain shadow-sm border border-white rounded">
+                                    @if($customImgUrl)
+                                        <!-- Overlaid Custom Photo inside inner frame area -->
+                                        <div class="absolute inset-0 flex items-center justify-center p-3 z-10 pointer-events-none">
+                                            <div class="w-[58%] h-[58%] relative overflow-hidden rounded-xs shadow-md border border-black/20 bg-white">
+                                                <img src="{{ $customImgUrl }}" alt="Özel Fotoğraf" class="w-full h-full object-cover">
+                                            </div>
                                         </div>
+                                        
+                                        <!-- Interactive Preview Zoom Icon -->
+                                        <button type="button" onclick="openCartPreviewModal('{{ $customImgUrl }}', '{{ addslashes($item['name']) }}')" class="absolute bottom-1.5 right-1.5 z-20 w-6 h-6 bg-[#C87A53] text-white rounded-full flex items-center justify-center text-[10px] shadow hover:scale-110 transition" title="Kişiselleştirilmiş Fotoğrafı Büyüt">
+                                            <i class="fa-solid fa-magnifying-glass-plus"></i>
+                                        </button>
                                     @endif
                                 </div>
 
@@ -49,9 +66,14 @@
                                         <a href="{{ url('/urun/' . $item['product_id']) }}" class="hover:text-brand transition">{{ $item['name'] }}</a>
                                     </h3>
                                     
-                                    @if(isset($item['custom_image']) && $item['custom_image'])
-                                        <div class="inline-block bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded mb-2">
-                                            <i class="fa-solid fa-camera mr-1"></i> Kişiselleştirilmiş Fotoğraf
+                                    @if($customImgUrl)
+                                        <div class="inline-flex items-center gap-2 bg-amber-50 text-amber-900 border border-amber-200/80 text-xs font-bold px-2.5 py-1 rounded-md mb-2">
+                                            <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i>
+                                            <span>Yüklenen Fotoğraf:</span>
+                                            <img src="{{ $customImgUrl }}" class="w-5 h-5 object-cover rounded border border-amber-300 cursor-pointer" onclick="openCartPreviewModal('{{ $customImgUrl }}', '{{ addslashes($item['name']) }}')">
+                                            <button type="button" onclick="openCartPreviewModal('{{ $customImgUrl }}', '{{ addslashes($item['name']) }}')" class="text-brand hover:underline font-extrabold ml-1">
+                                                (Ön İzle)
+                                            </button>
                                         </div>
                                     @endif
                                     
@@ -61,15 +83,36 @@
                                 </div>
 
                                 <!-- Quantity -->
-                                <div class="flex items-center gap-3">
-                                    <span class="text-sm font-bold text-gray-600">Adet:</span>
-                                    <span class="bg-gray-100 text-gray-800 font-bold px-4 py-2 rounded-lg">{{ $item['quantity'] }}</span>
+                                <div class="flex items-center gap-2">
+                                    <form action="{{ route('cart.update') }}" method="POST" class="inline">
+                                        @csrf
+                                        <input type="hidden" name="key" value="{{ $key }}">
+                                        <input type="hidden" name="quantity" value="{{ $item['quantity'] - 1 }}">
+                                        <button type="submit" {{ $item['quantity'] <= 1 ? 'disabled' : '' }} class="w-8 h-8 rounded-full bg-gray-150 hover:bg-gray-200 disabled:opacity-50 flex items-center justify-center font-bold text-gray-700 transition border border-gray-200 select-none">
+                                            -
+                                        </button>
+                                    </form>
+                                    
+                                    <span class="w-8 text-center font-bold text-gray-800">{{ $item['quantity'] }}</span>
+                                    
+                                    <form action="{{ route('cart.update') }}" method="POST" class="inline">
+                                        @csrf
+                                        <input type="hidden" name="key" value="{{ $key }}">
+                                        <input type="hidden" name="quantity" value="{{ $item['quantity'] + 1 }}">
+                                        <button type="submit" class="w-8 h-8 rounded-full bg-gray-150 hover:bg-gray-200 flex items-center justify-center font-bold text-gray-700 transition border border-gray-200 select-none">
+                                            +
+                                        </button>
+                                    </form>
                                 </div>
 
-                                <!-- Remove (Dummy) -->
-                                <button class="text-gray-400 hover:text-red-500 transition p-2">
-                                    <i class="fa-solid fa-trash-can text-xl"></i>
-                                </button>
+                                <!-- Remove -->
+                                <form action="{{ route('cart.remove') }}" method="POST" class="inline">
+                                    @csrf
+                                    <input type="hidden" name="key" value="{{ $key }}">
+                                    <button type="submit" class="text-gray-400 hover:text-red-600 transition p-2" title="Sepetten Kaldır">
+                                        <i class="fa-solid fa-trash-can text-xl"></i>
+                                    </button>
+                                </form>
                             </div>
                         @endforeach
                     </div>
@@ -93,18 +136,51 @@
                         <div class="border-t border-gray-100 pt-4 mb-6">
                             <div class="flex justify-between items-center">
                                 <span class="text-base font-bold text-gray-800">Genel Toplam</span>
-                                <span class="text-2xl font-extrabold text-brand">{{ number_format($total, 2, ',', '.') }} TL</span>
+                                <span class="text-2xl font-extrabold text-[#C87A53]">{{ number_format($total, 2, ',', '.') }} TL</span>
                             </div>
                         </div>
 
-                        <button class="w-full bg-brand hover:bg-brand-dark text-white font-bold py-3.5 px-4 rounded-lg transition text-base shadow-md flex items-center justify-center gap-2">
+                        <a href="{{ route('checkout.index') }}" class="w-full bg-[#C87A53] hover:bg-[#A65F38] text-white font-bold py-3.5 px-4 rounded-lg transition text-base shadow-md flex items-center justify-center gap-2">
                             Alışverişi Tamamla
                             <i class="fa-solid fa-chevron-right text-sm"></i>
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
         @endif
     </div>
 </div>
+
+<!-- Image Preview Modal -->
+<div id="cartPreviewModal" class="fixed inset-0 z-[99999] bg-black/80 hidden items-center justify-center p-4 backdrop-blur-sm" onclick="closeCartPreviewModal()">
+    <div class="bg-white rounded-2xl p-6 max-w-lg w-full relative shadow-2xl border border-gray-100" onclick="event.stopPropagation()">
+        <button type="button" onclick="closeCartPreviewModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl font-bold leading-none">&times;</button>
+        <h4 id="cartPreviewTitle" class="text-base font-bold text-gray-800 mb-3 border-b border-gray-100 pb-2">Kişiselleştirilmiş Fotoğraf</h4>
+        <div class="bg-stone-100 p-4 rounded-xl flex items-center justify-center max-h-[70vh] overflow-hidden">
+            <img id="cartPreviewImage" src="" class="max-w-full max-h-[60vh] object-contain rounded-lg shadow-md border border-gray-200">
+        </div>
+        <div class="mt-4 flex justify-end">
+            <a id="cartPreviewDownload" href="" target="_blank" class="px-4 py-2 bg-[#C87A53] hover:bg-[#A65F38] text-white text-xs font-bold rounded-lg transition flex items-center gap-1.5">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> Orijinal Görseli Aç
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+function openCartPreviewModal(imgUrl, title) {
+    document.getElementById('cartPreviewImage').src = imgUrl;
+    document.getElementById('cartPreviewDownload').href = imgUrl;
+    document.getElementById('cartPreviewTitle').innerText = title + ' — Fotoğraf Ön İzleme';
+    const modal = document.getElementById('cartPreviewModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeCartPreviewModal() {
+    const modal = document.getElementById('cartPreviewModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+</script>
 @endsection

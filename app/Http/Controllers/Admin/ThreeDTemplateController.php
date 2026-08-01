@@ -124,17 +124,4 @@ class ThreeDTemplateController extends Controller
 
         return redirect()->route('admin.templates.index')->with('success', '3D Şablon başarıyla silindi.');
     }
-
-    // Moved public 3D Studio page to Admin Panel
-    public function studio()
-    {
-        $templates = ThreeDTemplate::all();
-        return view('admin.3d.studio', compact('templates'));
-    }
-
-    // Moved public 3D Builder page to Admin Panel
-    public function builder()
-    {
-        return view('admin.3d.builder');
-    }
 }

@@ -4,39 +4,69 @@
 
 @section('content')
 
-{{-- Warm Hero Banner (Atölye & El İşçiliği Teması) --}}
-<div class="relative overflow-hidden bg-white/80 backdrop-blur-sm">
-    {{-- Overlay to tone down the body pattern inside the hero --}}
-    <div class="absolute inset-0 bg-white/60"></div>
-    <div class="container mx-auto px-4 py-9 relative z-10">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div>
-                <div class="inline-flex items-center gap-2 bg-brand/10 text-brand text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-3">
-                    <i class="fa-solid fa-hammer text-xs"></i> El İşçiliği Koleksiyonu
-                </div>
-                <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight mb-2">
-                    Her Çerçeve Bir <span class="text-brand">El Emeği</span>
-                </h1>
-                <p class="text-sm md:text-base text-gray-600 max-w-lg leading-relaxed">
-                    Manisa'daki küçük atölyemizde, her ürün baştan sona el işçiliğiyle tamamlanıyor.<br>
-                    <span class="font-semibold text-gray-700">Masif ahşap · 45° gönyeli birleşim · Kişiye özel üretim</span>
+{{-- Products Banner — Authentic Atelier Style --}}
+<div class="relative overflow-hidden" style="background: #f5efe6;">
+
+    {{-- Subtle horizontal wood-grain stripe --}}
+    <div class="absolute top-0 left-0 right-0 h-1" style="background: repeating-linear-gradient(90deg, #c4956a 0px, #b07d50 18px, #d4a874 36px, #b8845a 54px, #c4956a 72px);"></div>
+
+    <div class="container mx-auto px-4" style="padding-top: 2.75rem; padding-bottom: 2.75rem;">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-16">
+
+            {{-- Left: Text block --}}
+            <div class="max-w-xl">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#9c6c3c] mb-3" style="font-family: Georgia, serif; letter-spacing: 0.2em;">
+                    Manisa Atölyesi — El Yapımı
                 </p>
-                <div class="flex items-center gap-4 mt-4 text-sm text-gray-500 font-medium">
-                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-seedling text-green-600"></i> %100 Doğal Malzeme</span>
-                    <span class="hidden sm:flex items-center gap-1.5"><i class="fa-solid fa-truck-fast text-brand"></i> Ücretsiz Kargo</span>
-                    <span class="hidden sm:flex items-center gap-1.5"><i class="fa-solid fa-rotate-left text-blue-600"></i> 14 Gün İade</span>
+
+                <h1 class="font-extrabold text-gray-900 leading-[1.08] mb-4" style="font-size: clamp(1.75rem, 4vw, 2.6rem); font-family: Georgia, 'Times New Roman', serif;">
+                    Masif Ahşap,<br>
+                    <span style="color: #a0622a;">Kişiye Özel Üretim</span>
+                </h1>
+
+                <p class="text-gray-600 leading-relaxed mb-5" style="font-size: 0.9rem; max-width: 42ch;">
+                    Her ürün tek tek elle şekillendirilir, 45° gönyeli köşelerle birleştirilir 
+                    ve sipariş alındıktan sonra üretilir. Seri değil, özel.
+                </p>
+
+                <div class="flex items-center gap-6 text-[0.8rem] text-gray-500 font-medium border-t border-[#d5b896]/60 pt-4">
+                    <span>%100 Masif Ahşap</span>
+                    <span class="text-[#c4956a]">·</span>
+                    <span>Ücretsiz Kargo</span>
+                    <span class="text-[#c4956a]">·</span>
+                    <span>14 Gün İade</span>
                 </div>
             </div>
-            {{-- Atölye ürün görseli --}}
-            <div class="hidden lg:flex flex-col items-center gap-2 shrink-0">
-                <div class="w-36 h-36 rounded-2xl overflow-hidden shadow-xl">
-                    <img src="/artisan_frame_hero.png" alt="El Yapımı Masif Ahşap Çerçeve" class="w-full h-full object-cover">
+
+            {{-- Right: Staggered image mosaic with hand-label --}}
+            <div class="hidden lg:flex items-end gap-3 shrink-0">
+                {{-- Tall frame --}}
+                <div class="flex flex-col items-center gap-2">
+                    <div class="rounded-xl overflow-hidden shadow-md" style="width: 88px; height: 128px; border: 2px solid #c8a07a;">
+                        <img src="/artisan_frame_hero.png" alt="Ahşap Çerçeve" class="w-full h-full object-cover">
+                    </div>
                 </div>
-                <span class="text-[11px] text-brand font-bold uppercase tracking-wider">El yapımı atölye ürünü</span>
+                {{-- Short frame offset upward --}}
+                <div class="flex flex-col items-center gap-2 mb-5">
+                    <div class="rounded-xl overflow-hidden shadow-md" style="width: 78px; height: 100px; border: 2px solid #c8a07a; transform: rotate(-2deg);">
+                        <img src="/artisan_frame_hero.png" alt="Ahşap Çerçeve" class="w-full h-full object-cover object-top">
+                    </div>
+                </div>
+                {{-- Stamp label --}}
+                <div class="mb-2 text-center" style="width: 72px;">
+                    <div style="border: 2px solid #9c6c3c; border-radius: 4px; padding: 6px 4px; transform: rotate(2deg); opacity: 0.85;">
+                        <p class="font-bold text-[9px] uppercase tracking-widest text-[#6b3e1a]" style="font-family: Georgia, serif; line-height: 1.5;">El<br>Yapımı<br>✦ 2024</p>
+                    </div>
+                </div>
             </div>
+
         </div>
     </div>
+
+    {{-- Bottom grain stripe --}}
+    <div class="absolute bottom-0 left-0 right-0 h-[2px]" style="background: repeating-linear-gradient(90deg, #c4956a 0px, #a07040 24px, #d4a874 48px, #b8845a 72px, #c4956a 96px); opacity: 0.5;"></div>
 </div>
+
 
 <div class="min-h-screen pb-16 pt-8">
     <div class="container mx-auto px-4">
@@ -94,6 +124,12 @@
                             <div class="absolute top-3 left-3 bg-brand/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-full tracking-wide">
                                 El Yapımı
                             </div>
+
+                            @if($product->discount_percent > 0)
+                                <div class="absolute top-3 right-12 bg-red-600 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow z-10">
+                                    %{{ $product->discount_percent }} İndirim
+                                </div>
+                            @endif
 
                             @if($product->stock > 0)
                                 <div class="absolute bottom-0 left-0 bg-green-600/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-tr-xl">

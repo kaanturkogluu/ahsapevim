@@ -31,13 +31,13 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
-            'original_price' => 'nullable|numeric|min:0',
+            'discounted_price' => 'nullable|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'description' => 'nullable|string',
-            'barcode' => 'nullable|string|max:255',
-            'model_code' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
-            'three_d_template_id' => 'nullable|exists:three_d_templates,id',
+            'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:8192',
+            'youtube_url' => 'nullable|url|max:255',
+            'three_d_template_id' => 'required|exists:three_d_templates,id',
             'color' => 'nullable|string',
             'size' => 'nullable|string',
         ]);
@@ -49,22 +49,40 @@ class ProductController extends Controller
             $imagePath = '/uploads/products/' . $imageName;
         }
 
+        // Gallery Images Upload
+        $galleryImages = [];
+        if ($request->hasFile('gallery')) {
+            foreach ($request->file('gallery') as $file) {
+                $galName = time() . '_' . Str::random(10) . '.' . $file->extension();
+                $file->move(public_path('uploads/products'), $galName);
+                $galleryImages[] = '/uploads/products/' . $galName;
+            }
+        }
+
+        // Price & Discount Calculation
+        if ($request->has('has_discount') && $request->filled('discounted_price')) {
+            $price = $request->discounted_price;
+            $originalPrice = $request->price;
+        } else {
+            $price = $request->price;
+            $originalPrice = null;
+        }
+
         $features = [
             'color' => $request->color,
             'size' => $request->size,
-            'images' => [] // can be extended for gallery
+            'images' => $galleryImages,
+            'youtube_url' => $request->youtube_url,
         ];
 
         Product::create([
             'category_id' => $request->category_id,
             'name' => $request->name,
             'slug' => Str::slug($request->name) . '-' . rand(1000, 9999),
-            'price' => $request->price,
-            'original_price' => $request->original_price,
+            'price' => $price,
+            'original_price' => $originalPrice,
             'stock' => $request->stock,
             'description' => $request->description,
-            'barcode' => $request->barcode,
-            'model_code' => $request->model_code,
             'image' => $imagePath,
             'three_d_template_id' => $request->three_d_template_id,
             'features' => $features,
@@ -90,13 +108,13 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
-            'original_price' => 'nullable|numeric|min:0',
+            'discounted_price' => 'nullable|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'description' => 'nullable|string',
-            'barcode' => 'nullable|string|max:255',
-            'model_code' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
-            'three_d_template_id' => 'nullable|exists:three_d_templates,id',
+            'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:8192',
+            'youtube_url' => 'nullable|url|max:255',
+            'three_d_template_id' => 'required|exists:three_d_templates,id',
             'color' => 'nullable|string',
             'size' => 'nullable|string',
         ]);
@@ -112,20 +130,54 @@ class ProductController extends Controller
             $imagePath = '/uploads/products/' . $imageName;
         }
 
+        // Gallery Images Handling
         $features = $product->features ?: [];
+        $existingGallery = $features['images'] ?? [];
+
+        // Remove deleted gallery images
+        if ($request->has('remove_gallery') && is_array($request->remove_gallery)) {
+            foreach ($request->remove_gallery as $removedImg) {
+                if (($key = array_search($removedImg, $existingGallery)) !== false) {
+                    unset($existingGallery[$key]);
+                    if (File::exists(public_path($removedImg))) {
+                        File::delete(public_path($removedImg));
+                    }
+                }
+            }
+            $existingGallery = array_values($existingGallery);
+        }
+
+        // Append new gallery images
+        if ($request->hasFile('gallery')) {
+            foreach ($request->file('gallery') as $file) {
+                $galName = time() . '_' . Str::random(10) . '.' . $file->extension();
+                $file->move(public_path('uploads/products'), $galName);
+                $existingGallery[] = '/uploads/products/' . $galName;
+            }
+        }
+
+        // Price & Discount Calculation
+        if ($request->has('has_discount') && $request->filled('discounted_price')) {
+            $price = $request->discounted_price;
+            $originalPrice = $request->price;
+        } else {
+            $price = $request->price;
+            $originalPrice = null;
+        }
+
         $features['color'] = $request->color;
         $features['size'] = $request->size;
+        $features['images'] = array_values($existingGallery);
+        $features['youtube_url'] = $request->youtube_url;
 
         $product->update([
             'category_id' => $request->category_id,
             'name' => $request->name,
             'slug' => Str::slug($request->name) . '-' . $product->id,
-            'price' => $request->price,
-            'original_price' => $request->original_price,
+            'price' => $price,
+            'original_price' => $originalPrice,
             'stock' => $request->stock,
             'description' => $request->description,
-            'barcode' => $request->barcode,
-            'model_code' => $request->model_code,
             'image' => $imagePath,
             'three_d_template_id' => $request->three_d_template_id,
             'features' => $features,

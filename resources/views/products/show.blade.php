@@ -37,6 +37,14 @@
                             </div>
                         @endforeach
                     @endif
+                    @if($product->youtube_id)
+                        <div class="thumb-box w-16 h-20 border-2 border-red-300 rounded-md cursor-pointer overflow-hidden relative bg-black group shadow-sm hover:border-red-600 transition" onclick="openYoutubeModal('https://www.youtube.com/embed/{{ $product->youtube_id }}')">
+                            <img src="https://img.youtube.com/vi/{{ $product->youtube_id }}/hqdefault.jpg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition" alt="video thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/20 transition">
+                                <i class="fa-brands fa-youtube text-red-600 text-2xl drop-shadow-md"></i>
+                            </div>
+                        </div>
+                    @endif
                 </div>
                 
                 <!-- Main Image / 3D Showcase -->
@@ -95,14 +103,19 @@
 
             <!-- Right Side: Buybox -->
             <div class="w-full lg:w-[25%]">
-                <form id="addToCartForm" action="{{ url('/sepet/ekle') }}" method="POST" enctype="multipart/form-data" class="border border-gray-200 rounded-xl p-5 bg-white shadow-sm sticky top-24" onsubmit="return checkCustomization(event)">
+                <form id="addToCartForm" action="{{ url('/sepet/ekle') }}" method="POST" enctype="multipart/form-data" class="border border-gray-200 rounded-xl p-5 bg-white shadow-sm sticky top-24" onsubmit="return confirmAddToCart(event)">
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
                     
                     <!-- Price -->
                     <div class="mb-6">
-                        <div class="text-3xl font-extrabold text-brand">{{ number_format($product->price, 2, ',', '.') }} TL</div>
-                        @if($product->original_price > $product->price)
+                        <div class="flex items-center gap-3">
+                            <div class="text-3xl font-extrabold text-brand">{{ number_format($product->price, 2, ',', '.') }} TL</div>
+                            @if($product->discount_percent > 0)
+                                <span class="bg-red-600 text-white font-extrabold text-xs px-2.5 py-1 rounded-full shadow-sm">%{{ $product->discount_percent }} İNDİRİM</span>
+                            @endif
+                        </div>
+                        @if($product->discount_percent > 0)
                             <div class="text-sm text-gray-400 line-through mt-1">{{ number_format($product->original_price, 2, ',', '.') }} TL</div>
                         @endif
                     </div>
@@ -282,7 +295,219 @@ function closeCustomizationModal() {
     const modal = document.getElementById('customizationModal');
     modal.classList.add('hidden');
     modal.classList.remove('flex');
+    
+    if (typeof destroyModal3D === 'function') {
+        destroyModal3D();
+    }
 }
+
+@if($product->threeDTemplate)
+let modalScene, modalCamera, modalRenderer, modalControls, modalAnimationId;
+let modalModelGroup = new THREE.Group();
+let modalOuterGroup, modalCustomRotatingFrame, modalCustomPhotoFront, modalCustomPhotoBack;
+
+function initModal3D() {
+    const container = document.getElementById('workspaceContainer');
+    if (!container) return;
+
+    // Clear previous canvas
+    const oldCanvas = container.querySelector('canvas');
+    if (oldCanvas) oldCanvas.remove();
+
+    modalScene = new THREE.Scene();
+    const rect = container.getBoundingClientRect();
+    modalCamera = new THREE.PerspectiveCamera(40, rect.width / (rect.height || 480), 0.1, 1000);
+    modalCamera.position.set(0, 0, 50);
+
+    modalRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    modalRenderer.setSize(rect.width, rect.height || 480);
+    modalRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    modalRenderer.shadowMap.enabled = true;
+    container.appendChild(modalRenderer.domElement);
+
+    modalControls = new THREE.OrbitControls(modalCamera, modalRenderer.domElement);
+    modalControls.enableDamping = true;
+    modalControls.dampingFactor = 0.05;
+    modalControls.maxPolarAngle = Math.PI / 2 + 0.1;
+    modalControls.minDistance = 15;
+    modalControls.maxDistance = 75;
+
+    // Clear old group children
+    while(modalModelGroup.children.length > 0) {
+        modalModelGroup.remove(modalModelGroup.children[0]);
+    }
+    modalScene.add(modalModelGroup);
+
+    const ambient = new THREE.AmbientLight(0xffffff, 0.65);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 0.85);
+    keyLight.position.set(25, 45, 30);
+    modalScene.add(ambient, keyLight);
+
+    // Build the frame inside modalModelGroup
+    buildModalFrame();
+
+    const animateModal = () => {
+        modalAnimationId = requestAnimationFrame(animateModal);
+        modalControls.update();
+        modalRenderer.render(modalScene, modalCamera);
+    };
+    animateModal();
+}
+
+function destroyModal3D() {
+    if (modalAnimationId) {
+        cancelAnimationFrame(modalAnimationId);
+        modalAnimationId = null;
+    }
+    if (modalRenderer) {
+        modalRenderer.dispose();
+        if (modalRenderer.domElement) {
+            modalRenderer.domElement.remove();
+        }
+        modalRenderer = null;
+    }
+    modalScene = null;
+    modalCamera = null;
+    modalControls = null;
+}
+
+function buildModalFrame() {
+    const width = {{ $product->threeDTemplate->width }};
+    const height = {{ $product->threeDTemplate->height }};
+    const depth = {{ $product->threeDTemplate->depth }};
+    const thickness = {{ $product->threeDTemplate->thickness }};
+
+    const innerW = {{ $product->threeDTemplate->inner_width }};
+    const innerH = {{ $product->threeDTemplate->inner_height }};
+    const innerD = {{ $product->threeDTemplate->inner_depth }};
+    const innerB = {{ $product->threeDTemplate->inner_border }};
+
+    const px = {{ $product->threeDTemplate->pos_x }};
+    const py = {{ $product->threeDTemplate->pos_y }};
+
+    const woodType = "{{ $product->threeDTemplate->wood_type }}";
+
+    // Use modalRenderer for anisotropy
+    const woodTexture = generateWoodTexture(woodType, modalRenderer);
+    const bScale = {{ $product->threeDTemplate->bump_scale ?: 0.08 }};
+    const materialObj = new THREE.MeshStandardMaterial({ 
+        map: woodTexture, 
+        bumpMap: woodTexture,
+        bumpScale: bScale,
+        roughness: 0.88,
+        metalness: 0.0
+    });
+
+    const hasTop = {{ $product->threeDTemplate->has_top ? 'true' : 'false' }};
+    const hasBottom = {{ $product->threeDTemplate->has_bottom ? 'true' : 'false' }};
+    const hasLeft = {{ $product->threeDTemplate->has_left ? 'true' : 'false' }};
+    const hasRight = {{ $product->threeDTemplate->has_right ? 'true' : 'false' }};
+
+    modalOuterGroup = new THREE.Group();
+
+    if(hasTop) {
+        const mesh = new THREE.Mesh(createMiteredFramePiece(width, thickness, depth, hasLeft, hasRight), materialObj);
+        mesh.position.y = height/2 - thickness/2;
+        modalOuterGroup.add(mesh);
+    }
+    if(hasBottom) {
+        const mesh = new THREE.Mesh(createMiteredFramePiece(width, thickness, depth, hasRight, hasLeft), materialObj);
+        mesh.rotation.z = Math.PI;
+        mesh.position.y = -height/2 + thickness/2;
+        modalOuterGroup.add(mesh);
+    }
+    if(hasLeft) {
+        const mesh = new THREE.Mesh(createMiteredFramePiece(height, thickness, depth, hasBottom, hasTop), materialObj);
+        mesh.rotation.z = Math.PI / 2;
+        mesh.position.x = -width/2 + thickness/2;
+        modalOuterGroup.add(mesh);
+    }
+    if(hasRight) {
+        const mesh = new THREE.Mesh(createMiteredFramePiece(height, thickness, depth, hasTop, hasBottom), materialObj);
+        mesh.rotation.z = -Math.PI / 2;
+        mesh.position.x = width/2 - thickness/2;
+        modalOuterGroup.add(mesh);
+    }
+
+    modalModelGroup.add(modalOuterGroup);
+
+    modalCustomRotatingFrame = new THREE.Group();
+    modalCustomRotatingFrame.position.set(px, py, 0);
+
+    const topIn = new THREE.Mesh(createMiteredFramePiece(innerW, innerB, innerD, true, true), materialObj);
+    topIn.position.y = innerH/2 - innerB/2;
+    modalCustomRotatingFrame.add(topIn);
+
+    const botIn = new THREE.Mesh(createMiteredFramePiece(innerW, innerB, innerD, true, true), materialObj);
+    botIn.rotation.z = Math.PI;
+    botIn.position.y = -innerH/2 + innerB/2;
+    modalCustomRotatingFrame.add(botIn);
+
+    const leftIn = new THREE.Mesh(createMiteredFramePiece(innerH, innerB, innerD, true, true), materialObj);
+    leftIn.rotation.z = Math.PI / 2;
+    leftIn.position.x = -innerW/2 + innerB/2;
+    modalCustomRotatingFrame.add(leftIn);
+
+    const rightIn = new THREE.Mesh(createMiteredFramePiece(innerH, innerB, innerD, true, true), materialObj);
+    rightIn.rotation.z = -Math.PI / 2;
+    rightIn.position.x = innerW/2 - innerB/2;
+    modalCustomRotatingFrame.add(rightIn);
+
+    // Photo planes
+    const photoW = innerW - innerB * 1.5;
+    const photoH = innerH - innerB * 1.5;
+
+    const photoMatFront = new THREE.MeshStandardMaterial({ 
+        color: 0xefefef, 
+        roughness: 0.35, 
+        metalness: 0.1 
+    });
+    const photoMatBack = new THREE.MeshStandardMaterial({ 
+        color: 0xefefef, 
+        roughness: 0.35, 
+        metalness: 0.1 
+    });
+
+    modalCustomPhotoFront = new THREE.Mesh(new THREE.PlaneGeometry(photoW, photoH), photoMatFront);
+    modalCustomPhotoFront.position.z = 0.1;
+    modalCustomRotatingFrame.add(modalCustomPhotoFront);
+
+    modalCustomPhotoBack = new THREE.Mesh(new THREE.PlaneGeometry(photoW, photoH), photoMatBack);
+    modalCustomPhotoBack.rotation.y = Math.PI;
+    modalCustomPhotoBack.position.z = -0.1;
+    modalCustomRotatingFrame.add(modalCustomPhotoBack);
+
+    const backingGeom = new THREE.BoxGeometry(photoW, photoH, 0.08);
+    const backing = new THREE.Mesh(backingGeom, materialObj);
+    modalCustomRotatingFrame.add(backing);
+
+    modalModelGroup.add(modalCustomRotatingFrame);
+
+    // If an image is selected, load it onto the photo planes!
+    const fileInput = document.getElementById('customImageInput');
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const texture = new THREE.Texture(img);
+                texture.needsUpdate = true;
+                
+                modalCustomPhotoFront.material.map = texture;
+                modalCustomPhotoFront.material.color.set('#ffffff');
+                modalCustomPhotoFront.material.needsUpdate = true;
+
+                modalCustomPhotoBack.material.map = texture;
+                modalCustomPhotoBack.material.color.set('#ffffff');
+                modalCustomPhotoBack.material.needsUpdate = true;
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+@endif
 
 function resetBox(el) {
     if (!el) return;
@@ -307,6 +532,9 @@ function goToStep1() {
     }
     document.querySelectorAll('.mask-handle').forEach(h => h.style.display = 'block');
     
+    const modalFrameImage = document.getElementById('modalFrameImage');
+    if (modalFrameImage) modalFrameImage.style.display = 'block';
+
     const userImgBox = document.getElementById('userImageBox');
     if(userImgBox) userImgBox.style.display = 'none';
     
@@ -315,6 +543,10 @@ function goToStep1() {
     document.getElementById('btnFinish')?.classList.add('hidden');
     
     activeElement = maskBox;
+
+    if (typeof destroyModal3D === 'function') {
+        destroyModal3D();
+    }
 }
 
 function goToStep2() {
@@ -327,25 +559,39 @@ function goToStep2() {
 
 function showStep2UI() {
     currentStep = 2;
-    if(document.getElementById('modalTitle')) document.getElementById('modalTitle').innerText = "Adım 2: Çerçeve Önizlemesi";
-    if(document.getElementById('modalSubtitle')) document.getElementById('modalSubtitle').innerText = "Fotoğrafınız belirlediğiniz alana doğrudan yerleştirildi.";
-    if(document.getElementById('modalHelpText')) document.getElementById('modalHelpText').innerHTML = "<i class='fa-solid fa-info-circle'></i> Alanı veya açıyı değiştirmek isterseniz Geri butonunu kullanabilirsiniz.";
     
     const maskBox = document.getElementById('maskBox');
     if(maskBox) {
         maskBox.style.display = 'none';
     }
     
+    const modalFrameImage = document.getElementById('modalFrameImage');
     const userImgBox = document.getElementById('userImageBox');
-    if(userImgBox) {
-        userImgBox.style.display = 'block';
-    }
     
     document.getElementById('btnBack')?.classList.remove('hidden');
     document.getElementById('btnNext')?.classList.add('hidden');
     document.getElementById('btnFinish')?.classList.remove('hidden');
     
-    activeElement = null; // Lock user image, no dragging or extra handles in Step 2
+    activeElement = null; // Lock user image in Step 2
+
+    // Check if 3D is available, else fallback to 2D
+    if (typeof initModal3D === 'function') {
+        if(document.getElementById('modalTitle')) document.getElementById('modalTitle').innerText = "Adım 2: 3D Çerçeve Önizlemesi";
+        if(document.getElementById('modalSubtitle')) document.getElementById('modalSubtitle').innerText = "Yüklediğiniz fotoğraf 3D çerçeveye yerleştirildi. Fareyle veya parmağınızla sürükleyerek döndürebilirsiniz.";
+        if(document.getElementById('modalHelpText')) document.getElementById('modalHelpText').innerHTML = "<i class='fa-solid fa-info-circle'></i> Alanı değiştirmek isterseniz Geri butonunu kullanabilirsiniz.";
+        
+        if(modalFrameImage) modalFrameImage.style.display = 'none';
+        if(userImgBox) userImgBox.style.display = 'none';
+        
+        initModal3D();
+    } else {
+        if(document.getElementById('modalTitle')) document.getElementById('modalTitle').innerText = "Adım 2: Çerçeve Önizlemesi";
+        if(document.getElementById('modalSubtitle')) document.getElementById('modalSubtitle').innerText = "Fotoğrafınız belirlediğiniz alana doğrudan yerleştirildi.";
+        if(document.getElementById('modalHelpText')) document.getElementById('modalHelpText').innerHTML = "<i class='fa-solid fa-info-circle'></i> Alanı veya açıyı değiştirmek isterseniz Geri butonunu kullanabilirsiniz.";
+        
+        if(modalFrameImage) modalFrameImage.style.display = 'block';
+        if(userImgBox) userImgBox.style.display = 'block';
+    }
 }
 
 function handleImageUpload(event) {
@@ -354,18 +600,20 @@ function handleImageUpload(event) {
 
     const reader = new FileReader();
     reader.onload = function(e) {
-        document.getElementById('modalUserImage').src = e.target.result;
+        // 1. Update 2D editor image
+        const modalUserImage = document.getElementById('modalUserImage');
+        if (modalUserImage) modalUserImage.src = e.target.result;
         
-        // Directly sync userImageBox position, dimensions AND rotation to maskBox
         const mask = document.getElementById('maskBox');
         const userImg = document.getElementById('userImageBox');
-        
-        userImg.style.width = mask.style.width;
-        userImg.style.height = mask.style.height;
-        userImg.style.left = mask.style.left;
-        userImg.style.top = mask.style.top;
-        userImg.style.transform = mask.style.transform;
-        userImg.dataset.rotation = mask.dataset.rotation || '0';
+        if (mask && userImg) {
+            userImg.style.width = mask.style.width;
+            userImg.style.height = mask.style.height;
+            userImg.style.left = mask.style.left;
+            userImg.style.top = mask.style.top;
+            userImg.style.transform = mask.style.transform;
+            userImg.dataset.rotation = mask.dataset.rotation || '0';
+        }
         
         showStep2UI();
     }
@@ -374,6 +622,26 @@ function handleImageUpload(event) {
 
 function saveCustomization() {
     closeCustomizationModal();
+}
+
+function confirmAddToCart(event) {
+    const fileInput = document.getElementById('customImageInput');
+    if (!fileInput.files || !fileInput.files.length) {
+        event.preventDefault();
+        const confirmVal = confirm('Ürününüzü kişiselleştirmediniz. Kişiselleştirmeden sepetinize eklemek istediğinize emin misiniz?\n\n(Kişiselleştirmek için İptal\'e tıklayabilirsiniz.)');
+        if (confirmVal) {
+            // Submit form bypassing check
+            const form = document.getElementById('addToCartForm');
+            if (form) {
+                form.onsubmit = null;
+                form.submit();
+            }
+        } else {
+            openCustomizationModal();
+        }
+        return false;
+    }
+    return true;
 }
 
 // Robust Drag, Resize & Rotate Engine
@@ -489,21 +757,24 @@ function handleEnd() {
     window.removeEventListener('mouseup', handleEnd);
     window.removeEventListener('touchend', handleEnd);
 }
-function checkCustomization(e) {
-    if (!document.getElementById('customImageInput').files.length) {
-        e.preventDefault();
-        
-        // Show a custom toast/alert (you can use standard alert or the toast setup)
-        alert('Lütfen sepete eklemeden önce "Kişiselleştir ve Ön İzle" butonuna tıklayarak ürününüzü kişiselleştirin.');
-        
-        openCustomizationModal();
-        return false;
-    }
-    return true;
-}
+
+</script>
 
 @if($product->threeDTemplate)
 <script>
+    function darkenColor(hex, percent) {
+        if (!hex) return '#333333';
+        hex = hex.replace('#', '');
+        if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+        if (hex.length !== 6) return '#333333';
+        let num = parseInt(hex, 16);
+        let amt = Math.round(2.55 * percent);
+        let R = Math.max(0, (num >> 16) - amt);
+        let G = Math.max(0, (num >> 8 & 0x00FF) - amt);
+        let B = Math.max(0, (num & 0x0000FF) - amt);
+        return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+    }
+
     // --- WOOD TEXTURE GENERATOR ---
     function generateWoodTexture(woodType, rendererInstance) {
         const canvas = document.createElement('canvas');
@@ -512,7 +783,12 @@ function checkCustomization(e) {
         const ctx = canvas.getContext('2d');
 
         let baseColor, lineColor, poreColor;
-        if (woodType === 'Ceviz') {
+        if (woodType && (woodType.startsWith('#') || /^[0-9a-fA-F]{6}$/.test(woodType.replace('#','')))) {
+            const hex = woodType.startsWith('#') ? woodType : '#' + woodType;
+            baseColor = hex;
+            lineColor = darkenColor(hex, 25);
+            poreColor = darkenColor(hex, 45);
+        } else if (woodType === 'Ceviz') {
             baseColor = '#4a3319';
             lineColor = '#2b1b0e';
             poreColor = '#1d1209';
@@ -529,9 +805,9 @@ function checkCustomization(e) {
             lineColor = '#562512';
             poreColor = '#3c180a';
         } else {
-            baseColor = '#ead9c3';
-            lineColor = '#c7b095';
-            poreColor = '#b59d81';
+            baseColor = woodType || '#ead9c3';
+            lineColor = darkenColor(baseColor, 25);
+            poreColor = darkenColor(baseColor, 45);
         }
 
         // Base color
@@ -630,8 +906,6 @@ function checkCustomization(e) {
     let customRotatingFrame = null;
     let customPhotoFront = null;
     let customPhotoBack = null;
-    let outerFrameMeshes = [];
-    let innerFrameMeshes = [];
 
     const container3D = document.getElementById('productShowcase3D');
 
@@ -831,6 +1105,31 @@ function checkCustomization(e) {
         const backing = new THREE.Mesh(backingGeom, materialObj);
         customRotatingFrame.add(backing);
 
+        // Metallic Pivot Pins (Orta Dönme Pinleri)
+        const pinMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.9, roughness: 0.2 });
+        
+        // Top Pin
+        const innerEdgeTop = py + (innerH / 2);
+        const outerTargetTop = (height / 2) - (thickness / 2);
+        const lenTop = Math.max(0.15, outerTargetTop - innerEdgeTop);
+        const localYTop = (innerH / 2) + (lenTop / 2);
+
+        const pinTopGeo = new THREE.CylinderGeometry(0.18, 0.18, lenTop, 16);
+        const pinTop = new THREE.Mesh(pinTopGeo, pinMat);
+        pinTop.position.set(0, localYTop, 0);
+
+        // Bottom Pin
+        const innerEdgeBot = py - (innerH / 2);
+        const outerTargetBot = -(height / 2) + (thickness / 2);
+        const lenBot = Math.max(0.15, innerEdgeBot - outerTargetBot);
+        const localYBot = -(innerH / 2) - (lenBot / 2);
+
+        const pinBotGeo = new THREE.CylinderGeometry(0.18, 0.18, lenBot, 16);
+        const pinBottom = new THREE.Mesh(pinBotGeo, pinMat);
+        pinBottom.position.set(0, localYBot, 0);
+
+        customRotatingFrame.add(pinTop, pinBottom);
+
         currentModelGroup.add(customRotatingFrame);
     }
 
@@ -864,5 +1163,34 @@ function checkCustomization(e) {
     };
 </script>
 @endif
+
+<!-- YouTube Video Modal -->
+<div id="youtubeVideoModal" class="fixed inset-0 z-[999999] bg-black/90 hidden items-center justify-center p-4 backdrop-blur-md" onclick="closeYoutubeModal(event)">
+    <div class="relative w-full max-w-4xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border border-gray-800" onclick="event.stopPropagation()">
+        <button type="button" onclick="closeYoutubeModal()" class="absolute top-4 right-4 text-white text-3xl font-bold z-20 hover:text-red-500 transition leading-none bg-black/50 w-10 h-10 rounded-full flex items-center justify-center">&times;</button>
+        <iframe id="youtubeIframe" src="" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+</div>
+
+<script>
+function openYoutubeModal(embedUrl) {
+    const iframe = document.getElementById('youtubeIframe');
+    if (iframe) iframe.src = embedUrl + '?autoplay=1';
+    const modal = document.getElementById('youtubeVideoModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+}
+
+function closeYoutubeModal(e) {
+    const modal = document.getElementById('youtubeVideoModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+    const iframe = document.getElementById('youtubeIframe');
+    if (iframe) iframe.src = '';
+}
 </script>
 @endsection

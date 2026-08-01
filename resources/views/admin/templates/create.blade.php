@@ -27,14 +27,19 @@
                             <input type="text" name="name" required class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: 20x25 Standart Dönen Çerçeve">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-700 mb-1">Ahşap Rengi / Türü *</label>
-                            <select name="wood_type" id="woodTypeSelect" required class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none bg-white">
-                                <option value="Ceviz">Masif Ceviz (Koyu)</option>
-                                <option value="Meşe">Masif Meşe (Orta)</option>
-                                <option value="Çam">Doğal Çam (Açık)</option>
-                                <option value="Kiraz">Masif Kiraz (Kızıl)</option>
-                                <option value="Ham">Ham Ahşap</option>
-                            </select>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Ahşap Rengi / Renk Paleti *</label>
+                            <div class="flex items-center gap-2">
+                                <input type="color" id="woodColorPicker" value="#4a3319" class="w-10 h-10 rounded border border-gray-300 cursor-pointer p-0.5 shrink-0" onchange="updateWoodColorFromPicker(this.value)">
+                                <input type="text" name="wood_type" id="woodTypeSelect" required value="{{ old('wood_type', 'Ceviz') }}" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Renk kodu veya adı (#4a3319, Ceviz vb.)">
+                            </div>
+                            <div class="flex flex-wrap gap-1.5 mt-2">
+                                <button type="button" onclick="setWoodPreset('#4a3319', 'Ceviz')" class="px-2 py-1 bg-[#4a3319] text-white text-[10px] font-bold rounded shadow-sm hover:opacity-90">Ceviz</button>
+                                <button type="button" onclick="setWoodPreset('#a8896c', 'Meşe')" class="px-2 py-1 bg-[#a8896c] text-white text-[10px] font-bold rounded shadow-sm hover:opacity-90">Meşe</button>
+                                <button type="button" onclick="setWoodPreset('#e3d3bd', 'Çam')" class="px-2 py-1 bg-[#e3d3bd] text-gray-800 text-[10px] font-bold rounded shadow-sm hover:opacity-90 border">Çam</button>
+                                <button type="button" onclick="setWoodPreset('#8c462b', 'Kiraz')" class="px-2 py-1 bg-[#8c462b] text-white text-[10px] font-bold rounded shadow-sm hover:opacity-90">Kiraz</button>
+                                <button type="button" onclick="setWoodPreset('#2b2b2b', 'Siyah')" class="px-2 py-1 bg-[#2b2b2b] text-white text-[10px] font-bold rounded shadow-sm hover:opacity-90">Siyah</button>
+                                <button type="button" onclick="setWoodPreset('#f0ede6', 'Beyaz')" class="px-2 py-1 bg-[#f0ede6] text-gray-800 text-[10px] font-bold rounded shadow-sm hover:opacity-90 border">Beyaz</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -148,6 +153,35 @@
 </div>
 
 <script>
+function darkenColor(hex, percent) {
+    if (!hex) return '#333333';
+    hex = hex.replace('#', '');
+    if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+    if (hex.length !== 6) return '#333333';
+    let num = parseInt(hex, 16);
+    let amt = Math.round(2.55 * percent);
+    let R = Math.max(0, (num >> 16) - amt);
+    let G = Math.max(0, (num >> 8 & 0x00FF) - amt);
+    let B = Math.max(0, (num & 0x0000FF) - amt);
+    return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+}
+
+function updateWoodColorFromPicker(val) {
+    const input = document.getElementById('woodTypeSelect');
+    if (input) {
+        input.value = val;
+        redrawModel();
+    }
+}
+
+function setWoodPreset(hex, name) {
+    const picker = document.getElementById('woodColorPicker');
+    const input = document.getElementById('woodTypeSelect');
+    if (picker) picker.value = hex;
+    if (input) input.value = hex;
+    redrawModel();
+}
+
 // --- WOOD TEXTURE GENERATOR ---
 function generateWoodTexture(woodType, rendererInstance) {
     const canvas = document.createElement('canvas');
@@ -156,7 +190,12 @@ function generateWoodTexture(woodType, rendererInstance) {
     const ctx = canvas.getContext('2d');
 
     let baseColor, lineColor, poreColor;
-    if (woodType === 'Ceviz') {
+    if (woodType && (woodType.startsWith('#') || /^[0-9a-fA-F]{6}$/.test(woodType.replace('#','')))) {
+        const hex = woodType.startsWith('#') ? woodType : '#' + woodType;
+        baseColor = hex;
+        lineColor = darkenColor(hex, 25);
+        poreColor = darkenColor(hex, 45);
+    } else if (woodType === 'Ceviz') {
         baseColor = '#4a3319';
         lineColor = '#2b1b0e';
         poreColor = '#1d1209';
@@ -173,9 +212,9 @@ function generateWoodTexture(woodType, rendererInstance) {
         lineColor = '#562512';
         poreColor = '#3c180a';
     } else {
-        baseColor = '#ead9c3';
-        lineColor = '#c7b095';
-        poreColor = '#b59d81';
+        baseColor = woodType || '#ead9c3';
+        lineColor = darkenColor(baseColor, 25);
+        poreColor = darkenColor(baseColor, 45);
     }
 
     // Base color
@@ -456,6 +495,31 @@ function redrawModel() {
     const backingGeom = new THREE.BoxGeometry(innerW - innerB*1.5, innerH - innerB*1.5, 0.15);
     const backing = new THREE.Mesh(backingGeom, materialObj);
     customRotatingFrame.add(backing); innerFrameMeshes.push(backing);
+
+    // Metallic Pivot Pins (Orta Dönme Pinleri)
+    const pinMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.9, roughness: 0.2 });
+    
+    // Top Pin
+    const innerEdgeTop = py + (innerH / 2);
+    const outerTargetTop = (height / 2) - (thickness / 2);
+    const lenTop = Math.max(0.15, outerTargetTop - innerEdgeTop);
+    const localYTop = (innerH / 2) + (lenTop / 2);
+
+    const pinTopGeo = new THREE.CylinderGeometry(0.18, 0.18, lenTop, 16);
+    const pinTop = new THREE.Mesh(pinTopGeo, pinMat);
+    pinTop.position.set(0, localYTop, 0);
+
+    // Bottom Pin
+    const innerEdgeBot = py - (innerH / 2);
+    const outerTargetBot = -(height / 2) + (thickness / 2);
+    const lenBot = Math.max(0.15, innerEdgeBot - outerTargetBot);
+    const localYBot = -(innerH / 2) - (lenBot / 2);
+
+    const pinBotGeo = new THREE.CylinderGeometry(0.18, 0.18, lenBot, 16);
+    const pinBottom = new THREE.Mesh(pinBotGeo, pinMat);
+    pinBottom.position.set(0, localYBot, 0);
+
+    customRotatingFrame.add(pinTop, pinBottom);
 
     currentModelGroup.add(customRotatingFrame);
 }

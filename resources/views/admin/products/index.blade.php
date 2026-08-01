@@ -38,14 +38,11 @@
                         </td>
                         <td class="py-3.5">
                             <div class="font-bold text-gray-800">{{ $product->name }}</div>
-                            <div class="flex gap-3 text-xs text-gray-500 mt-1">
-                                @if($product->model_code)
-                                    <span>Kod: <strong class="text-gray-700">{{ $product->model_code }}</strong></span>
-                                @endif
-                                @if($product->barcode)
-                                    <span>Barkod: <strong class="text-gray-700">{{ $product->barcode }}</strong></span>
-                                @endif
-                            </div>
+                            @if($product->discount_percent > 0)
+                                <div class="mt-1">
+                                    <span class="px-2 py-0.5 bg-red-100 text-red-700 font-extrabold text-[10px] rounded-full">%{{ $product->discount_percent }} İNDİRİMLİ</span>
+                                </div>
+                            @endif
                         </td>
                         <td class="py-3.5">
                             <span class="px-2.5 py-1 bg-stone-100 text-stone-700 rounded-md font-semibold text-xs">{{ $product->category->name ?? 'Kategorisiz' }}</span>
@@ -60,10 +57,10 @@
                             @endif
                         </td>
                         <td class="py-3.5 text-right font-bold text-gray-900">
-                            @if($product->original_price)
-                                <span class="text-xs text-gray-400 line-through mr-1.5">{{ number_format($product->original_price, 2) }} TL</span>
+                            @if($product->discount_percent > 0)
+                                <div class="text-xs text-gray-400 line-through">{{ number_format($product->original_price, 2, ',', '.') }} TL</div>
                             @endif
-                            <span class="text-[#C87A53]">{{ number_format($product->price, 2) }} TL</span>
+                            <div class="text-[#C87A53]">{{ number_format($product->price, 2, ',', '.') }} TL</div>
                         </td>
                         <td class="py-3.5 text-center font-semibold text-gray-600">{{ $product->stock }}</td>
                         <td class="py-3.5 text-center">
