@@ -68,21 +68,18 @@
 
 <body class="text-gray-800 selection:bg-brand selection:text-white">
 
-    <!-- Minimal Brand Logo (No Navbar/Topbar) -->
-    <div class="fixed top-6 left-6 lg:top-8 lg:left-14 z-50 pointer-events-auto">
+    <!-- Minimal Brand Logo & "Ürünleri Keşfet" Button Header Group -->
+    <div class="fixed top-6 left-6 lg:top-8 lg:left-14 z-50 pointer-events-auto flex items-center gap-4 lg:gap-6">
         <a href="{{ url('/') }}" class="flex items-center gap-2.5">
             <img src="{{ url('/ahsaplogo_yataybg.png') }}" alt="AhşapEvim Logo"
-                class="h-12 lg:h-16 w-auto object-contain">
+                class="h-12 lg:h-16 w-auto object-contain drop-shadow-sm">
         </a>
-    </div>
 
-    <!-- Fixed Top-Right "Ürünleri Keşfet" Button (Sayfayla beraber kaysın/her an erişilebilsin) -->
-    <div class="fixed top-6 right-6 lg:top-8 lg:right-14 z-50 pointer-events-auto">
         <a href="{{ url('/urunler') }}"
-            class="inline-flex items-center gap-2.5 py-3 px-6 bg-white/95 hover:bg-brand text-gray-900 hover:text-white font-extrabold text-xs lg:text-sm rounded-2xl shadow-xl shadow-gray-200/50 hover:shadow-brand/25 border border-gray-200/80 hover:border-brand transition-all duration-300 transform hover:-translate-y-0.5 group">
-            <i class="fa-solid fa-store text-brand group-hover:text-white transition"></i>
-            <span>Ürünleri Keşfet</span>
-            <i class="fa-solid fa-arrow-right text-[11px] opacity-75 group-hover:translate-x-0.5 transition"></i>
+            class="inline-flex items-center gap-3 py-3.5 px-7 bg-gradient-to-r from-[#C87A53] via-[#D87843] to-[#F27A1A] hover:from-[#B56740] hover:to-[#E06912] text-white font-black text-sm lg:text-base rounded-2xl shadow-xl shadow-orange-500/25 hover:shadow-2xl hover:shadow-orange-500/40 border border-white/20 backdrop-blur-md transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 group">
+            <i class="fa-solid fa-store text-lg lg:text-xl group-hover:scale-110 transition-transform duration-300"></i>
+            <span class="tracking-wide">Ürünleri Keşfet</span>
+            <i class="fa-solid fa-arrow-right text-xs lg:text-sm opacity-90 group-hover:translate-x-1 transition-transform duration-300"></i>
         </a>
     </div>
 
