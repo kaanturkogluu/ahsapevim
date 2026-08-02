@@ -1,30 +1,28 @@
-@extends('layouts.admin')
+<?php $__env->startSection('header', 'Sayfayı Düzenle'); ?>
 
-@section('header', 'Sayfayı Düzenle')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm max-w-6xl">
     <div class="mb-6 pb-4 border-b border-gray-100 flex justify-between items-center">
         <div>
-            <h3 class="text-lg font-bold text-gray-800">{{ $page->title }} — İçerik Düzenleme</h3>
+            <h3 class="text-lg font-bold text-gray-800"><?php echo e($page->title); ?> — İçerik Düzenleme</h3>
             <p class="text-xs text-gray-500 mt-1">
-                @if($page->slug === 'iletisim')
+                <?php if($page->slug === 'iletisim'): ?>
                     İletişim bilgilerini, sosyal hatları ve konum haritasını bu sayfadan hızlıca güncelleyin.
-                @else
+                <?php else: ?>
                     Bu bilgilendirme sayfasının başlığını ve içeriğini güncelleyin.
-                @endif
+                <?php endif; ?>
             </p>
         </div>
-        <a href="{{ route('admin.pages.index') }}" class="text-xs font-bold text-gray-500 hover:text-gray-700 transition flex items-center gap-1">
+        <a href="<?php echo e(route('admin.pages.index')); ?>" class="text-xs font-bold text-gray-500 hover:text-gray-700 transition flex items-center gap-1">
             <i class="fa-solid fa-arrow-left"></i> Geri Dön
         </a>
     </div>
 
-    @if($page->slug === 'iletisim')
+    <?php if($page->slug === 'iletisim'): ?>
         <!-- İletişim Sayfası İçin Düzenli 2 Sütunlu Compact Form -->
-        <form action="{{ route('admin.pages.update', $page->id) }}" method="POST">
-            @csrf
-            @method('PUT')
+        <form action="<?php echo e(route('admin.pages.update', $page->id)); ?>" method="POST">
+            <?php echo csrf_field(); ?>
+            <?php echo method_field('PUT'); ?>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 
@@ -36,7 +34,7 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Sayfa Başlığı *</label>
-                                <input type="text" name="title" required value="{{ old('title', $page->title) }}" class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] focus:ring-0 outline-none">
+                                <input type="text" name="title" required value="<?php echo e(old('title', $page->title)); ?>" class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] focus:ring-0 outline-none">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">URL Adresi</label>
@@ -55,19 +53,19 @@
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">
                                     <i class="fa-solid fa-phone text-orange-500 mr-1"></i> Müşteri Hizmetleri
                                 </label>
-                                <input type="text" name="phone" value="{{ old('phone', $contactData['phone'] ?? '') }}" placeholder="0850 123 45 67" class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] focus:ring-0 outline-none">
+                                <input type="text" name="phone" value="<?php echo e(old('phone', $contactData['phone'] ?? '')); ?>" placeholder="0850 123 45 67" class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] focus:ring-0 outline-none">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">
                                     <i class="fa-brands fa-whatsapp text-green-600 mr-1"></i> WhatsApp Hattı
                                 </label>
-                                <input type="text" name="whatsapp" value="{{ old('whatsapp', $contactData['whatsapp'] ?? '') }}" placeholder="0532 123 45 67" class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] focus:ring-0 outline-none">
+                                <input type="text" name="whatsapp" value="<?php echo e(old('whatsapp', $contactData['whatsapp'] ?? '')); ?>" placeholder="0532 123 45 67" class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] focus:ring-0 outline-none">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">
                                     <i class="fa-solid fa-envelope text-blue-500 mr-1"></i> E-Posta Adresi
                                 </label>
-                                <input type="email" name="email" value="{{ old('email', $contactData['email'] ?? '') }}" placeholder="info@ahsapevim.com" class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] focus:ring-0 outline-none">
+                                <input type="email" name="email" value="<?php echo e(old('email', $contactData['email'] ?? '')); ?>" placeholder="info@ahsapevim.com" class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] focus:ring-0 outline-none">
                             </div>
                         </div>
                     </div>
@@ -80,25 +78,25 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Hafta İçi Saatleri</label>
-                                <input type="text" name="working_hours_weekdays" value="{{ old('working_hours_weekdays', $contactData['working_hours_weekdays'] ?? '') }}" placeholder="09:00 - 18:00" class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] focus:ring-0 outline-none">
+                                <input type="text" name="working_hours_weekdays" value="<?php echo e(old('working_hours_weekdays', $contactData['working_hours_weekdays'] ?? '')); ?>" placeholder="09:00 - 18:00" class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] focus:ring-0 outline-none">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Cumartesi Saatleri</label>
-                                <input type="text" name="working_hours_saturday" value="{{ old('working_hours_saturday', $contactData['working_hours_saturday'] ?? '') }}" placeholder="10:00 - 15:00" class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] focus:ring-0 outline-none">
+                                <input type="text" name="working_hours_saturday" value="<?php echo e(old('working_hours_saturday', $contactData['working_hours_saturday'] ?? '')); ?>" placeholder="10:00 - 15:00" class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] focus:ring-0 outline-none">
                             </div>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">
                                 <i class="fa-solid fa-location-dot text-red-500 mr-1"></i> Açık Adres
                             </label>
-                            <textarea name="address" rows="2" placeholder="Atölye ve mağaza adresi..." class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] focus:ring-0 outline-none">{{ old('address', $contactData['address'] ?? '') }}</textarea>
+                            <textarea name="address" rows="2" placeholder="Atölye ve mağaza adresi..." class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] focus:ring-0 outline-none"><?php echo e(old('address', $contactData['address'] ?? '')); ?></textarea>
                         </div>
                     </div>
 
                     <!-- Ek Not -->
                     <div class="bg-gray-50 p-4 rounded-xl border border-gray-200/80">
                         <label class="block text-xs font-bold text-gray-700 mb-1">Ek Not / Özel Bilgilendirme (Opsiyonel)</label>
-                        <textarea name="note" rows="2" placeholder="Sayfada duyuru veya ek not olarak görünecek kısa metin..." class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] focus:ring-0 outline-none">{{ old('note', $contactData['note'] ?? '') }}</textarea>
+                        <textarea name="note" rows="2" placeholder="Sayfada duyuru veya ek not olarak görünecek kısa metin..." class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] focus:ring-0 outline-none"><?php echo e(old('note', $contactData['note'] ?? '')); ?></textarea>
                     </div>
                 </div>
 
@@ -113,7 +111,7 @@
                         </h4>
 
                         <div class="flex items-center gap-2 mb-4">
-                            <input type="checkbox" name="is_active" id="isActive" value="1" {{ old('is_active', $page->is_active) ? 'checked' : '' }} class="rounded text-[#C87A53] focus:ring-[#C87A53] w-4 h-4 cursor-pointer">
+                            <input type="checkbox" name="is_active" id="isActive" value="1" <?php echo e(old('is_active', $page->is_active) ? 'checked' : ''); ?> class="rounded text-[#C87A53] focus:ring-[#C87A53] w-4 h-4 cursor-pointer">
                             <label for="isActive" class="text-xs font-semibold text-gray-700 cursor-pointer select-none">Sayfayı Yayında Tut (Aktif)</label>
                         </div>
 
@@ -121,7 +119,7 @@
                             <button type="submit" class="w-full py-2.5 px-4 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-lg text-xs transition shadow-sm flex items-center justify-center gap-2">
                                 <i class="fa-solid fa-save"></i> Değişiklikleri Kaydet
                             </button>
-                            <a href="{{ url('/iletisim') }}" target="_blank" class="w-full py-2 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg text-xs transition flex items-center justify-center gap-2">
+                            <a href="<?php echo e(url('/iletisim')); ?>" target="_blank" class="w-full py-2 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg text-xs transition flex items-center justify-center gap-2">
                                 <i class="fa-solid fa-eye"></i> Sayfayı Önizle
                             </a>
                         </div>
@@ -133,36 +131,36 @@
                             <i class="fa-solid fa-map-location-dot"></i> Google Harita Konumu
                         </h4>
                         <p class="text-[11px] text-gray-500 mb-2">Google Maps Embed (`src="..."`) linkini yapıştırın:</p>
-                        <input type="text" name="map_url" value="{{ old('map_url', $contactData['map_url'] ?? '') }}" placeholder="https://www.google.com/maps/embed?pb=..." class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-brand focus:ring-0 outline-none font-mono mb-2">
+                        <input type="text" name="map_url" value="<?php echo e(old('map_url', $contactData['map_url'] ?? '')); ?>" placeholder="https://www.google.com/maps/embed?pb=..." class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-brand focus:ring-0 outline-none font-mono mb-2">
 
-                        @if(!empty($contactData['map_url']))
+                        <?php if(!empty($contactData['map_url'])): ?>
                             <div class="w-full h-36 rounded-lg overflow-hidden border border-gray-200 bg-gray-100 relative mt-2">
-                                <iframe src="{{ $contactData['map_url'] }}" class="w-full h-full border-0" allowfullscreen="" loading="lazy"></iframe>
+                                <iframe src="<?php echo e($contactData['map_url']); ?>" class="w-full h-full border-0" allowfullscreen="" loading="lazy"></iframe>
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
 
                 </div>
 
             </div>
         </form>
-    @else
+    <?php else: ?>
         <!-- Standart Metin Sayfaları İçin CKEditor Metin Düzenleyici -->
-        <form action="{{ route('admin.pages.update', $page->id) }}" method="POST" id="editPageForm">
-            @csrf
-            @method('PUT')
+        <form action="<?php echo e(route('admin.pages.update', $page->id)); ?>" method="POST" id="editPageForm">
+            <?php echo csrf_field(); ?>
+            <?php echo method_field('PUT'); ?>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Sayfa Başlığı *</label>
-                    <input type="text" name="title" required value="{{ old('title', $page->title) }}" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none">
+                    <input type="text" name="title" required value="<?php echo e(old('title', $page->title)); ?>" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none">
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">URL Adresi (Slug) *</label>
                     <div class="flex items-center">
-                        <span class="bg-gray-100 border border-r-0 border-gray-300 rounded-l-lg px-3 py-2 text-xs text-gray-500 font-mono">{{ url('/') }}/</span>
-                        <input type="text" name="slug" required value="{{ old('slug', $page->slug) }}" class="w-full text-sm border-gray-300 rounded-r-lg p-2.5 border focus:border-brand focus:ring-0 outline-none font-mono">
+                        <span class="bg-gray-100 border border-r-0 border-gray-300 rounded-l-lg px-3 py-2 text-xs text-gray-500 font-mono"><?php echo e(url('/')); ?>/</span>
+                        <input type="text" name="slug" required value="<?php echo e(old('slug', $page->slug)); ?>" class="w-full text-sm border-gray-300 rounded-r-lg p-2.5 border focus:border-brand focus:ring-0 outline-none font-mono">
                     </div>
                 </div>
             </div>
@@ -170,11 +168,11 @@
             <div class="mb-6">
                 <label class="block text-sm font-semibold text-gray-700 mb-2">Sayfa İçeriği *</label>
                 <div id="editorContainer" class="border border-gray-300 rounded-lg overflow-hidden"></div>
-                <textarea id="pageContent" name="content" class="hidden" required>{!! old('content', $page->content) !!}</textarea>
+                <textarea id="pageContent" name="content" class="hidden" required><?php echo old('content', $page->content); ?></textarea>
             </div>
 
             <div class="flex items-center gap-2 mb-6">
-                <input type="checkbox" name="is_active" id="isActive" value="1" {{ old('is_active', $page->is_active) ? 'checked' : '' }} class="rounded text-[#C87A53] focus:ring-[#C87A53] w-4 h-4 cursor-pointer">
+                <input type="checkbox" name="is_active" id="isActive" value="1" <?php echo e(old('is_active', $page->is_active) ? 'checked' : ''); ?> class="rounded text-[#C87A53] focus:ring-[#C87A53] w-4 h-4 cursor-pointer">
                 <label for="isActive" class="text-sm font-semibold text-gray-700 cursor-pointer select-none">Bu sayfayı yayında tut (Aktif)</label>
             </div>
 
@@ -182,7 +180,7 @@
                 <button type="submit" class="py-3 px-8 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-lg text-sm transition shadow-sm">
                     <i class="fa-solid fa-save mr-1"></i> Değişiklikleri Kaydet
                 </button>
-                <a href="{{ url('/' . $page->slug) }}" target="_blank" class="py-3 px-5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg text-sm transition">
+                <a href="<?php echo e(url('/' . $page->slug)); ?>" target="_blank" class="py-3 px-5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg text-sm transition">
                     <i class="fa-solid fa-eye mr-1"></i> Önizle
                 </a>
             </div>
@@ -306,6 +304,7 @@
             console.error('CKEditor init error:', err);
         });
         </script>
-    @endif
+    <?php endif; ?>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\ahsapevim\resources\views/admin/pages/edit.blade.php ENDPATH**/ ?>

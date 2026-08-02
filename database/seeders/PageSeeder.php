@@ -9,66 +9,22 @@ class PageSeeder extends Seeder
 {
     public function run(): void
     {
-        $contactHtml = <<<HTML
-<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
-    <div>
-        <h3 class="text-lg font-bold text-gray-800 mb-6 border-b border-gray-100 pb-2">İletişim Bilgilerimiz</h3>
-        
-        <div class="flex items-center gap-4 mb-6">
-            <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center text-[#C87A53] text-xl shrink-0">
-                <i class="fa-solid fa-phone"></i>
-            </div>
-            <div>
-                <div class="font-bold text-gray-700 text-[15px]">Müşteri Hizmetleri</div>
-                <a href="tel:+90850xxxxxxx" class="text-gray-600 hover:text-[#C87A53] transition block mt-0.5">0850 XXX XX XX</a>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-4 mb-6">
-            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-xl shrink-0">
-                <i class="fa-brands fa-whatsapp"></i>
-            </div>
-            <div>
-                <div class="font-bold text-gray-700 text-[15px]">WhatsApp Destek</div>
-                <a href="https://wa.me/905xxxxxxxxx" class="text-gray-600 hover:text-green-600 transition block mt-0.5">05XX XXX XX XX</a>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-4 mb-6">
-            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-xl shrink-0">
-                <i class="fa-solid fa-clock"></i>
-            </div>
-            <div>
-                <div class="font-bold text-gray-700 text-[15px]">Çalışma Saatleri</div>
-                <div class="text-gray-600 mt-0.5">Hafta İçi: 09:00 - 18:00<br>Cumartesi: 10:00 - 15:00</div>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-4">
-            <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 text-xl shrink-0">
-                <i class="fa-solid fa-location-dot"></i>
-            </div>
-            <div>
-                <div class="font-bold text-gray-700 text-[15px]">Atölye / Mağaza Adresi</div>
-                <div class="text-gray-600 mt-0.5">Şehzadeler Mevkii, Merkez<br>Manisa, Türkiye</div>
-            </div>
-        </div>
-    </div>
-    
-    <div>
-        <h3 class="text-lg font-bold text-gray-800 mb-6 border-b border-gray-100 pb-2">Konumumuz</h3>
-        <div class="w-full h-80 rounded-xl overflow-hidden border border-gray-200 shadow-sm bg-gray-100 relative">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d100001.32837311103!2d27.359288219030202!3d38.61867137839352!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14b98d249f0322b7%3A0xc486be78a2e7c4f4!2sManisa%2C%20%C5%9Eehzadeler%2FManisa!5e0!3m2!1str!2str!4v1700000000000!5m2!1str!2str" class="absolute inset-0 w-full h-full" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-        </div>
-    </div>
-</div>
-HTML;
+        $contactData = [
+            'phone' => '0850 XXX XX XX',
+            'whatsapp' => '05XX XXX XX XX',
+            'working_hours_weekdays' => '09:00 - 18:00',
+            'working_hours_saturday' => '10:00 - 15:00',
+            'address' => "Şehzadeler Mevkii, Merkez\nManisa, Türkiye",
+            'map_url' => 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d100001.32837311103!2d27.359288219030202!3d38.61867137839352!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14b98d249f0322b7%3A0xc486be78a2e7c4f4!2sManisa%2C%20%C5%9Eehzadeler%2FManisa!5e0!3m2!1str!2str!4v1700000000000!5m2!1str!2str',
+            'email' => 'info@ahsapevim.com',
+            'note' => '',
+        ];
 
         $pages = [
             [
                 'slug' => 'iletisim',
                 'title' => 'İletişim',
-                'content' => $contactHtml,
+                'content' => json_encode($contactData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
             ],
             [
                 'slug' => 'sikca-sorulanlar',

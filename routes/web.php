@@ -108,6 +108,28 @@ use App\Http\Controllers\Admin\LoginController;
 // Dynamic Informational Pages (Bilgilendirme Sayfaları)
 Route::get('/{slug}', function ($slug) {
     $page = \App\Models\Page::where('slug', $slug)->where('is_active', true)->firstOrFail();
+    
+    if ($slug === 'iletisim') {
+        $contactData = json_decode($page->content, true);
+        if (!is_array($contactData)) {
+            $contactData = [
+                'phone' => '0850 XXX XX XX',
+                'whatsapp' => '05XX XXX XX XX',
+                'working_hours_weekdays' => '09:00 - 18:00',
+                'working_hours_saturday' => '10:00 - 15:00',
+                'address' => "Şehzadeler Mevkii, Merkez\nManisa, Türkiye",
+                'map_url' => 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d100001.32837311103!2d27.359288219030202!3d38.61867137839352!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14b98d249f0322b7%3A0xc486be78a2e7c4f4!2sManisa%2C%20%C5%9Eehzadeler%2FManisa!5e0!3m2!1str!2str!4v1700000000000!5m2!1str!2str',
+                'email' => 'info@ahsapevim.com',
+                'note' => '',
+            ];
+        }
+        return view('pages.contact', [
+            'pageTitle' => $page->title,
+            'contactData' => $contactData,
+            'page' => $page
+        ]);
+    }
+
     return view('pages.show', [
         'pageTitle' => $page->title,
         'content' => $page->content
