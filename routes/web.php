@@ -161,6 +161,7 @@ Route::get('/admin', function () {
 });
 
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\EmailTemplateController;
 
 // Admin Routes (Protected)
 Route::prefix('yonetim')->middleware('auth')->group(function () {
@@ -173,4 +174,11 @@ Route::prefix('yonetim')->middleware('auth')->group(function () {
     Route::resource('3d-sablonlar', ThreeDTemplateController::class)->parameters(['3d-sablonlar' => 'template'])->names('admin.templates');
     Route::resource('sayfalar', PageController::class)->names('admin.pages');
     Route::resource('siparisler', OrderController::class)->only(['index', 'show', 'update'])->names('admin.orders');
+
+    // E-Posta Şablon Yönetimi
+    Route::get('/eposta-sablonlari', [EmailTemplateController::class, 'index'])->name('admin.email_templates.index');
+    Route::get('/eposta-sablonlari/{id}/edit', [EmailTemplateController::class, 'edit'])->name('admin.email_templates.edit');
+    Route::put('/eposta-sablonlari/{id}', [EmailTemplateController::class, 'update'])->name('admin.email_templates.update');
+    Route::get('/eposta-sablonlari/{id}/preview', [EmailTemplateController::class, 'preview'])->name('admin.email_templates.preview');
+    Route::post('/eposta-sablonlari/{id}/test', [EmailTemplateController::class, 'sendTest'])->name('admin.email_templates.test');
 });

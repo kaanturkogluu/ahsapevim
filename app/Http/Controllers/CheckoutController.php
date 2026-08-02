@@ -95,8 +95,16 @@ class CheckoutController extends Controller
             session()->forget('cart');
             session()->forget('pending_order_id');
 
+            $orderData = [
+                'user_name' => $order->name,
+                'order_id' => $order->id,
+                'tracking_code' => $order->tracking_code ?: 'AHS-' . $order->id,
+                'total_amount' => number_format($order->total_amount, 2, ',', '.'),
+                'delivery_address' => $order->address . ' (' . ($order->city ?: 'Manisa') . ')',
+            ];
+
             try {
-                \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\OrderSuccessMail($order));
+                \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_success', $orderData));
             } catch (\Throwable $e) {
                 \Illuminate\Support\Facades\Log::error('Mail Kuyruğa Gönderim Hatası: ' . $e->getMessage());
             }
@@ -174,6 +182,11 @@ class CheckoutController extends Controller
                 ]);
             }
 
+            // Restore user login session if cross-site Iyzico POST stripped session cookie
+            if ($order->user_id && !auth()->check()) {
+                \Illuminate\Support\Facades\Auth::loginUsingId($order->user_id);
+            }
+
             $isSuccess = $payment && (
                 ($payment->getStatus() === 'success' && $payment->getPaymentStatus() === 'SUCCESS') ||
                 ($payment->getStatus() === 'success' && empty($payment->getErrorCode()))
@@ -189,9 +202,17 @@ class CheckoutController extends Controller
                 // Clear Cart Session
                 session()->forget('cart');
 
-                // Queue Order Confirmation Email to Customer
+                // Queue Order Confirmation Email to Customer using Dynamic Mail Template
+                $orderData = [
+                    'user_name' => $order->name,
+                    'order_id' => $order->id,
+                    'tracking_code' => $order->tracking_code ?: 'AHS-' . $order->id,
+                    'total_amount' => number_format($order->total_amount, 2, ',', '.'),
+                    'delivery_address' => $order->address . ' (' . ($order->city ?: 'Manisa') . ')',
+                ];
+
                 try {
-                    \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\OrderSuccessMail($order));
+                    \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_success', $orderData));
                 } catch (\Throwable $e) {
                     \Illuminate\Support\Facades\Log::error('Mail Kuyruğa Gönderim Hatası: ' . $e->getMessage());
                 }

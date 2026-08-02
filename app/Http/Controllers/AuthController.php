@@ -58,6 +58,16 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        // Send Instant Welcome Email via Hostinger SMTP
+        try {
+            \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\DynamicMail('welcome_user', [
+                'user_name' => $user->name,
+                'user_email' => $user->email,
+            ]));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Welcome Email Error: ' . $e->getMessage());
+        }
+
         Auth::login($user);
 
         return redirect('/')->with('success', 'Hesabınız başarıyla oluşturuldu! Hoş geldiniz.');
@@ -86,6 +96,16 @@ class AuthController extends Controller
                 'password' => Hash::make(Str::random(16)),
                 'avatar' => 'https://lh3.googleusercontent.com/a/default-user',
             ]);
+
+            // Send Instant Welcome Email
+            try {
+                \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\DynamicMail('welcome_user', [
+                    'user_name' => $user->name,
+                    'user_email' => $user->email,
+                ]));
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Google Welcome Email Error: ' . $e->getMessage());
+            }
         } else {
             if (!$user->google_id) {
                 $user->update(['google_id' => $googleId]);
@@ -114,6 +134,16 @@ class AuthController extends Controller
                     'avatar'    => $googleUser->getAvatar(),
                     'password'  => Hash::make(Str::random(16)),
                 ]);
+
+                // Send Instant Welcome Email
+                try {
+                    \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\DynamicMail('welcome_user', [
+                        'user_name' => $user->name,
+                        'user_email' => $user->email,
+                    ]));
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::error('Google OAuth Welcome Email Error: ' . $e->getMessage());
+                }
             } else {
                 $user->update([
                     'google_id' => $googleUser->getId(),
