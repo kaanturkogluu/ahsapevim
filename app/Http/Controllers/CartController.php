@@ -13,32 +13,57 @@ class CartController extends Controller
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'custom_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:25600', // Max 25MB high-res
+            'custom_image_front' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:25600',
+            'custom_image_back' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:25600',
+            'custom_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:25600',
         ]);
 
         $product = Product::findOrFail($request->product_id);
-        
-        if (!$request->hasFile('custom_image') && !$request->filled('custom_preview_base64')) {
-            return redirect()->back()->with('error', 'Lütfen çerçeve içerisine yerleştirilecek bir fotoğraf yükleyiniz!');
+
+        $hasFront = $request->hasFile('custom_image_front');
+        $hasBack = $request->hasFile('custom_image_back');
+        $hasSingle = $request->hasFile('custom_image');
+        $hasPreview = $request->filled('custom_preview_base64');
+
+        if (!$hasFront && !$hasBack && !$hasSingle && !$hasPreview) {
+            return redirect()->back()->with('error', 'Lütfen çerçevenin ön ve arka yüzüne yerleştirilecek fotoğrafları yükleyiniz!');
         }
 
-        $customImagePath = null;
-        if ($request->hasFile('custom_image')) {
-            $customName = time() . '_' . Str::random(10) . '.' . $request->file('custom_image')->extension();
-            $request->file('custom_image')->move(public_path('uploads/customizations'), $customName);
-            $customImagePath = '/uploads/customizations/' . $customName;
+        File::ensureDirectoryExists(public_path('uploads/customizations'));
+
+        // Handle Front Image
+        $frontImagePath = null;
+        if ($hasFront) {
+            $frontName = 'front_' . time() . '_' . Str::random(8) . '.' . $request->file('custom_image_front')->extension();
+            $request->file('custom_image_front')->move(public_path('uploads/customizations'), $frontName);
+            $frontImagePath = '/uploads/customizations/' . $frontName;
         }
 
-        // Handle 3D canvas snapshot base64 image
+        // Handle Back Image
+        $backImagePath = null;
+        if ($hasBack) {
+            $backName = 'back_' . time() . '_' . Str::random(8) . '.' . $request->file('custom_image_back')->extension();
+            $request->file('custom_image_back')->move(public_path('uploads/customizations'), $backName);
+            $backImagePath = '/uploads/customizations/' . $backName;
+        }
+
+        // Fallback Single Custom Image
+        $singleImagePath = null;
+        if ($hasSingle) {
+            $singleName = 'custom_' . time() . '_' . Str::random(8) . '.' . $request->file('custom_image')->extension();
+            $request->file('custom_image')->move(public_path('uploads/customizations'), $singleName);
+            $singleImagePath = '/uploads/customizations/' . $singleName;
+        }
+
+        // Handle 3D Snapshot
         $customPreviewPath = null;
-        if ($request->filled('custom_preview_base64')) {
+        if ($hasPreview) {
             $base64Data = $request->custom_preview_base64;
             if (preg_match('/^data:image\/(\w+);base64,/', $base64Data, $type)) {
                 $data = substr($base64Data, strpos($base64Data, ',') + 1);
                 $data = base64_decode($data);
                 if ($data !== false) {
                     $previewName = '3d_preview_' . time() . '_' . Str::random(8) . '.png';
-                    File::ensureDirectoryExists(public_path('uploads/customizations'));
                     file_put_contents(public_path('uploads/customizations/' . $previewName), $data);
                     $customPreviewPath = '/uploads/customizations/' . $previewName;
                 }
@@ -47,13 +72,12 @@ class CartController extends Controller
 
         $cart = session()->get('cart', []);
 
-        // Unique cart key so custom image products don't merge with plain ones
-        $uniqueSeed = ($customPreviewPath ?: '') . ($customImagePath ?: '');
+        $uniqueSeed = ($frontImagePath ?: '') . ($backImagePath ?: '') . ($singleImagePath ?: '') . ($customPreviewPath ?: '');
         $cartKey = $product->id . ($uniqueSeed ? '_' . md5($uniqueSeed) : '');
 
         $displayImage = $customPreviewPath 
             ? url($customPreviewPath) 
-            : ($customImagePath ? url($customImagePath) : $product->image);
+            : ($frontImagePath ? url($frontImagePath) : ($singleImagePath ? url($singleImagePath) : $product->image));
 
         if (isset($cart[$cartKey])) {
             $cart[$cartKey]['quantity']++;
@@ -64,14 +88,16 @@ class CartController extends Controller
                 'price' => $product->price,
                 'quantity' => 1,
                 'image' => $displayImage,
-                'custom_image' => $customImagePath ? url($customImagePath) : null,
+                'custom_image_front' => $frontImagePath ? url($frontImagePath) : ($singleImagePath ? url($singleImagePath) : null),
+                'custom_image_back' => $backImagePath ? url($backImagePath) : null,
+                'custom_image' => $frontImagePath ? url($frontImagePath) : ($singleImagePath ? url($singleImagePath) : null),
                 'custom_preview' => $customPreviewPath ? url($customPreviewPath) : null,
             ];
         }
 
         session()->put('cart', $cart);
 
-        return redirect()->route('cart.index')->with('success', 'Ürün sepete başarıyla eklendi!');
+        return redirect()->route('cart.index')->with('success', 'Kişiselleştirilmiş ürününüz sepete eklendi!');
     }
 
     public function index()

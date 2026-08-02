@@ -1,9 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
 use App\Models\Product;
 use App\Models\Category;
+use App\Http\Controllers\OrderTrackingController;
+
+// Sipariş Takip Rotaları
+Route::get('/siparis-takip', [OrderTrackingController::class, 'index'])->name('order.tracking');
+Route::post('/siparis-takip', [OrderTrackingController::class, 'track'])->name('order.tracking.search');
 
 // Frontend Routes
 Route::get('/', function () {
@@ -85,6 +89,16 @@ Route::post('/auth/google', [AuthController::class, 'googleLogin'])->name('auth.
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 Route::post('/cikis', [AuthController::class, 'logout'])->name('logout');
 
+use App\Http\Controllers\ProfileController;
+
+// User Profile Routes (Protected)
+Route::middleware('auth')->group(function () {
+    Route::get('/hesabim', [ProfileController::class, 'index'])->name('profile.index');
+    Route::post('/hesabim/bilgiler', [ProfileController::class, 'updateInfo'])->name('profile.updateInfo');
+    Route::post('/hesabim/adres', [ProfileController::class, 'updateAddress'])->name('profile.updateAddress');
+    Route::post('/hesabim/sifre', [ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
+});
+
 // Favorites Routes
 Route::get('/favoriler', [FavoriteController::class, 'index'])->name('favorites.index');
 Route::post('/favori-toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
@@ -96,7 +110,7 @@ Route::post('/sepet/sil', [CartController::class, 'remove'])->name('cart.remove'
 
 Route::get('/odeme', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/odeme', [CheckoutController::class, 'process'])->name('checkout.process');
-Route::post('/odeme/callback', [CheckoutController::class, 'callback'])->name('checkout.callback');
+Route::match(['get', 'post'], '/odeme/callback', [CheckoutController::class, 'callback'])->name('checkout.callback');
 Route::get('/odeme/sonuc', [CheckoutController::class, 'result'])->name('checkout.result');
 
 use App\Http\Controllers\Admin\CategoryController;
@@ -146,6 +160,8 @@ Route::get('/admin', function () {
     return redirect()->route('admin.products.index');
 });
 
+use App\Http\Controllers\Admin\OrderController;
+
 // Admin Routes (Protected)
 Route::prefix('yonetim')->middleware('auth')->group(function () {
     Route::get('/', function () {
@@ -156,8 +172,5 @@ Route::prefix('yonetim')->middleware('auth')->group(function () {
     Route::resource('urunler', ProductController::class)->names('admin.products');
     Route::resource('3d-sablonlar', ThreeDTemplateController::class)->parameters(['3d-sablonlar' => 'template'])->names('admin.templates');
     Route::resource('sayfalar', PageController::class)->names('admin.pages');
-
-    Route::get('/siparisler', function () {
-        return view('admin.orders.index');
-    })->name('admin.orders');
+    Route::resource('siparisler', OrderController::class)->only(['index', 'show', 'update'])->names('admin.orders');
 });

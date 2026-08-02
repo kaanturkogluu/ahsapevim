@@ -158,6 +158,18 @@
 
             <!-- User Actions -->
             <div class="flex items-center gap-5 text-[13px] font-semibold text-gray-700 shrink-0">
+                <!-- Sipariş Takip Link -->
+                <?php if(auth()->guard()->check()): ?>
+                    <a href="<?php echo e(route('profile.index', ['tab' => 'siparisler'])); ?>" class="hover:text-brand flex flex-col items-center gap-0.5 group transition">
+                        <i class="fa-solid fa-truck-fast text-xl group-hover:text-brand text-[#C87A53]"></i>
+                        <span class="hidden md:inline text-[11px]">Sipariş Takip</span>
+                    </a>
+                <?php else: ?>
+                    <a href="<?php echo e(route('order.tracking')); ?>" class="hover:text-brand flex flex-col items-center gap-0.5 group transition">
+                        <i class="fa-solid fa-truck-fast text-xl group-hover:text-brand"></i>
+                        <span class="hidden md:inline text-[11px]">Sipariş Takip</span>
+                    </a>
+                <?php endif; ?>
                 <?php if(auth()->guard()->check()): ?>
                     <!-- User Dropdown -->
                     <div class="relative group" id="userMenuDropdown">
@@ -174,6 +186,9 @@
 
                                     <span class="block font-normal text-[10px] text-gray-400 truncate"><?php echo e(auth()->user()->email); ?></span>
                                 </div>
+                                <a href="<?php echo e(route('profile.index')); ?>" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
+                                    <i class="fa-solid fa-user-gear text-[#C87A53]"></i> Hesabım / Profilim
+                                </a>
                                 <a href="<?php echo e(route('favorites.index')); ?>" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
                                     <i class="fa-solid fa-heart text-red-500"></i> Favorilerim
                                 </a>

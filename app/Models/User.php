@@ -24,7 +24,16 @@ class User extends Authenticatable
         'password',
         'google_id',
         'avatar',
+        'phone',
+        'address',
+        'city',
+        'district',
     ];
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class)->latest();
+    }
 
     public function favorites()
     {

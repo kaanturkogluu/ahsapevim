@@ -13,6 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->validateCsrfTokens(except: [
             'odeme/callback',
+            'odeme/callback/*',
+            '*/odeme/callback',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

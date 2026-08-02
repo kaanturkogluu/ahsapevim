@@ -39,60 +39,79 @@ class IyzicoService
     {
         $request = new CreateCheckoutFormInitializeRequest();
         $request->setLocale(Locale::TR);
-        $request->setConversationId($order->id);
-        $request->setPrice(number_format($order->total_amount, 2, '.', ''));
-        $request->setPaidPrice(number_format($order->total_amount, 2, '.', ''));
+        $request->setConversationId((string)$order->id);
+        // Clean phone number format for Iyzico (+90XXXXXXXXXX)
+        $cleanPhone = preg_replace('/[^0-9+]/', '', $order->phone);
+        if (strlen($cleanPhone) == 10 && str_starts_with($cleanPhone, '5')) {
+            $cleanPhone = '+90' . $cleanPhone;
+        } elseif (strlen($cleanPhone) == 11 && str_starts_with($cleanPhone, '05')) {
+            $cleanPhone = '+90' . substr($cleanPhone, 1);
+        }
+        if (empty($cleanPhone) || strlen($cleanPhone) < 10) {
+            $cleanPhone = '+905555555555';
+        }
+
+        // Build Basket Items and calculate total sum
+        $basketItems = [];
+        $calculatedSum = 0;
+        foreach ($cartItems as $key => $item) {
+            $itemTotal = round($item['price'] * $item['quantity'], 2);
+            $calculatedSum += $itemTotal;
+
+            $basketItem = new BasketItem();
+            $basketItem->setId((string)$item['product_id']);
+            $basketItem->setName(mb_substr($item['name'], 0, 50));
+            $basketItem->setCategory1('Cerceve');
+            $basketItem->setItemType(BasketItemType::PHYSICAL);
+            $basketItem->setPrice(number_format($itemTotal, 2, '.', ''));
+            $basketItems[] = $basketItem;
+        }
+
+        // Set total price matching basket sum
+        $totalFormatted = number_format($calculatedSum > 0 ? $calculatedSum : $order->total_amount, 2, '.', '');
+        $request->setPrice($totalFormatted);
+        $request->setPaidPrice($totalFormatted);
         $request->setCurrency(Currency::TL);
         $request->setBasketId('B' . $order->id);
         $request->setPaymentGroup(PaymentGroup::PRODUCT);
         $request->setCallbackUrl($callbackUrl);
-        
+
         // Split name/surname (Iyzico requires both)
         $nameParts = explode(' ', trim($order->name));
         $surname = array_pop($nameParts);
         $name = implode(' ', $nameParts);
         if (empty($name)) {
             $name = $surname;
-            $surname = 'Soyadi';
+            $surname = 'Musteri';
         }
 
         $buyer = new Buyer();
-        $buyer->setId($order->user_id ?: 9999);
+        $buyer->setId((string)($order->user_id ?: 9999));
         $buyer->setName($name);
         $buyer->setSurname($surname);
         $buyer->setEmail($order->email);
-        $buyer->setGsmNumber($order->phone);
-        $buyer->setIdentityNumber($order->identity_number ?? '11111111111');
-        $buyer->setRegistrationAddress($order->address);
-        $buyer->setCity('Manisa');
+        $buyer->setGsmNumber($cleanPhone);
+        $buyer->setIdentityNumber($order->identity_number ?: '11111111111');
+        $buyer->setRegistrationAddress($order->address ?: 'Manisa');
+        $buyer->setCity($order->city ?: 'Manisa');
         $buyer->setCountry('Turkey');
         $buyer->setIp(request()->ip() ?: '127.0.0.1');
         $request->setBuyer($buyer);
 
         $billingAddress = new Address();
         $billingAddress->setContactName($order->name);
-        $billingAddress->setCity('Manisa');
+        $billingAddress->setCity($order->city ?: 'Manisa');
         $billingAddress->setCountry('Turkey');
         $billingAddress->setAddress($order->address);
         $request->setBillingAddress($billingAddress);
 
         $shippingAddress = new Address();
         $shippingAddress->setContactName($order->name);
-        $shippingAddress->setCity('Manisa');
+        $shippingAddress->setCity($order->city ?: 'Manisa');
         $shippingAddress->setCountry('Turkey');
         $shippingAddress->setAddress($order->address);
         $request->setShippingAddress($shippingAddress);
 
-        $basketItems = [];
-        foreach ($cartItems as $key => $item) {
-            $basketItem = new BasketItem();
-            $basketItem->setId($item['product_id']);
-            $basketItem->setName($item['name']);
-            $basketItem->setCategory1('Cerceve');
-            $basketItem->setItemType(BasketItemType::PHYSICAL);
-            $basketItem->setPrice(number_format($item['price'] * $item['quantity'], 2, '.', ''));
-            $basketItems[] = $basketItem;
-        }
         $request->setBasketItems($basketItems);
 
         return CheckoutFormInitialize::create($request, $this->options);
