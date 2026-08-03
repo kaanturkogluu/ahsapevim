@@ -558,9 +558,58 @@ function rotateFrame180() {
     }
 }
 
+// Strict Image File Security Validator
+function isStrictValidImage(file) {
+    if (!file) return false;
+    const filename = file.name.toLowerCase();
+    const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+
+    // Extension check
+    const ext = filename.split('.').pop();
+    if (!allowedExtensions.includes(ext)) {
+        showToast('Yalnızca JPG, JPEG, PNG, WEBP ve GIF formatında görseller yüklenebilir!', 'error');
+        return false;
+    }
+
+    // Double extension & dangerous keyword checks (anti-virus/exploit protection)
+    const dangerExtensions = ['.php', '.exe', '.zip', '.rar', '.sh', '.bat', '.py', '.js', '.html', '.htm', '.phtml', '.phps', '.jar'];
+    for (let danger of dangerExtensions) {
+        if (filename.includes(danger)) {
+            showToast('Güvenlik nedeniyle şüpheli veya çift uzantılı dosyalar kabul edilmemektedir!', 'error');
+            return false;
+        }
+    }
+
+    // Mime type check
+    if (!file.type.startsWith('image/')) {
+        showToast('Seçilen dosya geçerli bir fotoğraf/görsel değil!', 'error');
+        return false;
+    }
+
+    return true;
+}
+
+// Reset image inputs on page refresh so no stale data remains
+window.addEventListener('load', function() {
+    const frontInput = document.getElementById('customImageFrontInput');
+    const backInput = document.getElementById('customImageBackInput');
+    const singleInput = document.getElementById('customImageInput');
+    const hiddenBase64 = document.getElementById('customPreviewBase64Input');
+
+    if (frontInput) frontInput.value = '';
+    if (backInput) backInput.value = '';
+    if (singleInput) singleInput.value = '';
+    if (hiddenBase64) hiddenBase64.value = '';
+});
+
 function handleFrontImageUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
+
+    if (!isStrictValidImage(file)) {
+        event.target.value = '';
+        return;
+    }
 
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -592,6 +641,11 @@ function handleBackImageUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
 
+    if (!isStrictValidImage(file)) {
+        event.target.value = '';
+        return;
+    }
+
     const reader = new FileReader();
     reader.onload = function(e) {
         const dataUrl = e.target.result;
@@ -613,7 +667,7 @@ function handleBackImageUpload(event) {
         if (badge) badge.classList.remove('hidden');
 
         const btnText = document.getElementById('btnBackText');
-        if (btnText) btnText.innerText = "2. Arka Yüz Fotoğrafını Değiştir";
+        if (btnText) btnText.innerText = "2. Arka Yüz Fotoğrafını Değiştir (Opsiyonel)";
     };
     reader.readAsDataURL(file);
 }
@@ -648,18 +702,15 @@ function submitCustomizedForm() {
 function confirmAddToCart(event) {
     capture3DSnapshot();
     const frontInput = document.getElementById('customImageFrontInput');
-    const backInput = document.getElementById('customImageBackInput');
-    const fileInput = document.getElementById('customImageInput');
-    const hiddenBase64 = document.getElementById('customPreviewBase64Input');
+    const singleInput = document.getElementById('customImageInput');
     
-    const hasPhoto = (frontInput && frontInput.files && frontInput.files.length > 0) ||
-                     (backInput && backInput.files && backInput.files.length > 0) ||
-                     (fileInput && fileInput.files && fileInput.files.length > 0) || 
-                     (hiddenBase64 && hiddenBase64.value);
+    // 1st Photo (Ön Yüz) is MANDATORY, 2nd & 3D preview are OPTIONAL
+    const hasFrontPhoto = (frontInput && frontInput.files && frontInput.files.length > 0) ||
+                          (singleInput && singleInput.files && singleInput.files.length > 0);
 
-    if (!hasPhoto) {
+    if (!hasFrontPhoto) {
         event.preventDefault();
-        showToast('Lütfen sipariş vermeden önce çerçevenin ön ve/veya arka yüzü için fotoğraflarınızı yükleyiniz!', 'error');
+        showToast('Sipariş verebilmek için 1. Fotoğrafı (Ön Yüz) yüklemeniz zorunludur! (2. Fotoğraf opsiyoneldir)', 'error');
         openCustomizationModal();
         return false;
     }

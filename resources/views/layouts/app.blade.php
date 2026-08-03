@@ -169,44 +169,52 @@
                     </a>
                 @endauth
                 @auth
-                    <!-- User Dropdown -->
-                    <div class="relative group" id="userMenuDropdown">
-                        <button type="button" onclick="toggleUserDropdown(event)" class="hover:text-brand flex flex-col items-center gap-0.5 transition outline-none">
-                            <i class="fa-solid fa-user-check text-xl text-[#C87A53]"></i>
-                            <span class="hidden md:inline text-[11px] truncate max-w-[90px]">{{ auth()->user()->name }}</span>
-                        </button>
-                        
-                        <!-- Dropdown Menu with pt-2 hover bridge -->
-                        <div id="userDropdownContent" class="absolute right-0 top-full pt-1.5 w-48 hidden group-hover:block z-50">
-                            <div class="bg-white rounded-xl shadow-2xl border border-amber-100 py-2">
-                                <div class="px-4 py-2 border-b border-gray-100 font-bold text-gray-800 text-xs mb-1">
-                                    {{ auth()->user()->name }}
-                                    <span class="block font-normal text-[10px] text-gray-400 truncate">{{ auth()->user()->email }}</span>
+                    @if(auth()->user()->is_admin)
+                        <!-- Admin Direct Link (No Dropdown) -->
+                        <a href="{{ url('/yonetim') }}" class="hover:text-brand flex flex-col items-center gap-0.5 group transition text-[#C87A53] font-bold">
+                            <i class="fa-solid fa-user-gear text-xl text-[#C87A53] group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden md:inline text-[11px] font-extrabold">Yönet</span>
+                        </a>
+                    @else
+                        <!-- Customer Dropdown Menu -->
+                        <div class="relative group" id="userMenuDropdown">
+                            <button type="button" onclick="toggleUserDropdown(event)" class="hover:text-brand flex flex-col items-center gap-0.5 transition outline-none">
+                                <i class="fa-solid fa-user-check text-xl text-[#C87A53]"></i>
+                                <span class="hidden md:inline text-[11px] truncate max-w-[90px]">{{ auth()->user()->name }}</span>
+                            </button>
+                            
+                            <!-- Dropdown Menu -->
+                            <div id="userDropdownContent" class="absolute right-0 top-full pt-1.5 w-48 hidden group-hover:block z-50">
+                                <div class="bg-white rounded-xl shadow-2xl border border-amber-100 py-2">
+                                    <div class="px-4 py-2 border-b border-gray-100 font-bold text-gray-800 text-xs mb-1">
+                                        {{ auth()->user()->name }}
+                                        <span class="block font-normal text-[10px] text-gray-400 truncate">{{ auth()->user()->email }}</span>
+                                    </div>
+                                    <a href="{{ route('profile.index', ['tab' => 'siparisler']) }}" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
+                                        <i class="fa-solid fa-box text-[#C87A53]"></i> Siparişler
+                                    </a>
+                                    <a href="{{ route('favorites.index') }}" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
+                                        <i class="fa-solid fa-heart text-red-500"></i> Favorilerim
+                                    </a>
+                                    <a href="{{ route('profile.index', ['tab' => 'bilgiler']) }}" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
+                                        <i class="fa-solid fa-user text-[#C87A53]"></i> Kullanıcı Bilgileri
+                                    </a>
+                                    <a href="{{ route('profile.index', ['tab' => 'adres']) }}" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
+                                        <i class="fa-solid fa-map-location-dot text-[#C87A53]"></i> Adres Bilgilerim
+                                    </a>
+                                    <a href="{{ route('profile.index', ['tab' => 'sifre']) }}" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
+                                        <i class="fa-solid fa-shield-halved text-[#C87A53]"></i> Şifre Güvenlik
+                                    </a>
+                                    <form action="{{ route('logout') }}" method="POST" class="block border-t border-gray-100 mt-1 pt-1">
+                                        @csrf
+                                        <button type="submit" class="w-full text-left px-4 py-2 hover:bg-red-50 text-xs text-red-600 font-semibold flex items-center gap-2">
+                                            <i class="fa-solid fa-sign-out-alt"></i> Çıkış Yap
+                                        </button>
+                                    </form>
                                 </div>
-                                <a href="{{ route('profile.index', ['tab' => 'siparisler']) }}" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
-                                    <i class="fa-solid fa-box text-[#C87A53]"></i> Siparişler
-                                </a>
-                                <a href="{{ route('favorites.index') }}" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
-                                    <i class="fa-solid fa-heart text-red-500"></i> Favorilerim
-                                </a>
-                                <a href="{{ route('profile.index', ['tab' => 'bilgiler']) }}" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
-                                    <i class="fa-solid fa-user text-[#C87A53]"></i> Kullanıcı Bilgileri
-                                </a>
-                                <a href="{{ route('profile.index', ['tab' => 'adres']) }}" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
-                                    <i class="fa-solid fa-map-location-dot text-[#C87A53]"></i> Adres Bilgilerim
-                                </a>
-                                <a href="{{ route('profile.index', ['tab' => 'sifre']) }}" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
-                                    <i class="fa-solid fa-shield-halved text-[#C87A53]"></i> Şifre Güvenlik
-                                </a>
-                                <form action="{{ route('logout') }}" method="POST" class="block border-t border-gray-100 mt-1 pt-1">
-                                    @csrf
-                                    <button type="submit" class="w-full text-left px-4 py-2 hover:bg-red-50 text-xs text-red-600 font-semibold flex items-center gap-2">
-                                        <i class="fa-solid fa-sign-out-alt"></i> Çıkış Yap
-                                    </button>
-                                </form>
                             </div>
                         </div>
-                    </div>
+                    @endif
                 @else
                     <a href="{{ route('login') }}" class="hover:text-brand flex flex-col items-center gap-0.5 group transition">
                         <i class="fa-regular fa-user text-xl group-hover:text-brand"></i>
@@ -407,8 +415,8 @@
                 <i class="fa-solid fa-truck-fast text-emerald-600"></i> Tüm Siparişlerinizde Kargo Ücretsiz!
             </div>
             <div class="grid grid-cols-2 gap-2.5">
-                <a href="{{ route('cart.index') }}" class="py-3 px-4 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-xl transition text-center text-xs flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-cart-shopping"></i> Sepete Git
+                <a href="{{ url('/urunler') }}" onclick="closeCartDrawer()" class="py-3 px-4 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-xl transition text-center text-xs flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-store"></i> Ürünleri Keşfet
                 </a>
                 <a href="{{ route('checkout.index') }}" class="py-3 px-4 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-xl transition text-center text-xs shadow-md flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-lock"></i> Ödemeye Geç
@@ -696,17 +704,20 @@
         }
     });
 
-    // Auto trigger Toast on session flash messages
-    @if(session('success'))
-        document.addEventListener('DOMContentLoaded', function() {
+    // Auto trigger Toast on session flash messages & auto open cart drawer if open_cart=1 parameter exists
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('open_cart') === '1') {
+            setTimeout(openCartDrawer, 300);
+        }
+
+        @if(session('success'))
             showToast('{{ session('success') }}', 'success');
-        });
-    @endif
-    @if(session('error'))
-        document.addEventListener('DOMContentLoaded', function() {
+        @endif
+        @if(session('error'))
             showToast('{{ session('error') }}', 'error');
-        });
-    @endif
+        @endif
+    });
     </script>
 </body>
 

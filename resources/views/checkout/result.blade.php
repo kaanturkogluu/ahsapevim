@@ -17,14 +17,14 @@
                     Ödemeniz güvenle onaylandı ve masif ahşap el işçiliği ürünleriniz hazırlık sırasına alındı.
                 </p>
 
-                <!-- Queue Email Confirmation Callout -->
-                <div class="bg-stone-50 border border-stone-200 rounded-2xl p-4 mb-8 text-left flex items-center gap-3 text-xs text-stone-700">
-                    <div class="w-9 h-9 rounded-xl bg-amber-100 text-[#C87A53] flex items-center justify-center text-lg shrink-0">
-                        <i class="fa-solid fa-envelope-circle-check"></i>
+                <!-- Order Status Notification Callout -->
+                <div class="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-4 mb-8 text-left flex items-center gap-3.5 text-xs text-stone-700 shadow-sm">
+                    <div class="w-10 h-10 rounded-xl bg-[#C87A53] text-white flex items-center justify-center text-lg shrink-0 shadow-sm">
+                        <i class="fa-solid fa-bell"></i>
                     </div>
                     <div>
-                        <strong class="font-bold text-gray-800 block">Sipariş Onay Maili Kuyruğa Gönderildi</strong>
-                        <span>Sipariş detaylarınız ve faturanız belirtmiş olduğunuz e-posta adresine gönderilmek üzere sıraya alındı.</span>
+                        <strong class="font-extrabold text-gray-900 text-sm block">Siparişinizi aldık</strong>
+                        <span class="text-gray-600 font-medium">İşlemler tamamlandığında SMS ve mail yolu ile bilgilendirileceksiniz.</span>
                     </div>
                 </div>
 

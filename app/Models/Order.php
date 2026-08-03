@@ -19,12 +19,19 @@ class Order extends Model
         'identity_number',
         'total_amount',
         'status',
-        'payment_id'
+        'payment_id',
+        'shipping_company_id',
+        'cargo_tracking_code',
     ];
 
     public function items()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function shippingCompany()
+    {
+        return $this->belongsTo(ShippingCompany::class, 'shipping_company_id');
     }
 
     public static function generateTrackingCode(): string

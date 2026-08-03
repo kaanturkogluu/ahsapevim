@@ -25,8 +25,21 @@ class CartController extends Controller
         $hasSingle = $request->hasFile('custom_image');
         $hasPreview = $request->filled('custom_preview_base64');
 
-        if (!$hasFront && !$hasBack && !$hasSingle && !$hasPreview) {
-            return redirect()->back()->with('error', 'Lütfen çerçevenin ön ve arka yüzüne yerleştirilecek fotoğrafları yükleyiniz!');
+        // Strict Security Check: 1st Photo is MANDATORY
+        if (!$hasFront && !$hasSingle) {
+            return redirect()->back()->with('error', 'Sipariş verebilmek için 1. Fotoğrafı (Ön Yüz) yüklemeniz zorunludur!');
+        }
+
+        // Strict Filename & Extension Verification (anti-exploit / double extension protection)
+        $dangerPattern = '/\.(exe|php|zip|rar|sh|bat|py|js|html|htm|phtml|phps|jar)/i';
+        foreach (['custom_image_front', 'custom_image_back', 'custom_image'] as $fileKey) {
+            if ($request->hasFile($fileKey)) {
+                $file = $request->file($fileKey);
+                $origName = $file->getClientOriginalName();
+                if (preg_match($dangerPattern, $origName)) {
+                    return redirect()->back()->with('error', 'Güvenlik uyarısı: Yüklemek istediğiniz dosya şüpheli veya zararlı çift uzantı barındırıyor!');
+                }
+            }
         }
 
         File::ensureDirectoryExists(public_path('uploads/customizations'));
@@ -112,8 +125,7 @@ class CartController extends Controller
 
     public function index()
     {
-        $cart = session()->get('cart', []);
-        return view('cart.index', compact('cart'));
+        return redirect()->to(url('/urunler?open_cart=1'));
     }
 
     public function getCartData()

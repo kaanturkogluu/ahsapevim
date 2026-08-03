@@ -163,6 +163,7 @@ Route::get('/admin', function () {
 
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\EmailTemplateController;
+use App\Http\Controllers\Admin\ShippingCompanyController;
 
 // Admin Routes (Protected)
 Route::prefix('yonetim')->middleware(['auth', 'admin'])->group(function () {
@@ -175,6 +176,7 @@ Route::prefix('yonetim')->middleware(['auth', 'admin'])->group(function () {
     Route::resource('3d-sablonlar', ThreeDTemplateController::class)->parameters(['3d-sablonlar' => 'template'])->names('admin.templates');
     Route::resource('sayfalar', PageController::class)->names('admin.pages');
     Route::resource('siparisler', OrderController::class)->only(['index', 'show', 'update'])->names('admin.orders');
+    Route::resource('kargo-sirketleri', ShippingCompanyController::class)->except(['create', 'show', 'edit'])->names('admin.shipping_companies');
 
     // E-Posta Şablon Yönetimi
     Route::get('/eposta-sablonlari', [EmailTemplateController::class, 'index'])->name('admin.email_templates.index');

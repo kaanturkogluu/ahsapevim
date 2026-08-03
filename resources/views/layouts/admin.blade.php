@@ -23,6 +23,7 @@
             <a href="{{ url('/yonetim/urunler') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-box mr-2"></i> Ürünler</a>
             <a href="{{ url('/yonetim/kategoriler') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-list mr-2"></i> Kategoriler</a>
             <a href="{{ url('/yonetim/3d-sablonlar') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-cube mr-2"></i> 3D Şablonlar</a>
+            <a href="{{ route('admin.shipping_companies.index') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-truck-fast mr-2"></i> Kargo Şirketleri</a>
             <a href="{{ route('admin.email_templates.index') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-envelope-open-text mr-2"></i> E-Posta Şablonları</a>
             <a href="{{ url('/yonetim/sayfalar') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-file-lines mr-2"></i> Bilgilendirme</a>
             <a href="{{ url('/') }}" class="block p-4 hover:bg-[#3D332B] mt-4 border-t border-[#3D332B]"><i class="fa-solid fa-eye mr-2"></i> Siteyi Görüntüle</a>
