@@ -5,22 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 
 class LoginController extends Controller
 {
     public function showLoginForm()
     {
-        // Ensure admin user exists
-        if (!User::where('email', 'admin@ahsapevim.com')->exists()) {
-            User::create([
-                'name' => 'AhşapEvim Admin',
-                'email' => 'admin@ahsapevim.com',
-                'password' => bcrypt('admin1234'),
-                'is_admin' => true,
-            ]);
+        if (Auth::check() && Auth::user()->is_admin) {
+            return redirect()->route('admin.products.index');
         }
-
         return view('admin.auth.login');
     }
 
@@ -33,6 +25,12 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials, $request->has('remember'))) {
             $request->session()->regenerate();
+
+            if (!Auth::user()->is_admin) {
+                Auth::logout();
+                return back()->withErrors(['email' => 'Bu panel sadece yöneticiler içindir.'])->onlyInput('email');
+            }
+
             return redirect()->intended(route('admin.products.index'))->with('success', 'Başarıyla giriş yapıldı.');
         }
 
@@ -46,6 +44,6 @@ class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('login')->with('success', 'Başarıyla çıkış yapıldı.');
+        return redirect()->route('admin.login')->with('success', 'Başarıyla çıkış yapıldı.');
     }
 }

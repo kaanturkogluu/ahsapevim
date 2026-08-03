@@ -230,12 +230,23 @@
                         </div>
 
                         <!-- Teslimat Adresi Özeti -->
-                        <div class="bg-gray-50/70 p-3 px-4 border-t border-gray-100 text-[11px] text-gray-600 flex items-center justify-between">
+                        <div class="bg-gray-50/70 p-3 px-4 border-t border-gray-100 text-[11px] text-gray-600 flex flex-wrap items-center justify-between gap-2">
                             <div>
                                 <i class="fa-solid fa-truck text-amber-700 mr-1"></i>
                                 <span class="font-bold text-gray-700">Teslimat Adresi:</span> {{ Str::limit($order->address, 60) }}
                             </div>
-                            <span class="text-gray-400 font-mono text-[10px]">Alıcı: {{ $order->name }} ({{ $order->phone }})</span>
+                            <div class="flex items-center gap-3">
+                                <span class="text-gray-400 font-mono text-[10px]">Alıcı: {{ $order->name }} ({{ $order->phone }})</span>
+                                @if($order->status === 'pending')
+                                    <form action="{{ route('orders.cancel', $order->id) }}" method="POST" onsubmit="return confirm('Bu siparişi iptal etmek istediğinize emin misiniz?')">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit" class="inline-flex items-center gap-1 bg-red-50 hover:bg-red-100 text-red-600 font-bold px-2.5 py-1 rounded-lg border border-red-200 text-[10px] transition">
+                                            <i class="fa-solid fa-xmark"></i> Siparişi İptal Et
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 @empty

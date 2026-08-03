@@ -70,4 +70,30 @@ class ProfileController extends Controller
 
         return redirect()->route('profile.index', ['tab' => 'sifre'])->with('success', 'Şifreniz başarıyla değiştirildi.');
     }
+
+    public function cancelOrder($id)
+    {
+        $order = \App\Models\Order::where('id', $id)
+                    ->where('user_id', auth()->id())
+                    ->first();
+
+        if (!$order) {
+            return redirect()->back()->with('error', 'Sipariş bulunamadı veya bu işlem için yetkiniz yok.');
+        }
+
+        if ($order->status !== 'pending') {
+            return redirect()->back()->with('error', 'Yalnızca ödeme bekleyen siparişler iptal edilebilir.');
+        }
+
+        // Restore stock for each item
+        foreach ($order->items as $item) {
+            if ($item->product) {
+                $item->product->increment('stock', $item->quantity);
+            }
+        }
+
+        $order->update(['status' => 'cancelled']);
+
+        return redirect()->route('profile.index', ['tab' => 'siparisler'])->with('success', 'Sipariş #' . $order->id . ' başarıyla iptal edildi.');
+    }
 }

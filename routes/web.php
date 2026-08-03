@@ -81,9 +81,9 @@ use App\Http\Controllers\FavoriteController;
 
 // User Auth Routes
 Route::get('/giris', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/giris', [AuthController::class, 'login'])->name('login.post');
+Route::post('/giris', [AuthController::class, 'login'])->name('login.post')->middleware('throttle:10,1');
 Route::get('/kayit', [AuthController::class, 'showRegisterForm'])->name('register');
-Route::post('/kayit', [AuthController::class, 'register'])->name('register.post');
+Route::post('/kayit', [AuthController::class, 'register'])->name('register.post')->middleware('throttle:5,1');
 Route::get('/auth/google', [AuthController::class, 'googleLogin']);
 Route::post('/auth/google', [AuthController::class, 'googleLogin'])->name('auth.google');
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
@@ -97,6 +97,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/hesabim/bilgiler', [ProfileController::class, 'updateInfo'])->name('profile.updateInfo');
     Route::post('/hesabim/adres', [ProfileController::class, 'updateAddress'])->name('profile.updateAddress');
     Route::post('/hesabim/sifre', [ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
+    Route::put('/hesabim/siparisler/{id}/iptal', [ProfileController::class, 'cancelOrder'])->name('orders.cancel');
 });
 
 // Favorites Routes
@@ -152,8 +153,8 @@ Route::get('/{slug}', function ($slug) {
 })->where('slug', 'iletisim|sikca-sorulanlar|mesafeli-satis-sozlesmesi|gizlilik-politikasi|teslimat-ve-iade');
 
 // Admin Auth Routes
-Route::get('/yonetim/giris', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/yonetim/giris', [LoginController::class, 'login']);
+Route::get('/yonetim/giris', [LoginController::class, 'showLoginForm'])->name('admin.login');
+Route::post('/yonetim/giris', [LoginController::class, 'login'])->name('admin.login.post')->middleware('throttle:5,1');
 Route::post('/yonetim/cikis', [LoginController::class, 'logout'])->name('admin.logout');
 
 // Admin Redirects

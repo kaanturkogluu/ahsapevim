@@ -110,12 +110,36 @@
                     <input type="file" id="customImageInput" name="custom_image" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
                     <input type="hidden" name="custom_preview_base64" id="customPreviewBase64Input">
 
+                    <!-- Stock Badge -->
+                    <div class="mb-4">
+                        @if($product->stock <= 0)
+                            <span class="inline-flex items-center gap-1.5 bg-red-100 text-red-700 text-xs font-extrabold px-3 py-1.5 rounded-full border border-red-200">
+                                <i class="fa-solid fa-circle-xmark"></i> Stokta Yok
+                            </span>
+                        @elseif($product->stock <= 5)
+                            <span class="inline-flex items-center gap-1.5 bg-amber-100 text-amber-800 text-xs font-extrabold px-3 py-1.5 rounded-full border border-amber-200">
+                                <i class="fa-solid fa-triangle-exclamation"></i> Son {{ $product->stock }} adet kaldı!
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-1.5 bg-green-100 text-green-700 text-xs font-bold px-3 py-1.5 rounded-full border border-green-200">
+                                <i class="fa-solid fa-circle-check"></i> Stokta Mevcut
+                            </span>
+                        @endif
+                    </div>
+
                     <!-- Action Buttons -->
                     <div class="flex flex-col gap-3 mb-6">
-                        <button type="submit" class="w-full bg-brand hover:bg-brand-dark text-white font-bold py-3.5 px-4 rounded-lg transition text-base shadow-md flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-cart-shopping"></i>
-                            Sepete Ekle
-                        </button>
+                        @if($product->stock <= 0)
+                            <button type="button" disabled class="w-full bg-gray-300 text-gray-500 font-bold py-3.5 px-4 rounded-lg text-base cursor-not-allowed flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-ban"></i>
+                                Stokta Yok
+                            </button>
+                        @else
+                            <button type="submit" class="w-full bg-brand hover:bg-brand-dark text-white font-bold py-3.5 px-4 rounded-lg transition text-base shadow-md flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-cart-shopping"></i>
+                                Sepete Ekle
+                            </button>
+                        @endif
                         
                         <button type="button" onclick="toggleFavorite({{ $product->id }}, this)" class="w-full bg-rose-50 hover:bg-rose-100 border border-rose-200/80 text-rose-700 font-bold py-3 px-4 rounded-xl transition text-sm flex items-center justify-center gap-2 shadow-sm">
                             <i class="{{ $product->isFavoritedBy() ? 'fa-solid fa-heart text-red-500 text-lg drop-shadow-sm' : 'fa-regular fa-heart text-red-500 text-lg' }}"></i>

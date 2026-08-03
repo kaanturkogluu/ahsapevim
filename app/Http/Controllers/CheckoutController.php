@@ -100,6 +100,13 @@ class CheckoutController extends Controller
             session()->forget('cart');
             session()->forget('pending_order_id');
 
+            // Decrement stock for each item (EFT)
+            foreach ($order->items as $item) {
+                if ($item->product) {
+                    $item->product->decrement('stock', $item->quantity);
+                }
+            }
+
             $orderData = [
                 'user_name' => $order->name,
                 'order_id' => $order->id,
@@ -204,6 +211,13 @@ class CheckoutController extends Controller
                     'status' => 'paid',
                     'payment_id' => $payment->getPaymentId() ?: ('IYZ_' . time()),
                 ]);
+
+                // Decrement stock for each item
+                foreach ($order->items as $item) {
+                    if ($item->product) {
+                        $item->product->decrement('stock', $item->quantity);
+                    }
+                }
 
                 // Clear Cart Session
                 session()->forget('cart');

@@ -20,6 +20,14 @@ class CartController extends Controller
 
         $product = Product::findOrFail($request->product_id);
 
+        // Stock check
+        if ($product->stock <= 0) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json(['status' => 'error', 'message' => 'Bu ürün şu anda stokta bulunmamaktadır.'], 422);
+            }
+            return redirect()->back()->with('error', 'Üzgünüz, bu ürün şu anda stokta bulunmamaktadır.');
+        }
+
         $hasFront = $request->hasFile('custom_image_front');
         $hasBack = $request->hasFile('custom_image_back');
         $hasSingle = $request->hasFile('custom_image');

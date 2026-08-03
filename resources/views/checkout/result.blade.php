@@ -153,7 +153,7 @@
                 </p>
 
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="{{ route('cart.index') }}" class="bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-3.5 px-8 rounded-xl transition text-xs border border-stone-200">
+                    <a href="{{ url('/urunler') }}" onclick="event.preventDefault(); window.location.href='{{ url('/urunler?open_cart=1') }}';" class="bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-3.5 px-8 rounded-xl transition text-xs border border-stone-200">
                         Sepete Geri Dön
                     </a>
                     <a href="{{ route('checkout.index') }}" class="bg-[#C87A53] hover:bg-[#A65F38] text-white font-bold py-3.5 px-8 rounded-xl transition text-xs shadow-md">
