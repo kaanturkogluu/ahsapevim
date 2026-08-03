@@ -17,6 +17,7 @@ class LoginController extends Controller
                 'name' => 'AhşapEvim Admin',
                 'email' => 'admin@ahsapevim.com',
                 'password' => bcrypt('admin1234'),
+                'is_admin' => true,
             ]);
         }
 

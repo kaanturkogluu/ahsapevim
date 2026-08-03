@@ -164,7 +164,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\EmailTemplateController;
 
 // Admin Routes (Protected)
-Route::prefix('yonetim')->middleware('auth')->group(function () {
+Route::prefix('yonetim')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', function () {
         return redirect()->route('admin.products.index');
     });

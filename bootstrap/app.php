@@ -16,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'odeme/callback/*',
             '*/odeme/callback',
         ]);
+        $middleware->alias([
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

@@ -93,34 +93,5 @@
         </div>
     @endif
 
-    <!-- Bize Mesaj Gönderin Formu -->
-    <div class="bg-gray-50 p-6 rounded-2xl border border-gray-200/80">
-        <h3 class="text-base font-extrabold text-gray-800 mb-2">Bize Mesaj Gönderin</h3>
-        <p class="text-xs text-gray-500 mb-4">Sorularınız, özel ahşap tasarım siparişleriniz veya önerileriniz için formu doldurabilirsiniz.</p>
-
-        <form action="#" method="POST" onsubmit="event.preventDefault(); alert('Mesajınız başarıyla iletildi. En kısa sürede sizinle iletişime geçeceğiz!'); this.reset();">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">Adınız Soyadınız *</label>
-                    <input type="text" required placeholder="Ahmet Yılmaz" class="w-full text-xs border border-gray-300 rounded-lg p-2.5 bg-white focus:border-brand focus:ring-0 outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">E-Posta veya Telefon *</label>
-                    <input type="text" required placeholder="05XX XXX XX XX" class="w-full text-xs border border-gray-300 rounded-lg p-2.5 bg-white focus:border-brand focus:ring-0 outline-none">
-                </div>
-            </div>
-            <div class="mb-4">
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Konu *</label>
-                <input type="text" required placeholder="Örn: Özel Ölçü Ahşap Masa Teklifi" class="w-full text-xs border border-gray-300 rounded-lg p-2.5 bg-white focus:border-brand focus:ring-0 outline-none">
-            </div>
-            <div class="mb-4">
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Mesajınız *</label>
-                <textarea rows="4" required placeholder="Mesajınızı buraya yazabilirsiniz..." class="w-full text-xs border border-gray-300 rounded-lg p-2.5 bg-white focus:border-brand focus:ring-0 outline-none"></textarea>
-            </div>
-            <button type="submit" class="py-2.5 px-6 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-lg text-xs transition shadow-sm inline-flex items-center gap-2">
-                <i class="fa-solid fa-paper-plane"></i> Mesajı Gönder
-            </button>
-        </form>
-    </div>
 </div>
 @endsection

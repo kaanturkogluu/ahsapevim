@@ -14,7 +14,7 @@ class AuthController extends Controller
     public function showLoginForm()
     {
         if (Auth::check()) {
-            return redirect('/');
+            return auth()->user()->is_admin ? redirect()->route('admin.products.index') : redirect()->route('profile.index');
         }
         return view('auth.login');
     }
@@ -28,7 +28,12 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->remember)) {
             $request->session()->regenerate();
-            return redirect()->intended('/')->with('success', 'Hoş geldiniz! Başarıyla giriş yapıldı.');
+            
+            if (auth()->user()->is_admin) {
+                return redirect()->route('admin.products.index')->with('success', 'Admin paneline hoş geldiniz.');
+            }
+            
+            return redirect()->intended(route('profile.index'))->with('success', 'Hoş geldiniz! Başarıyla giriş yapıldı.');
         }
 
         return back()->withErrors([
@@ -39,7 +44,7 @@ class AuthController extends Controller
     public function showRegisterForm()
     {
         if (Auth::check()) {
-            return redirect('/');
+            return auth()->user()->is_admin ? redirect()->route('admin.products.index') : redirect()->route('profile.index');
         }
         return view('auth.register');
     }
@@ -70,7 +75,7 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect('/')->with('success', 'Hesabınız başarıyla oluşturuldu! Hoş geldiniz.');
+        return redirect()->route('profile.index')->with('success', 'Hesabınız başarıyla oluşturuldu! Hoş geldiniz.');
     }
 
     /**
@@ -114,7 +119,11 @@ class AuthController extends Controller
 
         Auth::login($user, true);
 
-        return redirect('/')->with('success', 'Google hesabınızla başarıyla giriş yapıldı!');
+        if ($user->is_admin) {
+            return redirect()->route('admin.products.index')->with('success', 'Admin paneline hoş geldiniz.');
+        }
+
+        return redirect()->route('profile.index')->with('success', 'Google hesabınızla başarıyla giriş yapıldı!');
     }
 
     public function handleGoogleCallback()
@@ -153,7 +162,11 @@ class AuthController extends Controller
 
             Auth::login($user, true);
 
-            return redirect('/')->with('success', 'Google hesabınızla başarıyla giriş yapıldı!');
+            if ($user->is_admin) {
+                return redirect()->route('admin.products.index')->with('success', 'Admin paneline hoş geldiniz.');
+            }
+
+            return redirect()->route('profile.index')->with('success', 'Google hesabınızla başarıyla giriş yapıldı!');
         } catch (\Exception $e) {
             \Log::error('Google Auth Error: ' . $e->getMessage());
             return redirect()->route('login')->withErrors(['email' => 'Google ile giriş hatası: ' . $e->getMessage()]);
