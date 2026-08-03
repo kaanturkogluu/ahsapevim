@@ -104,6 +104,7 @@ Route::get('/favoriler', [FavoriteController::class, 'index'])->name('favorites.
 Route::post('/favori-toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
 
 Route::get('/sepet', [CartController::class, 'index'])->name('cart.index');
+Route::get('/sepet/data', [CartController::class, 'getCartData'])->name('cart.data');
 Route::post('/sepet/ekle', [CartController::class, 'add'])->name('cart.add');
 Route::post('/sepet/guncelle', [CartController::class, 'update'])->name('cart.update');
 Route::post('/sepet/sil', [CartController::class, 'remove'])->name('cart.remove');

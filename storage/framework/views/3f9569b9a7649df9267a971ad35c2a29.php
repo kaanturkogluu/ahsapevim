@@ -226,10 +226,10 @@
                 </a>
 
                 <!-- Cart Link -->
-                <a href="<?php echo e(url('/sepet')); ?>" class="hover:text-brand flex flex-col items-center gap-0.5 group transition relative">
+                <a href="<?php echo e(url('/sepet')); ?>" onclick="event.preventDefault(); openCartDrawer();" class="hover:text-brand flex flex-col items-center gap-0.5 group transition relative cursor-pointer">
                     <i class="fa-solid fa-shopping-bag text-xl group-hover:text-brand"></i>
                     <span class="hidden md:inline text-[11px]">Sepetim</span>
-                    <span class="absolute -top-1.5 -right-2 bg-brand text-white text-[10px] font-bold rounded-full h-4.5 w-4.5 min-w-[18px] min-h-[18px] flex items-center justify-center">
+                    <span id="headerCartCountBadge" class="absolute -top-1.5 -right-2 bg-brand text-white text-[10px] font-bold rounded-full h-4.5 w-4.5 min-w-[18px] min-h-[18px] flex items-center justify-center">
                         <?php echo e(session('cart') ? count(session('cart')) : 0); ?>
 
                     </span>
@@ -374,8 +374,266 @@
         </div>
     </footer>
 
+    <!-- Offcanvas Cart Drawer Overlay -->
+    <div id="cartDrawerOverlay" onclick="closeCartDrawer()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998] hidden opacity-0 transition-opacity duration-300 pointer-events-auto"></div>
+
+    <!-- Offcanvas Cart Drawer Slide Panel -->
+    <div id="cartDrawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[9999] transform translate-x-full transition-transform duration-300 ease-out flex flex-col pointer-events-auto">
+        <!-- Drawer Header -->
+        <div class="p-4 border-b border-amber-100 flex items-center justify-between bg-[#FFFBF5]">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-orange-100 text-[#C87A53] flex items-center justify-center text-base font-bold">
+                    <i class="fa-solid fa-shopping-bag"></i>
+                </div>
+                <div>
+                    <h3 class="font-extrabold text-gray-800 text-base font-serif">Alışveriş Sepetim</h3>
+                    <span id="drawerCartCountText" class="text-[11px] text-gray-500 block">0 ürün bulunuyor</span>
+                </div>
+            </div>
+            <button onclick="closeCartDrawer()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center transition focus:outline-none">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Drawer Items Content Body -->
+        <div id="cartDrawerContent" class="flex-1 overflow-y-auto p-4 space-y-3">
+            <!-- Dynamic Cart Items / Empty State Rendered Here -->
+        </div>
+
+        <!-- Drawer Footer -->
+        <div id="cartDrawerFooter" class="p-4 border-t border-amber-100 bg-[#FFFBF5] space-y-3 hidden">
+            <div class="flex justify-between items-center text-sm font-semibold text-gray-700">
+                <span>Ürünler Toplamı:</span>
+                <span id="cartDrawerSubtotal" class="text-xl font-black text-[#C87A53]">0,00 TL</span>
+            </div>
+            <div class="text-[11.5px] text-emerald-700 font-bold bg-emerald-50 border border-emerald-200/80 p-2.5 rounded-xl flex items-center justify-center gap-2">
+                <i class="fa-solid fa-truck-fast text-emerald-600"></i> Tüm Siparişlerinizde Kargo Ücretsiz!
+            </div>
+            <div class="grid grid-cols-2 gap-2.5">
+                <a href="<?php echo e(route('cart.index')); ?>" class="py-3 px-4 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-xl transition text-center text-xs flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-cart-shopping"></i> Sepete Git
+                </a>
+                <a href="<?php echo e(route('checkout.index')); ?>" class="py-3 px-4 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-xl transition text-center text-xs shadow-md flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-lock"></i> Ödemeye Geç
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast UI Container -->
+    <div id="toastContainer" class="fixed top-5 right-5 z-[10000] flex flex-col gap-2.5 max-w-sm pointer-events-none"></div>
+
     <script>
+    // Global Toast Notification System
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = `pointer-events-auto flex items-center gap-3 p-4 rounded-2xl shadow-xl text-xs font-bold transition-all duration-300 transform translate-x-10 opacity-0 border ${
+            type === 'success' ? 'bg-emerald-800 text-white border-emerald-600' :
+            type === 'error' ? 'bg-red-800 text-white border-red-600' :
+            'bg-amber-800 text-white border-amber-600'
+        }`;
+
+        const iconClass = type === 'success' ? 'fa-circle-check text-emerald-300' :
+                          type === 'error' ? 'fa-triangle-exclamation text-red-300' :
+                          'fa-circle-info text-amber-300';
+
+        toast.innerHTML = `
+            <i class="fa-solid ${iconClass} text-lg shrink-0"></i>
+            <div class="flex-1 leading-snug">${message}</div>
+            <button onclick="this.parentElement.remove()" class="text-white/70 hover:text-white text-sm focus:outline-none ml-2">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        `;
+
+        container.appendChild(toast);
+
+        // Animate In
+        setTimeout(() => {
+            toast.classList.remove('translate-x-10', 'opacity-0');
+        }, 10);
+
+        // Auto Dismiss after 3.5s
+        setTimeout(() => {
+            toast.classList.add('translate-x-10', 'opacity-0');
+            setTimeout(() => toast.remove(), 300);
+        }, 3500);
+    }
+
+    // Offcanvas Cart Drawer Handlers
+    function openCartDrawer() {
+        const overlay = document.getElementById('cartDrawerOverlay');
+        const drawer = document.getElementById('cartDrawer');
+        if (overlay && drawer) {
+            overlay.classList.remove('hidden');
+            setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+            drawer.classList.remove('translate-x-full');
+            refreshCartDrawer();
+        }
+    }
+
+    function closeCartDrawer() {
+        const overlay = document.getElementById('cartDrawerOverlay');
+        const drawer = document.getElementById('cartDrawer');
+        if (overlay && drawer) {
+            drawer.classList.add('translate-x-full');
+            overlay.classList.add('opacity-0');
+            setTimeout(() => overlay.classList.add('hidden'), 300);
+        }
+    }
+
+    function refreshCartDrawer() {
+        const content = document.getElementById('cartDrawerContent');
+        const footer = document.getElementById('cartDrawerFooter');
+        const subtotalEl = document.getElementById('cartDrawerSubtotal');
+        const badge = document.getElementById('headerCartCountBadge');
+        const drawerCountText = document.getElementById('drawerCartCountText');
+
+        if (!content) return;
+
+        content.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-12 text-gray-400">
+                <i class="fa-solid fa-spinner fa-spin text-3xl mb-3 text-[#C87A53]"></i>
+                <span class="text-xs font-semibold">Sepet yükleniyor...</span>
+            </div>
+        `;
+
+        fetch('<?php echo e(route("cart.data")); ?>', {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status !== 'success') return;
+
+            // Update badge counters
+            if (badge) badge.innerText = data.count;
+            if (drawerCountText) drawerCountText.innerText = `${data.count} ürün bulunuyor`;
+
+            const cartKeys = Object.keys(data.cart);
+
+            if (cartKeys.length === 0) {
+                footer.classList.add('hidden');
+                content.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full py-16 text-center px-4">
+                        <div class="w-20 h-20 bg-amber-50 text-[#C87A53] rounded-full flex items-center justify-center text-4xl mb-4 border border-amber-200/60 shadow-inner">
+                            <i class="fa-solid fa-basket-shopping"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-gray-800 mb-1 font-serif">Sepetiniz Henüz Boş</h4>
+                        <p class="text-xs text-gray-500 mb-8 max-w-xs leading-relaxed">Harika masif ahşap çerçeve koleksiyonlarımızı keşfetmek ve fotoğraflarınızı ölümsüzleştirmek için hemen alışverişe başlayın.</p>
+                        
+                        <div class="mt-auto w-full pt-6 border-t border-gray-100">
+                            <a href="<?php echo e(url('/urunler')); ?>" onclick="closeCartDrawer()" class="w-full bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold py-3.5 px-6 rounded-xl transition text-center shadow-lg flex items-center justify-center gap-2 text-xs uppercase tracking-wider">
+                                <i class="fa-solid fa-store text-sm"></i> Alışverişe Başla
+                            </a>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            footer.classList.remove('hidden');
+            if (subtotalEl) subtotalEl.innerText = data.total;
+
+            let html = '';
+            cartKeys.forEach(key => {
+                const item = data.cart[key];
+                const itemTotal = (item.price * item.quantity).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' TL';
+                const itemPriceFormatted = (item.price * 1).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' TL';
+
+                html += `
+                    <div class="p-3 bg-white rounded-2xl border border-gray-150 shadow-sm flex items-center gap-3 relative group">
+                        <div class="w-16 h-16 bg-stone-50 rounded-xl border border-gray-200 overflow-hidden flex-shrink-0 flex items-center justify-center p-1">
+                            <img src="${item.image}" alt="${item.name}" class="max-w-full max-h-full object-contain">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h5 class="text-xs font-bold text-gray-800 truncate">${item.name}</h5>
+                            ${item.custom_image ? '<span class="text-[10px] font-semibold text-amber-700 block mt-0.5"><i class="fa-solid fa-camera"></i> Özel Tasarımlı</span>' : ''}
+                            <div class="text-[11px] text-gray-500 mt-1 font-semibold">${itemPriceFormatted}</div>
+                            
+                            <div class="flex items-center gap-2 mt-2">
+                                <div class="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
+                                    <button onclick="updateCartDrawerQuantity('${key}', ${item.quantity - 1})" class="px-2 py-0.5 text-xs text-gray-600 hover:bg-gray-200 transition font-bold" ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
+                                    <span class="px-2 text-xs font-extrabold text-gray-800">${item.quantity}</span>
+                                    <button onclick="updateCartDrawerQuantity('${key}', ${item.quantity + 1})" class="px-2 py-0.5 text-xs text-gray-600 hover:bg-gray-200 transition font-bold">+</button>
+                                </div>
+                                <span class="text-xs font-extrabold text-[#C87A53] ml-auto">${itemTotal}</span>
+                            </div>
+                        </div>
+                        <button onclick="removeFromCartDrawer('${key}')" title="Ürünü Sil" class="text-gray-300 hover:text-red-500 transition text-sm p-1.5 focus:outline-none">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `;
+            });
+
+            content.innerHTML = html;
+        })
+        .catch(err => {
+            console.error('Sepet drawer verisi alınamadı:', err);
+            content.innerHTML = `<div class="text-xs text-red-500 text-center py-6">Sepet verisi yüklenirken bir hata oluştu.</div>`;
+        });
+    }
+
+    function updateCartDrawerQuantity(key, newQty) {
+        if (newQty < 1) return;
+
+        fetch('<?php echo e(route("cart.update")); ?>', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ key: key, quantity: newQty })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                refreshCartDrawer();
+            } else {
+                showToast(data.message || 'Sepet güncellenemedi.', 'error');
+            }
+        })
+        .catch(err => showToast('Bir hata oluştu.', 'error'));
+    }
+
+    function removeFromCartDrawer(key) {
+        fetch('<?php echo e(route("cart.remove")); ?>', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ key: key })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showToast('Ürün sepetten çıkarıldı.', 'info');
+                refreshCartDrawer();
+            } else {
+                showToast(data.message || 'Silinemedi.', 'error');
+            }
+        })
+        .catch(err => showToast('Bir hata oluştu.', 'error'));
+    }
+
+    // Anti-Spam Protected Favorite Toggle
+    let isFavoriteProcessing = false;
     function toggleFavorite(productId, btnElement) {
+        if (isFavoriteProcessing) return;
+        isFavoriteProcessing = true;
+
+        let originalContent = '';
+        if (btnElement) {
+            originalContent = btnElement.innerHTML;
+            btnElement.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-600"></i> İşleniyor...`;
+            btnElement.style.pointerEvents = 'none';
+        }
+
         fetch('<?php echo e(route("favorites.toggle")); ?>', {
             method: 'POST',
             headers: {
@@ -394,30 +652,35 @@
         .then(data => {
             if (!data) return;
 
-            // Update Header Counter
             const badge = document.getElementById('favCounterBadge');
             if (badge) badge.innerText = data.count;
 
-            // Update heart icon styling & text on current button
             if (btnElement) {
+                btnElement.innerHTML = originalContent;
+                btnElement.style.pointerEvents = 'auto';
+
                 const heartIcon = btnElement.querySelector('i');
                 const btnSpan = btnElement.querySelector('span');
                 if (heartIcon) {
                     if (data.action === 'added') {
                         heartIcon.className = 'fa-solid fa-heart text-red-500 text-base drop-shadow-sm scale-110 transition-transform duration-200';
                         if (btnSpan) btnSpan.innerText = 'Favorilerinizde';
+                        showToast('Ürün favorilerinize eklendi!', 'success');
                     } else if (data.action === 'removed') {
                         heartIcon.className = 'fa-regular fa-heart text-gray-500 text-base hover:text-red-500 transition-colors duration-200';
                         if (btnSpan) btnSpan.innerText = 'Favorilere Ekle';
+                        showToast('Ürün favorilerinizden çıkarıldı.', 'info');
 
-                        // If on favorites page grid, remove card live
                         const card = document.getElementById('favCard-' + productId);
                         if (card) card.remove();
                     }
                 }
             }
         })
-        .catch(err => console.error('Favori işlemi hatası:', err));
+        .catch(err => showToast('Favori işlemi sırasında hata oluştu.', 'error'))
+        .finally(() => {
+            isFavoriteProcessing = false;
+        });
     }
 
     function toggleUserDropdown(event) {
@@ -435,6 +698,18 @@
             content.classList.add('hidden');
         }
     });
+
+    // Auto trigger Toast on session flash messages
+    <?php if(session('success')): ?>
+        document.addEventListener('DOMContentLoaded', function() {
+            showToast('<?php echo e(session('success')); ?>', 'success');
+        });
+    <?php endif; ?>
+    <?php if(session('error')): ?>
+        document.addEventListener('DOMContentLoaded', function() {
+            showToast('<?php echo e(session('error')); ?>', 'error');
+        });
+    <?php endif; ?>
     </script>
 </body>
 

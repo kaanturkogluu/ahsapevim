@@ -97,6 +97,16 @@ class CartController extends Controller
 
         session()->put('cart', $cart);
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Kişiselleştirilmiş ürününüz sepete eklendi!',
+                'cart' => $cart,
+                'count' => count($cart),
+                'total' => $this->calculateTotal($cart),
+            ]);
+        }
+
         return redirect()->route('cart.index')->with('success', 'Kişiselleştirilmiş ürününüz sepete eklendi!');
     }
 
@@ -104,6 +114,17 @@ class CartController extends Controller
     {
         $cart = session()->get('cart', []);
         return view('cart.index', compact('cart'));
+    }
+
+    public function getCartData()
+    {
+        $cart = session()->get('cart', []);
+        return response()->json([
+            'status' => 'success',
+            'cart' => $cart,
+            'count' => count($cart),
+            'total' => $this->calculateTotal($cart),
+        ]);
     }
 
     public function update(Request $request)
@@ -118,7 +139,22 @@ class CartController extends Controller
         if (isset($cart[$request->key])) {
             $cart[$request->key]['quantity'] = intval($request->quantity);
             session()->put('cart', $cart);
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Sepet güncellendi.',
+                    'cart' => $cart,
+                    'count' => count($cart),
+                    'total' => $this->calculateTotal($cart),
+                ]);
+            }
+
             return redirect()->back()->with('success', 'Sepet güncellendi.');
+        }
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json(['status' => 'error', 'message' => 'Ürün bulunamadı.'], 404);
         }
 
         return redirect()->back()->with('error', 'Ürün bulunamadı.');
@@ -135,9 +171,33 @@ class CartController extends Controller
         if (isset($cart[$request->key])) {
             unset($cart[$request->key]);
             session()->put('cart', $cart);
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Ürün sepetten silindi.',
+                    'cart' => $cart,
+                    'count' => count($cart),
+                    'total' => $this->calculateTotal($cart),
+                ]);
+            }
+
             return redirect()->back()->with('success', 'Ürün sepetten silindi.');
         }
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json(['status' => 'error', 'message' => 'Ürün sepetten silinemedi.'], 400);
+        }
+
         return redirect()->back()->with('error', 'Ürün sepetten silinemedi.');
+    }
+
+    private function calculateTotal($cart)
+    {
+        $total = 0;
+        foreach ($cart as $item) {
+            $total += ($item['price'] * $item['quantity']);
+        }
+        return number_format($total, 2, ',', '.') . ' TL';
     }
 }

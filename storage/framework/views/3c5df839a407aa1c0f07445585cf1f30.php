@@ -1,17 +1,16 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', 'Ödeme Bilgileri - AhşapEvim'); ?>
 
-@section('title', 'Ödeme Bilgileri - AhşapEvim')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="bg-[#F7F5F0] pb-12 min-h-screen">
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold text-gray-800 mb-8 font-serif">Ödeme ve Teslimat Bilgileri</h1>
 
-        @if(session('error'))
+        <?php if(session('error')): ?>
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
-                {{ session('error') }}
+                <?php echo e(session('error')); ?>
+
             </div>
-        @endif
+        <?php endif; ?>
 
         <div class="flex flex-col lg:flex-row gap-8">
             <!-- Left Side: Delivery Details Form -->
@@ -19,28 +18,49 @@
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                     <h2 class="text-xl font-bold text-gray-800 mb-6 font-serif border-b border-gray-100 pb-3">Teslimat & Fatura Adresi</h2>
                     
-                    <form id="checkoutForm" action="{{ route('checkout.process') }}" method="POST" onsubmit="return validateCheckoutForm(event)">
-                        @csrf
+                    <form id="checkoutForm" action="<?php echo e(route('checkout.process')); ?>" method="POST" onsubmit="return validateCheckoutForm(event)">
+                        <?php echo csrf_field(); ?>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div>
                                 <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">Ad Soyad *</label>
-                                <input type="text" id="name" name="name" value="{{ old('name', auth()->user() ? auth()->user()->name : '') }}" required class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C87A53] focus:border-[#C87A53] transition">
-                                @error('name') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                                <input type="text" id="name" name="name" value="<?php echo e(old('name', auth()->user() ? auth()->user()->name : '')); ?>" required class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C87A53] focus:border-[#C87A53] transition">
+                                <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-xs mt-1 block"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                             
                             <div>
                                 <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">E-Posta Adresi *</label>
-                                <input type="email" id="email" name="email" value="{{ old('email', auth()->user() ? auth()->user()->email : '') }}" required class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C87A53] focus:border-[#C87A53] transition">
-                                @error('email') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                                <input type="email" id="email" name="email" value="<?php echo e(old('email', auth()->user() ? auth()->user()->email : '')); ?>" required class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C87A53] focus:border-[#C87A53] transition">
+                                <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-xs mt-1 block"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div>
                                 <label for="phone" class="block text-sm font-semibold text-gray-700 mb-2">Telefon Numarası *</label>
-                                <input type="text" id="phone" name="phone" placeholder="+90 5XX XXX XX XX" value="{{ old('phone', auth()->user() ? auth()->user()->phone : '') }}" required oninput="formatPhoneInput(this)" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C87A53] focus:border-[#C87A53] transition font-mono">
-                                @error('phone') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                                <input type="text" id="phone" name="phone" placeholder="+90 5XX XXX XX XX" value="<?php echo e(old('phone', auth()->user() ? auth()->user()->phone : '')); ?>" required oninput="formatPhoneInput(this)" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C87A53] focus:border-[#C87A53] transition font-mono">
+                                <?php $__errorArgs = ['phone'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-xs mt-1 block"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <div>
@@ -48,8 +68,15 @@
                                     T.C. Kimlik No *
                                     <span class="text-[11px] font-medium text-amber-700 block mt-0.5">(Bu bilgiler fatura kesimi için kullanılacaktır)</span>
                                 </label>
-                                <input type="text" id="identity_number" name="identity_number" maxlength="11" placeholder="11 haneli T.C. Kimlik No" value="{{ old('identity_number') }}" required oninput="this.value = this.value.replace(/[^0-9]/g, '');" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C87A53] focus:border-[#C87A53] transition font-mono">
-                                @error('identity_number') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                                <input type="text" id="identity_number" name="identity_number" maxlength="11" placeholder="11 haneli T.C. Kimlik No" value="<?php echo e(old('identity_number')); ?>" required oninput="this.value = this.value.replace(/[^0-9]/g, '');" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C87A53] focus:border-[#C87A53] transition font-mono">
+                                <?php $__errorArgs = ['identity_number'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-xs mt-1 block"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
@@ -72,9 +99,16 @@
 
                         <div class="mb-6">
                             <label for="streetAddress" class="block text-sm font-semibold text-gray-700 mb-2">Açık Adres (Mahalle, Cadde, Sokak, Bina/Daire No) *</label>
-                            <textarea id="streetAddress" rows="3" placeholder="Örn: Atatürk Mahallesi, Cumhuriyet Caddesi, No: 15 Daire: 4" required class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C87A53] focus:border-[#C87A53] transition" oninput="updateFullAddress()">{{ old('street_address', auth()->user() ? auth()->user()->address : '') }}</textarea>
-                            <input type="hidden" id="address" name="address" value="{{ old('address', auth()->user() ? auth()->user()->address : '') }}">
-                            @error('address') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            <textarea id="streetAddress" rows="3" placeholder="Örn: Atatürk Mahallesi, Cumhuriyet Caddesi, No: 15 Daire: 4" required class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C87A53] focus:border-[#C87A53] transition" oninput="updateFullAddress()"><?php echo e(old('street_address', auth()->user() ? auth()->user()->address : '')); ?></textarea>
+                            <input type="hidden" id="address" name="address" value="<?php echo e(old('address', auth()->user() ? auth()->user()->address : '')); ?>">
+                            <?php $__errorArgs = ['address'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-xs mt-1 block"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <!-- Ödeme Yöntemi Seçimi -->
@@ -146,36 +180,36 @@
                     <h3 class="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-3 font-serif">Sipariş Özeti</h3>
                     
                     <div class="max-h-60 overflow-y-auto mb-6 divide-y divide-gray-100 pr-1">
-                        @php $total = 0; @endphp
-                        @foreach($cart as $item)
-                            @php 
+                        <?php $total = 0; ?>
+                        <?php $__currentLoopData = $cart; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php 
                                 $total += $item['price'] * $item['quantity']; 
                                 $customImgUrl = !empty($item['custom_image']) ? (str_starts_with($item['custom_image'], 'http') ? $item['custom_image'] : url($item['custom_image'])) : null;
                                 $itemImgUrl = !empty($item['image']) ? (str_starts_with($item['image'], 'http') ? $item['image'] : url($item['image'])) : url('/cerceve.png');
-                            @endphp
+                            ?>
                             <div class="py-3 flex items-center gap-4">
                                 <div class="w-14 h-14 bg-stone-100 rounded-lg border border-gray-200 flex-shrink-0 p-1 relative flex items-center justify-center overflow-hidden">
-                                    <img src="{{ $itemImgUrl }}" alt="{{ $item['name'] }}" class="max-w-full max-h-full object-contain">
+                                    <img src="<?php echo e($itemImgUrl); ?>" alt="<?php echo e($item['name']); ?>" class="max-w-full max-h-full object-contain">
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <div class="text-sm font-bold text-gray-800 truncate">{{ $item['name'] }}</div>
-                                    @if($customImgUrl)
+                                    <div class="text-sm font-bold text-gray-800 truncate"><?php echo e($item['name']); ?></div>
+                                    <?php if($customImgUrl): ?>
                                         <div class="text-[11px] font-semibold text-amber-700 flex items-center gap-1 mt-0.5">
                                             <i class="fa-solid fa-camera"></i> Özel Fotoğraflı
                                         </div>
-                                    @endif
-                                    <div class="text-xs text-gray-500 mt-0.5">{{ $item['quantity'] }} adet x {{ number_format($item['price'], 2, ',', '.') }} TL</div>
+                                    <?php endif; ?>
+                                    <div class="text-xs text-gray-500 mt-0.5"><?php echo e($item['quantity']); ?> adet x <?php echo e(number_format($item['price'], 2, ',', '.')); ?> TL</div>
                                 </div>
                                 <div class="text-sm font-bold text-gray-800">
-                                    {{ number_format($item['price'] * $item['quantity'], 2, ',', '.') }} TL
+                                    <?php echo e(number_format($item['price'] * $item['quantity'], 2, ',', '.')); ?> TL
                                 </div>
                             </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                     
                     <div class="flex justify-between items-center mb-3 text-sm text-gray-600">
                         <span>Ürünler Toplamı</span>
-                        <span class="font-bold">{{ number_format($total, 2, ',', '.') }} TL</span>
+                        <span class="font-bold"><?php echo e(number_format($total, 2, ',', '.')); ?> TL</span>
                     </div>
                     
                     <div class="flex justify-between items-center mb-4 text-sm text-gray-600">
@@ -186,7 +220,7 @@
                     <div class="border-t border-gray-100 pt-4">
                         <div class="flex justify-between items-center">
                             <span class="text-base font-bold text-gray-800">Genel Toplam</span>
-                            <span class="text-2xl font-extrabold text-[#C87A53]">{{ number_format($total, 2, ',', '.') }} TL</span>
+                            <span class="text-2xl font-extrabold text-[#C87A53]"><?php echo e(number_format($total, 2, ',', '.')); ?> TL</span>
                         </div>
                     </div>
                 </div>
@@ -507,4 +541,6 @@ function validateCheckoutForm(e) {
     return true;
 }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\cerceve\resources\views/checkout/index.blade.php ENDPATH**/ ?>

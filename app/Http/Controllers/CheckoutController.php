@@ -43,6 +43,11 @@ class CheckoutController extends Controller
             'district' => 'nullable|string|max:100',
         ]);
 
+        $tc = $request->input('identity_number');
+        if (!empty($tc) && !$this->isValidTcNo($tc)) {
+            return redirect()->back()->with('error', 'Girdiğiniz T.C. Kimlik Numarası matematiksel olarak geçersizdir. Lütfen kontrol ediniz.')->withInput();
+        }
+
         // Calculate total amount
         $totalAmount = 0;
         foreach ($cart as $item) {
@@ -85,11 +90,11 @@ class CheckoutController extends Controller
 
         $paymentMethod = $request->input('payment_method', 'card');
 
-        // If customer selected Kapıda Ödeme / Havale
-        if ($paymentMethod === 'cod') {
+        // If customer selected Havale / EFT
+        if (in_array($paymentMethod, ['eft', 'cod'])) {
             $order->update([
                 'status' => 'pending',
-                'payment_id' => 'KAPIDA_' . time(),
+                'payment_id' => 'EFT_' . time(),
             ]);
 
             session()->forget('cart');
@@ -111,7 +116,8 @@ class CheckoutController extends Controller
 
             return redirect()->route('checkout.result')->with([
                 'status' => 'success',
-                'order_id' => $order->id
+                'order_id' => $order->id,
+                'is_eft' => true,
             ]);
         }
 
@@ -269,5 +275,31 @@ class CheckoutController extends Controller
         }
 
         return view('checkout.result');
+    }
+
+    private function isValidTcNo($tc)
+    {
+        $tc = preg_replace('/[^0-9]/', '', $tc);
+        if (strlen($tc) !== 11 || $tc[0] === '0') {
+            return false;
+        }
+
+        $digits = array_map('intval', str_split($tc));
+
+        $oddSum = $digits[0] + $digits[2] + $digits[4] + $digits[6] + $digits[8];
+        $evenSum = $digits[1] + $digits[3] + $digits[5] + $digits[7];
+
+        $d10 = (($oddSum * 7) - $evenSum) % 10;
+        if ($d10 < 0) $d10 += 10;
+        if ($d10 !== $digits[9]) {
+            return false;
+        }
+
+        $totalSum = array_sum(array_slice($digits, 0, 10));
+        if (($totalSum % 10) !== $digits[10]) {
+            return false;
+        }
+
+        return true;
     }
 }
