@@ -146,6 +146,19 @@ Route::get('/{slug}', function ($slug) {
         ]);
     }
 
+    if ($slug === 'sikca-sorulanlar') {
+        $faqItems = json_decode($page->content, true);
+        if (!is_array($faqItems)) {
+            $faqItems = [];
+        }
+        return view('pages.faq', [
+            'pageTitle' => $page->title,
+            'faqItems' => $faqItems,
+            'rawContent' => $page->content,
+            'page' => $page
+        ]);
+    }
+
     return view('pages.show', [
         'pageTitle' => $page->title,
         'content' => $page->content

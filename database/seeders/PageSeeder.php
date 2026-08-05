@@ -29,7 +29,20 @@ class PageSeeder extends Seeder
             [
                 'slug' => 'sikca-sorulanlar',
                 'title' => 'Sıkça Sorulanlar',
-                'content' => '<p><strong>Siparişim kaç günde ulaşır?</strong><br>Siparişleriniz ortalama 1-3 iş günü içinde kargoya teslim edilmektedir.</p><br><p><strong>İade koşulları nelerdir?</strong><br>Kişiselleştirilmiş ürünler hariç 14 gün içinde iade hakkınız bulunmaktadır.</p><br><p><strong>Ürünleriniz masif ahşap mı?</strong><br>Evet, tüm ürünlerimiz birinci sınıf masif ağaç kullanılarak Manisa atölyemizde el işçiliği ile üretilmektedir.</p>',
+                'content' => json_encode([
+                    [
+                        'question' => 'Siparişim kaç günde ulaşır?',
+                        'answer' => 'Siparişleriniz ortalama 1-3 iş günü içinde kargoya teslim edilmektedir.'
+                    ],
+                    [
+                        'question' => 'İade koşulları nelerdir?',
+                        'answer' => 'Kişiselleştirilmiş ürünler hariç 14 gün içinde iade hakkınız bulunmaktadır.'
+                    ],
+                    [
+                        'question' => 'Ürünleriniz masif ahşap mı?',
+                        'answer' => 'Evet, tüm ürünlerimiz birinci sınıf masif ağaç kullanılarak Manisa atölyemizde el işçiliği ile üretilmektedir.'
+                    ]
+                ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
             ],
             [
                 'slug' => 'mesafeli-satis-sozlesmesi',

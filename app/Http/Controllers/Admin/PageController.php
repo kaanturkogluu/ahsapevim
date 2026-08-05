@@ -62,12 +62,64 @@ class PageController extends Controller
             }
         }
 
-        return view('admin.pages.edit', compact('page', 'contactData'));
+        $faqItems = null;
+        if ($page->slug === 'sikca-sorulanlar') {
+            $faqItems = json_decode($page->content, true);
+            if (!is_array($faqItems)) {
+                $faqItems = [
+                    [
+                        'question' => 'Siparişim kaç günde ulaşır?',
+                        'answer' => 'Siparişleriniz ortalama 1-3 iş günü içinde kargoya teslim edilmektedir.'
+                    ],
+                    [
+                        'question' => 'İade koşulları nelerdir?',
+                        'answer' => 'Kişiselleştirilmiş ürünler hariç 14 gün içinde iade hakkınız bulunmaktadır.'
+                    ],
+                    [
+                        'question' => 'Ürünleriniz masif ahşap mı?',
+                        'answer' => 'Evet, tüm ürünlerimiz birinci sınıf masif ağaç kullanılarak Manisa atölyemizde el işçiliği ile üretilmektedir.'
+                    ]
+                ];
+            }
+        }
+
+        return view('admin.pages.edit', compact('page', 'contactData', 'faqItems'));
     }
 
     public function update(Request $request, $id)
     {
         $page = Page::findOrFail($id);
+
+        if ($page->slug === 'sikca-sorulanlar') {
+            $request->validate([
+                'title' => 'required|string|max:255',
+                'faqs' => 'nullable|array',
+                'faqs.*.question' => 'nullable|string|max:500',
+                'faqs.*.answer' => 'nullable|string',
+            ]);
+
+            $rawFaqs = $request->input('faqs', []);
+            $faqItems = [];
+
+            foreach ($rawFaqs as $item) {
+                $q = trim($item['question'] ?? '');
+                $a = trim($item['answer'] ?? '');
+                if (!empty($q) || !empty($a)) {
+                    $faqItems[] = [
+                        'question' => $q,
+                        'answer' => $a,
+                    ];
+                }
+            }
+
+            $page->update([
+                'title' => $request->title,
+                'content' => json_encode($faqItems, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
+                'is_active' => $request->has('is_active'),
+            ]);
+
+            return redirect()->route('admin.pages.index')->with('success', 'Sıkça Sorulan Sorular başarıyla güncellendi.');
+        }
 
         if ($page->slug === 'iletisim') {
             $request->validate([
