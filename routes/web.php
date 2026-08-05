@@ -213,8 +213,6 @@ Route::prefix('yonetim')->middleware(['auth', 'admin'])->group(function () {
     Route::post('/manuel-mail-gonder', [MessageLogController::class, 'sendManualMail'])->name('admin.mail.send_manual');
     Route::post('/manuel-sms-gonder', [MessageLogController::class, 'sendManualSms'])->name('admin.sms.send_manual');
 
-    // Cari Sistem Yönetimi
-    Route::get('/cari', [\App\Http\Controllers\Admin\CariController::class, 'index'])->name('admin.cari.index');
-    Route::get('/cari/{user}', [\App\Http\Controllers\Admin\CariController::class, 'show'])->name('admin.cari.show');
-    Route::post('/cari/{user}/ekle', [\App\Http\Controllers\Admin\CariController::class, 'store'])->name('admin.cari.store');
+    // Gelir Tablosu & İstatistikler
+    Route::get('/gelir-tablosu', [\App\Http\Controllers\Admin\RevenueController::class, 'index'])->name('admin.revenue.index');
 });

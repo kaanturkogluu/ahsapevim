@@ -20,7 +20,7 @@
         </div>
         <nav class="flex-1 overflow-y-auto mt-4">
             <a href="{{ url('/yonetim/siparisler') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-shopping-cart mr-2"></i> Siparişler</a>
-            <a href="{{ route('admin.cari.index') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-wallet mr-2"></i> Cari Hesaplar</a>
+            <a href="{{ route('admin.revenue.index') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-chart-line mr-2"></i> Gelir Tablosu</a>
             <a href="{{ url('/yonetim/urunler') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-box mr-2"></i> Ürünler</a>
             <a href="{{ url('/yonetim/kategoriler') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-list mr-2"></i> Kategoriler</a>
             <a href="{{ url('/yonetim/3d-sablonlar') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-cube mr-2"></i> 3D Şablonlar</a>

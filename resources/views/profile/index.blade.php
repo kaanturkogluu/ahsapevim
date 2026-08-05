@@ -86,14 +86,6 @@
                 <span class="px-2 py-0.5 bg-red-100 text-red-600 rounded-full text-[10px] font-bold">{{ $favorites->count() }}</span>
             </button>
 
-            <button onclick="switchTab('cari')" id="tab-btn-cari" class="tab-button w-full flex items-center justify-between p-3 rounded-xl text-xs font-extrabold text-gray-600 hover:bg-amber-50 hover:text-[#C87A53] transition">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-wallet text-base text-blue-500"></i>
-                    <span>Cari Hesabım</span>
-                </div>
-                <i class="fa-solid fa-chevron-right text-[10px] text-gray-400"></i>
-            </button>
-
             <button onclick="switchTab('bilgiler')" id="tab-btn-bilgiler" class="tab-button w-full flex items-center justify-between p-3 rounded-xl text-xs font-extrabold text-gray-600 hover:bg-amber-50 hover:text-[#C87A53] transition">
                 <div class="flex items-center gap-3">
                     <i class="fa-solid fa-user-pen text-base text-blue-500"></i>
@@ -279,91 +271,6 @@
                         </a>
                     </div>
                 @endforelse
-            </div>
-
-            <!-- SEKME X: CARİ HESABIM -->
-            <div id="tab-content-cari" class="tab-content hidden space-y-4">
-                <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div>
-                        <h2 class="text-base font-extrabold text-gray-800 mb-1 flex items-center gap-2">
-                            <i class="fa-solid fa-wallet text-blue-500"></i> Cari Hesabım & Bakiye Durumu
-                        </h2>
-                        <p class="text-xs text-gray-500">Güncel bakiyenizi ve geçmiş hesap hareketlerinizi bu alandan inceleyebilirsiniz.</p>
-                    </div>
-                    
-                    <!-- Bakiye Kartı -->
-                    <div class="bg-gray-50 px-4 py-2.5 rounded-xl border border-gray-100 flex flex-col items-end shrink-0">
-                        <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Güncel Bakiye</span>
-                        @if($user->balance > 0)
-                            <div class="text-lg font-black text-red-600">{{ number_format($user->balance, 2, ',', '.') }} ₺</div>
-                            <div class="text-[10px] text-red-500 font-bold mt-0.5">Ödenmesi Gereken Borç</div>
-                        @elseif($user->balance < 0)
-                            <div class="text-lg font-black text-green-600">{{ number_format(abs($user->balance), 2, ',', '.') }} ₺</div>
-                            <div class="text-[10px] text-green-500 font-bold mt-0.5">Alacaklı Durumdasınız</div>
-                        @else
-                            <div class="text-lg font-black text-gray-700">0,00 ₺</div>
-                            <div class="text-[10px] text-gray-500 mt-0.5 font-medium">Borç veya alacak bulunmuyor.</div>
-                        @endif
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-2xl border border-gray-200/80 overflow-hidden shadow-sm">
-                    <div class="p-4 border-b border-gray-100 bg-gray-50/50">
-                        <h3 class="text-sm font-bold text-gray-800"><i class="fa-solid fa-list-ul text-[#C87A53] mr-1.5"></i> Hesap Ekstresi (Hareketler)</h3>
-                    </div>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-left text-gray-500">
-                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b border-gray-100">
-                                <tr>
-                                    <th scope="col" class="px-6 py-4">Tarih</th>
-                                    <th scope="col" class="px-6 py-4">İşlem Detayı</th>
-                                    <th scope="col" class="px-6 py-4 text-right">Borç</th>
-                                    <th scope="col" class="px-6 py-4 text-right">Ödeme (Alacak)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($transactions as $transaction)
-                                    <tr class="bg-white border-b border-gray-50 hover:bg-gray-50/50 transition">
-                                        <td class="px-6 py-4 whitespace-nowrap text-gray-600 text-xs">
-                                            {{ $transaction->date->format('d.m.Y H:i') }}
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="text-gray-900 font-semibold">{{ $transaction->description }}</div>
-                                            @if($transaction->order_id)
-                                                <div class="text-[10px] text-gray-500 mt-0.5">Sipariş No: #{{ $transaction->order_id }}</div>
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-4 text-right font-black">
-                                            @if($transaction->type === 'debit')
-                                                <span class="text-red-600">{{ number_format($transaction->amount, 2, ',', '.') }} ₺</span>
-                                            @else
-                                                <span class="text-gray-300">-</span>
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-4 text-right font-black">
-                                            @if($transaction->type === 'credit')
-                                                <span class="text-green-600">{{ number_format($transaction->amount, 2, ',', '.') }} ₺</span>
-                                            @else
-                                                <span class="text-gray-300">-</span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="px-6 py-10 text-center">
-                                            <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 text-xl mx-auto mb-3">
-                                                <i class="fa-solid fa-receipt"></i>
-                                            </div>
-                                            <p class="text-sm font-bold text-gray-700">Hesap Hareketi Bulunamadı</p>
-                                            <p class="text-xs text-gray-500 mt-1">Geçmişe dönük borç veya ödeme işleminiz bulunmamaktadır.</p>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
 
             <!-- SEKME 2: FAVORİLERİM -->
