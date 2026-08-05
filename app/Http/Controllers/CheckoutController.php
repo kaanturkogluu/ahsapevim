@@ -130,15 +130,29 @@ class CheckoutController extends Controller
 
         $paymentMethod = $request->input('payment_method', 'card');
 
-        // If customer selected Havale / EFT
-        if (in_array($paymentMethod, ['eft', 'cod'])) {
+        // If customer selected Havale / EFT or Cari
+        if (in_array($paymentMethod, ['eft', 'cod', 'cari'])) {
             $order->update([
                 'status' => 'pending',
-                'payment_id' => 'EFT_' . time(),
+                'payment_id' => strtoupper($paymentMethod) . '_' . time(),
             ]);
 
             session()->forget('cart');
             session()->forget('pending_order_id');
+
+            // Handle Cari (Current Account Debt)
+            if ($paymentMethod === 'cari' && auth()->check()) {
+                $user = auth()->user();
+                $user->transactions()->create([
+                    'order_id' => $order->id,
+                    'type' => 'debit',
+                    'amount' => $order->total_amount,
+                    'description' => 'Sipariş #' . $order->id . ' (Cari Hesaba Borç)',
+                    'date' => now(),
+                ]);
+                $user->balance += $order->total_amount;
+                $user->save();
+            }
 
             // Decrement stock for each item (EFT)
             foreach ($order->items as $item) {

@@ -29,11 +29,17 @@ class User extends Authenticatable
         'city',
         'district',
         'is_admin',
+        'balance',
     ];
 
     public function orders()
     {
         return $this->hasMany(Order::class)->latest();
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(UserTransaction::class)->latest('date');
     }
 
     public function favorites()

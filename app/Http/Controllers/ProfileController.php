@@ -13,8 +13,9 @@ class ProfileController extends Controller
         $user = auth()->user();
         $orders = $user->orders()->with('items.product')->latest()->get();
         $favorites = $user->favoriteProducts()->latest()->get();
+        $transactions = $user->transactions()->orderBy('date', 'desc')->get();
 
-        return view('profile.index', compact('user', 'orders', 'favorites'));
+        return view('profile.index', compact('user', 'orders', 'favorites', 'transactions'));
     }
 
     public function updateInfo(Request $request)

@@ -110,6 +110,19 @@
                                         <span class="block text-[11px] text-gray-500 mt-0.5">Banka Hesabına Doğrudan Transfer</span>
                                     </div>
                                 </label>
+
+                                <!-- Option 3: Cari Hesabıma Yaz -->
+                                @auth
+                                <label class="payment-method-card relative border border-gray-200 hover:border-gray-300 p-4 rounded-xl cursor-pointer flex items-center gap-3 transition">
+                                    <input type="radio" name="payment_method" value="cari" onchange="togglePaymentMethodDisplay()" class="text-[#C87A53] focus:ring-[#C87A53] w-4 h-4">
+                                    <div>
+                                        <span class="block text-sm font-extrabold text-gray-800 flex items-center gap-1.5">
+                                            <i class="fa-solid fa-wallet text-blue-600"></i> Cari Hesabıma Yaz
+                                        </span>
+                                        <span class="block text-[11px] text-gray-500 mt-0.5">Tutar cari hesabınıza borç kaydedilir.</span>
+                                    </div>
+                                </label>
+                                @endauth
                             </div>
 
                             <!-- EFT Account Details Box -->
