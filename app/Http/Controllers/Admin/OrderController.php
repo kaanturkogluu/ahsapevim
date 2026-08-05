@@ -124,4 +124,49 @@ class OrderController extends Controller
 
         return redirect()->back()->with('success', 'Sipariş durumu #' . $order->id . ' başarıyla güncellendi.');
     }
+
+    public function destroy(Request $request, $id)
+    {
+        $order = Order::with('items')->findOrFail($id);
+
+        // Security Check 1: Only unpaid / failed / cancelled orders can be deleted
+        if (!in_array($order->status, ['pending', 'failed', 'cancelled'])) {
+            return redirect()->back()->with('error', 'Yalnızca ödemesi alınmayan, başarısız veya iptal edilmiş siparişler silinebilir.');
+        }
+
+        // Security Check 2: Confirm Admin Password
+        $request->validate([
+            'password' => 'required|string',
+        ]);
+
+        if (!\Illuminate\Support\Facades\Hash::check($request->password, auth()->user()->password)) {
+            return redirect()->back()->with('error', 'Girdiğiniz admin şifresi hatalı! Sipariş silinmedi.');
+        }
+
+        // Delete uploaded customer photos associated with this order from server storage
+        $deletedPhotoCount = 0;
+        foreach ($order->items as $item) {
+            $features = is_array($item->features) ? $item->features : (json_decode($item->features, true) ?: []);
+            
+            $possibleKeys = ['front_image', 'back_image', 'custom_image', 'custom_preview'];
+            foreach ($possibleKeys as $key) {
+                if (!empty($features[$key])) {
+                    $relPath = parse_url($features[$key], PHP_URL_PATH);
+                    if ($relPath) {
+                        $fullPath = public_path(ltrim($relPath, '/'));
+                        if (\Illuminate\Support\Facades\File::exists($fullPath) && is_file($fullPath)) {
+                            \Illuminate\Support\Facades\File::delete($fullPath);
+                            $deletedPhotoCount++;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Delete order items and order
+        $order->items()->delete();
+        $order->delete();
+
+        return redirect()->route('admin.orders.index')->with('success', "İptal/Başarısız sipariş (#{$id}) ve ilişkili {$deletedPhotoCount} adet müşteri fotoğrafı sistemden kalıcı olarak silindi.");
+    }
 }

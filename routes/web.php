@@ -189,7 +189,7 @@ Route::prefix('yonetim')->middleware(['auth', 'admin'])->group(function () {
     Route::resource('urunler', ProductController::class)->names('admin.products');
     Route::resource('3d-sablonlar', ThreeDTemplateController::class)->parameters(['3d-sablonlar' => 'template'])->names('admin.templates');
     Route::resource('sayfalar', PageController::class)->names('admin.pages');
-    Route::resource('siparisler', OrderController::class)->only(['index', 'show', 'update'])->names('admin.orders');
+    Route::resource('siparisler', OrderController::class)->only(['index', 'show', 'update', 'destroy'])->names('admin.orders');
     Route::resource('kargo-sirketleri', ShippingCompanyController::class)->except(['create', 'show', 'edit'])->names('admin.shipping_companies');
 
     // E-Posta Şablon Yönetimi

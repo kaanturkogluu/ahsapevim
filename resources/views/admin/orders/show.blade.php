@@ -10,9 +10,16 @@
             <h3 class="text-lg font-bold text-gray-800">Sipariş #{{ $order->id }} Detayı</h3>
             <p class="text-xs text-gray-500 mt-1">Sipariş tarihi: {{ $order->created_at->format('d.m.Y H:i') }}</p>
         </div>
-        <a href="{{ route('admin.orders.index') }}" class="text-xs font-bold text-gray-500 hover:text-gray-700 transition flex items-center gap-1">
-            <i class="fa-solid fa-arrow-left"></i> Sipariş Listesine Dön
-        </a>
+        <div class="flex items-center gap-3">
+            @if(in_array($order->status, ['pending', 'failed', 'cancelled']))
+                <button type="button" onclick="openDeleteOrderModal({{ $order->id }}, 'Sipariş #{{ $order->id }} ({{ $order->name }})')" class="py-1.5 px-3 bg-rose-50 text-rose-600 hover:bg-rose-100 font-extrabold text-xs rounded-lg transition inline-flex items-center gap-1.5">
+                    <i class="fa-solid fa-trash-can"></i> Siparişi Sil & Görselleri Temizle
+                </button>
+            @endif
+            <a href="{{ route('admin.orders.index') }}" class="text-xs font-bold text-gray-500 hover:text-gray-700 transition flex items-center gap-1">
+                <i class="fa-solid fa-arrow-left"></i> Sipariş Listesine Dön
+            </a>
+        </div>
     </div>
 
 
@@ -215,4 +222,72 @@
         <span class="text-xl font-black text-[#C87A53]">₺{{ number_format($order->total_amount, 2, ',', '.') }}</span>
     </div>
 </div>
+
+<!-- Admin Şifreli Sipariş Silme Modalı -->
+<div id="deleteOrderModal" class="fixed inset-0 z-[99999] bg-black/70 backdrop-blur-xs hidden flex-col items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200 relative">
+        <div class="flex justify-between items-center pb-3 border-b border-gray-100 mb-4">
+            <h3 class="text-sm font-extrabold text-rose-700 flex items-center gap-2">
+                <i class="fa-solid fa-trash-can text-lg"></i> İptal/Başarısız Sipariş Kaydını Sil
+            </h3>
+            <button type="button" onclick="closeDeleteOrderModal()" class="text-gray-400 hover:text-gray-600 text-lg">&times;</button>
+        </div>
+
+        <form id="deleteOrderForm" method="POST" action="">
+            @csrf
+            @method('DELETE')
+
+            <p class="text-xs text-gray-600 mb-3 leading-relaxed">
+                <strong id="deleteOrderTitle" class="text-gray-800 font-extrabold block mb-1">#0 Nolu Sipariş</strong>
+                Bu sipariş kaydını silmek istediğinize emin misiniz? Siparişle ilişkili <strong>yüklenen tüm müşteri fotoğrafları diskten kalıcı olarak silinecektir.</strong>
+            </p>
+
+            <div class="bg-rose-50 p-3 rounded-xl border border-rose-200 mb-4">
+                <label class="block text-[11px] font-extrabold text-rose-900 uppercase mb-1">Güvenlik Onayı İçin Admin Şifreniz *</label>
+                <input type="password" name="password" required placeholder="Admin şifrenizi giriniz..." class="w-full text-xs border-gray-300 rounded-lg p-2.5 border focus:border-rose-500 focus:ring-0 outline-none">
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="closeDeleteOrderModal()" class="py-2 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-lg transition">
+                    Vazgeç
+                </button>
+                <button type="submit" class="py-2 px-4 bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-xs rounded-lg transition shadow-sm flex items-center gap-1.5">
+                    <i class="fa-solid fa-trash-can text-xs"></i> Görselleri ve Kaydı Sil
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openDeleteOrderModal(orderId, title) {
+    const modal = document.getElementById('deleteOrderModal');
+    const form = document.getElementById('deleteOrderForm');
+    const titleEl = document.getElementById('deleteOrderTitle');
+    
+    if (form) {
+        form.action = `/yonetim/siparisler/${orderId}`;
+    }
+    if (titleEl) {
+        titleEl.textContent = title || `#${orderId} Nolu Sipariş`;
+    }
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        const pwd = form.querySelector('input[name="password"]');
+        if (pwd) {
+            pwd.value = '';
+            setTimeout(() => pwd.focus(), 100);
+        }
+    }
+}
+
+function closeDeleteOrderModal() {
+    const modal = document.getElementById('deleteOrderModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+}
+</script>
 @endsection

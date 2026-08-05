@@ -208,6 +208,19 @@
     </div>
 </div>
 
+<!-- Fotoğraflar Yükleniyor Yükleme Animasyonu (Loading Overlay) -->
+<div id="uploadLoadingOverlay" class="fixed inset-0 z-[100000] bg-black/80 backdrop-blur-md hidden flex-col items-center justify-center p-6 text-white text-center transition-all duration-300">
+    <div class="bg-[#29221C] border border-[#C87A53]/50 p-8 rounded-3xl shadow-2xl flex flex-col items-center max-w-sm w-full relative">
+        <div class="relative w-20 h-20 mb-5 flex items-center justify-center">
+            <div class="absolute inset-0 rounded-full border-4 border-[#C87A53]/30 animate-ping"></div>
+            <div class="w-16 h-16 rounded-full border-4 border-[#C87A53] border-t-transparent animate-spin"></div>
+            <i class="fa-solid fa-cloud-arrow-up text-[#C87A53] text-2xl absolute"></i>
+        </div>
+        <h3 class="text-base font-extrabold text-white mb-1.5">Fotoğraflarınız Yükleniyor...</h3>
+        <p class="text-xs text-gray-300 leading-relaxed">Yüksek kaliteli görselleriniz işlenip hazırlanıyor. Lütfen bekleyiniz...</p>
+    </div>
+</div>
+
 <!-- 3D Customization Modal -->
 <div id="customizationModal" class="fixed inset-0 z-[99999] bg-black/90 hidden flex-col items-center justify-center p-4 md:p-8 backdrop-blur-sm">
     <div class="bg-white w-full max-w-5xl rounded-2xl overflow-hidden flex flex-col h-[90vh] shadow-2xl relative">
@@ -713,17 +726,7 @@ function capture3DSnapshot() {
     }
 }
 
-function submitCustomizedForm() {
-    capture3DSnapshot();
-    closeCustomizationModal();
-    const form = document.getElementById('addToCartForm');
-    if (form) {
-        form.onsubmit = null;
-        form.submit();
-    }
-}
-
-function confirmAddToCart(event) {
+function submitAddToCartAjax() {
     capture3DSnapshot();
     const frontInput = document.getElementById('customImageFrontInput');
     const singleInput = document.getElementById('customImageInput');
@@ -733,12 +736,66 @@ function confirmAddToCart(event) {
                           (singleInput && singleInput.files && singleInput.files.length > 0);
 
     if (!hasFrontPhoto) {
-        event.preventDefault();
         showToast('Sipariş verebilmek için 1. Fotoğrafı (Ön Yüz) yüklemeniz zorunludur! (2. Fotoğraf opsiyoneldir)', 'error');
         openCustomizationModal();
         return false;
     }
-    return true;
+
+    const overlay = document.getElementById('uploadLoadingOverlay');
+    if (overlay) {
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+    }
+
+    const form = document.getElementById('addToCartForm');
+    const formData = new FormData(form);
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+    fetch(form.action, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': csrfToken || ''
+        },
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (overlay) {
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
+        }
+
+        if (data.status === 'success') {
+            closeCustomizationModal();
+            showToast(data.message || 'Kişiselleştirilmiş ürününüz sepete eklendi!', 'success');
+            
+            // Auto open Cart Drawer
+            if (typeof openCartDrawer === 'function') {
+                setTimeout(openCartDrawer, 300);
+            }
+        } else {
+            showToast(data.message || 'Ürün sepete eklenirken bir hata oluştu.', 'error');
+        }
+    })
+    .catch(err => {
+        if (overlay) {
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
+        }
+        console.error('Add to cart AJAX error:', err);
+        showToast('Fotoğraflar yüklenirken sunucu hatası oluştu.', 'error');
+    });
+}
+
+function submitCustomizedForm() {
+    submitAddToCartAjax();
+}
+
+function confirmAddToCart(event) {
+    if (event) event.preventDefault();
+    submitAddToCartAjax();
+    return false;
 }
 
 // Robust Drag, Resize & Rotate Engine
