@@ -308,6 +308,10 @@ class CheckoutController extends Controller
                     \Illuminate\Support\Facades\Log::error('SMS Gönderim Hatası: ' . $e->getMessage());
                 }
 
+                // Clear Cart Session ONLY on successful payment
+                session()->forget('cart');
+                session()->forget('pending_order_id');
+
                 return redirect()->route('checkout.result')->with([
                     'status' => 'success',
                     'order_id' => $order->id
@@ -318,6 +322,35 @@ class CheckoutController extends Controller
                     $rawMsg = '3D Güvenlik doğrulaması kart sahibi tarafından iptal edildi veya tamamlanamadı.';
                 }
                 $errorMessage = str_starts_with($rawMsg, 'Banka Yanıtı :') ? $rawMsg : 'Banka Yanıtı : ' . $rawMsg;
+
+                // Ensure cart session is NEVER lost on payment failure by restoring cart items from order
+                if ($order && $order->items->count() > 0) {
+                    $restoredCart = [];
+                    foreach ($order->items as $item) {
+                        $features = is_array($item->features) ? $item->features : (json_decode($item->features, true) ?: []);
+                        $fImg = $features['front_image'] ?? ($features['custom_image'] ?? null);
+                        $bImg = $features['back_image'] ?? null;
+                        $preview = $features['custom_preview'] ?? null;
+                        
+                        $uniqueSeed = ($fImg ?: '') . ($bImg ?: '') . ($preview ?: '');
+                        $cartKey = $item->product_id . ($uniqueSeed ? '_' . md5($uniqueSeed) : '');
+                        
+                        $restoredCart[$cartKey] = [
+                            'product_id' => $item->product_id,
+                            'name' => $item->product ? $item->product->name : 'Ahşap Ürün',
+                            'price' => $item->price,
+                            'quantity' => $item->quantity,
+                            'image' => $preview ? url($preview) : ($fImg ? url($fImg) : ($item->product ? $item->product->image : null)),
+                            'custom_image_front' => $fImg ? url($fImg) : null,
+                            'custom_image_back' => $bImg ? url($bImg) : null,
+                            'custom_image' => $fImg ? url($fImg) : null,
+                            'custom_preview' => $preview ? url($preview) : null,
+                        ];
+                    }
+                    if (!empty($restoredCart)) {
+                        session()->put('cart', $restoredCart);
+                    }
+                }
 
                 // Update order status to failed with failure reason
                 $order->update([
