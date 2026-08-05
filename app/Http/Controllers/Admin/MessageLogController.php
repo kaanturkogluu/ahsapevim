@@ -84,7 +84,7 @@ class MessageLogController extends Controller
         );
 
         if ($success) {
-            return redirect()->back()->with('success', "'{$request->to_email}' adresine manuel e-posta başarıyla gönderildi ve loglandı.");
+            return redirect()->back()->with('success', "'{$request->to_email}' adresine manuel e-posta gönderimi başarıyla kuyruğa (sıraya) eklendi ve arka planda gönderiliyor.");
         }
 
         return redirect()->back()->with('error', "'{$request->to_email}' adresine e-posta gönderimi başarısız oldu! Log detaylarını inceleyebilirsiniz.");
