@@ -25,7 +25,7 @@ class PageController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|unique:pages,slug',
-            'content' => 'required|string',
+            'content' => 'nullable|string',
         ]);
 
         $slug = $request->slug ? Str::slug($request->slug) : Str::slug($request->title);
@@ -33,7 +33,7 @@ class PageController extends Controller
         Page::create([
             'title' => $request->title,
             'slug' => $slug,
-            'content' => $request->content,
+            'content' => $request->input('content', ''),
             'is_active' => $request->has('is_active'),
         ]);
 
@@ -157,13 +157,13 @@ class PageController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:pages,slug,' . $id,
-            'content' => 'required|string',
+            'content' => 'nullable|string',
         ]);
 
         $page->update([
             'title' => $request->title,
             'slug' => Str::slug($request->slug),
-            'content' => $request->content,
+            'content' => $request->input('content', ''),
             'is_active' => $request->has('is_active'),
         ]);
 

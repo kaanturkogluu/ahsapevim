@@ -33,9 +33,9 @@
         </div>
 
         <div class="mb-6">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Sayfa İçeriği *</label>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Sayfa İçeriği (Opsiyonel)</label>
             <div id="editorContainer" class="border border-gray-300 rounded-lg overflow-hidden"></div>
-            <textarea id="pageContent" name="content" class="hidden" required>{{ old('content') }}</textarea>
+            <textarea id="pageContent" name="content" class="hidden">{{ old('content') }}</textarea>
         </div>
 
         <div class="flex items-center gap-2 mb-6">
