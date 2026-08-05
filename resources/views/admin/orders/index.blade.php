@@ -30,11 +30,7 @@
         </form>
     </div>
 
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg text-xs font-bold mb-4">
-            {{ session('success') }}
-        </div>
-    @endif
+
 
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
@@ -96,7 +92,9 @@
                             @elseif($order->status === 'pending')
                                 <span class="px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full font-bold text-[10px]">Beklemede</span>
                             @else
-                                <span class="px-2.5 py-1 bg-red-100 text-red-700 rounded-full font-bold text-[10px]">İptal / Başarısız</span>
+                                <span class="px-2.5 py-1 bg-red-100 text-red-700 rounded-full font-bold text-[10px]">
+                                    İptal / {{ $order->payment_error_reason ?: 'Başarısız' }}
+                                </span>
                             @endif
                         </td>
                         <td class="py-4 text-right">

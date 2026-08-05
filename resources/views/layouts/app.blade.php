@@ -268,28 +268,6 @@
 
     <!-- Main Content -->
     <main class="flex-grow pt-6 pb-12">
-        @if(session('success'))
-            <div id="toast-success"
-                class="fixed top-4 right-4 z-[9999] bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg transition-opacity duration-500 flex items-center justify-between min-w-[300px]">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-circle-check text-green-500 text-xl"></i>
-                    <span class="font-medium">{{ session('success') }}</span>
-                </div>
-                <button onclick="document.getElementById('toast-success').style.display='none'"
-                    class="text-green-700 hover:text-green-900 focus:outline-none">
-                    <i class="fa-solid fa-times"></i>
-                </button>
-            </div>
-            <script>
-                setTimeout(() => {
-                    const toast = document.getElementById('toast-success');
-                    if (toast) {
-                        toast.style.opacity = '0';
-                        setTimeout(() => toast.style.display = 'none', 500);
-                    }
-                }, 3000);
-            </script>
-        @endif
         @yield('content')
     </main>
 
@@ -435,20 +413,26 @@
         if (!container) return;
 
         const toast = document.createElement('div');
-        toast.className = `pointer-events-auto flex items-center gap-3 p-4 rounded-2xl shadow-xl text-xs font-bold transition-all duration-300 transform translate-x-10 opacity-0 border ${
-            type === 'success' ? 'bg-emerald-800 text-white border-emerald-600' :
-            type === 'error' ? 'bg-red-800 text-white border-red-600' :
-            'bg-amber-800 text-white border-amber-600'
+        toast.className = `pointer-events-auto flex items-center gap-3.5 p-4 rounded-2xl shadow-2xl text-xs font-bold transition-all duration-300 transform translate-x-10 opacity-0 border backdrop-blur-md min-w-[300px] max-w-md ${
+            type === 'success' ? 'bg-[#29221C]/95 text-white border-[#C87A53]/50' :
+            type === 'error' ? 'bg-rose-950/95 text-white border-rose-600/50' :
+            'bg-[#29221C]/95 text-white border-amber-500/50'
         }`;
 
-        const iconClass = type === 'success' ? 'fa-circle-check text-emerald-300' :
-                          type === 'error' ? 'fa-triangle-exclamation text-red-300' :
-                          'fa-circle-info text-amber-300';
+        const iconBg = type === 'success' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' :
+                       type === 'error' ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' :
+                       'bg-amber-500/20 text-amber-400 border-amber-500/30';
+
+        const iconClass = type === 'success' ? 'fa-circle-check' :
+                          type === 'error' ? 'fa-triangle-exclamation' :
+                          'fa-circle-info';
 
         toast.innerHTML = `
-            <i class="fa-solid ${iconClass} text-lg shrink-0"></i>
-            <div class="flex-1 leading-snug">${message}</div>
-            <button onclick="this.parentElement.remove()" class="text-white/70 hover:text-white text-sm focus:outline-none ml-2">
+            <div class="w-8 h-8 rounded-xl ${iconBg} border flex items-center justify-center text-sm shrink-0">
+                <i class="fa-solid ${iconClass}"></i>
+            </div>
+            <div class="flex-1 leading-snug text-gray-100">${message}</div>
+            <button onclick="this.parentElement.remove()" class="w-6 h-6 rounded-full hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center text-xs transition shrink-0 ml-1">
                 <i class="fa-solid fa-times"></i>
             </button>
         `;

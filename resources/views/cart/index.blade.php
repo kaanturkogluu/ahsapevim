@@ -7,11 +7,7 @@
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold text-gray-800 mb-8">Sepetim</h1>
 
-        @if(session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6">
-                {{ session('success') }}
-            </div>
-        @endif
+
 
         @if(empty($cart))
             <div class="bg-white rounded-xl shadow-sm p-12 text-center border border-gray-100">

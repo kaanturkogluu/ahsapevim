@@ -206,10 +206,28 @@ class CheckoutController extends Controller
             );
 
             if ($isSuccess) {
-                // Update order status to paid
+                // Calculate merchant payout total from items if available
+                $merchantPayout = 0;
+                if ($payment->getPaymentItems()) {
+                    foreach ($payment->getPaymentItems() as $pItem) {
+                        $merchantPayout += (float)($pItem->getMerchantPayoutAmount() ?? 0);
+                    }
+                }
+                $paidPrice = (float)($payment->getPaidPrice() ?: $order->total_amount);
+                if ($merchantPayout <= 0) {
+                    $merchantPayout = $paidPrice;
+                }
+
+                // Update order status to paid with financial details
                 $order->update([
                     'status' => 'paid',
                     'payment_id' => $payment->getPaymentId() ?: ('IYZ_' . time()),
+                    'paid_price' => $paidPrice,
+                    'installment' => (int)($payment->getInstallment() ?: 1),
+                    'merchant_payout_amount' => round($merchantPayout, 2),
+                    'card_family' => $payment->getCardFamily(),
+                    'card_last_four' => $payment->getLastFourDigits(),
+                    'payment_error_reason' => null,
                 ]);
 
                 // Decrement stock for each item
@@ -257,15 +275,16 @@ class CheckoutController extends Controller
                     'order_id' => $order->id
                 ]);
             } else {
-                // Update order status to failed
-                $order->update([
-                    'status' => 'failed',
-                ]);
-
                 $errorMessage = $payment ? $payment->getErrorMessage() : null;
                 if (empty($errorMessage)) {
                     $errorMessage = 'Iyzico ödeme doğrulaması başarısız oldu (Hata Kodu: ' . ($payment ? $payment->getErrorCode() : 'Bilinmiyor') . '). Sandbox test kartı SMS şifresi ekranında 123456 veya 111111 giriniz.';
                 }
+
+                // Update order status to failed with failure reason
+                $order->update([
+                    'status' => 'failed',
+                    'payment_error_reason' => $errorMessage,
+                ]);
 
                 return redirect()->route('checkout.result')->with([
                     'status' => 'error',

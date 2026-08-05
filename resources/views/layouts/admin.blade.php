@@ -43,13 +43,37 @@
         </header>
         <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
             @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
-                    {{ session('success') }}
+                <div id="adminSuccessToast" class="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-xl shadow-sm mb-5 flex items-center justify-between text-xs font-bold transition-all duration-300">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                            <i class="fa-solid fa-check text-xs"></i>
+                        </div>
+                        <span>{{ session('success') }}</span>
+                    </div>
+                    <button onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-700 p-1">
+                        <i class="fa-solid fa-times text-sm"></i>
+                    </button>
+                </div>
+            @endif
+            @if(session('error'))
+                <div id="adminErrorToast" class="bg-gradient-to-r from-rose-50 to-red-50 border border-rose-200 text-rose-800 px-4 py-3 rounded-xl shadow-sm mb-5 flex items-center justify-between text-xs font-bold transition-all duration-300">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-7 h-7 rounded-lg bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                            <i class="fa-solid fa-exclamation text-xs"></i>
+                        </div>
+                        <span>{{ session('error') }}</span>
+                    </div>
+                    <button onclick="this.parentElement.remove()" class="text-rose-500 hover:text-rose-700 p-1">
+                        <i class="fa-solid fa-times text-sm"></i>
+                    </button>
                 </div>
             @endif
             @if($errors->any())
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-                    <ul>
+                <div class="bg-gradient-to-r from-rose-50 to-red-50 border border-rose-200 text-rose-800 p-4 rounded-xl shadow-sm mb-5 text-xs">
+                    <div class="font-bold mb-1 flex items-center gap-1.5 text-rose-900">
+                        <i class="fa-solid fa-circle-exclamation"></i> Lütfen aşağıdaki hataları düzeltin:
+                    </div>
+                    <ul class="list-disc list-inside space-y-0.5 text-rose-700 font-medium">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach

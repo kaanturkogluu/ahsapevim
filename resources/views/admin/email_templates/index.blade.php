@@ -11,11 +11,7 @@
         </div>
     </div>
 
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg text-xs font-bold mb-6">
-            <i class="fa-solid fa-check-circle mr-1"></i> {{ session('success') }}
-        </div>
-    @endif
+
 
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">

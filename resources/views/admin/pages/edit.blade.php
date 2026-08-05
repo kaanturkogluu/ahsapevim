@@ -317,7 +317,15 @@
                 row.remove();
                 updateFaqIndexes();
             } else {
-                alert('En az bir soru kartı kalmalıdır.');
+                let warningEl = document.getElementById('faqWarningMsg');
+                if (!warningEl) {
+                    warningEl = document.createElement('div');
+                    warningEl.id = 'faqWarningMsg';
+                    warningEl.className = 'mt-3 p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold rounded-xl flex items-center gap-2';
+                    warningEl.innerHTML = '<i class="fa-solid fa-circle-exclamation text-rose-500"></i> En az 1 adet soru ve cevap kartı kalmalıdır.';
+                    container.parentNode.appendChild(warningEl);
+                    setTimeout(() => warningEl.remove(), 4000);
+                }
             }
         }
         </script>

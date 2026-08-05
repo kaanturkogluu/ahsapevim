@@ -15,11 +15,7 @@
         </a>
     </div>
 
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg text-xs font-bold mb-6">
-            {{ session('success') }}
-        </div>
-    @endif
+
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <!-- Müşteri Bilgileri -->
@@ -90,6 +86,58 @@
             </form>
         </div>
     </div>
+
+    <!-- Iyzico Finansal Hakediş & İptal / Başarısızlık Detayları -->
+    @if($order->status === 'failed' || $order->status === 'cancelled' || !empty($order->payment_error_reason))
+        <div class="bg-rose-50 border border-rose-200 p-4 rounded-xl mb-6 shadow-2xs">
+            <div class="flex items-center gap-2 text-rose-900 font-extrabold text-xs uppercase tracking-wider mb-1.5">
+                <i class="fa-solid fa-circle-xmark text-rose-600 text-sm"></i> Ödeme Durumu: İptal / Başarısız
+            </div>
+            <div class="text-xs text-rose-800 space-y-1">
+                <p><strong>İptal / Başarısız Sebebi:</strong> <span class="font-extrabold text-rose-950">{{ $order->payment_error_reason ?: 'Yetersiz Bakiye / Kart Onayı Alınamadı' }}</span></p>
+                @if($order->payment_id)
+                    <p class="font-mono text-[11px] text-rose-700"><strong>İşlem Referans No:</strong> {{ $order->payment_id }}</p>
+                @endif
+            </div>
+        </div>
+    @else
+        <div class="bg-gradient-to-br from-emerald-50/70 via-white to-gray-50 p-4 rounded-xl border border-emerald-200/80 mb-6 shadow-2xs">
+            <h4 class="text-xs font-bold text-emerald-900 uppercase tracking-wider mb-3 flex items-center justify-between">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-credit-card text-emerald-600"></i> Iyzico Ödeme & Finansal Hakediş Detayları</span>
+                <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] rounded font-mono font-bold">Iyzico 256-Bit SSL</span>
+            </h4>
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+                <div class="bg-white p-3 rounded-lg border border-gray-200/70 shadow-2xs">
+                    <span class="text-[10px] font-extrabold text-gray-400 uppercase block">Bankanın Çektiği Tutar</span>
+                    <span class="text-sm font-black text-gray-800 mt-0.5 block">₺{{ number_format($order->paid_price ?? $order->total_amount, 2, ',', '.') }}</span>
+                </div>
+
+                <div class="bg-white p-3 rounded-lg border border-gray-200/70 shadow-2xs">
+                    <span class="text-[10px] font-extrabold text-gray-400 uppercase block">Taksit Sayısı</span>
+                    <span class="text-sm font-black text-blue-700 mt-0.5 block">
+                        @if(($order->installment ?? 1) > 1)
+                            {{ $order->installment }} Taksit
+                        @else
+                            Tek Çekim (1 Taksit)
+                        @endif
+                    </span>
+                </div>
+
+                <div class="bg-white p-3 rounded-lg border border-emerald-300 shadow-2xs bg-emerald-50/40">
+                    <span class="text-[10px] font-extrabold text-emerald-800 uppercase block">Esnafın Hak Ediş Miktarı (Net)</span>
+                    <span class="text-sm font-black text-emerald-700 mt-0.5 block">₺{{ number_format($order->merchant_payout_amount ?? $order->total_amount, 2, ',', '.') }}</span>
+                </div>
+
+                <div class="bg-white p-3 rounded-lg border border-gray-200/70 shadow-2xs">
+                    <span class="text-[10px] font-extrabold text-gray-400 uppercase block">Kart / Referans No</span>
+                    <span class="text-xs font-bold text-gray-700 mt-0.5 block">
+                        {{ $order->card_family ?: 'Kredi Kartı' }} {{ $order->card_last_four ? '**** ' . $order->card_last_four : '' }}
+                    </span>
+                    <span class="text-[10px] font-mono text-gray-400 block truncate" title="{{ $order->payment_id }}">{{ $order->payment_id ?: 'N/A' }}</span>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <!-- Sipariş Kalemleri ve Yüklenen Fotoğraflar -->
     <div class="bg-gray-50 rounded-xl p-5 border border-gray-200/80 mb-6">

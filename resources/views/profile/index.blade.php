@@ -126,11 +126,16 @@
             
             <!-- SEKME 1: SİPARİŞLERİM -->
             <div id="tab-content-siparisler" class="tab-content hidden space-y-4">
-                <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-sm">
-                    <h2 class="text-base font-extrabold text-gray-800 mb-1 flex items-center gap-2">
-                        <i class="fa-solid fa-box-open text-[#C87A53]"></i> Geçmiş Siparişleriniz
-                    </h2>
-                    <p class="text-xs text-gray-500">Verdiğiniz tüm siparişlerin durumunu ve satın alınan ürünleri buradan inceleyebilirsiniz.</p>
+                <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-base font-extrabold text-gray-800 mb-1 flex items-center gap-2">
+                            <i class="fa-solid fa-box-open text-[#C87A53]"></i> Geçmiş Siparişleriniz
+                        </h2>
+                        <p class="text-xs text-gray-500">Verdiğiniz tüm siparişlerin durumunu ve satın alınan ürünleri buradan inceleyebilirsiniz.</p>
+                    </div>
+                    <a href="{{ url('/urunler') }}" class="py-2.5 px-5 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-xl text-xs transition inline-flex items-center gap-2 shrink-0 shadow-sm self-start sm:self-auto">
+                        <i class="fa-solid fa-bag-shopping"></i> Alışverişe Başla
+                    </a>
                 </div>
 
                 @forelse($orders as $order)
@@ -174,7 +179,7 @@
                                         </span>
                                     @else
                                         <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full font-extrabold text-xs inline-flex items-center gap-1">
-                                            <i class="fa-solid fa-circle-xmark text-[10px]"></i> İptal / Başarısız
+                                            <i class="fa-solid fa-circle-xmark text-[10px]"></i> İptal / {{ $order->payment_error_reason ?: 'Yetersiz Bakiye' }}
                                         </span>
                                     @endif
                                 </div>
