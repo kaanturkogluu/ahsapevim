@@ -150,6 +150,7 @@ class CheckoutController extends Controller
                 'tracking_code' => $order->tracking_code ?: 'AHS-' . $order->id,
                 'total_amount' => number_format($order->total_amount, 2, ',', '.'),
                 'delivery_address' => $order->address . ' (' . ($order->city ?: 'Manisa') . ')',
+                'product_details' => $this->formatOrderItemsHtml($order),
             ];
 
             try {
@@ -276,6 +277,7 @@ class CheckoutController extends Controller
                     'tracking_code' => $order->tracking_code ?: 'AHS-' . $order->id,
                     'total_amount' => number_format($order->total_amount, 2, ',', '.'),
                     'delivery_address' => $order->address . ' (' . ($order->city ?: 'Manisa') . ')',
+                    'product_details' => $this->formatOrderItemsHtml($order),
                 ];
 
                 try {
@@ -400,5 +402,22 @@ class CheckoutController extends Controller
         }
 
         return true;
+    }
+
+    protected function formatOrderItemsHtml($order)
+    {
+        $html = '<table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px;">';
+        $html .= '<thead><tr style="background-color: #F5F2EB; text-align: left; color: #666;"><th style="padding: 8px; border-bottom: 1px solid #EFEAE0;">Ürün</th><th style="padding: 8px; text-align: center; border-bottom: 1px solid #EFEAE0;">Adet</th><th style="padding: 8px; text-align: right; border-bottom: 1px solid #EFEAE0;">Fiyat</th></tr></thead>';
+        $html .= '<tbody>';
+
+        foreach ($order->items as $item) {
+            $pName = e($item->product ? $item->product->name : 'Ahşap Ürün');
+            $qty = intval($item->quantity);
+            $price = number_format($item->price * $qty, 2, ',', '.');
+            $html .= "<tr><td style=\"padding: 8px; border-bottom: 1px solid #EFEAE0;\">{$pName}</td><td style=\"padding: 8px; text-align: center; border-bottom: 1px solid #EFEAE0;\">{$qty}</td><td style=\"padding: 8px; text-align: right; border-bottom: 1px solid #EFEAE0;\">₺{$price}</td></tr>";
+        }
+
+        $html .= '</tbody></table>';
+        return $html;
     }
 }
