@@ -33,7 +33,7 @@ class PageController extends Controller
         Page::create([
             'title' => $request->title,
             'slug' => $slug,
-            'content' => $request->input('content', ''),
+            'content' => $request->input('content') ?? '',
             'is_active' => $request->has('is_active'),
         ]);
 
@@ -163,7 +163,7 @@ class PageController extends Controller
         $page->update([
             'title' => $request->title,
             'slug' => Str::slug($request->slug),
-            'content' => $request->input('content', ''),
+            'content' => $request->input('content') ?? '',
             'is_active' => $request->has('is_active'),
         ]);
 
