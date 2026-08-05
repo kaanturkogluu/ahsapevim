@@ -102,6 +102,7 @@ class CheckoutController extends Controller
             'city' => $request->city ?: 'Manisa',
             'district' => $request->district ?: 'Merkez',
             'identity_number' => $request->identity_number ?: '11111111111',
+            'note' => $request->note,
             'total_amount' => $totalAmount,
             'status' => 'pending',
         ]);

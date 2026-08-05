@@ -28,6 +28,8 @@ class Order extends Model
         'payment_id',
         'shipping_company_id',
         'cargo_tracking_code',
+        'note',
+        'admin_notified_at',
     ];
 
     public function items()

@@ -57,14 +57,25 @@
                 <p class="whitespace-pre-line">{{ $order->address }}</p>
                 <p><strong>Şehir / İlçe:</strong> {{ $order->city ?: 'Manisa' }} / {{ $order->district ?: 'Merkez' }}</p>
             </div>
+
+            @if(!empty($order->note))
+                <div class="mt-3 pt-3 border-t border-gray-200/80">
+                    <span class="block text-[10px] font-extrabold text-[#C87A53] uppercase mb-1">
+                        <i class="fa-solid fa-note-sticky"></i> Müşteri Sipariş Notu:
+                    </span>
+                    <p class="text-xs text-gray-800 italic bg-white p-2 rounded-lg border border-amber-200/70 font-serif">
+                        "{{ $order->note }}"
+                    </p>
+                </div>
+            @endif
         </div>
 
         <!-- Durum ve Kargo Takip Güncelleme Formu -->
         <div class="bg-orange-50/50 p-4 rounded-xl border border-orange-100">
             <h4 class="text-xs font-bold text-[#C87A53] uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                <i class="fa-solid fa-truck-fast"></i> Kargo & Durum Güncelle
+                <i class="fa-solid fa-truck-fast"></i> Kargo & Durum Bilgisi
             </h4>
-            <form action="{{ route('admin.orders.update', $order->id) }}" method="POST" class="space-y-3">
+            <form action="{{ route('admin.orders.update', $order->id) }}" method="POST" class="space-y-3" onsubmit="preventSpamSubmit(this)">
                 @csrf
                 @method('PUT')
                 
@@ -95,9 +106,21 @@
                     <input type="text" name="cargo_tracking_code" placeholder="Örn: 123456789" value="{{ old('cargo_tracking_code', $order->cargo_tracking_code) }}" class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] outline-none font-mono">
                 </div>
 
-                <button type="submit" class="w-full py-2.5 px-4 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-lg text-xs transition shadow-sm flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-paper-plane"></i> Güncelle & SMS/Mail Gönder
-                </button>
+                @if(!empty($order->cargo_tracking_code) || $order->status === 'completed')
+                    <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 font-bold space-y-1">
+                        <div class="flex items-center gap-1.5 text-emerald-700">
+                            <i class="fa-solid fa-circle-check text-sm"></i>
+                            <span>Kargo Bilgisi İletildi</span>
+                        </div>
+                        <p class="text-[11px] text-emerald-800 font-normal">
+                            Müşteriye e-posta ve SMS bilgilendirmesi gönderilmiştir. Tekrarlanan mail/SMS spamını önlemek amacıyla güncelleme butonu kaldırılmıştır.
+                        </p>
+                    </div>
+                @else
+                    <button type="submit" class="w-full py-2.5 px-4 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-lg text-xs transition shadow-sm flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-paper-plane"></i> Güncelle & SMS/Mail Gönder
+                    </button>
+                @endif
             </form>
         </div>
     </div>
@@ -326,7 +349,7 @@ function closeDeleteOrderModal() {
             <button type="button" onclick="closeSendMailModal()" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
         </div>
 
-        <form action="{{ route('admin.mail.send_manual') }}" method="POST" class="space-y-4">
+        <form action="{{ route('admin.mail.send_manual') }}" method="POST" class="space-y-4" onsubmit="preventSpamSubmit(this)">
             @csrf
             <div>
                 <label class="block text-[11px] font-extrabold text-gray-500 uppercase mb-1">Alıcı E-Posta Adresi *</label>
@@ -367,7 +390,7 @@ function closeDeleteOrderModal() {
             <button type="button" onclick="closeSendSmsModal()" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
         </div>
 
-        <form action="{{ route('admin.sms.send_manual') }}" method="POST" class="space-y-4">
+        <form action="{{ route('admin.sms.send_manual') }}" method="POST" class="space-y-4" onsubmit="preventSpamSubmit(this)">
             @csrf
             <div>
                 <label class="block text-[11px] font-extrabold text-gray-500 uppercase mb-1">Alıcı GSM / Telefon Numarası *</label>
@@ -394,6 +417,14 @@ function closeDeleteOrderModal() {
 </div>
 
 <script>
+function preventSpamSubmit(form) {
+    const btn = form.querySelector('button[type="submit"]');
+    if (btn && !btn.disabled) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Gönderiliyor...';
+    }
+}
+
 function openSendMailModal(email = '', orderId = '') {
     const modal = document.getElementById('sendMailModal');
     if (modal) {
