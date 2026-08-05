@@ -189,11 +189,11 @@ Route::prefix('yonetim')->middleware(['auth', 'admin'])->group(function () {
     Route::resource('kategoriler', CategoryController::class)->except(['create', 'show', 'edit'])->names('admin.categories');
     
     Route::post('urunler', [ProductController::class, 'store'])->middleware('throttle:15,1')->name('admin.products.store');
-    Route::put('urunler/{urunler}', [ProductController::class, 'update'])->middleware('throttle:15,1')->name('admin.products.update');
-    Route::resource('urunler', ProductController::class)->except(['store', 'update'])->names('admin.products');
+    Route::put('urunler/{product}', [ProductController::class, 'update'])->middleware('throttle:15,1')->name('admin.products.update');
+    Route::resource('urunler', ProductController::class)->parameters(['urunler' => 'product'])->except(['store', 'update'])->names('admin.products');
 
     Route::post('3d-sablonlar', [ThreeDTemplateController::class, 'store'])->middleware('throttle:15,1')->name('admin.templates.store');
-    Route::put('3d-sablonlar/{3d_sablonlar}', [ThreeDTemplateController::class, 'update'])->middleware('throttle:15,1')->name('admin.templates.update');
+    Route::put('3d-sablonlar/{template}', [ThreeDTemplateController::class, 'update'])->middleware('throttle:15,1')->name('admin.templates.update');
     Route::resource('3d-sablonlar', ThreeDTemplateController::class)->parameters(['3d-sablonlar' => 'template'])->except(['store', 'update'])->names('admin.templates');
 
     Route::resource('sayfalar', PageController::class)->names('admin.pages');
