@@ -38,14 +38,24 @@ class CartController extends Controller
             return redirect()->back()->with('error', 'Sipariş verebilmek için 1. Fotoğrafı (Ön Yüz) yüklemeniz zorunludur!');
         }
 
-        // Strict Filename & Extension Verification (anti-exploit / double extension protection)
-        $dangerPattern = '/\.(exe|php|zip|rar|sh|bat|py|js|html|htm|phtml|phps|jar)/i';
+        // Strict Filename & Double Extension Verification (anti-exploit / security protection)
+        $dangerList = ['exe', 'php', 'zip', 'rar', 'sh', 'bat', 'py', 'js', 'html', 'htm', 'phtml', 'phps', 'jar', 'vbs', 'scr', 'dll', 'cmd'];
+        $allowedExts = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+
         foreach (['custom_image_front', 'custom_image_back', 'custom_image'] as $fileKey) {
             if ($request->hasFile($fileKey)) {
                 $file = $request->file($fileKey);
-                $origName = $file->getClientOriginalName();
-                if (preg_match($dangerPattern, $origName)) {
-                    return redirect()->back()->with('error', 'Güvenlik uyarısı: Yüklemek istediğiniz dosya şüpheli veya zararlı çift uzantı barındırıyor!');
+                $origName = strtolower($file->getClientOriginalName());
+                $nameParts = explode('.', $origName);
+                $lastExt = end($nameParts);
+
+                // Reject if final extension is not in allowed list OR if any part contains dangerous extensions
+                if (!in_array($lastExt, $allowedExts) || count(array_intersect($nameParts, $dangerList)) > 0) {
+                    $err = 'Güvenlik uyarısı: Yüklemek istediğiniz dosya şüpheli veya zararlı çift uzantı (örn: .exe, .php) barındırıyor!';
+                    if ($request->wantsJson() || $request->ajax()) {
+                        return response()->json(['status' => 'error', 'message' => $err], 422);
+                    }
+                    return redirect()->back()->with('error', $err);
                 }
             }
         }

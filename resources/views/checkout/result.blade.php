@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Siparişiniz Alındı - AhşapEvim')
+@section('title', (session('status') === 'success' ? 'Siparişiniz Alındı' : 'Ödeme Durumu') . ' - AhşapEvim')
 
 @section('content')
 <div class="bg-[#F7F5F0] py-12 min-h-screen">
@@ -141,23 +141,30 @@
                     </a>
                 </div>
             @else
-                <!-- Error State -->
-                <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center text-red-500 text-4xl mx-auto mb-6 border border-red-100">
-                    <i class="fa-solid fa-circle-xmark"></i>
+                <!-- Error State (Banka İşlemi Red Etti) -->
+                <div class="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center text-rose-600 text-4xl mx-auto mb-5 border border-rose-200 shadow-xs">
+                    <i class="fa-solid fa-[#C87A53] fa-credit-card"></i>
                 </div>
                 
-                <h1 class="text-3xl font-bold text-gray-800 mb-4 font-serif">Ödeme Başarısız Oldu</h1>
-                <p class="text-gray-600 mb-8 leading-relaxed text-sm">
-                    Siparişinizin ödeme işlemi gerçekleştirilirken bir hata oluştu:<br>
-                    <span class="text-red-600 font-semibold block mt-2 bg-red-50 py-2.5 px-4 rounded border border-red-100 inline-block text-xs">{{ session('message', 'Beklenmeyen bir hata oluştu.') }}</span>
+                <h1 class="text-3xl font-black text-gray-800 mb-2 font-serif">Banka İşlemi Red Etti</h1>
+                <p class="text-gray-600 mb-6 leading-relaxed text-xs md:text-sm max-w-lg mx-auto">
+                    Ödeme talebiniz bankanız tarafından onaylanmadı. Kart limitinizi, 3D Secure onayınızı veya İnternet alışveriş yetkisini kontrol ederek tekrar deneyebilirsiniz.
                 </p>
 
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="{{ url('/urunler') }}" onclick="event.preventDefault(); window.location.href='{{ url('/urunler?open_cart=1') }}';" class="bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-3.5 px-8 rounded-xl transition text-xs border border-stone-200">
-                        Sepete Geri Dön
+                <div class="bg-rose-50/80 border border-rose-200 rounded-2xl p-4 mb-8 text-left max-w-lg mx-auto text-xs text-rose-950 space-y-1">
+                    <span class="text-[10px] font-extrabold text-rose-800 uppercase block tracking-wider">Banka Cevabı / Ret Nedeni:</span>
+                    <p class="font-extrabold text-rose-900 text-sm flex items-center gap-1.5">
+                        <i class="fa-solid fa-triangle-exclamation text-rose-600"></i>
+                        {{ session('message', 'Banka tarafından ödeme onayı verilmedi (Yetersiz Bakiye / Kart Onayı Alınamadı).') }}
+                    </p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                    <a href="{{ url('/urunler') }}" onclick="event.preventDefault(); window.location.href='{{ url('/urunler?open_cart=1') }}';" class="bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-3.5 px-6 rounded-xl transition text-xs border border-stone-200 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> Sepete Geri Dön
                     </a>
-                    <a href="{{ route('checkout.index') }}" class="bg-[#C87A53] hover:bg-[#A65F38] text-white font-bold py-3.5 px-8 rounded-xl transition text-xs shadow-md">
-                        Tekrar Dene
+                    <a href="{{ route('checkout.index') }}" class="bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold py-3.5 px-6 rounded-xl transition text-xs shadow-md flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i> Tekrar Dene
                     </a>
                 </div>
             @endif
