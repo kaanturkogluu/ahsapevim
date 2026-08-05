@@ -289,20 +289,22 @@ class CheckoutController extends Controller
 
                 try {
                     \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_success', $orderData));
+                    app(\App\Services\MailService::class)->logMailable($order->email, "Siparişiniz Alındı (#{$order->id})", "Sipariş onay e-postası gönderildi.", 'success', null, $order->id);
                 } catch (\Throwable $e) {
                     \Illuminate\Support\Facades\Log::error('Mail Kuyruğa Gönderim Hatası: ' . $e->getMessage());
+                    app(\App\Services\MailService::class)->logMailable($order->email, "Siparişiniz Alındı (#{$order->id})", "Sipariş onay e-postası", 'failed', $e->getMessage(), $order->id);
                 }
 
-                // Send SMS to customer and shop owner via Netgsm
+                // Send SMS to customer and shop owner via Netgsm and log
                 try {
                     $netgsm = app(NetgsmService::class);
                     $customerMsg = "Degerli musterimiz, #" . $order->id . " nolu siparisiniz basariyla alinmistir. Siparisiniz en kisa surede kargolanacaktır. Bizi tercih ettiginiz icin tesekkur ederiz.";
-                    $netgsm->sendSms($order->phone, $customerMsg);
+                    $netgsm->sendSms($order->phone, $customerMsg, $order->id, 'automated');
 
                     $adminPhone = config('services.netgsm.admin_phone');
                     if ($adminPhone) {
                         $adminMsg = "Yeni siparis alindi! Siparis No: #" . $order->id . ", Tutar: " . number_format($order->total_amount, 2, ',', '.') . " TL. Musteri: " . $order->name;
-                        $netgsm->sendSms($adminPhone, $adminMsg);
+                        $netgsm->sendSms($adminPhone, $adminMsg, $order->id, 'automated');
                     }
                 } catch (\Throwable $e) {
                     \Illuminate\Support\Facades\Log::error('SMS Gönderim Hatası: ' . $e->getMessage());

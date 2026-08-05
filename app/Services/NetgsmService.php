@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\SmsLog;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -20,16 +21,27 @@ class NetgsmService
     }
 
     /**
-     * Send an SMS via Netgsm GET API
+     * Send an SMS via Netgsm GET API and record SmsLog
      * 
      * @param string $phone
      * @param string $message
+     * @param int|null $orderId
+     * @param string $type ('automated'|'manual')
      * @return bool
      */
-    public function sendSms($phone, $message)
+    public function sendSms($phone, $message, $orderId = null, $type = 'automated')
     {
         if (empty($this->usercode) || empty($this->password)) {
             Log::warning('Netgsm SMS credentials not configured in .env. Skipping SMS.');
+            SmsLog::create([
+                'order_id' => $orderId,
+                'to_phone' => $phone,
+                'message' => $message,
+                'status' => 'failed',
+                'error_message' => 'Netgsm kullanıcı adı veya şifresi .env dosyasında yapılandırılmamış.',
+                'response_code' => 'CONFIG_ERROR',
+                'type' => $type,
+            ]);
             return false;
         }
 
@@ -51,12 +63,45 @@ class NetgsmService
                 'filter' => '0',
             ]);
 
-            Log::info('Netgsm SMS response: ' . $response->body());
-            
-            // Netgsm returns status code starting with "00" on success
-            return str_starts_with($response->body(), '00');
+            $resBody = trim($response->body());
+            Log::info('Netgsm SMS response: ' . $resBody);
+
+            $isSuccess = str_starts_with($resBody, '00');
+            $responseCode = strtok($resBody, ' ');
+
+            $errorDetail = null;
+            if (!$isSuccess) {
+                $errorDetail = match($responseCode) {
+                    '20' => 'Mesaj metninde veya karakter kütüğünde hata var (Kod: 20)',
+                    '30' => 'Geçersiz kullanıcı adı veya şifre (Kod: 30)',
+                    '40' => 'Mesaj başlığı (Gönderici Adı) sistemde tanımlı değil (Kod: 40)',
+                    '70' => 'Hatalı parametre veya GSM numarası geçersiz (Kod: 70)',
+                    default => 'Netgsm Servis Hatası: ' . $resBody,
+                };
+            }
+
+            SmsLog::create([
+                'order_id' => $orderId,
+                'to_phone' => $phone,
+                'message' => $message,
+                'status' => $isSuccess ? 'success' : 'failed',
+                'error_message' => $errorDetail,
+                'response_code' => $responseCode,
+                'type' => $type,
+            ]);
+
+            return $isSuccess;
         } catch (\Exception $e) {
             Log::error('Netgsm SMS Exception: ' . $e->getMessage());
+            SmsLog::create([
+                'order_id' => $orderId,
+                'to_phone' => $phone,
+                'message' => $message,
+                'status' => 'failed',
+                'error_message' => 'Sunucu SMS Bağlantı Hatası: ' . $e->getMessage(),
+                'response_code' => 'EXCEPTION',
+                'type' => $type,
+            ]);
             return false;
         }
     }

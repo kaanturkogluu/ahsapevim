@@ -38,6 +38,14 @@
                     <p><strong>T.C. Kimlik No:</strong> {{ $order->identity_number }}</p>
                 @endif
             </div>
+            <div class="mt-4 pt-3 border-t border-gray-200/80 flex flex-wrap gap-2">
+                <button type="button" onclick="openSendMailModal('{{ $order->email }}', '{{ $order->id }}')" class="py-1.5 px-2.5 bg-amber-100 text-amber-900 hover:bg-amber-200 font-extrabold text-[11px] rounded-lg transition inline-flex items-center gap-1 border border-amber-300">
+                    <i class="fa-solid fa-paper-plane text-xs"></i> E-Posta Gönder
+                </button>
+                <button type="button" onclick="openSendSmsModal('{{ $order->phone }}', '{{ $order->id }}')" class="py-1.5 px-2.5 bg-emerald-100 text-emerald-900 hover:bg-emerald-200 font-extrabold text-[11px] rounded-lg transition inline-flex items-center gap-1 border border-emerald-300">
+                    <i class="fa-solid fa-comment-sms text-xs"></i> SMS Gönder
+                </button>
+            </div>
         </div>
 
         <!-- Teslimat Adresi -->
@@ -284,6 +292,121 @@ function openDeleteOrderModal(orderId, title) {
 
 function closeDeleteOrderModal() {
     const modal = document.getElementById('deleteOrderModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+}
+</script>
+
+<!-- Manuel E-Posta Gönderme Modalı -->
+<div id="sendMailModal" class="fixed inset-0 z-[99999] bg-black/70 backdrop-blur-xs hidden flex-col items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-200 relative">
+        <div class="flex justify-between items-center pb-3 border-b border-gray-100 mb-4">
+            <h3 class="text-sm font-extrabold text-gray-800 flex items-center gap-2">
+                <i class="fa-solid fa-paper-plane text-[#C87A53]"></i> Müşteriye Manuel E-Posta Gönder
+            </h3>
+            <button type="button" onclick="closeSendMailModal()" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
+        </div>
+
+        <form action="{{ route('admin.mail.send_manual') }}" method="POST" class="space-y-4">
+            @csrf
+            <div>
+                <label class="block text-[11px] font-extrabold text-gray-500 uppercase mb-1">Alıcı E-Posta Adresi *</label>
+                <input type="email" name="to_email" id="modalToEmail" required placeholder="ornek@musteri.com" class="w-full text-xs border border-gray-300 rounded-xl p-2.5 outline-none focus:border-[#C87A53]">
+            </div>
+
+            <div>
+                <label class="block text-[11px] font-extrabold text-gray-500 uppercase mb-1">E-Posta Konusu *</label>
+                <input type="text" name="subject" required placeholder="Siparişiniz hakkında..." class="w-full text-xs border border-gray-300 rounded-xl p-2.5 outline-none focus:border-[#C87A53]">
+            </div>
+
+            <div>
+                <label class="block text-[11px] font-extrabold text-gray-500 uppercase mb-1">E-Posta İçeriği (Mesaj Metni) *</label>
+                <textarea name="body" rows="5" required placeholder="Müşterinize iletmek istediğiniz mesaj metnini buraya yazınız..." class="w-full text-xs border border-gray-300 rounded-xl p-2.5 outline-none focus:border-[#C87A53]"></textarea>
+            </div>
+
+            <input type="hidden" name="order_id" id="modalOrderId">
+
+            <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                <button type="button" onclick="closeSendMailModal()" class="py-2 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-xl transition">
+                    Vazgeç
+                </button>
+                <button type="submit" class="py-2 px-5 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold text-xs rounded-xl transition shadow-sm flex items-center gap-1.5">
+                    <i class="fa-solid fa-paper-plane"></i> Gönder ve Kaydet
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Manuel SMS Gönderme Modalı -->
+<div id="sendSmsModal" class="fixed inset-0 z-[99999] bg-black/70 backdrop-blur-xs hidden flex-col items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-200 relative">
+        <div class="flex justify-between items-center pb-3 border-b border-gray-100 mb-4">
+            <h3 class="text-sm font-extrabold text-gray-800 flex items-center gap-2">
+                <i class="fa-solid fa-comment-sms text-[#C87A53]"></i> Netgsm İle Müşteriye SMS Gönder
+            </h3>
+            <button type="button" onclick="closeSendSmsModal()" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
+        </div>
+
+        <form action="{{ route('admin.sms.send_manual') }}" method="POST" class="space-y-4">
+            @csrf
+            <div>
+                <label class="block text-[11px] font-extrabold text-gray-500 uppercase mb-1">Alıcı GSM / Telefon Numarası *</label>
+                <input type="text" name="to_phone" id="modalToPhone" required placeholder="05XXXXXXXXX" class="w-full text-xs font-mono border border-gray-300 rounded-xl p-2.5 outline-none focus:border-[#C87A53]">
+            </div>
+
+            <div>
+                <label class="block text-[11px] font-extrabold text-gray-500 uppercase mb-1">SMS Mesaj Metni *</label>
+                <textarea name="message" id="modalSmsBody" rows="4" maxlength="1000" required placeholder="Müşterinize gitmesini istediğiniz SMS metni..." class="w-full text-xs border border-gray-300 rounded-xl p-2.5 outline-none focus:border-[#C87A53]"></textarea>
+            </div>
+
+            <input type="hidden" name="order_id" id="modalSmsOrderId">
+
+            <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                <button type="button" onclick="closeSendSmsModal()" class="py-2 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-xl transition">
+                    Vazgeç
+                </button>
+                <button type="submit" class="py-2 px-5 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold text-xs rounded-xl transition shadow-sm flex items-center gap-1.5">
+                    <i class="fa-solid fa-paper-plane"></i> Netgsm İle Gönder
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openSendMailModal(email = '', orderId = '') {
+    const modal = document.getElementById('sendMailModal');
+    if (modal) {
+        document.getElementById('modalToEmail').value = email;
+        document.getElementById('modalOrderId').value = orderId;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+}
+
+function closeSendMailModal() {
+    const modal = document.getElementById('sendMailModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+}
+
+function openSendSmsModal(phone = '', orderId = '') {
+    const modal = document.getElementById('sendSmsModal');
+    if (modal) {
+        document.getElementById('modalToPhone').value = phone;
+        document.getElementById('modalSmsOrderId').value = orderId;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+}
+
+function closeSendSmsModal() {
+    const modal = document.getElementById('sendSmsModal');
     if (modal) {
         modal.classList.add('hidden');
         modal.classList.remove('flex');

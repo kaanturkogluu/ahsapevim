@@ -178,6 +178,7 @@ Route::get('/admin', function () {
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\EmailTemplateController;
 use App\Http\Controllers\Admin\ShippingCompanyController;
+use App\Http\Controllers\Admin\MessageLogController;
 
 // Admin Routes (Protected)
 Route::prefix('yonetim')->middleware(['auth', 'admin'])->group(function () {
@@ -198,4 +199,10 @@ Route::prefix('yonetim')->middleware(['auth', 'admin'])->group(function () {
     Route::put('/eposta-sablonlari/{id}', [EmailTemplateController::class, 'update'])->name('admin.email_templates.update');
     Route::get('/eposta-sablonlari/{id}/preview', [EmailTemplateController::class, 'preview'])->name('admin.email_templates.preview');
     Route::post('/eposta-sablonlari/{id}/test', [EmailTemplateController::class, 'sendTest'])->name('admin.email_templates.test');
+
+    // İletişim & Mesaj Logları (Mail & SMS)
+    Route::get('/loglar/mail', [MessageLogController::class, 'mailLogs'])->name('admin.mail_logs.index');
+    Route::get('/loglar/sms', [MessageLogController::class, 'smsLogs'])->name('admin.sms_logs.index');
+    Route::post('/manuel-mail-gonder', [MessageLogController::class, 'sendManualMail'])->name('admin.mail.send_manual');
+    Route::post('/manuel-sms-gonder', [MessageLogController::class, 'sendManualSms'])->name('admin.sms.send_manual');
 });

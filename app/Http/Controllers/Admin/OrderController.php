@@ -73,15 +73,15 @@ class OrderController extends Controller
         $isNewlyShipped = ($newStatus === 'shipped' && ($oldStatus !== 'shipped' || $oldTrackingCode !== $order->cargo_tracking_code));
 
         if ($isNewlyShipped) {
-            // 1. Send SMS via Netgsm
+            // 1. Send SMS via Netgsm and log
             try {
                 $smsMessage = "Sayın {$order->name}, Kargonuz {$shippingCompanyName} ile {$cargoCode} takip numarası ile kargolanmıştır. İyi günler dileriz - AhşapEvim";
-                app(NetgsmService::class)->sendSms($order->phone, $smsMessage);
+                app(NetgsmService::class)->sendSms($order->phone, $smsMessage, $order->id, 'automated');
             } catch (\Throwable $e) {
                 \Illuminate\Support\Facades\Log::error('Kargo SMS Gönderim Hatası: ' . $e->getMessage());
             }
 
-            // 2. Queue Email Notification
+            // 2. Queue Email Notification & Log
             try {
                 $data = [
                     'user_name' => $order->name,
@@ -94,8 +94,10 @@ class OrderController extends Controller
                 ];
 
                 \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_shipped', $data));
+                app(\App\Services\MailService::class)->logMailable($order->email, "Siparişiniz Kargolandı (#{$order->id})", "Kargonuz {$shippingCompanyName} ile {$cargoCode} takip numarası ile gönderildi.", 'success', null, $order->id);
             } catch (\Throwable $e) {
                 \Illuminate\Support\Facades\Log::error('Kargo Mail Gönderim Hatası: ' . $e->getMessage());
+                app(\App\Services\MailService::class)->logMailable($order->email, "Siparişiniz Kargolandı (#{$order->id})", "Kargo bilgilendirme e-postası", 'failed', $e->getMessage(), $order->id);
             }
 
             return redirect()->back()->with('success', "Sipariş #{$order->id} kargolandı olarak güncellendi. SMS ve E-Posta bilgilendirmesi gönderildi.");
@@ -114,11 +116,14 @@ class OrderController extends Controller
             try {
                 if ($newStatus === 'completed') {
                     \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_completed', $data));
+                    app(\App\Services\MailService::class)->logMailable($order->email, "Siparişiniz Tamamlandı (#{$order->id})", "Sipariş teslim edildi ve tamamlandı.", 'success', null, $order->id);
                 } elseif (in_array($newStatus, ['cancelled', 'failed'])) {
                     \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_cancelled', $data));
+                    app(\App\Services\MailService::class)->logMailable($order->email, "Sipariş Durumu İptal / Başarısız (#{$order->id})", "Sipariş iptal olarak işaretlendi.", 'success', null, $order->id);
                 }
             } catch (\Throwable $e) {
                 \Illuminate\Support\Facades\Log::error('Status Change Email Error: ' . $e->getMessage());
+                app(\App\Services\MailService::class)->logMailable($order->email, "Sipariş Durum Bilgilendirmesi (#{$order->id})", "Durum güncelleme e-postası", 'failed', $e->getMessage(), $order->id);
             }
         }
 
