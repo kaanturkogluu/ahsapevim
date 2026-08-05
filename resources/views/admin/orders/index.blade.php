@@ -61,19 +61,29 @@
                                 {{ $order->items->count() }} Kalem Ürün
                             </div>
                             <div class="flex flex-wrap gap-1 mt-1">
-                                @foreach($order->items as $item)
-                                    @php
-                                        $hasFront = !empty($item->features['front_image']);
-                                        $hasBack = !empty($item->features['back_image']);
-                                        $hasSingle = !empty($item->features['custom_image']);
-                                    @endphp
-                                    @if($hasFront || $hasBack || $hasSingle)
-                                        <span class="px-2 py-0.5 bg-orange-100 text-[#C87A53] rounded text-[10px] font-bold">
-                                            <i class="fa-solid fa-camera mr-0.5"></i> Çift Yüzlü Fotoğraf
-                                        </span>
-                                        @break
-                                    @endif
-                                @endforeach
+                                @php
+                                    $hasDoubleFace = false;
+                                    $hasSingleFace = false;
+                                    foreach($order->items as $item) {
+                                        $f = !empty($item->features['front_image']);
+                                        $b = !empty($item->features['back_image']);
+                                        $s = !empty($item->features['custom_image']);
+                                        if ($f && $b) {
+                                            $hasDoubleFace = true;
+                                        } elseif ($f || $b || $s) {
+                                            $hasSingleFace = true;
+                                        }
+                                    }
+                                @endphp
+                                @if($hasDoubleFace)
+                                    <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded text-[10px] font-bold">
+                                        <i class="fa-solid fa-images mr-0.5"></i> Çift Yüzlü (2 Fotoğraf)
+                                    </span>
+                                @elseif($hasSingleFace)
+                                    <span class="px-2 py-0.5 bg-orange-100 text-[#C87A53] rounded text-[10px] font-bold">
+                                        <i class="fa-solid fa-image mr-0.5"></i> Tek Yüzlü (1 Fotoğraf)
+                                    </span>
+                                @endif
                             </div>
                         </td>
                         <td class="py-4 text-center text-xs text-gray-500">

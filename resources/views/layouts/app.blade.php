@@ -540,6 +540,7 @@
                         <div class="flex-1 min-w-0">
                             <h5 class="text-xs font-bold text-gray-800 truncate">${item.name}</h5>
                             ${item.custom_image ? '<span class="text-[10px] font-semibold text-amber-700 block mt-0.5"><i class="fa-solid fa-camera"></i> Özel Tasarımlı</span>' : ''}
+                            ${(item.is_gift || item.gift_note) ? `<span class="text-[10px] font-extrabold text-amber-900 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-md inline-block mt-1"><i class="fa-solid fa-gift text-brand"></i> Hediye Notu: ${item.gift_note || 'Hediye Paketi'}</span>` : ''}
                             <div class="text-[11px] text-gray-500 mt-1 font-semibold">${itemPriceFormatted}</div>
                             
                             <div class="flex items-center gap-2 mt-2">

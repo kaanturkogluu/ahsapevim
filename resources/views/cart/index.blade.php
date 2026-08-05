@@ -80,7 +80,14 @@
                                         </div>
                                     @endif
                                     
-                                    <div class="text-brand font-extrabold text-xl mt-2">
+                                     @if(!empty($item['is_gift']) || !empty($item['gift_note']))
+                                         <div class="bg-amber-100/90 text-amber-950 border border-amber-300/80 text-xs font-bold px-3 py-1.5 rounded-lg mb-2 flex items-center gap-1.5">
+                                             <i class="fa-solid fa-gift text-brand"></i>
+                                             <span>Hediye Notu: {{ $item['gift_note'] ?: 'Hediye Paketi Yapılacak' }}</span>
+                                         </div>
+                                     @endif
+                                     
+                                     <div class="text-brand font-extrabold text-xl mt-2">
                                         {{ number_format($item['price'], 2, ',', '.') }} TL
                                     </div>
                                 </div>

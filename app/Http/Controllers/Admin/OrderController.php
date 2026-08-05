@@ -53,9 +53,9 @@ class OrderController extends Controller
         ]);
 
         $newStatus = $request->status;
-        // If cargo tracking code is provided, automatically mark status as shipped
-        if ($request->filled('cargo_tracking_code') && $newStatus !== 'completed' && $newStatus !== 'cancelled') {
-            $newStatus = 'shipped';
+        // If cargo tracking code is provided, automatically mark status as completed
+        if ($request->filled('cargo_tracking_code') && $newStatus !== 'cancelled') {
+            $newStatus = 'completed';
         }
 
         $order->update([
@@ -69,13 +69,13 @@ class OrderController extends Controller
         $shippingCompanyName = $order->shippingCompany ? $order->shippingCompany->name : 'Kargo Şirketi';
         $cargoCode = $order->cargo_tracking_code ?: 'Belirtilmedi';
 
-        // Check if order was newly shipped or tracking code was newly added
-        $isNewlyShipped = ($newStatus === 'shipped' && ($oldStatus !== 'shipped' || $oldTrackingCode !== $order->cargo_tracking_code));
+        // Check if cargo tracking code was newly added or updated
+        $isNewlyShipped = ($request->filled('cargo_tracking_code') && ($oldTrackingCode !== $order->cargo_tracking_code || $oldStatus !== 'completed'));
 
         if ($isNewlyShipped) {
             // 1. Send SMS via Netgsm and log
             try {
-                $smsMessage = "Sayın {$order->name}, Kargonuz {$shippingCompanyName} ile {$cargoCode} takip numarası ile kargolanmıştır. İyi günler dileriz - AhşapEvim";
+                $smsMessage = "Sayın {$order->name}, Kargonuz {$shippingCompanyName} ile {$cargoCode} takip numarası ile kargolanmıştır. Siparişiniz tamamlandı olarak güncellenmiştir. AhşapEvim";
                 app(NetgsmService::class)->sendSms($order->phone, $smsMessage, $order->id, 'automated');
             } catch (\Throwable $e) {
                 \Illuminate\Support\Facades\Log::error('Kargo SMS Gönderim Hatası: ' . $e->getMessage());
@@ -91,16 +91,17 @@ class OrderController extends Controller
                     'cargo_tracking_code' => $cargoCode,
                     'total_amount' => number_format($order->total_amount, 2, ',', '.'),
                     'delivery_address' => $order->address . ' (' . ($order->city ?: 'Manisa') . ')',
+                    'product_details' => $this->formatOrderItemsHtml($order),
                 ];
 
                 \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_shipped', $data));
-                app(\App\Services\MailService::class)->logMailable($order->email, "Siparişiniz Kargolandı (#{$order->id})", "Kargonuz {$shippingCompanyName} ile {$cargoCode} takip numarası ile gönderildi.", 'success', null, $order->id);
+                app(\App\Services\MailService::class)->logMailable($order->email, "Siparişiniz Kargolandı (#{$order->id})", "Kargonuz {$shippingCompanyName} ile {$cargoCode} takip numarası ile gönderildi ve siparişiniz tamamlandı.", 'success', null, $order->id);
             } catch (\Throwable $e) {
                 \Illuminate\Support\Facades\Log::error('Kargo Mail Gönderim Hatası: ' . $e->getMessage());
                 app(\App\Services\MailService::class)->logMailable($order->email, "Siparişiniz Kargolandı (#{$order->id})", "Kargo bilgilendirme e-postası", 'failed', $e->getMessage(), $order->id);
             }
 
-            return redirect()->back()->with('success', "Sipariş #{$order->id} kargolandı olarak güncellendi. SMS ve E-Posta bilgilendirmesi gönderildi.");
+            return redirect()->back()->with('success', "Sipariş #{$order->id} kargo bilgisi kaydedildi ve sipariş durumu otomatik olarak 'Tamamlandı' (completed) yapıldı. SMS ve E-Posta bilgilendirmesi gönderildi.");
         }
 
         // Generic Status Change Email Notification
@@ -142,7 +143,14 @@ class OrderController extends Controller
             $pName = e($item->product ? $item->product->name : 'Ahşap Ürün');
             $qty = intval($item->quantity);
             $price = number_format($item->price * $qty, 2, ',', '.');
-            $html .= "<tr><td style=\"padding: 8px; border-bottom: 1px solid #EFEAE0;\">{$pName}</td><td style=\"padding: 8px; text-align: center; border-bottom: 1px solid #EFEAE0;\">{$qty}</td><td style=\"padding: 8px; text-align: right; border-bottom: 1px solid #EFEAE0;\">₺{$price}</td></tr>";
+
+            $giftHtml = '';
+            if (!empty($item->features['is_gift']) || !empty($item->features['gift_note'])) {
+                $gNote = e($item->features['gift_note'] ?? 'Hediye Paketi');
+                $giftHtml = "<br><span style=\"color: #C87A53; font-size: 11px; font-weight: bold;\">🎁 Hediye Notu: {$gNote}</span>";
+            }
+
+            $html .= "<tr><td style=\"padding: 8px; border-bottom: 1px solid #EFEAE0;\">{$pName}{$giftHtml}</td><td style=\"padding: 8px; text-align: center; border-bottom: 1px solid #EFEAE0;\">{$qty}</td><td style=\"padding: 8px; text-align: right; border-bottom: 1px solid #EFEAE0;\">₺{$price}</td></tr>";
         }
 
         $html .= '</tbody></table>';

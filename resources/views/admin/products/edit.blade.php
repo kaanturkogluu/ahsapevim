@@ -14,7 +14,7 @@
         </a>
     </div>
 
-    <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data" onsubmit="preventSpamSubmit(this)">
         @csrf
         @method('PUT')
         
@@ -187,5 +187,12 @@ function calculateDiscount() {
 }
 
 document.addEventListener('DOMContentLoaded', calculateDiscount);
+function preventSpamSubmit(form) {
+    const btn = form.querySelector('button[type="submit"]');
+    if (btn && !btn.disabled) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Kaydediliyor...';
+    }
+}
 </script>
 @endsection

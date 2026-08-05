@@ -118,6 +118,8 @@ class CheckoutController extends Controller
                     'back_image' => $item['custom_image_back'] ?? null,
                     'custom_image' => $item['custom_image'] ?? null,
                     'custom_preview' => $item['custom_preview'] ?? null,
+                    'is_gift' => $item['is_gift'] ?? false,
+                    'gift_note' => $item['gift_note'] ?? null,
                 ]
             ]);
         }
@@ -414,7 +416,14 @@ class CheckoutController extends Controller
             $pName = e($item->product ? $item->product->name : 'Ahşap Ürün');
             $qty = intval($item->quantity);
             $price = number_format($item->price * $qty, 2, ',', '.');
-            $html .= "<tr><td style=\"padding: 8px; border-bottom: 1px solid #EFEAE0;\">{$pName}</td><td style=\"padding: 8px; text-align: center; border-bottom: 1px solid #EFEAE0;\">{$qty}</td><td style=\"padding: 8px; text-align: right; border-bottom: 1px solid #EFEAE0;\">₺{$price}</td></tr>";
+
+            $giftHtml = '';
+            if (!empty($item->features['is_gift']) || !empty($item->features['gift_note'])) {
+                $gNote = e($item->features['gift_note'] ?? 'Hediye Paketi');
+                $giftHtml = "<br><span style=\"color: #C87A53; font-size: 11px; font-weight: bold;\">🎁 Hediye Notu: {$gNote}</span>";
+            }
+
+            $html .= "<tr><td style=\"padding: 8px; border-bottom: 1px solid #EFEAE0;\">{$pName}{$giftHtml}</td><td style=\"padding: 8px; text-align: center; border-bottom: 1px solid #EFEAE0;\">{$qty}</td><td style=\"padding: 8px; text-align: right; border-bottom: 1px solid #EFEAE0;\">₺{$price}</td></tr>";
         }
 
         $html .= '</tbody></table>';

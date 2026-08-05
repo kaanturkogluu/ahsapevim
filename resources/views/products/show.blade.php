@@ -127,6 +127,19 @@
                         @endif
                     </div>
 
+                    <!-- Hediye Paketi & Notu Seçeneği -->
+                    <div class="mb-4 bg-amber-50/70 p-3.5 rounded-xl border border-amber-200/80">
+                        <label class="flex items-center gap-2 text-xs font-bold text-amber-950 cursor-pointer select-none">
+                            <input type="checkbox" name="is_gift" id="isGiftCheckbox" value="1" onchange="document.getElementById('giftNoteContainer').classList.toggle('hidden', !this.checked)" class="w-4 h-4 text-brand rounded border-gray-300 focus:ring-brand">
+                            <span class="flex items-center gap-1.5"><i class="fa-solid fa-gift text-brand text-sm"></i> Hediye Paketi İstiyorum</span>
+                        </label>
+
+                        <div id="giftNoteContainer" class="hidden mt-3 pt-2 border-t border-amber-200/60">
+                            <label class="block text-[11px] font-extrabold text-amber-900 mb-1">🎁 Hediye Notunuz (Opsiyonel)</label>
+                            <textarea name="gift_note" rows="2" maxlength="300" placeholder="Paketin içine eklenmesini istediğiniz özel notu yazınız..." class="w-full text-xs border border-amber-300 rounded-lg p-2 bg-white text-gray-800 outline-none focus:border-brand"></textarea>
+                        </div>
+                    </div>
+
                     <!-- Action Buttons -->
                     <div class="flex flex-col gap-3 mb-6">
                         @if($product->stock <= 0)

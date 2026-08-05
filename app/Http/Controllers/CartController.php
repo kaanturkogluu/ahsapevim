@@ -101,9 +101,12 @@ class CartController extends Controller
             }
         }
 
+        $isGift = $request->boolean('is_gift');
+        $giftNote = trim($request->input('gift_note', ''));
+
         $cart = session()->get('cart', []);
 
-        $uniqueSeed = ($frontImagePath ?: '') . ($backImagePath ?: '') . ($singleImagePath ?: '') . ($customPreviewPath ?: '');
+        $uniqueSeed = ($frontImagePath ?: '') . ($backImagePath ?: '') . ($singleImagePath ?: '') . ($customPreviewPath ?: '') . ($giftNote ?: '');
         $cartKey = $product->id . ($uniqueSeed ? '_' . md5($uniqueSeed) : '');
 
         $displayImage = $customPreviewPath 
@@ -123,6 +126,8 @@ class CartController extends Controller
                 'custom_image_back' => $backImagePath ? url($backImagePath) : null,
                 'custom_image' => $frontImagePath ? url($frontImagePath) : ($singleImagePath ? url($singleImagePath) : null),
                 'custom_preview' => $customPreviewPath ? url($customPreviewPath) : null,
+                'is_gift' => $isGift,
+                'gift_note' => $giftNote,
             ];
         }
 

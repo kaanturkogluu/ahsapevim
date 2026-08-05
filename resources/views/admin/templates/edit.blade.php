@@ -15,7 +15,7 @@
         <!-- Sidebar Controls / Form -->
         <div class="w-full lg:w-96 flex-shrink-0 flex flex-col gap-4">
             
-            <form action="{{ route('admin.templates.update', $template->id) }}" method="POST" id="templateForm" class="space-y-4">
+            <form action="{{ route('admin.templates.update', $template->id) }}" method="POST" id="templateForm" class="space-y-4" onsubmit="preventSpamSubmit(this)">
                 @csrf
                 @method('PUT')
                 
@@ -523,6 +523,14 @@ function redrawModel() {
     customRotatingFrame.add(pinTop, pinBottom);
 
     currentModelGroup.add(customRotatingFrame);
+}
+
+function preventSpamSubmit(form) {
+    const btn = form.querySelector('button[type="submit"]');
+    if (btn && !btn.disabled) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Kaydediliyor...';
+    }
 }
 </script>
 @endsection

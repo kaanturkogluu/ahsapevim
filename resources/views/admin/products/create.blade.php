@@ -14,7 +14,7 @@
         </a>
     </div>
 
-    <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" onsubmit="preventSpamSubmit(this)">
         @csrf
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -154,6 +154,12 @@ function calculateDiscount() {
         badge.classList.remove('hidden');
     } else {
         badge.classList.add('hidden');
+    }
+function preventSpamSubmit(form) {
+    const btn = form.querySelector('button[type="submit"]');
+    if (btn && !btn.disabled) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Kaydediliyor...';
     }
 }
 </script>

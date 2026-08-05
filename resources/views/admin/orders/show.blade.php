@@ -178,14 +178,31 @@
                                 Adet: <strong class="text-gray-800">{{ $item->quantity }}</strong> × ₺{{ number_format($item->price, 2, ',', '.') }}
                             </div>
 
+                            @if(!empty($item->features['is_gift']) || !empty($item->features['gift_note']))
+                                <div class="mt-2 bg-amber-50/80 p-2.5 rounded-xl border border-amber-200 text-xs text-amber-950">
+                                    <span class="font-extrabold text-[#C87A53] flex items-center gap-1.5 text-[11px] uppercase tracking-wider">
+                                        <i class="fa-solid fa-gift"></i> Müşterinin Hediye Notu İsteği:
+                                    </span>
+                                    <p class="mt-1 text-gray-800 italic bg-white p-2 rounded-lg border border-amber-200/60 font-serif text-xs">
+                                        "{{ $item->features['gift_note'] ?: 'Özel not belirtilmedi (Hediye Paketi Yapılacak)' }}"
+                                    </p>
+                                </div>
+                            @endif
+
                             <!-- Yüklenen Özel Ön Yüz & Arka Yüz Fotoğrafları -->
                             @php
                                 $fImg = $item->features['front_image'] ?? ($item->features['custom_image'] ?? null);
                                 $bImg = $item->features['back_image'] ?? null;
+                                $isDoubleFace = ($fImg && $bImg);
                             @endphp
                             @if($fImg || $bImg)
                                 <div class="mt-3 bg-white p-3 rounded-xl border border-orange-200/80 space-y-2">
-                                    <span class="block text-[11px] font-extrabold text-[#C87A53] uppercase tracking-wider">Müşteri Tarafından Yüklenen Fotoğraflar:</span>
+                                    <span class="block text-[11px] font-extrabold text-[#C87A53] uppercase tracking-wider">
+                                        Müşteri Tarafından Yüklenen Fotoğraflar 
+                                        <span class="px-2 py-0.5 rounded text-[10px] ml-1 {{ $isDoubleFace ? 'bg-emerald-100 text-emerald-800' : 'bg-orange-100 text-orange-800' }}">
+                                            {{ $isDoubleFace ? 'Çift Yüzlü (2 Fotoğraf)' : 'Tek Yüzlü (1 Fotoğraf)' }}
+                                        </span>
+                                    </span>
                                     <div class="flex flex-wrap items-center gap-3">
                                         @if($fImg)
                                             <div class="flex items-center gap-2 bg-orange-50 p-1.5 rounded-lg border border-orange-200">

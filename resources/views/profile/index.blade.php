@@ -206,6 +206,11 @@
                                             <div class="text-[11px] text-gray-500 mt-0.5">
                                                 Adet: <span class="font-bold text-gray-700">{{ $item->quantity }}</span> × ₺{{ number_format($item->price, 2, ',', '.') }}
                                             </div>
+                                            @if(!empty($item->features['is_gift']) || !empty($item->features['gift_note']))
+                                                <div class="mt-1 font-bold text-amber-900 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded text-[10px] inline-flex items-center gap-1">
+                                                    <i class="fa-solid fa-gift text-brand"></i> Hediye Notu: {{ $item->features['gift_note'] ?: 'Hediye Paketi Yapılacak' }}
+                                                </div>
+                                            @endif
                                             @php
                                                 $fImg = $item->features['front_image'] ?? ($item->features['custom_image'] ?? null);
                                                 $bImg = $item->features['back_image'] ?? null;
