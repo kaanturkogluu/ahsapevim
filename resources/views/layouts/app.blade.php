@@ -690,6 +690,20 @@
         }
     });
 
+    // Fixed Scroll To Top Button Trigger
+    window.addEventListener('scroll', function() {
+        const btn = document.getElementById('scrollToTopBtn');
+        if (btn) {
+            if (window.scrollY > 250) {
+                btn.classList.remove('opacity-0', 'pointer-events-none');
+                btn.classList.add('opacity-100', 'pointer-events-auto');
+            } else {
+                btn.classList.remove('opacity-100', 'pointer-events-auto');
+                btn.classList.add('opacity-0', 'pointer-events-none');
+            }
+        }
+    });
+
     // Auto trigger Toast on session flash messages & auto open cart drawer if open_cart=1 parameter exists
     document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -705,6 +719,19 @@
         @endif
     });
     </script>
+
+    <!-- Fixed Floating WhatsApp Button (Sol Alt) -->
+    <a href="https://wa.me/905xxxxxxxxx" target="_blank" title="WhatsApp İletişim Hattı" class="fixed bottom-5 left-5 z-[9999] w-12 h-12 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center text-2xl shadow-xl hover:scale-110 transition-transform duration-200 border-2 border-white group">
+        <i class="fa-brands fa-whatsapp text-2xl"></i>
+        <span class="absolute left-14 bg-emerald-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-md pointer-events-none">
+            WhatsApp Destek Hattı
+        </span>
+    </a>
+
+    <!-- Fixed Scroll To Top Button (Sağ Alt) -->
+    <button type="button" id="scrollToTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Yukarı Çık" class="fixed bottom-5 right-5 z-[9999] w-11 h-11 bg-[#C87A53] hover:bg-[#A65F38] text-white rounded-full flex items-center justify-center text-lg shadow-xl hover:scale-110 transition-all duration-200 border-2 border-white opacity-0 pointer-events-none">
+        <i class="fa-solid fa-chevron-up"></i>
+    </button>
 </body>
 
 </html>

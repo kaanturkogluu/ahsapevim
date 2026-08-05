@@ -166,24 +166,6 @@
             <div class="mt-8">
                 {{ $products->links() }}
             </div>
-
-            {{-- Atölye Banner (alt kısım) --}}
-            @if($products->count() > 0)
-            <div class="mt-10 bg-white border border-wood-light rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
-                <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 rounded-xl bg-brand/10 flex items-center justify-center shrink-0">
-                        <i class="fa-solid fa-hammer text-3xl text-brand"></i>
-                    </div>
-                    <div>
-                        <div class="font-extrabold text-gray-900 text-base mb-0.5">Özel ölçü veya tasarım mı istiyorsunuz?</div>
-                        <div class="text-sm text-gray-600">Atölyemizle doğrudan iletişime geçin, sizin için özel üretelim.</div>
-                    </div>
-                </div>
-                <a href="https://wa.me/905xxxxxxxxx" target="_blank" class="shrink-0 inline-flex items-center gap-2.5 bg-green-600 hover:bg-green-700 text-white font-bold text-sm px-5 py-3 rounded-xl transition shadow-md shadow-green-200 whitespace-nowrap">
-                    <i class="fa-brands fa-whatsapp text-lg"></i> WhatsApp'tan Yazın
-                </a>
-            </div>
-            @endif
         </div>
     </div>
 </div>
