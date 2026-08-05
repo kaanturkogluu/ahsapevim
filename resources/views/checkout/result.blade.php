@@ -96,6 +96,16 @@
                             </div>
                         @endif
 
+                        <!-- General Order Note -->
+                        @if(!empty($resultOrder->note))
+                            <div class="p-3 bg-amber-50/90 rounded-xl border border-amber-200/80 text-xs text-stone-800">
+                                <span class="font-bold text-[#C87A53] flex items-center gap-1 text-[11px] uppercase">
+                                    <i class="fa-solid fa-note-sticky"></i> Sipariş Notunuz:
+                                </span>
+                                <p class="mt-1 italic text-gray-700 font-serif text-xs">"{{ $resultOrder->note }}"</p>
+                            </div>
+                        @endif
+
                         <!-- Product Items Breakdown -->
                         <div class="pt-2">
                             <h4 class="text-xs font-extrabold text-gray-700 uppercase tracking-wider mb-3">Sipariş Edilen Ürünler</h4>
@@ -109,6 +119,11 @@
                                             <div>
                                                 <span class="font-bold text-gray-800 block">{{ $item->product ? $item->product->name : 'Ahşap Ürün' }}</span>
                                                 <span class="text-[11px] text-gray-500">{{ $item->quantity }} Adet × ₺{{ number_format($item->price, 2, ',', '.') }}</span>
+                                                @if(!empty($item->features['is_gift']) || !empty($item->features['gift_note']))
+                                                    <span class="text-[10px] text-amber-900 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded font-bold inline-block mt-1">
+                                                        🎁 Hediye Notu: {{ $item->features['gift_note'] ?: 'Hediye Paketi' }}
+                                                    </span>
+                                                @endif
                                             </div>
                                         </div>
                                         <span class="font-extrabold text-gray-800">₺{{ number_format($item->price * $item->quantity, 2, ',', '.') }}</span>
