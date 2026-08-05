@@ -20,6 +20,43 @@ class CheckoutController extends Controller
     public function index()
     {
         $cart = session()->get('cart', []);
+        
+        // If cart is empty, try restoring items from failed/pending order in session
+        if (empty($cart)) {
+            $pendingId = session()->get('pending_order_id') ?: session()->get('order_id');
+            if ($pendingId) {
+                $failedOrder = Order::with('items.product')->find($pendingId);
+                if ($failedOrder && in_array($failedOrder->status, ['pending', 'failed'])) {
+                    $restoredCart = [];
+                    foreach ($failedOrder->items as $item) {
+                        $features = is_array($item->features) ? $item->features : (json_decode($item->features, true) ?: []);
+                        $fImg = $features['front_image'] ?? ($features['custom_image'] ?? null);
+                        $bImg = $features['back_image'] ?? null;
+                        $preview = $features['custom_preview'] ?? null;
+                        
+                        $uniqueSeed = ($fImg ?: '') . ($bImg ?: '') . ($preview ?: '');
+                        $cartKey = $item->product_id . ($uniqueSeed ? '_' . md5($uniqueSeed) : '');
+                        
+                        $restoredCart[$cartKey] = [
+                            'product_id' => $item->product_id,
+                            'name' => $item->product ? $item->product->name : 'Ahşap Ürün',
+                            'price' => $item->price,
+                            'quantity' => $item->quantity,
+                            'image' => $preview ? url($preview) : ($fImg ? url($fImg) : ($item->product ? $item->product->image : null)),
+                            'custom_image_front' => $fImg ? url($fImg) : null,
+                            'custom_image_back' => $bImg ? url($bImg) : null,
+                            'custom_image' => $fImg ? url($fImg) : null,
+                            'custom_preview' => $preview ? url($preview) : null,
+                        ];
+                    }
+                    if (!empty($restoredCart)) {
+                        session()->put('cart', $restoredCart);
+                        $cart = $restoredCart;
+                    }
+                }
+            }
+        }
+
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Sepetiniz boş olduğu için ödeme sayfasına gidemezsiniz.');
         }
@@ -200,10 +237,11 @@ class CheckoutController extends Controller
                 \Illuminate\Support\Facades\Auth::loginUsingId($order->user_id);
             }
 
-            $isSuccess = $payment && (
-                ($payment->getStatus() === 'success' && $payment->getPaymentStatus() === 'SUCCESS') ||
-                ($payment->getStatus() === 'success' && empty($payment->getErrorCode()))
-            );
+            // Strict Security & Payment Validation: BOTH API status and Payment Status must be SUCCESS
+            $isSuccess = $payment &&
+                ($payment->getStatus() === 'success') &&
+                ($payment->getPaymentStatus() === 'SUCCESS') &&
+                empty($payment->getErrorCode());
 
             if ($isSuccess) {
                 // Calculate merchant payout total from items if available
@@ -275,10 +313,11 @@ class CheckoutController extends Controller
                     'order_id' => $order->id
                 ]);
             } else {
-                $errorMessage = $payment ? $payment->getErrorMessage() : null;
-                if (empty($errorMessage)) {
-                    $errorMessage = 'Iyzico ödeme doğrulaması başarısız oldu (Hata Kodu: ' . ($payment ? $payment->getErrorCode() : 'Bilinmiyor') . '). Sandbox test kartı SMS şifresi ekranında 123456 veya 111111 giriniz.';
+                $rawMsg = $payment ? $payment->getErrorMessage() : null;
+                if (empty($rawMsg)) {
+                    $rawMsg = '3D Güvenlik doğrulaması kart sahibi tarafından iptal edildi veya tamamlanamadı.';
                 }
+                $errorMessage = str_starts_with($rawMsg, 'Banka Yanıtı :') ? $rawMsg : 'Banka Yanıtı : ' . $rawMsg;
 
                 // Update order status to failed with failure reason
                 $order->update([
@@ -288,7 +327,8 @@ class CheckoutController extends Controller
 
                 return redirect()->route('checkout.result')->with([
                     'status' => 'error',
-                    'message' => $errorMessage
+                    'message' => $errorMessage,
+                    'order_id' => $order->id
                 ]);
             }
         } catch (\Throwable $e) {

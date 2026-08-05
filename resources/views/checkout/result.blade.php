@@ -151,11 +151,17 @@
                     Ödeme talebiniz bankanız tarafından onaylanmadı. Kart limitinizi, 3D Secure onayınızı veya İnternet alışveriş yetkisini kontrol ederek tekrar deneyebilirsiniz.
                 </p>
 
+                @php
+                    $bankMsg = session('message', 'Banka tarafından ödeme onayı verilmedi (Yetersiz Bakiye / Kart Onayı Alınamadı).');
+                    if (!str_starts_with($bankMsg, 'Banka Yanıtı')) {
+                        $bankMsg = 'Banka Yanıtı : ' . $bankMsg;
+                    }
+                @endphp
                 <div class="bg-rose-50/80 border border-rose-200 rounded-2xl p-4 mb-8 text-left max-w-lg mx-auto text-xs text-rose-950 space-y-1">
                     <span class="text-[10px] font-extrabold text-rose-800 uppercase block tracking-wider">Banka Cevabı / Ret Nedeni:</span>
-                    <p class="font-extrabold text-rose-900 text-sm flex items-center gap-1.5">
-                        <i class="fa-solid fa-triangle-exclamation text-rose-600"></i>
-                        {{ session('message', 'Banka tarafından ödeme onayı verilmedi (Yetersiz Bakiye / Kart Onayı Alınamadı).') }}
+                    <p class="font-extrabold text-rose-900 text-sm flex items-start gap-1.5">
+                        <i class="fa-solid fa-triangle-exclamation text-rose-600 mt-0.5"></i>
+                        <span>{{ $bankMsg }}</span>
                     </p>
                 </div>
 
