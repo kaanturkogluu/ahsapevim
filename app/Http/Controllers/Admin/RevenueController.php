@@ -10,38 +10,51 @@ use Carbon\Carbon;
 
 class RevenueController extends Controller
 {
+    /**
+     * Ödeme alınmış sipariş durumları:
+     * - 'paid'       : İyzico kart ödemesi başarılı
+     * - 'preparing'  : Siparişe alındı
+     * - 'shipped'    : Kargoya verildi
+     * - 'completed'  : Teslim edildi / tamamlandı
+     * 'pending' (EFT bekliyor), 'failed', 'cancelled' dahil edilmez.
+     */
+    private array $paidStatuses = ['paid', 'preparing', 'shipped', 'completed'];
+
     public function index(Request $request)
     {
-        // Temel metrikler
-        $totalRevenue = Order::where('status', '!=', 'cancelled')->sum('total_amount');
-        $thisMonthRevenue = Order::where('status', '!=', 'cancelled')
+        // Temel metrikler – sadece ödemesi alınmış siparişler
+        $totalRevenue = Order::whereIn('status', $this->paidStatuses)->sum('total_amount');
+
+        $thisMonthRevenue = Order::whereIn('status', $this->paidStatuses)
                                 ->whereMonth('created_at', Carbon::now()->month)
                                 ->whereYear('created_at', Carbon::now()->year)
                                 ->sum('total_amount');
-        $totalOrders = Order::where('status', '!=', 'cancelled')->count();
-        $totalProductsSold = OrderItem::whereHas('order', function($q) {
-            $q->where('status', '!=', 'cancelled');
+
+        $totalOrders = Order::whereIn('status', $this->paidStatuses)->count();
+
+        $totalProductsSold = OrderItem::whereHas('order', function ($q) {
+            $q->whereIn('status', $this->paidStatuses);
         })->sum('quantity');
 
-        // Grafikler için son 30 günün gelir verisi
-        $last30Days = [];
-        $revenueData = [];
+        // Son 30 günlük günlük gelir verisi (grafik)
+        $last30Days   = [];
+        $revenueData  = [];
 
         for ($i = 29; $i >= 0; $i--) {
-            $date = Carbon::now()->subDays($i);
-            $last30Days[] = $date->format('d M');
-            
-            $dayRevenue = Order::where('status', '!=', 'cancelled')
+            $date          = Carbon::now()->subDays($i);
+            $last30Days[]  = $date->format('d M');
+
+            $dayRevenue = Order::whereIn('status', $this->paidStatuses)
                                ->whereDate('created_at', $date->toDateString())
                                ->sum('total_amount');
-            
+
             $revenueData[] = (float) $dayRevenue;
         }
 
         return view('admin.revenue.index', compact(
-            'totalRevenue', 
-            'thisMonthRevenue', 
-            'totalOrders', 
+            'totalRevenue',
+            'thisMonthRevenue',
+            'totalOrders',
             'totalProductsSold',
             'last30Days',
             'revenueData'
