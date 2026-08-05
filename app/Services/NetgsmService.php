@@ -64,7 +64,6 @@ class NetgsmService
             ]);
 
             $resBody = trim($response->body());
-            Log::info('Netgsm SMS response: ' . $resBody);
 
             $isSuccess = str_starts_with($resBody, '00');
             $responseCode = strtok($resBody, ' ');

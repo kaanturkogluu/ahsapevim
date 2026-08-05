@@ -198,15 +198,6 @@ class CheckoutController extends Controller
         try {
             $payment = $this->iyzico->retrieveCheckoutForm($token);
 
-            // Log detailed payment callback info for debugging
-            \Illuminate\Support\Facades\Log::info('Iyzico Callback Response:', [
-                'status' => $payment ? $payment->getStatus() : null,
-                'paymentStatus' => $payment ? $payment->getPaymentStatus() : null,
-                'errorCode' => $payment ? $payment->getErrorCode() : null,
-                'errorMessage' => $payment ? $payment->getErrorMessage() : null,
-                'conversationId' => $payment ? $payment->getConversationId() : null,
-            ]);
-
             // 4-Tier Robust Order Lookup Strategy
             $conversationId = $payment ? $payment->getConversationId() : null;
             $sessionOrderId = session()->get('pending_order_id');
