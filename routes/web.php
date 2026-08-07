@@ -163,7 +163,7 @@ Route::get('/{slug}', function ($slug) {
         'pageTitle' => $page->title,
         'content' => $page->content
     ]);
-})->where('slug', 'iletisim|sikca-sorulanlar|mesafeli-satis-sozlesmesi|gizlilik-politikasi|teslimat-ve-iade');
+});
 
 // Admin Auth Routes
 Route::get('/yonetim/giris', [LoginController::class, 'showLoginForm'])->name('admin.login');

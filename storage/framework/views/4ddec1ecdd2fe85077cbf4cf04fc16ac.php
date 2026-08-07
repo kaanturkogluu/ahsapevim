@@ -369,13 +369,24 @@
                 <!-- Col 3: Sözleşmeler ve Politikalar -->
                 <div>
                     <h3 class="font-serif font-bold text-gray-800 text-base mb-4 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-8 after:h-0.5 after:bg-[#C87A53]">
-                        Sözleşmeler & Politikalar
+                        Sözleşmeler & Bilgilendirme
                     </h3>
                     <ul class="text-xs text-gray-600 space-y-2.5">
-                        <li><a href="<?php echo e(url('/mesafeli-satis-sozlesmesi')); ?>" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Mesafeli Satış Sözleşmesi</a></li>
-                        <li><a href="<?php echo e(url('/gizlilik-politikasi')); ?>" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Gizlilik & Güvenlik Politikası</a></li>
-                        <li><a href="<?php echo e(url('/teslimat-ve-iade')); ?>" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Teslimat ve İade Şartları</a></li>
-                        <li><a href="<?php echo e(url('/kvkk')); ?>" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">KVKK Aydınlatma Metni</a></li>
+                        <?php
+                            $footerPages = \App\Models\Page::where('is_active', true)->whereNotIn('slug', ['iletisim', 'sikca-sorulanlar'])->get();
+                        ?>
+                        <?php $__empty_1 = true; $__currentLoopData = $footerPages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $fPage): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <li>
+                                <a href="<?php echo e(url('/' . $fPage->slug)); ?>" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">
+                                    <?php echo e($fPage->title); ?>
+
+                                </a>
+                            </li>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <li><a href="<?php echo e(url('/mesafeli-satis-sozlesmesi')); ?>" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Mesafeli Satış Sözleşmesi</a></li>
+                            <li><a href="<?php echo e(url('/gizlilik-politikasi')); ?>" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Gizlilik & Güvenlik Politikası</a></li>
+                            <li><a href="<?php echo e(url('/teslimat-ve-iade')); ?>" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Teslimat ve İade Şartları</a></li>
+                        <?php endif; ?>
                     </ul>
                 </div>
 

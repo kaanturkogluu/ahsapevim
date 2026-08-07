@@ -14,21 +14,14 @@
                         Bilgilendirme
                     </div>
                     <nav class="flex flex-col text-[14px] font-medium">
-                        <a href="{{ url('/iletisim') }}" class="px-5 py-3 border-b border-gray-50 hover:bg-orange-50 hover:text-brand transition {{ request()->is('iletisim') ? 'bg-orange-50 text-brand border-l-4 border-l-brand' : 'text-gray-600 border-l-4 border-l-transparent' }}">
-                            İletişim
-                        </a>
-                        <a href="{{ url('/sikca-sorulanlar') }}" class="px-5 py-3 border-b border-gray-50 hover:bg-orange-50 hover:text-brand transition {{ request()->is('sikca-sorulanlar') ? 'bg-orange-50 text-brand border-l-4 border-l-brand' : 'text-gray-600 border-l-4 border-l-transparent' }}">
-                            Sıkça Sorulanlar
-                        </a>
-                        <a href="{{ url('/mesafeli-satis-sozlesmesi') }}" class="px-5 py-3 border-b border-gray-50 hover:bg-orange-50 hover:text-brand transition {{ request()->is('mesafeli-satis-sozlesmesi') ? 'bg-orange-50 text-brand border-l-4 border-l-brand' : 'text-gray-600 border-l-4 border-l-transparent' }}">
-                            Mesafeli Satış Sözleşmesi
-                        </a>
-                        <a href="{{ url('/gizlilik-politikasi') }}" class="px-5 py-3 border-b border-gray-50 hover:bg-orange-50 hover:text-brand transition {{ request()->is('gizlilik-politikasi') ? 'bg-orange-50 text-brand border-l-4 border-l-brand' : 'text-gray-600 border-l-4 border-l-transparent' }}">
-                            Gizlilik Politikası
-                        </a>
-                        <a href="{{ url('/teslimat-ve-iade') }}" class="px-5 py-3 hover:bg-orange-50 hover:text-brand transition {{ request()->is('teslimat-ve-iade') ? 'bg-orange-50 text-brand border-l-4 border-l-brand' : 'text-gray-600 border-l-4 border-l-transparent' }}">
-                            Teslimat ve İade Şartları
-                        </a>
+                        @php
+                            $sidebarPages = \App\Models\Page::where('is_active', true)->get();
+                        @endphp
+                        @foreach($sidebarPages as $sbPage)
+                            <a href="{{ url('/' . $sbPage->slug) }}" class="px-5 py-3 border-b border-gray-50 hover:bg-amber-50 hover:text-[#C87A53] transition {{ request()->is($sbPage->slug) ? 'bg-amber-50 text-[#C87A53] border-l-4 border-l-[#C87A53] font-bold' : 'text-gray-600 border-l-4 border-l-transparent' }}">
+                                {{ $sbPage->title }}
+                            </a>
+                        @endforeach
                     </nav>
                 </div>
             </div>

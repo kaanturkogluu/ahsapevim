@@ -366,13 +366,23 @@
                 <!-- Col 3: Sözleşmeler ve Politikalar -->
                 <div>
                     <h3 class="font-serif font-bold text-gray-800 text-base mb-4 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-8 after:h-0.5 after:bg-[#C87A53]">
-                        Sözleşmeler & Politikalar
+                        Sözleşmeler & Bilgilendirme
                     </h3>
                     <ul class="text-xs text-gray-600 space-y-2.5">
-                        <li><a href="{{ url('/mesafeli-satis-sozlesmesi') }}" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Mesafeli Satış Sözleşmesi</a></li>
-                        <li><a href="{{ url('/gizlilik-politikasi') }}" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Gizlilik & Güvenlik Politikası</a></li>
-                        <li><a href="{{ url('/teslimat-ve-iade') }}" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Teslimat ve İade Şartları</a></li>
-                        <li><a href="{{ url('/kvkk') }}" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">KVKK Aydınlatma Metni</a></li>
+                        @php
+                            $footerPages = \App\Models\Page::where('is_active', true)->whereNotIn('slug', ['iletisim', 'sikca-sorulanlar'])->get();
+                        @endphp
+                        @forelse($footerPages as $fPage)
+                            <li>
+                                <a href="{{ url('/' . $fPage->slug) }}" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">
+                                    {{ $fPage->title }}
+                                </a>
+                            </li>
+                        @empty
+                            <li><a href="{{ url('/mesafeli-satis-sozlesmesi') }}" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Mesafeli Satış Sözleşmesi</a></li>
+                            <li><a href="{{ url('/gizlilik-politikasi') }}" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Gizlilik & Güvenlik Politikası</a></li>
+                            <li><a href="{{ url('/teslimat-ve-iade') }}" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Teslimat ve İade Şartları</a></li>
+                        @endforelse
                     </ul>
                 </div>
 
