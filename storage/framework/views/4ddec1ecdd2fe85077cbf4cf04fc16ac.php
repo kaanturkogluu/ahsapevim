@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Ahşap Evim Manisa')</title>
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <title><?php echo $__env->yieldContent('title', 'Ahşap Evim Manisa'); ?></title>
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ url('/favicon.ico') }}">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ url('/favicon.ico') }}">
-    <link rel="apple-touch-icon" href="{{ url('/ahsaplogo_yataybg.png') }}">
+    <link rel="icon" type="image/x-icon" href="<?php echo e(url('/favicon.ico')); ?>">
+    <link rel="shortcut icon" type="image/x-icon" href="<?php echo e(url('/favicon.ico')); ?>">
+    <link rel="apple-touch-icon" href="<?php echo e(url('/ahsaplogo_yataybg.png')); ?>">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -46,7 +46,7 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #F7F5F0;
             /* Soft organic linen background fallback */
-            background-image: url('{{ url('/light_wood_bg.jpg') }}');
+            background-image: url('<?php echo e(url('/light_wood_bg.jpg')); ?>');
             background-repeat: repeat;
             background-size: 320px 320px;
             min-height: 100vh;
@@ -101,7 +101,7 @@
         }
     </style>
     <!-- Page-specific head assets (e.g. Three.js only on home) -->
-    @stack('head_scripts')
+    <?php echo $__env->yieldPushContent('head_scripts'); ?>
 </head>
 
 <body class="text-gray-800 flex flex-col min-h-screen">
@@ -137,8 +137,8 @@
         <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-5">
 
             <!-- Logo -->
-            <a href="{{ url('/urunler') }}" class="flex items-center gap-2.5 shrink-0">
-                <img src="{{ url('/ahsaplogo_yataybg.png') }}" alt="AhşapEvim Logo"
+            <a href="<?php echo e(url('/urunler')); ?>" class="flex items-center gap-2.5 shrink-0">
+                <img src="<?php echo e(url('/ahsaplogo_yataybg.png')); ?>" alt="AhşapEvim Logo"
                     class="h-12 md:h-16 w-auto object-contain">
             </a>
 
@@ -158,56 +158,57 @@
             <!-- User Actions -->
             <div class="flex items-center gap-5 text-[13px] font-semibold text-gray-700 shrink-0">
                 <!-- Sipariş Takip Link -->
-                @auth
-                    <a href="{{ route('profile.index', ['tab' => 'siparisler']) }}" class="hover:text-brand flex flex-col items-center gap-0.5 group transition">
+                <?php if(auth()->guard()->check()): ?>
+                    <a href="<?php echo e(route('profile.index', ['tab' => 'siparisler'])); ?>" class="hover:text-brand flex flex-col items-center gap-0.5 group transition">
                         <i class="fa-solid fa-truck-fast text-xl group-hover:text-brand text-[#C87A53]"></i>
                         <span class="hidden md:inline text-[11px]">Sipariş Takip</span>
                     </a>
-                @else
-                    <a href="{{ route('order.tracking') }}" class="hover:text-brand flex flex-col items-center gap-0.5 group transition">
+                <?php else: ?>
+                    <a href="<?php echo e(route('order.tracking')); ?>" class="hover:text-brand flex flex-col items-center gap-0.5 group transition">
                         <i class="fa-solid fa-truck-fast text-xl group-hover:text-brand"></i>
                         <span class="hidden md:inline text-[11px]">Sipariş Takip</span>
                     </a>
-                @endauth
-                @auth
-                    @if(auth()->user()->is_admin)
+                <?php endif; ?>
+                <?php if(auth()->guard()->check()): ?>
+                    <?php if(auth()->user()->is_admin): ?>
                         <!-- Admin Direct Link (No Dropdown) -->
-                        <a href="{{ url('/yonetim') }}" class="hover:text-brand flex flex-col items-center gap-0.5 group transition text-[#C87A53] font-bold">
+                        <a href="<?php echo e(url('/yonetim')); ?>" class="hover:text-brand flex flex-col items-center gap-0.5 group transition text-[#C87A53] font-bold">
                             <i class="fa-solid fa-user-gear text-xl text-[#C87A53] group-hover:scale-110 transition-transform"></i>
                             <span class="hidden md:inline text-[11px] font-extrabold">Yönet</span>
                         </a>
-                    @else
+                    <?php else: ?>
                         <!-- Customer Dropdown Menu -->
                         <div class="relative group" id="userMenuDropdown">
                             <button type="button" onclick="toggleUserDropdown(event)" class="hover:text-brand flex flex-col items-center gap-0.5 transition outline-none">
                                 <i class="fa-solid fa-user-check text-xl text-[#C87A53]"></i>
-                                <span class="hidden md:inline text-[11px] truncate max-w-[90px]">{{ auth()->user()->name }}</span>
+                                <span class="hidden md:inline text-[11px] truncate max-w-[90px]"><?php echo e(auth()->user()->name); ?></span>
                             </button>
                             
                             <!-- Dropdown Menu -->
                             <div id="userDropdownContent" class="absolute right-0 top-full pt-1.5 w-48 hidden group-hover:block z-50">
                                 <div class="bg-white rounded-xl shadow-2xl border border-amber-100 py-2">
                                     <div class="px-4 py-2 border-b border-gray-100 font-bold text-gray-800 text-xs mb-1">
-                                        {{ auth()->user()->name }}
-                                        <span class="block font-normal text-[10px] text-gray-400 truncate">{{ auth()->user()->email }}</span>
+                                        <?php echo e(auth()->user()->name); ?>
+
+                                        <span class="block font-normal text-[10px] text-gray-400 truncate"><?php echo e(auth()->user()->email); ?></span>
                                     </div>
-                                    <a href="{{ route('profile.index', ['tab' => 'siparisler']) }}" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
+                                    <a href="<?php echo e(route('profile.index', ['tab' => 'siparisler'])); ?>" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
                                         <i class="fa-solid fa-box text-[#C87A53]"></i> Siparişler
                                     </a>
-                                    <a href="{{ route('favorites.index') }}" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
+                                    <a href="<?php echo e(route('favorites.index')); ?>" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
                                         <i class="fa-solid fa-heart text-red-500"></i> Favorilerim
                                     </a>
-                                    <a href="{{ route('profile.index', ['tab' => 'bilgiler']) }}" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
+                                    <a href="<?php echo e(route('profile.index', ['tab' => 'bilgiler'])); ?>" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
                                         <i class="fa-solid fa-user text-[#C87A53]"></i> Kullanıcı Bilgileri
                                     </a>
-                                    <a href="{{ route('profile.index', ['tab' => 'adres']) }}" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
+                                    <a href="<?php echo e(route('profile.index', ['tab' => 'adres'])); ?>" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
                                         <i class="fa-solid fa-map-location-dot text-[#C87A53]"></i> Adres Bilgilerim
                                     </a>
-                                    <a href="{{ route('profile.index', ['tab' => 'sifre']) }}" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
+                                    <a href="<?php echo e(route('profile.index', ['tab' => 'sifre'])); ?>" class="block px-4 py-2 hover:bg-amber-50 text-xs text-gray-700 font-semibold flex items-center gap-2">
                                         <i class="fa-solid fa-shield-halved text-[#C87A53]"></i> Şifre Güvenlik
                                     </a>
-                                    <form action="{{ route('logout') }}" method="POST" class="block border-t border-gray-100 mt-1 pt-1">
-                                        @csrf
+                                    <form action="<?php echo e(route('logout')); ?>" method="POST" class="block border-t border-gray-100 mt-1 pt-1">
+                                        <?php echo csrf_field(); ?>
                                         <button type="submit" class="w-full text-left px-4 py-2 hover:bg-red-50 text-xs text-red-600 font-semibold flex items-center gap-2">
                                             <i class="fa-solid fa-sign-out-alt"></i> Çıkış Yap
                                         </button>
@@ -215,29 +216,31 @@
                                 </div>
                             </div>
                         </div>
-                    @endif
-                @else
-                    <a href="{{ route('login') }}" class="hover:text-brand flex flex-col items-center gap-0.5 group transition">
+                    <?php endif; ?>
+                <?php else: ?>
+                    <a href="<?php echo e(route('login')); ?>" class="hover:text-brand flex flex-col items-center gap-0.5 group transition">
                         <i class="fa-regular fa-user text-xl group-hover:text-brand"></i>
                         <span class="hidden md:inline text-[11px]">Giriş Yap</span>
                     </a>
-                @endauth
+                <?php endif; ?>
 
                 <!-- Favorites Link -->
-                <a href="{{ route('favorites.index') }}" class="hover:text-brand flex flex-col items-center gap-0.5 group transition relative">
+                <a href="<?php echo e(route('favorites.index')); ?>" class="hover:text-brand flex flex-col items-center gap-0.5 group transition relative">
                     <i class="fa-regular fa-heart text-xl group-hover:text-brand"></i>
                     <span class="hidden md:inline text-[11px]">Favorilerim</span>
                     <span id="favCounterBadge" class="absolute -top-1.5 -right-2 bg-[#C87A53] text-white text-[10px] font-bold rounded-full h-4.5 w-4.5 min-w-[18px] min-h-[18px] flex items-center justify-center">
-                        {{ auth()->check() ? auth()->user()->favorites()->count() : 0 }}
+                        <?php echo e(auth()->check() ? auth()->user()->favorites()->count() : 0); ?>
+
                     </span>
                 </a>
 
                 <!-- Cart Link -->
-                <a href="{{ url('/sepet') }}" onclick="event.preventDefault(); openCartDrawer();" class="hover:text-brand flex flex-col items-center gap-0.5 group transition relative cursor-pointer">
+                <a href="<?php echo e(url('/sepet')); ?>" onclick="event.preventDefault(); openCartDrawer();" class="hover:text-brand flex flex-col items-center gap-0.5 group transition relative cursor-pointer">
                     <i class="fa-solid fa-shopping-bag text-xl group-hover:text-brand"></i>
                     <span class="hidden md:inline text-[11px]">Sepetim</span>
                     <span id="headerCartCountBadge" class="absolute -top-1.5 -right-2 bg-brand text-white text-[10px] font-bold rounded-full h-4.5 w-4.5 min-w-[18px] min-h-[18px] flex items-center justify-center">
-                        {{ session('cart') ? count(session('cart')) : 0 }}
+                        <?php echo e(session('cart') ? count(session('cart')) : 0); ?>
+
                     </span>
                 </a>
             </div>
@@ -247,21 +250,21 @@
         <nav class="border-t border-amber-100 bg-[#fffbf5]">
             <div
                 class="container mx-auto px-4 flex items-center justify-start gap-1 overflow-x-auto text-[12.5px] font-bold text-gray-600 whitespace-nowrap pb-0">
-                @if(isset($navCategories) && $navCategories->count())
-                    @foreach($navCategories as $cat)
-                        <a href="{{ url('/urunler') }}?category={{ $cat->slug }}"
-                            class="hover:text-brand hover:bg-amber-50 px-4 py-3 transition rounded-t-lg border-b-2 border-transparent hover:border-brand uppercase tracking-wide">{{ $cat->name }}</a>
-                    @endforeach
-                @else
-                    <a href="{{ url('/urunler') }}?category=cerceve"
+                <?php if(isset($navCategories) && $navCategories->count()): ?>
+                    <?php $__currentLoopData = $navCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <a href="<?php echo e(url('/urunler')); ?>?category=<?php echo e($cat->slug); ?>"
+                            class="hover:text-brand hover:bg-amber-50 px-4 py-3 transition rounded-t-lg border-b-2 border-transparent hover:border-brand uppercase tracking-wide"><?php echo e($cat->name); ?></a>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php else: ?>
+                    <a href="<?php echo e(url('/urunler')); ?>?category=cerceve"
                         class="hover:text-brand hover:bg-amber-50 px-4 py-3 transition border-b-2 border-transparent hover:border-brand uppercase tracking-wide">Çerçeve</a>
-                    <a href="{{ url('/urunler') }}?category=bebek-hediyelik"
+                    <a href="<?php echo e(url('/urunler')); ?>?category=bebek-hediyelik"
                         class="hover:text-brand hover:bg-amber-50 px-4 py-3 transition border-b-2 border-transparent hover:border-brand uppercase tracking-wide">Bebek
                         Hediyelik</a>
-                    <a href="{{ url('/urunler') }}?category=masa-ve-gece-lambasi"
+                    <a href="<?php echo e(url('/urunler')); ?>?category=masa-ve-gece-lambasi"
                         class="hover:text-brand hover:bg-amber-50 px-4 py-3 transition border-b-2 border-transparent hover:border-brand uppercase tracking-wide">Masa
                         & Gece Lambası</a>
-                @endif
+                <?php endif; ?>
 
             </div>
         </nav>
@@ -269,7 +272,7 @@
 
     <!-- Main Content -->
     <main class="flex-grow pt-6 pb-12">
-        @yield('content')
+        <?php echo $__env->yieldContent('content'); ?>
     </main>
 
     <!-- Footer -->
@@ -317,7 +320,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
                 <!-- Col 1: Brand Info -->
                 <div class="space-y-4">
-                    <a href="{{ url('/') }}" class="inline-block">
+                    <a href="<?php echo e(url('/')); ?>" class="inline-block">
                         <span class="font-serif text-xl font-bold text-gray-800 tracking-tight">AhşapEvim <span class="text-[#C87A53]">Manisa</span></span>
                     </a>
                     <p class="text-xs text-gray-600 leading-relaxed">
@@ -356,10 +359,10 @@
                         Kurumsal & Keşfet
                     </h3>
                     <ul class="text-xs text-gray-600 space-y-2.5">
-                        <li><a href="{{ url('/urunler') }}" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Tüm Ürünlerimiz</a></li>
-                        <li><a href="{{ url('/iletisim') }}" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">İletişim & Konum</a></li>
-                        <li><a href="{{ url('/sikca-sorulanlar') }}" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Sıkça Sorulan Sorular</a></li>
-                        <li><a href="{{ route('order.tracking') }}" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Sipariş Takip Ekranı</a></li>
+                        <li><a href="<?php echo e(url('/urunler')); ?>" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Tüm Ürünlerimiz</a></li>
+                        <li><a href="<?php echo e(url('/iletisim')); ?>" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">İletişim & Konum</a></li>
+                        <li><a href="<?php echo e(url('/sikca-sorulanlar')); ?>" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Sıkça Sorulan Sorular</a></li>
+                        <li><a href="<?php echo e(route('order.tracking')); ?>" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Sipariş Takip Ekranı</a></li>
                     </ul>
                 </div>
 
@@ -369,10 +372,10 @@
                         Sözleşmeler & Politikalar
                     </h3>
                     <ul class="text-xs text-gray-600 space-y-2.5">
-                        <li><a href="{{ url('/mesafeli-satis-sozlesmesi') }}" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Mesafeli Satış Sözleşmesi</a></li>
-                        <li><a href="{{ url('/gizlilik-politikasi') }}" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Gizlilik & Güvenlik Politikası</a></li>
-                        <li><a href="{{ url('/teslimat-ve-iade') }}" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Teslimat ve İade Şartları</a></li>
-                        <li><a href="{{ url('/kvkk') }}" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">KVKK Aydınlatma Metni</a></li>
+                        <li><a href="<?php echo e(url('/mesafeli-satis-sozlesmesi')); ?>" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Mesafeli Satış Sözleşmesi</a></li>
+                        <li><a href="<?php echo e(url('/gizlilik-politikasi')); ?>" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Gizlilik & Güvenlik Politikası</a></li>
+                        <li><a href="<?php echo e(url('/teslimat-ve-iade')); ?>" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">Teslimat ve İade Şartları</a></li>
+                        <li><a href="<?php echo e(url('/kvkk')); ?>" class="hover:text-[#C87A53] hover:translate-x-1 inline-block transition transform">KVKK Aydınlatma Metni</a></li>
                     </ul>
                 </div>
 
@@ -385,7 +388,7 @@
                     <!-- Fixed Iyzico Logo & Badge -->
                     <div class="bg-white border border-gray-200/90 rounded-2xl p-3.5 shadow-2xs space-y-2 text-center">
                         <div class="flex items-center justify-center py-1">
-                            <img src="{{ url('/images/iyzico-logo.svg') }}" alt="iyzico ile Öde" class="h-7 w-auto mx-auto object-contain">
+                            <img src="<?php echo e(url('/images/iyzico-logo.svg')); ?>" alt="iyzico ile Öde" class="h-7 w-auto mx-auto object-contain">
                         </div>
                         <span class="text-[10.5px] text-gray-500 font-medium block">256-Bit SSL Koruması ile 3D Ödeme</span>
                     </div>
@@ -408,7 +411,7 @@
             <!-- Bottom Footer Bar -->
             <div class="pt-6 border-t border-[#EFEAE0] flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-gray-500">
                 <div>
-                    &copy; {{ date('Y') }} <strong>AhşapEvim Manisa</strong>. Tüm hakları saklıdır.
+                    &copy; <?php echo e(date('Y')); ?> <strong>AhşapEvim Manisa</strong>. Tüm hakları saklıdır.
                 </div>
                 <div class="flex items-center gap-1.5 text-gray-500 font-medium">
                     <span>Manisa atölyemizde sevgiyle üretilmiştir</span>
@@ -454,10 +457,10 @@
                 <i class="fa-solid fa-truck-fast text-emerald-600"></i> Tüm Siparişlerinizde Kargo Ücretsiz!
             </div>
             <div class="grid grid-cols-2 gap-2.5">
-                <a href="{{ url('/urunler') }}" onclick="closeCartDrawer()" class="py-3 px-4 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-xl transition text-center text-xs flex items-center justify-center gap-1.5">
+                <a href="<?php echo e(url('/urunler')); ?>" onclick="closeCartDrawer()" class="py-3 px-4 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-xl transition text-center text-xs flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-store"></i> Ürünleri Keşfet
                 </a>
-                <a href="{{ route('checkout.index') }}" class="py-3 px-4 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-xl transition text-center text-xs shadow-md flex items-center justify-center gap-1.5">
+                <a href="<?php echo e(route('checkout.index')); ?>" class="py-3 px-4 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-xl transition text-center text-xs shadow-md flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-lock"></i> Ödemeye Geç
                 </a>
             </div>
@@ -550,7 +553,7 @@
             </div>
         `;
 
-        fetch('{{ route("cart.data") }}', {
+        fetch('<?php echo e(route("cart.data")); ?>', {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
         .then(res => res.json())
@@ -574,7 +577,7 @@
                         <p class="text-xs text-gray-500 mb-8 max-w-xs leading-relaxed">Harika masif ahşap çerçeve koleksiyonlarımızı keşfetmek ve fotoğraflarınızı ölümsüzleştirmek için hemen alışverişe başlayın.</p>
                         
                         <div class="mt-auto w-full pt-6 border-t border-gray-100">
-                            <a href="{{ url('/urunler') }}" onclick="closeCartDrawer()" class="w-full bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold py-3.5 px-6 rounded-xl transition text-center shadow-lg flex items-center justify-center gap-2 text-xs uppercase tracking-wider">
+                            <a href="<?php echo e(url('/urunler')); ?>" onclick="closeCartDrawer()" class="w-full bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold py-3.5 px-6 rounded-xl transition text-center shadow-lg flex items-center justify-center gap-2 text-xs uppercase tracking-wider">
                                 <i class="fa-solid fa-store text-sm"></i> Alışverişe Başla
                             </a>
                         </div>
@@ -630,11 +633,11 @@
     function updateCartDrawerQuantity(key, newQty) {
         if (newQty < 1) return;
 
-        fetch('{{ route("cart.update") }}', {
+        fetch('<?php echo e(route("cart.update")); ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
                 'X-Requested-With': 'XMLHttpRequest'
             },
             body: JSON.stringify({ key: key, quantity: newQty })
@@ -651,11 +654,11 @@
     }
 
     function removeFromCartDrawer(key) {
-        fetch('{{ route("cart.remove") }}', {
+        fetch('<?php echo e(route("cart.remove")); ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
                 'X-Requested-With': 'XMLHttpRequest'
             },
             body: JSON.stringify({ key: key })
@@ -685,17 +688,17 @@
             btnElement.style.pointerEvents = 'none';
         }
 
-        fetch('{{ route("favorites.toggle") }}', {
+        fetch('<?php echo e(route("favorites.toggle")); ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
             },
             body: JSON.stringify({ product_id: productId })
         })
         .then(res => {
             if (res.status === 401) {
-                window.location.href = '{{ route("login") }}';
+                window.location.href = '<?php echo e(route("login")); ?>';
                 return;
             }
             return res.json();
@@ -771,12 +774,12 @@
             setTimeout(openCartDrawer, 300);
         }
 
-        @if(session('success'))
-            showToast('{{ session('success') }}', 'success');
-        @endif
-        @if(session('error'))
-            showToast('{{ session('error') }}', 'error');
-        @endif
+        <?php if(session('success')): ?>
+            showToast('<?php echo e(session('success')); ?>', 'success');
+        <?php endif; ?>
+        <?php if(session('error')): ?>
+            showToast('<?php echo e(session('error')); ?>', 'error');
+        <?php endif; ?>
     });
     </script>
 
@@ -794,4 +797,4 @@
     </button>
 </body>
 
-</html>
+</html><?php /**PATH C:\xampp\htdocs\ahsapevim\resources\views/layouts/app.blade.php ENDPATH**/ ?>
