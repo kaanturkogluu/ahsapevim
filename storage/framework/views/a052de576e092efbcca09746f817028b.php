@@ -3,59 +3,26 @@
 <?php $__env->startSection('content'); ?>
 
 
-<div class="relative overflow-hidden" style="background: #f5efe6;">
-
-    
-    <div class="absolute top-0 left-0 right-0 h-1" style="background: repeating-linear-gradient(90deg, #c4956a 0px, #b07d50 18px, #d4a874 36px, #b8845a 54px, #c4956a 72px);"></div>
-
-    <div class="container mx-auto px-4" style="padding-top: 2.75rem; padding-bottom: 2.75rem;">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-16">
-
-            
-            <div class="max-w-xl">
-                <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#9c6c3c] mb-3" style="font-family: Georgia, serif; letter-spacing: 0.2em;">
-                    Manisa Atölyesi — El Yapımı
-                </p>
-
-                <h1 class="font-extrabold text-gray-900 leading-[1.08] mb-4" style="font-size: clamp(1.75rem, 4vw, 2.6rem); font-family: Georgia, 'Times New Roman', serif;">
-                    Masif Ahşap,<br>
-                    <span style="color: #a0622a;">Kişiye Özel Üretim</span>
-                </h1>
-
-                <p class="text-gray-600 leading-relaxed mb-5" style="font-size: 0.9rem; max-width: 42ch;">
-                    Her ürün tek tek elle şekillendirilir, 45° gönyeli köşelerle birleştirilir 
-                    ve sipariş alındıktan sonra üretilir. Seri değil, özel.
-                </p>
-
-            </div>
-
-            
-            <div class="hidden lg:flex items-end gap-3 shrink-0">
+<div class="relative w-full bg-[#FAF5EE] border-b border-[#EFEAE0] overflow-hidden py-3 md:py-5">
+    <div class="container mx-auto px-4">
+        <div class="relative w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-sm border border-[#E8E2D7] bg-white">
+            <picture class="w-full h-auto block">
+                <?php if(file_exists(public_path('images/hero-banner-desktop.png'))): ?>
+                    <source media="(min-width: 768px)" srcset="<?php echo e(url('/images/hero-banner-desktop.png')); ?>">
+                <?php endif; ?>
                 
-                <div class="flex flex-col items-center gap-2">
-                    <div class="rounded-xl overflow-hidden shadow-md" style="width: 88px; height: 128px; border: 2px solid #c8a07a;">
-                        <img src="<?php echo e(url('/artisan_frame_hero.png')); ?>" alt="Ahşap Çerçeve" class="w-full h-full object-cover">
-                    </div>
-                </div>
-                
-                <div class="flex flex-col items-center gap-2 mb-5">
-                    <div class="rounded-xl overflow-hidden shadow-md" style="width: 78px; height: 100px; border: 2px solid #c8a07a; transform: rotate(-2deg);">
-                        <img src="<?php echo e(url('/artisan_frame_hero.png')); ?>" alt="Ahşap Çerçeve" class="w-full h-full object-cover object-top">
-                    </div>
-                </div>
-                
-                <div class="mb-2 text-center" style="width: 72px;">
-                    <div style="border: 2px solid #9c6c3c; border-radius: 4px; padding: 6px 4px; transform: rotate(2deg); opacity: 0.85;">
-                        <p class="font-bold text-[9px] uppercase tracking-widest text-[#6b3e1a]" style="font-family: Georgia, serif; line-height: 1.5;">El<br>Yapımı<br>✦ 2024</p>
-                    </div>
-                </div>
-            </div>
-
+                <?php if(file_exists(public_path('images/hero-banner-mobile.png'))): ?>
+                    <img src="<?php echo e(url('/images/hero-banner-mobile.png')); ?>" 
+                         alt="Her Çerçeve, Bir Emeğin İzidir — AhşapEvim" 
+                         class="w-full h-auto block">
+                <?php else: ?>
+                    <img src="<?php echo e(url('/images/hero-banner.png')); ?>" 
+                         alt="Her Çerçeve, Bir Emeğin İzidir — AhşapEvim" 
+                         class="w-full h-auto block">
+                <?php endif; ?>
+            </picture>
         </div>
     </div>
-
-    
-    <div class="absolute bottom-0 left-0 right-0 h-[2px]" style="background: repeating-linear-gradient(90deg, #c4956a 0px, #a07040 24px, #d4a874 48px, #b8845a 72px, #c4956a 96px); opacity: 0.5;"></div>
 </div>
 
 
