@@ -4,27 +4,23 @@
 
 @section('content')
 
-{{-- Full-Width Rounded Hero Banner --}}
-<div class="relative w-full bg-[#FAF5EE] border-b border-[#EFEAE0] overflow-hidden py-3 md:py-5">
-    <div class="container mx-auto px-4">
-        <div class="relative w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-sm border border-[#E8E2D7] bg-white">
-            <picture class="w-full h-auto block">
-                @if(file_exists(public_path('images/hero-banner-desktop.png')))
-                    <source media="(min-width: 768px)" srcset="{{ url('/images/hero-banner-desktop.png') }}">
-                @endif
-                
-                @if(file_exists(public_path('images/hero-banner-mobile.png')))
-                    <img src="{{ url('/images/hero-banner-mobile.png') }}" 
-                         alt="Her Çerçeve, Bir Emeğin İzidir — AhşapEvim" 
-                         class="w-full h-auto block">
-                @else
-                    <img src="{{ url('/images/hero-banner.png') }}" 
-                         alt="Her Çerçeve, Bir Emeğin İzidir — AhşapEvim" 
-                         class="w-full h-auto block">
-                @endif
-            </picture>
-        </div>
-    </div>
+{{-- Full-Bleed Edge-to-Edge Hero Banner (Full Viewport Width 2400x600) --}}
+<div class="relative w-full overflow-hidden bg-transparent">
+    <picture class="w-full h-auto block">
+        @if(file_exists(public_path('images/hero-banner-desktop.png')))
+            <source media="(min-width: 768px)" srcset="{{ url('/images/hero-banner-desktop.png') }}">
+        @endif
+        
+        @if(file_exists(public_path('images/hero-banner-mobile.png')))
+            <img src="{{ url('/images/hero-banner-mobile.png') }}" 
+                 alt="AhşapEvim — Masif Ahşap El İşçiliği" 
+                 class="w-full h-auto block">
+        @else
+            <img src="{{ url('/images/hero-banner.png') }}" 
+                 alt="AhşapEvim — Masif Ahşap El İşçiliği" 
+                 class="w-full h-auto block">
+        @endif
+    </picture>
 </div>
 
 

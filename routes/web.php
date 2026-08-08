@@ -172,7 +172,7 @@ Route::post('/yonetim/cikis', [LoginController::class, 'logout'])->name('admin.l
 
 // Admin Redirects
 Route::get('/admin', function () {
-    return redirect()->route('admin.products.index');
+    return redirect()->route('admin.revenue.index');
 });
 
 use App\Http\Controllers\Admin\OrderController;
@@ -183,7 +183,7 @@ use App\Http\Controllers\Admin\MessageLogController;
 // Admin Routes (Protected)
 Route::prefix('yonetim')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', function () {
-        return redirect()->route('admin.products.index');
+        return redirect()->route('admin.revenue.index');
     });
 
     Route::resource('kategoriler', CategoryController::class)->except(['create', 'show', 'edit'])->names('admin.categories');

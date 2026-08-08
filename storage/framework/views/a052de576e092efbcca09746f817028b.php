@@ -3,26 +3,22 @@
 <?php $__env->startSection('content'); ?>
 
 
-<div class="relative w-full bg-[#FAF5EE] border-b border-[#EFEAE0] overflow-hidden py-3 md:py-5">
-    <div class="container mx-auto px-4">
-        <div class="relative w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-sm border border-[#E8E2D7] bg-white">
-            <picture class="w-full h-auto block">
-                <?php if(file_exists(public_path('images/hero-banner-desktop.png'))): ?>
-                    <source media="(min-width: 768px)" srcset="<?php echo e(url('/images/hero-banner-desktop.png')); ?>">
-                <?php endif; ?>
-                
-                <?php if(file_exists(public_path('images/hero-banner-mobile.png'))): ?>
-                    <img src="<?php echo e(url('/images/hero-banner-mobile.png')); ?>" 
-                         alt="Her Çerçeve, Bir Emeğin İzidir — AhşapEvim" 
-                         class="w-full h-auto block">
-                <?php else: ?>
-                    <img src="<?php echo e(url('/images/hero-banner.png')); ?>" 
-                         alt="Her Çerçeve, Bir Emeğin İzidir — AhşapEvim" 
-                         class="w-full h-auto block">
-                <?php endif; ?>
-            </picture>
-        </div>
-    </div>
+<div class="relative w-full overflow-hidden bg-transparent">
+    <picture class="w-full h-auto block">
+        <?php if(file_exists(public_path('images/hero-banner-desktop.png'))): ?>
+            <source media="(min-width: 768px)" srcset="<?php echo e(url('/images/hero-banner-desktop.png')); ?>">
+        <?php endif; ?>
+        
+        <?php if(file_exists(public_path('images/hero-banner-mobile.png'))): ?>
+            <img src="<?php echo e(url('/images/hero-banner-mobile.png')); ?>" 
+                 alt="AhşapEvim — Masif Ahşap El İşçiliği" 
+                 class="w-full h-auto block">
+        <?php else: ?>
+            <img src="<?php echo e(url('/images/hero-banner.png')); ?>" 
+                 alt="AhşapEvim — Masif Ahşap El İşçiliği" 
+                 class="w-full h-auto block">
+        <?php endif; ?>
+    </picture>
 </div>
 
 

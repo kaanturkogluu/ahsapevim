@@ -172,7 +172,7 @@
                 <?php if(auth()->guard()->check()): ?>
                     <?php if(auth()->user()->is_admin): ?>
                         <!-- Admin Direct Link (No Dropdown) -->
-                        <a href="<?php echo e(url('/yonetim')); ?>" class="hover:text-brand flex flex-col items-center gap-0.5 group transition text-[#C87A53] font-bold">
+                        <a href="<?php echo e(route('admin.revenue.index')); ?>" class="hover:text-brand flex flex-col items-center gap-0.5 group transition text-[#C87A53] font-bold">
                             <i class="fa-solid fa-user-gear text-xl text-[#C87A53] group-hover:scale-110 transition-transform"></i>
                             <span class="hidden md:inline text-[11px] font-extrabold">Yönet</span>
                         </a>

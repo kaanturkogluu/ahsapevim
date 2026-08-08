@@ -16,7 +16,7 @@
 
     <div class="w-64 bg-[#29221C] text-white flex flex-col">
         <div class="p-4 bg-[#1D1713] text-center font-bold text-xl border-b border-[#3D332B]">
-            Ahşap Evim Admin
+            <a href="{{ route('admin.revenue.index') }}" class="text-white hover:text-amber-400 transition">Ahşap Evim Admin</a>
         </div>
         <nav class="flex-1 overflow-y-auto mt-4">
             <a href="{{ url('/yonetim/siparisler') }}" class="block p-4 hover:bg-[#3D332B]"><i class="fa-solid fa-shopping-cart mr-2"></i> Siparişler</a>
