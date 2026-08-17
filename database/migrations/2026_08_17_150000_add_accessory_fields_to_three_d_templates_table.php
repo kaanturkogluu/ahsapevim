@@ -18,6 +18,13 @@ return new class extends Migration
                 $table->string('accessory_position')->default('right')->after('accessory_type');
                 $table->float('accessory_offset_x')->default(0)->after('accessory_position');
                 $table->float('accessory_offset_y')->default(0)->after('accessory_offset_x');
+                $table->float('accessory_scale')->default(1.0)->after('accessory_offset_y');
+            });
+        if (!Schema::hasColumn('three_d_templates', 'accessory_color1')) {
+            Schema::table('three_d_templates', function (Blueprint $table) {
+                $table->string('accessory_color1')->nullable()->after('accessory_scale');
+                $table->string('accessory_color2')->nullable()->after('accessory_color1');
+                $table->string('accessory_color3')->nullable()->after('accessory_color2');
             });
         }
     }

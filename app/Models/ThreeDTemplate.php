@@ -29,6 +29,7 @@ class ThreeDTemplate extends Model
         'accessory_position',
         'accessory_offset_x',
         'accessory_offset_y',
+        'accessory_scale',
     ];
 
     public function products()

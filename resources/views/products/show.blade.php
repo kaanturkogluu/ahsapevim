@@ -6,6 +6,7 @@
     @push('head_scripts')
         <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     @endpush
 @endif
 
@@ -544,9 +545,10 @@ function buildModalFrame() {
     const modalAccessoryPos = "{{ $product->threeDTemplate->accessory_position ?? 'right' }}";
     const modalAccOffsetX = {{ $product->threeDTemplate->accessory_offset_x ?? 0 }};
     const modalAccOffsetY = {{ $product->threeDTemplate->accessory_offset_y ?? 0 }};
+    const modalAccScale = {{ $product->threeDTemplate->accessory_scale ?? 1.0 }};
 
     if (modalHasAccessory && modalAccessoryType === 'street_lamp') {
-        const lampHeight = Math.min(height * 0.65, 18);
+        const lampHeight = Math.min(height * 0.65, 18) * modalAccScale;
         const lampGroup = createStreetLampGroup(lampHeight);
         
         const bottomBoardY = -height/2 + thickness;
@@ -1068,29 +1070,36 @@ function handleEnd() {
 
     function createStreetLampGroup(targetHeight) {
         const lampGroup = new THREE.Group();
-        const scale = (targetHeight || 14) / 22.0;
+        const scale = (targetHeight || 14) / 16.0;
 
-        const metalMat = new THREE.MeshStandardMaterial({ color: 0x332c25, metalness: 0.85, roughness: 0.35 });
-        const brassAccentMat = new THREE.MeshStandardMaterial({ color: 0x8a6e3e, metalness: 0.8, roughness: 0.4 });
-        const glassMat = new THREE.MeshStandardMaterial({ color: 0xffbb44, transparent: true, opacity: 0.75, roughness: 0.15, emissive: 0xff8800, emissiveIntensity: 0.7 });
-        const bulbMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffcc44, emissiveIntensity: 2.5, roughness: 0.1 });
+        const metalMat = new THREE.MeshStandardMaterial({ color: 0x222222, metalness: 0.8, roughness: 0.3 });
+        const glassMat = new THREE.MeshStandardMaterial({ color: 0xfff2a3, transparent: true, opacity: 0.7, emissive: 0xffaa00, emissiveIntensity: 0.6 });
 
-        const baseBottom = new THREE.Mesh(new THREE.CylinderGeometry(1.5 * scale, 1.8 * scale, 0.5 * scale, 8), metalMat); baseBottom.position.y = 0.25 * scale; lampGroup.add(baseBottom);
-        const baseMid = new THREE.Mesh(new THREE.CylinderGeometry(1.0 * scale, 1.4 * scale, 0.8 * scale, 8), metalMat); baseMid.position.y = 0.9 * scale; lampGroup.add(baseMid);
-        const baseRing = new THREE.Mesh(new THREE.TorusGeometry(0.95 * scale, 0.12 * scale, 8, 16), brassAccentMat); baseRing.rotation.x = Math.PI / 2; baseRing.position.y = 1.3 * scale; lampGroup.add(baseRing);
-        const stemY = 5.05 * scale;
-        const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.35 * scale, 0.60 * scale, 7.5 * scale, 16), metalMat); stem.position.y = stemY; lampGroup.add(stem);
-        const stemRing = new THREE.Mesh(new THREE.TorusGeometry(0.48 * scale, 0.1 * scale, 8, 16), brassAccentMat); stemRing.rotation.x = Math.PI / 2; stemRing.position.y = 6.25 * scale; lampGroup.add(stemRing);
-        const collarY = 9.25 * scale;
-        const collar = new THREE.Mesh(new THREE.CylinderGeometry(0.85 * scale, 0.4 * scale, 0.9 * scale, 6), metalMat); collar.position.y = collarY; lampGroup.add(collar);
-        const glassY = 10.9 * scale;
-        const glassMesh = new THREE.Mesh(new THREE.CylinderGeometry(1.3 * scale, 0.85 * scale, 2.4 * scale, 6), glassMat); glassMesh.position.y = glassY; lampGroup.add(glassMesh);
-        const bulbMesh = new THREE.Mesh(new THREE.SphereGeometry(0.38 * scale, 16, 16), bulbMat); bulbMesh.position.y = glassY; lampGroup.add(bulbMesh);
-        const warmLight = new THREE.PointLight(0xffaa33, 2.4, 28 * scale, 1.8); warmLight.position.y = glassY; lampGroup.add(warmLight);
-        const roofY = 12.6 * scale;
-        const roof = new THREE.Mesh(new THREE.CylinderGeometry(0.2 * scale, 1.6 * scale, 1.0 * scale, 6), metalMat); roof.position.y = roofY; lampGroup.add(roof);
-        const finialStem = new THREE.Mesh(new THREE.CylinderGeometry(0.12 * scale, 0.25 * scale, 0.6 * scale, 8), brassAccentMat); finialStem.position.y = 13.4 * scale; lampGroup.add(finialStem);
-        const finialBall = new THREE.Mesh(new THREE.SphereGeometry(0.28 * scale, 12, 12), brassAccentMat); finialBall.position.y = 13.8 * scale; lampGroup.add(finialBall);
+        // Base
+        const base = new THREE.Mesh(new THREE.CylinderGeometry(1.2 * scale, 1.8 * scale, 0.8 * scale, 12), metalMat);
+        base.position.y = 0.4 * scale;
+        lampGroup.add(base);
+
+        // Pole
+        const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.3 * scale, 0.5 * scale, 10 * scale, 12), metalMat);
+        pole.position.y = 5.8 * scale;
+        lampGroup.add(pole);
+
+        // Lamp Housing / Head Base
+        const headBase = new THREE.Mesh(new THREE.CylinderGeometry(1.4 * scale, 0.8 * scale, 0.6 * scale, 6), metalMat);
+        headBase.position.y = 11.1 * scale;
+        lampGroup.add(headBase);
+
+        // Glass
+        const glass = new THREE.Mesh(new THREE.CylinderGeometry(1.2 * scale, 0.8 * scale, 2.5 * scale, 6), glassMat);
+        glass.position.y = 12.5 * scale;
+        lampGroup.add(glass);
+
+        // Roof
+        const roof = new THREE.Mesh(new THREE.ConeGeometry(1.6 * scale, 1.2 * scale, 6), metalMat);
+        roof.position.y = 14.3 * scale;
+        lampGroup.add(roof);
+
         return lampGroup;
     }
 
@@ -1413,9 +1422,10 @@ function handleEnd() {
         const accessoryPos = "{{ $product->threeDTemplate->accessory_position ?? 'right' }}";
         const accOffsetX = {{ $product->threeDTemplate->accessory_offset_x ?? 0 }};
         const accOffsetY = {{ $product->threeDTemplate->accessory_offset_y ?? 0 }};
+        const accScale = {{ $product->threeDTemplate->accessory_scale ?? 1.0 }};
 
         if (hasAccessory) {
-            const targetH = Math.min(height * 0.65, 18);
+            const targetH = Math.min(height * 0.65, 18) * accScale;
             let accGroup = null;
 
             if (accessoryType === 'street_lamp') {
