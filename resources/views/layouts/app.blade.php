@@ -111,14 +111,18 @@
         <div class="container mx-auto px-4 flex justify-between items-center font-medium">
             <!-- Left: Contact -->
             <div class="flex gap-5">
-                <a href="tel:+90850xxxxxxx" class="hover:text-brand transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-phone text-amber-700"></i> 0850 XXX XX XX
-                </a>
-                <a href="https://wa.me/905xxxxxxxxx" target="_blank"
-                    class="hover:text-brand transition flex items-center gap-1.5 text-green-700">
-                    <i class="fa-brands fa-whatsapp"></i> WhatsApp Destek
-                </a>
-                <a href="#" class="hover:text-brand transition flex items-center gap-1.5">
+                @if(!empty($contactData['phone']))
+                    <a href="tel:{{ preg_replace('/[^0-9+]/', '', $contactData['phone']) }}" class="hover:text-brand transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-phone text-amber-700"></i> {{ $contactData['phone'] }}
+                    </a>
+                @endif
+                @if(!empty($contactData['whatsapp']))
+                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $contactData['whatsapp']) }}" target="_blank"
+                        class="hover:text-brand transition flex items-center gap-1.5 text-green-700">
+                        <i class="fa-brands fa-whatsapp text-green-600"></i> WhatsApp Destek
+                    </a>
+                @endif
+                <a href="{{ url('/sikca-sorulanlar') }}" class="hover:text-brand transition flex items-center gap-1.5">
                     <i class="fa-solid fa-circle-question text-amber-700"></i> Sıkça Sorulanlar
                 </a>
             </div>
@@ -328,11 +332,11 @@
                     <div class="space-y-2 pt-1 text-xs text-gray-600">
                         <div class="flex items-center gap-2.5">
                             <i class="fa-solid fa-location-dot text-[#C87A53] w-4 text-center"></i>
-                            <span>Manisa Atölye, Türkiye</span>
+                            <span>{{ Str::limit(str_replace("\n", ", ", $contactData['address'] ?? 'Manisa Atölye, Türkiye'), 45) }}</span>
                         </div>
                         <div class="flex items-center gap-2.5">
                             <i class="fa-solid fa-envelope text-[#C87A53] w-4 text-center"></i>
-                            <span>info@ahsapevimmanisa.com</span>
+                            <span>{{ $contactData['email'] ?? 'info@ahsapevimmanisa.com' }}</span>
                         </div>
                     </div>
 
@@ -344,9 +348,11 @@
                         <a href="#" class="w-8 h-8 rounded-xl bg-white border border-gray-200 hover:border-[#C87A53] hover:bg-[#C87A53] hover:text-white text-gray-600 flex items-center justify-center transition shadow-2xs">
                             <i class="fa-brands fa-facebook-f text-xs"></i>
                         </a>
-                        <a href="#" class="w-8 h-8 rounded-xl bg-white border border-gray-200 hover:border-[#C87A53] hover:bg-[#C87A53] hover:text-white text-gray-600 flex items-center justify-center transition shadow-2xs">
+                        @if(!empty($contactData['whatsapp']))
+                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $contactData['whatsapp']) }}" target="_blank" title="WhatsApp Destek" class="w-8 h-8 rounded-xl bg-white border border-gray-200 hover:border-emerald-600 hover:bg-emerald-600 hover:text-white text-gray-600 flex items-center justify-center transition shadow-2xs">
                             <i class="fa-brands fa-whatsapp text-xs"></i>
                         </a>
+                        @endif
                     </div>
                 </div>
 
@@ -791,12 +797,14 @@
     </script>
 
     <!-- Fixed Floating WhatsApp Button (Sol Alt) -->
-    <a href="https://wa.me/905xxxxxxxxx" target="_blank" title="WhatsApp İletişim Hattı" class="fixed bottom-5 left-5 z-[9999] w-12 h-12 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center text-2xl shadow-xl hover:scale-110 transition-transform duration-200 border-2 border-white group">
+    @if(!empty($contactData['whatsapp']))
+    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $contactData['whatsapp']) }}" target="_blank" title="WhatsApp İletişim Hattı" class="fixed bottom-5 left-5 z-[9999] w-12 h-12 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center text-2xl shadow-xl hover:scale-110 transition-transform duration-200 border-2 border-white group">
         <i class="fa-brands fa-whatsapp text-2xl"></i>
         <span class="absolute left-14 bg-emerald-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-md pointer-events-none">
             WhatsApp Destek Hattı
         </span>
     </a>
+    @endif
 
     <!-- Fixed Scroll To Top Button (Sağ Alt) -->
     <button type="button" id="scrollToTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Yukarı Çık" class="fixed bottom-5 right-5 z-[9999] w-11 h-11 bg-[#C87A53] hover:bg-[#A65F38] text-white rounded-full flex items-center justify-center text-lg shadow-xl hover:scale-110 transition-all duration-200 border-2 border-white opacity-0 pointer-events-none">
