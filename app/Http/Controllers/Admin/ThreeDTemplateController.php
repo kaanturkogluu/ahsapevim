@@ -39,6 +39,11 @@ class ThreeDTemplateController extends Controller
             'pos_x' => 'required|numeric',
             'pos_y' => 'required|numeric',
             'bump_scale' => 'required|numeric|min:0',
+            'has_accessory' => 'nullable',
+            'accessory_type' => 'nullable|string|max:255',
+            'accessory_position' => 'nullable|string|max:255',
+            'accessory_offset_x' => 'nullable|numeric',
+            'accessory_offset_y' => 'nullable|numeric',
         ]);
 
         ThreeDTemplate::create([
@@ -59,6 +64,11 @@ class ThreeDTemplateController extends Controller
             'pos_x' => $request->pos_x,
             'pos_y' => $request->pos_y,
             'bump_scale' => $request->bump_scale,
+            'has_accessory' => $request->has('has_accessory') ? 1 : 0,
+            'accessory_type' => $request->accessory_type ?? 'street_lamp',
+            'accessory_position' => $request->accessory_position ?? 'right',
+            'accessory_offset_x' => $request->accessory_offset_x ?? 0,
+            'accessory_offset_y' => $request->accessory_offset_y ?? 0,
         ]);
 
         return redirect()->route('admin.templates.index')->with('success', '3D Şablon başarıyla oluşturuldu.');
@@ -92,6 +102,11 @@ class ThreeDTemplateController extends Controller
             'pos_x' => 'required|numeric',
             'pos_y' => 'required|numeric',
             'bump_scale' => 'required|numeric|min:0',
+            'has_accessory' => 'nullable',
+            'accessory_type' => 'nullable|string|max:255',
+            'accessory_position' => 'nullable|string|max:255',
+            'accessory_offset_x' => 'nullable|numeric',
+            'accessory_offset_y' => 'nullable|numeric',
         ]);
 
         $template->update([
@@ -112,6 +127,11 @@ class ThreeDTemplateController extends Controller
             'pos_x' => $request->pos_x,
             'pos_y' => $request->pos_y,
             'bump_scale' => $request->bump_scale,
+            'has_accessory' => $request->has('has_accessory') ? 1 : 0,
+            'accessory_type' => $request->accessory_type ?? 'street_lamp',
+            'accessory_position' => $request->accessory_position ?? 'right',
+            'accessory_offset_x' => $request->accessory_offset_x ?? 0,
+            'accessory_offset_y' => $request->accessory_offset_y ?? 0,
         ]);
 
         return redirect()->route('admin.templates.index')->with('success', '3D Şablon başarıyla güncellendi.');

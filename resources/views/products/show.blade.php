@@ -419,14 +419,6 @@ function buildModalFrame() {
     const woodTextures = generateWoodTextures(woodType, modalRenderer);
     const bScaleRaw = {{ $product->threeDTemplate->bump_scale ?: 0.28 }};
     const bScale = bScaleRaw < 0.12 ? 0.28 : bScaleRaw;
-    const materialObj = new THREE.MeshStandardMaterial({ 
-        map: woodTextures.colorMap, 
-        bumpMap: woodTextures.bumpMap,
-        bumpScale: bScale,
-        roughnessMap: woodTextures.roughnessMap,
-        roughness: 0.68,
-        metalness: 0.02
-    });
 
     const hasTop = {{ $product->threeDTemplate->has_top ? 'true' : 'false' }};
     const hasBottom = {{ $product->threeDTemplate->has_bottom ? 'true' : 'false' }};
@@ -436,24 +428,28 @@ function buildModalFrame() {
     modalOuterGroup = new THREE.Group();
 
     if(hasTop) {
-        const mesh = new THREE.Mesh(createMiteredFramePiece(width, thickness, depth, hasLeft, hasRight), materialObj);
+        const mat = createPieceMaterial(woodTextures, bScale, 'top');
+        const mesh = new THREE.Mesh(createMiteredFramePiece(width, thickness, depth, hasLeft, hasRight), mat);
         mesh.position.y = height/2 - thickness/2;
         modalOuterGroup.add(mesh);
     }
     if(hasBottom) {
-        const mesh = new THREE.Mesh(createMiteredFramePiece(width, thickness, depth, hasRight, hasLeft), materialObj);
+        const mat = createPieceMaterial(woodTextures, bScale, 'bottom');
+        const mesh = new THREE.Mesh(createMiteredFramePiece(width, thickness, depth, hasRight, hasLeft), mat);
         mesh.rotation.z = Math.PI;
         mesh.position.y = -height/2 + thickness/2;
         modalOuterGroup.add(mesh);
     }
     if(hasLeft) {
-        const mesh = new THREE.Mesh(createMiteredFramePiece(height, thickness, depth, hasBottom, hasTop), materialObj);
+        const mat = createPieceMaterial(woodTextures, bScale, 'left');
+        const mesh = new THREE.Mesh(createMiteredFramePiece(height, thickness, depth, hasBottom, hasTop), mat);
         mesh.rotation.z = Math.PI / 2;
         mesh.position.x = -width/2 + thickness/2;
         modalOuterGroup.add(mesh);
     }
     if(hasRight) {
-        const mesh = new THREE.Mesh(createMiteredFramePiece(height, thickness, depth, hasTop, hasBottom), materialObj);
+        const mat = createPieceMaterial(woodTextures, bScale, 'right');
+        const mesh = new THREE.Mesh(createMiteredFramePiece(height, thickness, depth, hasTop, hasBottom), mat);
         mesh.rotation.z = -Math.PI / 2;
         mesh.position.x = width/2 - thickness/2;
         modalOuterGroup.add(mesh);
@@ -464,21 +460,25 @@ function buildModalFrame() {
     modalCustomRotatingFrame = new THREE.Group();
     modalCustomRotatingFrame.position.set(px, py, 0);
 
-    const topIn = new THREE.Mesh(createMiteredFramePiece(innerW, innerB, innerD, true, true), materialObj);
+    const matInTop = createPieceMaterial(woodTextures, bScale, 'inner_top');
+    const topIn = new THREE.Mesh(createMiteredFramePiece(innerW, innerB, innerD, true, true), matInTop);
     topIn.position.y = innerH/2 - innerB/2;
     modalCustomRotatingFrame.add(topIn);
 
-    const botIn = new THREE.Mesh(createMiteredFramePiece(innerW, innerB, innerD, true, true), materialObj);
+    const matInBot = createPieceMaterial(woodTextures, bScale, 'inner_bottom');
+    const botIn = new THREE.Mesh(createMiteredFramePiece(innerW, innerB, innerD, true, true), matInBot);
     botIn.rotation.z = Math.PI;
     botIn.position.y = -innerH/2 + innerB/2;
     modalCustomRotatingFrame.add(botIn);
 
-    const leftIn = new THREE.Mesh(createMiteredFramePiece(innerH, innerB, innerD, true, true), materialObj);
+    const matInLeft = createPieceMaterial(woodTextures, bScale, 'inner_left');
+    const leftIn = new THREE.Mesh(createMiteredFramePiece(innerH, innerB, innerD, true, true), matInLeft);
     leftIn.rotation.z = Math.PI / 2;
     leftIn.position.x = -innerW/2 + innerB/2;
     modalCustomRotatingFrame.add(leftIn);
 
-    const rightIn = new THREE.Mesh(createMiteredFramePiece(innerH, innerB, innerD, true, true), materialObj);
+    const matInRight = createPieceMaterial(woodTextures, bScale, 'inner_right');
+    const rightIn = new THREE.Mesh(createMiteredFramePiece(innerH, innerB, innerD, true, true), matInRight);
     rightIn.rotation.z = -Math.PI / 2;
     rightIn.position.x = innerW/2 - innerB/2;
     modalCustomRotatingFrame.add(rightIn);
@@ -507,8 +507,9 @@ function buildModalFrame() {
     modalCustomPhotoBack.position.z = -0.1;
     modalCustomRotatingFrame.add(modalCustomPhotoBack);
 
+    const matBacking = createPieceMaterial(woodTextures, bScale, 'backing');
     const backingGeom = new THREE.BoxGeometry(photoW, photoH, 0.08);
-    const backing = new THREE.Mesh(backingGeom, materialObj);
+    const backing = new THREE.Mesh(backingGeom, matBacking);
     modalCustomRotatingFrame.add(backing);
 
     // Metallic Pivot Pins (Orta Dönme Pinleri)
@@ -535,8 +536,32 @@ function buildModalFrame() {
     pinBottom.position.set(0, localYBot, 0);
 
     modalCustomRotatingFrame.add(pinTop, pinBottom);
-
     modalModelGroup.add(modalCustomRotatingFrame);
+
+    // Render 3D Accessory / Object (Nostaljik Sokak Lambası)
+    const modalHasAccessory = {{ $product->threeDTemplate->has_accessory ? 'true' : 'false' }};
+    const modalAccessoryType = "{{ $product->threeDTemplate->accessory_type ?? 'street_lamp' }}";
+    const modalAccessoryPos = "{{ $product->threeDTemplate->accessory_position ?? 'right' }}";
+    const modalAccOffsetX = {{ $product->threeDTemplate->accessory_offset_x ?? 0 }};
+    const modalAccOffsetY = {{ $product->threeDTemplate->accessory_offset_y ?? 0 }};
+
+    if (modalHasAccessory && modalAccessoryType === 'street_lamp') {
+        const lampHeight = Math.min(height * 0.65, 18);
+        const lampGroup = createStreetLampGroup(lampHeight);
+        
+        const bottomBoardY = -height/2 + thickness;
+        let posX = 0;
+        if (modalAccessoryPos === 'right') {
+            posX = width/2 - thickness * 2.2 + modalAccOffsetX;
+        } else if (modalAccessoryPos === 'left') {
+            posX = -width/2 + thickness * 2.2 + modalAccOffsetX;
+        } else {
+            posX = modalAccOffsetX;
+        }
+
+        lampGroup.position.set(posX, bottomBoardY + modalAccOffsetY, depth * 0.1);
+        modalModelGroup.add(lampGroup);
+    }
 
     // If an image is selected, load it onto the photo planes!
     const fileInput = document.getElementById('customImageInput');
@@ -944,290 +969,282 @@ function handleEnd() {
         return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
     }
 
-    // --- WOOD TEXTURE & TACTILE BUMP MAP GENERATOR ---
     function generateWoodTextures(woodType, rendererInstance) {
         const size = 1024;
-        
-        // 1. Color Map Canvas (Diffuse)
-        const colorCanvas = document.createElement('canvas');
-        colorCanvas.width = size;
-        colorCanvas.height = size;
+        const colorCanvas = document.createElement('canvas'); colorCanvas.width = size; colorCanvas.height = size;
         const colorCtx = colorCanvas.getContext('2d');
-
-        // 2. Bump Map Canvas (Tactile 3D Heightmap for Grooves & Pores / Tırtık)
-        const bumpCanvas = document.createElement('canvas');
-        bumpCanvas.width = size;
-        bumpCanvas.height = size;
+        const bumpCanvas = document.createElement('canvas'); bumpCanvas.width = size; bumpCanvas.height = size;
         const bumpCtx = bumpCanvas.getContext('2d');
-
-        // 3. Roughness Map Canvas (Surface Reflection Variation)
-        const roughCanvas = document.createElement('canvas');
-        roughCanvas.width = size;
-        roughCanvas.height = size;
+        const roughCanvas = document.createElement('canvas'); roughCanvas.width = size; roughCanvas.height = size;
         const roughCtx = roughCanvas.getContext('2d');
 
         let baseColor, lineColor, poreColor;
         if (woodType && (woodType.startsWith('#') || /^[0-9a-fA-F]{6}$/.test(woodType.replace('#','')))) {
             const hex = woodType.startsWith('#') ? woodType : '#' + woodType;
             baseColor = hex;
-            lineColor = darkenColor(hex, 25);
-            poreColor = darkenColor(hex, 45);
+            lineColor = darkenColor(hex, 28);
+            poreColor = darkenColor(hex, 48);
         } else if (woodType === 'Ceviz') {
-            baseColor = '#4a3319';
-            lineColor = '#2b1b0e';
-            poreColor = '#1d1209';
+            baseColor = '#4a3319'; lineColor = '#2b1b0e'; poreColor = '#1d1209';
         } else if (woodType === 'Meşe') {
-            baseColor = '#a8896c';
-            lineColor = '#72553b';
-            poreColor = '#503a27';
+            baseColor = '#a8896c'; lineColor = '#72553b'; poreColor = '#503a27';
         } else if (woodType === 'Çam') {
-            baseColor = '#e3d3bd';
-            lineColor = '#ba9e7d';
-            poreColor = '#a68865';
+            baseColor = '#e3d3bd'; lineColor = '#ba9e7d'; poreColor = '#a68865';
         } else if (woodType === 'Kiraz') {
-            baseColor = '#8c462b';
-            lineColor = '#562512';
-            poreColor = '#3c180a';
+            baseColor = '#8c462b'; lineColor = '#562512'; poreColor = '#3c180a';
         } else {
             baseColor = woodType || '#ead9c3';
-            lineColor = darkenColor(baseColor, 25);
-            poreColor = darkenColor(baseColor, 45);
+            lineColor = darkenColor(baseColor, 28);
+            poreColor = darkenColor(baseColor, 48);
         }
 
-        // --- Base Fills ---
-        colorCtx.fillStyle = baseColor;
-        colorCtx.fillRect(0, 0, size, size);
+        colorCtx.fillStyle = baseColor; colorCtx.fillRect(0, 0, size, size);
+        bumpCtx.fillStyle = '#808080'; bumpCtx.fillRect(0, 0, size, size);
+        roughCtx.fillStyle = '#707070'; roughCtx.fillRect(0, 0, size, size);
 
-        bumpCtx.fillStyle = '#808080'; // neutral height offset
-        bumpCtx.fillRect(0, 0, size, size);
-
-        roughCtx.fillStyle = '#707070'; // ~0.44 roughness base
-        roughCtx.fillRect(0, 0, size, size);
-
-        // --- 1. Micro-Noise & Pores (Tactile 3D Tırtık) ---
-        colorCtx.fillStyle = poreColor;
-        colorCtx.globalAlpha = 0.28;
-        for (let i = 0; i < 70000; i++) {
-            let px = Math.random() * size;
-            let py = Math.random() * size;
-            let pw = 2 + Math.random() * 4;
-            let ph = 1 + Math.random() * 1.2;
-            colorCtx.fillRect(px, py, pw, ph);
-        }
-        colorCtx.fillStyle = '#ffffff';
-        colorCtx.globalAlpha = 0.14;
-        for (let i = 0; i < 30000; i++) {
-            let px = Math.random() * size;
-            let py = Math.random() * size;
-            let pw = 3 + Math.random() * 6;
-            let ph = 0.8 + Math.random() * 0.8;
-            colorCtx.fillRect(px, py, pw, ph);
-        }
-        colorCtx.globalAlpha = 1.0;
-
-        // High-contrast heightmap specks for physical 3D bumpiness/tırtık
-        for (let i = 0; i < 45000; i++) {
-            let bx = Math.random() * size;
-            let by = Math.random() * size;
-            let bw = 1.5 + Math.random() * 3.5;
-            let bh = 1.0 + Math.random() * 1.5;
-            bumpCtx.fillStyle = Math.random() > 0.45 ? '#151515' : '#d8d8d8';
-            bumpCtx.fillRect(bx, by, bw, bh);
-
-            roughCtx.fillStyle = '#c5c5c5'; // matte pores
-            roughCtx.fillRect(bx, by, bw, bh);
-        }
-
-        // --- 2. Soft Grain Rings / Waves ---
-        colorCtx.strokeStyle = poreColor;
-        colorCtx.globalAlpha = 0.14;
-        colorCtx.lineWidth = 18;
-
-        bumpCtx.strokeStyle = '#505050';
-        bumpCtx.lineWidth = 14;
-
-        for (let i = -200; i < 1224; i += 40) {
-            colorCtx.beginPath();
-            bumpCtx.beginPath();
-            let y = i;
-            colorCtx.moveTo(0, y);
-            bumpCtx.moveTo(0, y);
-            let freq = 0.003;
-            let amp = 35;
-            let phase = i * 0.05;
-            for (let x = 0; x <= size; x += 25) {
-                let offset = Math.sin(x * freq + phase) * amp;
-                colorCtx.lineTo(x, y + offset);
-                bumpCtx.lineTo(x, y + offset);
+        for (let y = -50; y < size + 50; y += 7) {
+            let freq = 0.003 + (y % 13) * 0.0003;
+            let amp = 15 + (y % 17) * 1.5;
+            let phase = y * 0.02;
+            colorCtx.beginPath(); bumpCtx.beginPath(); roughCtx.beginPath();
+            colorCtx.moveTo(0, y); bumpCtx.moveTo(0, y); roughCtx.moveTo(0, y);
+            for (let x = 0; x <= size; x += 20) {
+                let dy = Math.sin(x * freq + phase) * amp;
+                colorCtx.lineTo(x, y + dy); bumpCtx.lineTo(x, y + dy); roughCtx.lineTo(x, y + dy);
             }
+            colorCtx.strokeStyle = (y % 21 === 0) ? lineColor : poreColor;
+            colorCtx.globalAlpha = (y % 21 === 0) ? 0.35 : 0.18;
+            colorCtx.lineWidth = (y % 21 === 0) ? 2.8 : 1.4;
             colorCtx.stroke();
+            bumpCtx.strokeStyle = (y % 21 === 0) ? '#101010' : '#404040';
+            bumpCtx.globalAlpha = (y % 21 === 0) ? 0.45 : 0.2;
+            bumpCtx.lineWidth = (y % 21 === 0) ? 3.0 : 1.5;
             bumpCtx.stroke();
+            roughCtx.strokeStyle = '#d5d5d5'; roughCtx.globalAlpha = 0.2; roughCtx.lineWidth = 2.0; roughCtx.stroke();
         }
-        colorCtx.globalAlpha = 1.0;
+        colorCtx.globalAlpha = 1.0; bumpCtx.globalAlpha = 1.0; roughCtx.globalAlpha = 1.0;
 
-        // --- 3. Deep Linear Grain Grooves (Girintiler) ---
-        colorCtx.strokeStyle = lineColor;
-        colorCtx.lineWidth = 2.6;
-
-        bumpCtx.strokeStyle = '#080808'; // deep groove heightmap (black = carved valley)
-        bumpCtx.lineWidth = 3.2;
-
-        roughCtx.strokeStyle = '#e5e5e5';
-        roughCtx.lineWidth = 2.6;
-
-        for (let i = -200; i < 1224; i += 11) {
-            colorCtx.beginPath();
-            bumpCtx.beginPath();
-            roughCtx.beginPath();
-
-            let y = i;
-            colorCtx.moveTo(0, y);
-            bumpCtx.moveTo(0, y);
-            roughCtx.moveTo(0, y);
-            
-            let frequency = 0.004 + Math.random() * 0.003;
-            let amplitude = 22 + Math.random() * 22;
-            let phase = Math.random() * Math.PI;
-
-            for (let x = 0; x <= size; x += 15) {
-                let offset = Math.sin(x * frequency + phase) * amplitude;
-                offset += (Math.random() - 0.5) * 1.8;
-                colorCtx.lineTo(x, y + offset);
-                bumpCtx.lineTo(x, y + offset);
-                roughCtx.lineTo(x, y + offset);
-            }
-            colorCtx.stroke();
-            bumpCtx.stroke();
-            roughCtx.stroke();
+        let knotX = size * 0.4;
+        let knotY = size * 0.5;
+        for (let r = 10; r < 45; r += 7) {
+            colorCtx.beginPath(); bumpCtx.beginPath();
+            colorCtx.ellipse(knotX, knotY, r * 2.5, r, Math.PI / 12, 0, Math.PI * 2);
+            bumpCtx.ellipse(knotX, knotY, r * 2.5, r, Math.PI / 12, 0, Math.PI * 2);
+            colorCtx.strokeStyle = lineColor; colorCtx.lineWidth = 1.8; colorCtx.globalAlpha = 0.25; colorCtx.stroke();
+            bumpCtx.strokeStyle = '#151515'; bumpCtx.lineWidth = 2.0; bumpCtx.globalAlpha = 0.3; bumpCtx.stroke();
         }
+        colorCtx.globalAlpha = 1.0; bumpCtx.globalAlpha = 1.0;
 
-        // --- 4. Knotholes & Ring Height Gradients (Budaklar) ---
-        colorCtx.lineWidth = 1.6;
-        for (let k = 0; k < 3; k++) {
-            let knotX = Math.random() * 624 + 200;
-            let knotY = Math.random() * 624 + 200;
-            let knotR = 30 + Math.random() * 40;
-            
-            for (let r = 8; r < knotR; r += 8) {
-                colorCtx.beginPath();
-                bumpCtx.beginPath();
-                roughCtx.beginPath();
-
-                let radX = r * 2.3;
-                let radY = r;
-                let rot = Math.PI / (6 + Math.random() * 4);
-
-                colorCtx.ellipse(knotX, knotY, radX, radY, rot, 0, Math.PI * 2);
-                bumpCtx.ellipse(knotX, knotY, radX, radY, rot, 0, Math.PI * 2);
-                roughCtx.ellipse(knotX, knotY, radX, radY, rot, 0, Math.PI * 2);
-
-                colorCtx.strokeStyle = lineColor;
-                colorCtx.stroke();
-
-                bumpCtx.strokeStyle = (r % 16 === 0) ? '#050505' : '#e8e8e8';
-                bumpCtx.lineWidth = 2.0;
-                bumpCtx.stroke();
-
-                roughCtx.strokeStyle = '#f5f5f5';
-                roughCtx.stroke();
-            }
-        }
-
-        // THREE Canvas Textures
         const colorTex = new THREE.CanvasTexture(colorCanvas);
-        colorTex.wrapS = THREE.RepeatWrapping;
-        colorTex.wrapT = THREE.RepeatWrapping;
-
         const bumpTex = new THREE.CanvasTexture(bumpCanvas);
-        bumpTex.wrapS = THREE.RepeatWrapping;
-        bumpTex.wrapT = THREE.RepeatWrapping;
-
         const roughTex = new THREE.CanvasTexture(roughCanvas);
-        roughTex.wrapS = THREE.RepeatWrapping;
-        roughTex.wrapT = THREE.RepeatWrapping;
+        colorTex.wrapS = THREE.ClampToEdgeWrapping; colorTex.wrapT = THREE.ClampToEdgeWrapping;
+        bumpTex.wrapS = THREE.ClampToEdgeWrapping; bumpTex.wrapT = THREE.ClampToEdgeWrapping;
+        roughTex.wrapS = THREE.ClampToEdgeWrapping; roughTex.wrapT = THREE.ClampToEdgeWrapping;
 
         if (rendererInstance && rendererInstance.capabilities) {
             const maxAniso = rendererInstance.capabilities.getMaxAnisotropy();
-            colorTex.anisotropy = maxAniso;
-            bumpTex.anisotropy = maxAniso;
-            roughTex.anisotropy = maxAniso;
+            colorTex.anisotropy = bumpTex.anisotropy = roughTex.anisotropy = maxAniso;
         }
 
         return { colorMap: colorTex, bumpMap: bumpTex, roughnessMap: roughTex };
     }
 
-    // --- 3D SHOWCASE ENGINE FOR PRODUCT PAGE ---
-    let scene, camera, renderer, controls;
-    let currentModelGroup = new THREE.Group();
-    let outerGroup = null;
-    let customRotatingFrame = null;
-    let customPhotoFront = null;
-    let customPhotoBack = null;
+    function createPieceMaterial(woodTextures, bScale, pieceName) {
+        const colorMap = woodTextures.colorMap.clone();
+        const bumpMap = woodTextures.bumpMap.clone();
+        const roughnessMap = woodTextures.roughnessMap.clone();
 
-    const container3D = document.getElementById('productShowcase3D');
+        colorMap.needsUpdate = bumpMap.needsUpdate = roughnessMap.needsUpdate = true;
+        colorMap.wrapS = colorMap.wrapT = bumpMap.wrapS = bumpMap.wrapT = roughnessMap.wrapS = roughnessMap.wrapT = THREE.ClampToEdgeWrapping;
 
-    if(container3D) {
-        // Wait for page load and styling
-        setTimeout(initProduct3D, 200);
+        const ry = parseFloat((Math.random() * 0.4).toFixed(3));
+        colorMap.offset.set(0, ry); bumpMap.offset.set(0, ry); roughnessMap.offset.set(0, ry);
+
+        return new THREE.MeshStandardMaterial({
+            map: colorMap, bumpMap: bumpMap, bumpScale: bScale, roughnessMap: roughnessMap, roughness: 0.65, metalness: 0.02
+        });
     }
 
-    function initProduct3D() {
-        scene = new THREE.Scene();
-        const rect = container3D.getBoundingClientRect();
-        camera = new THREE.PerspectiveCamera(40, rect.width / (rect.height || 480), 0.1, 1000);
-        camera.position.set(0, 0, 50);
+    function createStreetLampGroup(targetHeight) {
+        const lampGroup = new THREE.Group();
+        const scale = (targetHeight || 14) / 22.0;
 
-        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(rect.width, rect.height || 480);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.shadowMap.enabled = true;
-        container3D.appendChild(renderer.domElement);
+        const metalMat = new THREE.MeshStandardMaterial({ color: 0x332c25, metalness: 0.85, roughness: 0.35 });
+        const brassAccentMat = new THREE.MeshStandardMaterial({ color: 0x8a6e3e, metalness: 0.8, roughness: 0.4 });
+        const glassMat = new THREE.MeshStandardMaterial({ color: 0xffbb44, transparent: true, opacity: 0.75, roughness: 0.15, emissive: 0xff8800, emissiveIntensity: 0.7 });
+        const bulbMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffcc44, emissiveIntensity: 2.5, roughness: 0.1 });
 
-        controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controls.maxPolarAngle = Math.PI / 2 + 0.1;
-        controls.minDistance = 15;
-        controls.maxDistance = 75;
+        const baseBottom = new THREE.Mesh(new THREE.CylinderGeometry(1.5 * scale, 1.8 * scale, 0.5 * scale, 8), metalMat); baseBottom.position.y = 0.25 * scale; lampGroup.add(baseBottom);
+        const baseMid = new THREE.Mesh(new THREE.CylinderGeometry(1.0 * scale, 1.4 * scale, 0.8 * scale, 8), metalMat); baseMid.position.y = 0.9 * scale; lampGroup.add(baseMid);
+        const baseRing = new THREE.Mesh(new THREE.TorusGeometry(0.95 * scale, 0.12 * scale, 8, 16), brassAccentMat); baseRing.rotation.x = Math.PI / 2; baseRing.position.y = 1.3 * scale; lampGroup.add(baseRing);
+        const stemY = 5.05 * scale;
+        const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.35 * scale, 0.60 * scale, 7.5 * scale, 16), metalMat); stem.position.y = stemY; lampGroup.add(stem);
+        const stemRing = new THREE.Mesh(new THREE.TorusGeometry(0.48 * scale, 0.1 * scale, 8, 16), brassAccentMat); stemRing.rotation.x = Math.PI / 2; stemRing.position.y = 6.25 * scale; lampGroup.add(stemRing);
+        const collarY = 9.25 * scale;
+        const collar = new THREE.Mesh(new THREE.CylinderGeometry(0.85 * scale, 0.4 * scale, 0.9 * scale, 6), metalMat); collar.position.y = collarY; lampGroup.add(collar);
+        const glassY = 10.9 * scale;
+        const glassMesh = new THREE.Mesh(new THREE.CylinderGeometry(1.3 * scale, 0.85 * scale, 2.4 * scale, 6), glassMat); glassMesh.position.y = glassY; lampGroup.add(glassMesh);
+        const bulbMesh = new THREE.Mesh(new THREE.SphereGeometry(0.38 * scale, 16, 16), bulbMat); bulbMesh.position.y = glassY; lampGroup.add(bulbMesh);
+        const warmLight = new THREE.PointLight(0xffaa33, 2.4, 28 * scale, 1.8); warmLight.position.y = glassY; lampGroup.add(warmLight);
+        const roofY = 12.6 * scale;
+        const roof = new THREE.Mesh(new THREE.CylinderGeometry(0.2 * scale, 1.6 * scale, 1.0 * scale, 6), metalMat); roof.position.y = roofY; lampGroup.add(roof);
+        const finialStem = new THREE.Mesh(new THREE.CylinderGeometry(0.12 * scale, 0.25 * scale, 0.6 * scale, 8), brassAccentMat); finialStem.position.y = 13.4 * scale; lampGroup.add(finialStem);
+        const finialBall = new THREE.Mesh(new THREE.SphereGeometry(0.28 * scale, 12, 12), brassAccentMat); finialBall.position.y = 13.8 * scale; lampGroup.add(finialBall);
+        return lampGroup;
+    }
 
-        scene.add(currentModelGroup);
+    function createWoodenClockGroup(targetHeight) {
+        const clockGroup = new THREE.Group();
+        const scale = (targetHeight || 14) / 22.0;
+        const woodMat = new THREE.MeshStandardMaterial({ color: 0x5a3d28, roughness: 0.5, metalness: 0.05 });
+        const brassMat = new THREE.MeshStandardMaterial({ color: 0xc8a257, roughness: 0.3, metalness: 0.85 });
+        const dialMat = new THREE.MeshStandardMaterial({ color: 0xfaf4e8, roughness: 0.2, metalness: 0.1 });
+        const darkMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.4 });
+        const bodyWidth = 4.5 * scale; const bodyHeight = 7.0 * scale; const bodyDepth = 2.2 * scale;
+        const bodyMesh = new THREE.Mesh(new THREE.BoxGeometry(bodyWidth, bodyHeight, bodyDepth), woodMat);
+        bodyMesh.position.y = bodyHeight / 2; clockGroup.add(bodyMesh);
+        const archMesh = new THREE.Mesh(new THREE.CylinderGeometry(bodyWidth / 2, bodyWidth / 2, bodyDepth, 16, 1, false, 0, Math.PI), woodMat);
+        archMesh.rotation.x = Math.PI / 2; archMesh.rotation.z = Math.PI / 2; archMesh.position.y = bodyHeight; clockGroup.add(archMesh);
+        const bezelMesh = new THREE.Mesh(new THREE.TorusGeometry(1.6 * scale, 0.18 * scale, 8, 24), brassMat);
+        bezelMesh.position.set(0, bodyHeight * 0.62, bodyDepth / 2 + 0.05 * scale); clockGroup.add(bezelMesh);
+        const dialMesh = new THREE.Mesh(new THREE.CircleGeometry(1.55 * scale, 24), dialMat);
+        dialMesh.position.set(0, bodyHeight * 0.62, bodyDepth / 2 + 0.08 * scale); clockGroup.add(dialMesh);
+        const handH = new THREE.Mesh(new THREE.BoxGeometry(0.12 * scale, 0.7 * scale, 0.04 * scale), darkMat);
+        handH.rotation.z = -Math.PI / 4; handH.position.set(0.2 * scale, bodyHeight * 0.62 + 0.2 * scale, bodyDepth / 2 + 0.12 * scale); clockGroup.add(handH);
+        const handM = new THREE.Mesh(new THREE.BoxGeometry(0.08 * scale, 1.1 * scale, 0.04 * scale), darkMat);
+        handM.rotation.z = Math.PI / 6; handM.position.set(-0.25 * scale, bodyHeight * 0.62 + 0.35 * scale, bodyDepth / 2 + 0.12 * scale); clockGroup.add(handM);
+        const rodMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.06 * scale, 0.06 * scale, 2.0 * scale, 8), brassMat);
+        rodMesh.position.set(0, bodyHeight * 0.32, bodyDepth / 2 + 0.08 * scale); clockGroup.add(rodMesh);
+        const bobMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.6 * scale, 0.6 * scale, 0.15 * scale, 16), brassMat);
+        bobMesh.rotation.x = Math.PI / 2; bobMesh.position.set(0, bodyHeight * 0.22, bodyDepth / 2 + 0.1 * scale); clockGroup.add(bobMesh);
+        return clockGroup;
+    }
 
-        const ambient = new THREE.AmbientLight(0xffffff, 0.65);
-        const keyLight = new THREE.DirectionalLight(0xffffff, 0.85);
-        keyLight.position.set(25, 45, 30);
-        keyLight.castShadow = true;
-        scene.add(ambient, keyLight);
+    function createFlowerVaseGroup(targetHeight) {
+        const plantGroup = new THREE.Group();
+        const scale = (targetHeight || 14) / 22.0;
+        const potMat = new THREE.MeshStandardMaterial({ color: 0xc46d4e, roughness: 0.6, metalness: 0.05 });
+        const soilMat = new THREE.MeshStandardMaterial({ color: 0x3d2716, roughness: 0.9 });
+        const leafMat = new THREE.MeshStandardMaterial({ color: 0x2e7d32, roughness: 0.5 });
+        const flowerMat1 = new THREE.MeshStandardMaterial({ color: 0xe91e63, roughness: 0.4 });
+        const flowerMat2 = new THREE.MeshStandardMaterial({ color: 0xffeb3b, roughness: 0.4 });
+        const potMesh = new THREE.Mesh(new THREE.CylinderGeometry(1.6 * scale, 1.1 * scale, 3.2 * scale, 16), potMat);
+        potMesh.position.y = 1.6 * scale; plantGroup.add(potMesh);
+        const rimMesh = new THREE.Mesh(new THREE.TorusGeometry(1.65 * scale, 0.18 * scale, 8, 16), potMat);
+        rimMesh.rotation.x = Math.PI / 2; rimMesh.position.y = 3.2 * scale; plantGroup.add(rimMesh);
+        const soilMesh = new THREE.Mesh(new THREE.CylinderGeometry(1.5 * scale, 1.5 * scale, 0.2 * scale, 16), soilMat);
+        soilMesh.position.y = 3.1 * scale; plantGroup.add(soilMesh);
+        for (let i = 0; i < 9; i++) {
+            const leafMesh = new THREE.Mesh(new THREE.SphereGeometry(0.75 * scale, 8, 8), leafMat);
+            const angle = (i / 9) * Math.PI * 2; const rad = 0.6 * scale;
+            const lx = Math.cos(angle) * rad; const lz = Math.sin(angle) * rad; const ly = 3.8 * scale + Math.sin(i) * 0.4 * scale;
+            leafMesh.position.set(lx, ly, lz); leafMesh.scale.set(1.2, 0.4, 0.8); leafMesh.rotation.y = angle; plantGroup.add(leafMesh);
+        }
+        for (let i = 0; i < 5; i++) {
+            const mat = i % 2 === 0 ? flowerMat1 : flowerMat2;
+            const flowerMesh = new THREE.Mesh(new THREE.SphereGeometry(0.55 * scale, 10, 10), mat);
+            const angle = (i / 5) * Math.PI * 2 + 0.3; const rad = 0.7 * scale;
+            const fx = Math.cos(angle) * rad; const fz = Math.sin(angle) * rad; const fy = 4.7 * scale + (i % 3) * 0.4 * scale;
+            flowerMesh.position.set(fx, fy, fz); plantGroup.add(flowerMesh);
+        }
+        return plantGroup;
+    }
 
-        buildProductFrame();
+    function createMiniBookshelfGroup(targetHeight) {
+        const bookGroup = new THREE.Group();
+        const scale = (targetHeight || 14) / 22.0;
+        const woodMat = new THREE.MeshStandardMaterial({ color: 0x4a321f, roughness: 0.6 });
+        const goldMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.8, roughness: 0.3 });
+        const bookColors = [0x8b0000, 0x1b4d3e, 0x1f305e, 0x704214, 0x4b0082, 0x800020];
+        const shelfMesh = new THREE.Mesh(new THREE.BoxGeometry(5.5 * scale, 0.4 * scale, 2.2 * scale), woodMat);
+        shelfMesh.position.y = 0.2 * scale; bookGroup.add(shelfMesh);
+        const endGeo = new THREE.BoxGeometry(0.4 * scale, 4.2 * scale, 2.2 * scale);
+        const leftEnd = new THREE.Mesh(endGeo, woodMat); leftEnd.position.set(-2.55 * scale, 2.1 * scale, 0); bookGroup.add(leftEnd);
+        const rightEnd = new THREE.Mesh(endGeo, woodMat); rightEnd.position.set(2.55 * scale, 2.1 * scale, 0); bookGroup.add(rightEnd);
+        let startX = -2.1 * scale;
+        for (let i = 0; i < 5; i++) {
+            const bWidth = 0.75 * scale; const bHeight = (3.2 + (i % 3) * 0.4) * scale; const bDepth = 1.9 * scale;
+            const bMat = new THREE.MeshStandardMaterial({ color: bookColors[i % bookColors.length], roughness: 0.4 });
+            const bookMesh = new THREE.Mesh(new THREE.BoxGeometry(bWidth, bHeight, bDepth), bMat);
+            bookMesh.position.set(startX + bWidth / 2, bHeight / 2 + 0.4 * scale, 0);
+            if (i === 4) { bookMesh.rotation.z = -0.15; bookMesh.position.x += 0.1 * scale; }
+            bookGroup.add(bookMesh);
+            const ribMesh = new THREE.Mesh(new THREE.BoxGeometry(bWidth * 1.02, 0.08 * scale, bDepth * 1.02), goldMat);
+            ribMesh.position.set(bookMesh.position.x, bookMesh.position.y + bHeight * 0.25, 0); bookGroup.add(ribMesh);
+            startX += bWidth + 0.05 * scale;
+        }
+        return bookGroup;
+    }
 
-        const animate = () => {
-            requestAnimationFrame(animate);
-            controls.update();
-            renderer.render(scene, camera);
-        };
-        animate();
+    function createCandleHolderGroup(targetHeight, c1, c2, c3) {
+        const group = new THREE.Group();
+        const scale = (targetHeight || 14) / 22.0;
+        const brassMat = new THREE.MeshStandardMaterial({ color: c1 || 0xc8a257, metalness: 0.85, roughness: 0.25 });
+        const accentMat = new THREE.MeshStandardMaterial({ color: c2 || 0xe5c158, metalness: 0.9, roughness: 0.2 });
+        const candleMat = new THREE.MeshStandardMaterial({ color: 0xfffcf5, roughness: 0.6 });
+        const flameMat = new THREE.MeshStandardMaterial({ color: c3 || 0xff9900, emissive: c3 || 0xff8800, emissiveIntensity: 3.0, roughness: 0.1 });
 
-        window.addEventListener('resize', () => {
-            const r = container3D.getBoundingClientRect();
-            camera.aspect = r.width / r.height;
-            camera.updateProjectionMatrix();
-            renderer.setSize(r.width, r.height);
-        });
+        const base = new THREE.Mesh(new THREE.CylinderGeometry(1.8 * scale, 2.2 * scale, 0.6 * scale, 16), brassMat); base.position.y = 0.3 * scale; group.add(base);
+        const baseRing = new THREE.Mesh(new THREE.TorusGeometry(1.9 * scale, 0.15 * scale, 8, 16), accentMat); baseRing.rotation.x = Math.PI/2; baseRing.position.y = 0.6 * scale; group.add(baseRing);
+        const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.35 * scale, 0.7 * scale, 6.0 * scale, 16), brassMat); stem.position.y = 3.6 * scale; group.add(stem);
+        const cup = new THREE.Mesh(new THREE.CylinderGeometry(1.2 * scale, 0.6 * scale, 1.2 * scale, 16), accentMat); cup.position.y = 7.2 * scale; group.add(cup);
+        const candle = new THREE.Mesh(new THREE.CylinderGeometry(0.7 * scale, 0.7 * scale, 4.5 * scale, 16), candleMat); candle.position.y = 9.8 * scale; group.add(candle);
+        const wick = new THREE.Mesh(new THREE.CylinderGeometry(0.06 * scale, 0.06 * scale, 0.6 * scale, 8), new THREE.MeshBasicMaterial({ color: 0x111111 })); wick.position.y = 12.35 * scale; group.add(wick);
+        const flame = new THREE.Mesh(new THREE.ConeGeometry(0.35 * scale, 1.1 * scale, 12), flameMat); flame.position.y = 13.0 * scale; group.add(flame);
+        const flameLight = new THREE.PointLight(c3 || 0xffaa33, 2.5, 25 * scale, 1.5); flameLight.position.y = 13.0 * scale; group.add(flameLight);
+        return group;
+    }
 
-        // Spin decoration
-        setTimeout(() => {
-            if(customRotatingFrame) {
-                let startRot = 0;
-                const spin = () => {
-                    if(startRot < Math.PI * 2) {
-                        customRotatingFrame.rotation.y += 0.03;
-                        startRot += 0.03;
-                        requestAnimationFrame(spin);
-                    }
-                };
-                spin();
+    function createAbstractSculptureGroup(targetHeight, c1, c2) {
+        const group = new THREE.Group();
+        const scale = (targetHeight || 14) / 22.0;
+        const baseMat = new THREE.MeshStandardMaterial({ color: c1 || 0x222222, roughness: 0.3 });
+        const metalMat = new THREE.MeshStandardMaterial({ color: c2 || 0xd4af37, metalness: 0.9, roughness: 0.15 });
+
+        const pedestal = new THREE.Mesh(new THREE.BoxGeometry(3.5 * scale, 2.5 * scale, 3.5 * scale), baseMat); pedestal.position.y = 1.25 * scale; group.add(pedestal);
+        const knot = new THREE.Mesh(new THREE.TorusKnotGeometry(1.8 * scale, 0.45 * scale, 64, 16), metalMat); knot.position.y = 5.2 * scale; group.add(knot);
+        return group;
+    }
+
+    function applySinglePieceTimberUVs(geometry, L, T, D) {
+        geometry.computeVertexNormals();
+        const pos = geometry.attributes.position;
+        const norm = geometry.attributes.normal;
+        const uv = geometry.attributes.uv;
+        if (!pos || !uv) return;
+
+        const depthVal = D || T;
+
+        for (let i = 0; i < pos.count; i++) {
+            const x = pos.getX(i);
+            const y = pos.getY(i);
+            const z = pos.getZ(i);
+
+            let nx = norm ? Math.abs(norm.getX(i)) : 0;
+            let ny = norm ? Math.abs(norm.getY(i)) : 0;
+            let nz = norm ? Math.abs(norm.getZ(i)) : 1;
+
+            let u, v;
+            if (nz >= nx && nz >= ny) {
+                // Front & Back Faces (XY plane)
+                u = (x + L / 2) / L;
+                v = (y + T / 2) / T;
+            } else if (ny >= nx && ny >= nz) {
+                // Top & Bottom Faces (XZ plane)
+                u = (x + L / 2) / L;
+                v = (z + depthVal / 2) / depthVal;
+            } else {
+                // Side & Miter Faces (ZY plane)
+                u = (z + depthVal / 2) / depthVal;
+                v = (y + T / 2) / T;
             }
-        }, 1200);
+
+            u = Math.max(0.001, Math.min(0.999, u));
+            v = Math.max(0.001, Math.min(0.999, v));
+            uv.setXY(i, u, v);
+        }
+        uv.needsUpdate = true;
     }
 
     function createMiteredFramePiece(L, T, D, miterLeft, miterRight) {
@@ -1250,6 +1267,9 @@ function handleEnd() {
         geom.computeBoundingBox();
         const zOffset = -0.5 * (geom.boundingBox.max.z - geom.boundingBox.min.z);
         geom.translate(0, 0, zOffset);
+
+        applySinglePieceTimberUVs(geom, L, T, D);
+
         return geom;
     }
 
@@ -1272,14 +1292,6 @@ function handleEnd() {
         const woodTextures = generateWoodTextures(woodType, renderer);
         const bScaleRaw = {{ $product->threeDTemplate->bump_scale ?: 0.28 }};
         const bScale = bScaleRaw < 0.12 ? 0.28 : bScaleRaw;
-        const materialObj = new THREE.MeshStandardMaterial({ 
-            map: woodTextures.colorMap, 
-            bumpMap: woodTextures.bumpMap,
-            bumpScale: bScale,
-            roughnessMap: woodTextures.roughnessMap,
-            roughness: 0.68,
-            metalness: 0.02
-        });
 
         const hasTop = {{ $product->threeDTemplate->has_top ? 'true' : 'false' }};
         const hasBottom = {{ $product->threeDTemplate->has_bottom ? 'true' : 'false' }};
@@ -1289,24 +1301,28 @@ function handleEnd() {
         outerGroup = new THREE.Group();
 
         if(hasTop) {
-            const mesh = new THREE.Mesh(createMiteredFramePiece(width, thickness, depth, hasLeft, hasRight), materialObj);
+            const mat = createPieceMaterial(woodTextures, bScale, 'top');
+            const mesh = new THREE.Mesh(createMiteredFramePiece(width, thickness, depth, hasLeft, hasRight), mat);
             mesh.position.y = height/2 - thickness/2;
             outerGroup.add(mesh);
         }
         if(hasBottom) {
-            const mesh = new THREE.Mesh(createMiteredFramePiece(width, thickness, depth, hasRight, hasLeft), materialObj);
+            const mat = createPieceMaterial(woodTextures, bScale, 'bottom');
+            const mesh = new THREE.Mesh(createMiteredFramePiece(width, thickness, depth, hasRight, hasLeft), mat);
             mesh.rotation.z = Math.PI;
             mesh.position.y = -height/2 + thickness/2;
             outerGroup.add(mesh);
         }
         if(hasLeft) {
-            const mesh = new THREE.Mesh(createMiteredFramePiece(height, thickness, depth, hasBottom, hasTop), materialObj);
+            const mat = createPieceMaterial(woodTextures, bScale, 'left');
+            const mesh = new THREE.Mesh(createMiteredFramePiece(height, thickness, depth, hasBottom, hasTop), mat);
             mesh.rotation.z = Math.PI / 2;
             mesh.position.x = -width/2 + thickness/2;
             outerGroup.add(mesh);
         }
         if(hasRight) {
-            const mesh = new THREE.Mesh(createMiteredFramePiece(height, thickness, depth, hasTop, hasBottom), materialObj);
+            const mat = createPieceMaterial(woodTextures, bScale, 'right');
+            const mesh = new THREE.Mesh(createMiteredFramePiece(height, thickness, depth, hasTop, hasBottom), mat);
             mesh.rotation.z = -Math.PI / 2;
             mesh.position.x = width/2 - thickness/2;
             outerGroup.add(mesh);
@@ -1317,26 +1333,29 @@ function handleEnd() {
         customRotatingFrame = new THREE.Group();
         customRotatingFrame.position.set(px, py, 0);
 
-        const topIn = new THREE.Mesh(createMiteredFramePiece(innerW, innerB, innerD, true, true), materialObj);
+        const matInTop = createPieceMaterial(woodTextures, bScale, 'inner_top');
+        const topIn = new THREE.Mesh(createMiteredFramePiece(innerW, innerB, innerD, true, true), matInTop);
         topIn.position.y = innerH/2 - innerB/2;
         customRotatingFrame.add(topIn);
 
-        const botIn = new THREE.Mesh(createMiteredFramePiece(innerW, innerB, innerD, true, true), materialObj);
+        const matInBot = createPieceMaterial(woodTextures, bScale, 'inner_bottom');
+        const botIn = new THREE.Mesh(createMiteredFramePiece(innerW, innerB, innerD, true, true), matInBot);
         botIn.rotation.z = Math.PI;
         botIn.position.y = -innerH/2 + innerB/2;
         customRotatingFrame.add(botIn);
 
-        const leftIn = new THREE.Mesh(createMiteredFramePiece(innerH, innerB, innerD, true, true), materialObj);
+        const matInLeft = createPieceMaterial(woodTextures, bScale, 'inner_left');
+        const leftIn = new THREE.Mesh(createMiteredFramePiece(innerH, innerB, innerD, true, true), matInLeft);
         leftIn.rotation.z = Math.PI / 2;
         leftIn.position.x = -innerW/2 + innerB/2;
         customRotatingFrame.add(leftIn);
 
-        const rightIn = new THREE.Mesh(createMiteredFramePiece(innerH, innerB, innerD, true, true), materialObj);
+        const matInRight = createPieceMaterial(woodTextures, bScale, 'inner_right');
+        const rightIn = new THREE.Mesh(createMiteredFramePiece(innerH, innerB, innerD, true, true), matInRight);
         rightIn.rotation.z = -Math.PI / 2;
         rightIn.position.x = innerW/2 - innerB/2;
         customRotatingFrame.add(rightIn);
 
-        // Photo planes
         const photoW = innerW - innerB * 1.5;
         const photoH = innerH - innerB * 1.5;
 
@@ -1360,14 +1379,13 @@ function handleEnd() {
         customPhotoBack.position.z = -0.1;
         customRotatingFrame.add(customPhotoBack);
 
+        const matBacking = createPieceMaterial(woodTextures, bScale, 'backing');
         const backingGeom = new THREE.BoxGeometry(photoW, photoH, 0.08);
-        const backing = new THREE.Mesh(backingGeom, materialObj);
+        const backing = new THREE.Mesh(backingGeom, matBacking);
         customRotatingFrame.add(backing);
 
-        // Metallic Pivot Pins (Orta Dönme Pinleri)
         const pinMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.9, roughness: 0.2 });
         
-        // Top Pin
         const innerEdgeTop = py + (innerH / 2);
         const outerTargetTop = (height / 2) - (thickness / 2);
         const lenTop = Math.max(0.15, outerTargetTop - innerEdgeTop);
@@ -1377,7 +1395,6 @@ function handleEnd() {
         const pinTop = new THREE.Mesh(pinTopGeo, pinMat);
         pinTop.position.set(0, localYTop, 0);
 
-        // Bottom Pin
         const innerEdgeBot = py - (innerH / 2);
         const outerTargetBot = -(height / 2) + (thickness / 2);
         const lenBot = Math.max(0.15, innerEdgeBot - outerTargetBot);
@@ -1388,10 +1405,49 @@ function handleEnd() {
         pinBottom.position.set(0, localYBot, 0);
 
         customRotatingFrame.add(pinTop, pinBottom);
-
         currentModelGroup.add(customRotatingFrame);
-    }
 
+        // Render 3D Accessory / Object
+        const hasAccessory = {{ $product->threeDTemplate->has_accessory ? 'true' : 'false' }};
+        const accessoryType = "{{ $product->threeDTemplate->accessory_type ?? 'street_lamp' }}";
+        const accessoryPos = "{{ $product->threeDTemplate->accessory_position ?? 'right' }}";
+        const accOffsetX = {{ $product->threeDTemplate->accessory_offset_x ?? 0 }};
+        const accOffsetY = {{ $product->threeDTemplate->accessory_offset_y ?? 0 }};
+
+        if (hasAccessory) {
+            const targetH = Math.min(height * 0.65, 18);
+            let accGroup = null;
+
+            if (accessoryType === 'street_lamp') {
+                accGroup = createStreetLampGroup(targetH);
+            } else if (accessoryType === 'wooden_clock') {
+                accGroup = createWoodenClockGroup(targetH);
+            } else if (accessoryType === 'flower_vase') {
+                accGroup = createFlowerVaseGroup(targetH);
+            } else if (accessoryType === 'mini_bookshelf') {
+                accGroup = createMiniBookshelfGroup(targetH);
+            } else if (accessoryType === 'candle_holder') {
+                accGroup = createCandleHolderGroup(targetH);
+            } else if (accessoryType === 'abstract_sculpture') {
+                accGroup = createAbstractSculptureGroup(targetH);
+            }
+
+            if (accGroup) {
+                const bottomBoardY = -height/2 + thickness;
+                let posX = 0;
+                if (accessoryPos === 'right') {
+                    posX = width/2 - thickness * 2.2 + accOffsetX;
+                } else if (accessoryPos === 'left') {
+                    posX = -width/2 + thickness * 2.2 + accOffsetX;
+                } else {
+                    posX = accOffsetX;
+                }
+
+                accGroup.position.set(posX, bottomBoardY + accOffsetY, depth * 0.1);
+                currentModelGroup.add(accGroup);
+            }
+        }
+    }
     // Connect image upload handle to load image directly onto 3D model
     const originalHandleUpload = window.handleImageUpload;
     window.handleImageUpload = function(event) {
