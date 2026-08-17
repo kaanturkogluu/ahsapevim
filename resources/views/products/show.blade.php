@@ -46,6 +46,14 @@
                             </div>
                         </div>
                     @endif
+                    @if($product->instagram_code)
+                        <div class="thumb-box w-16 h-20 border-2 border-pink-400 rounded-md cursor-pointer overflow-hidden relative bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 group shadow-sm hover:border-pink-600 transition" onclick="openInstagramModal('{{ $product->instagram_embed_url }}')">
+                            <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/30 group-hover:bg-black/10 transition">
+                                <i class="fa-brands fa-instagram text-white text-2xl drop-shadow-md"></i>
+                                <span class="text-[9px] font-extrabold text-white mt-1 uppercase tracking-tighter">REEL</span>
+                            </div>
+                        </div>
+                    @endif
                 </div>
                 
                 <!-- Main Image -->
@@ -1578,6 +1586,14 @@ function handleEnd() {
     </div>
 </div>
 
+<!-- Instagram Video / Reel Modal -->
+<div id="instagramVideoModal" class="fixed inset-0 z-[999999] bg-black/90 hidden items-center justify-center p-4 backdrop-blur-md" onclick="closeInstagramModal(event)">
+    <div class="relative w-full max-w-md h-[85vh] max-h-[720px] bg-black rounded-2xl overflow-hidden shadow-2xl border border-gray-800 flex flex-col" onclick="event.stopPropagation()">
+        <button type="button" onclick="closeInstagramModal()" class="absolute top-3 right-3 text-white text-2xl font-bold z-30 hover:text-pink-500 transition leading-none bg-black/60 w-9 h-9 rounded-full flex items-center justify-center">&times;</button>
+        <iframe id="instagramIframe" src="" class="w-full h-full rounded-2xl" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+    </div>
+</div>
+
 <script>
 function openYoutubeModal(embedUrl) {
     const iframe = document.getElementById('youtubeIframe');
@@ -1596,6 +1612,26 @@ function closeYoutubeModal(e) {
         modal.classList.remove('flex');
     }
     const iframe = document.getElementById('youtubeIframe');
+    if (iframe) iframe.src = '';
+}
+
+function openInstagramModal(embedUrl) {
+    const iframe = document.getElementById('instagramIframe');
+    if (iframe) iframe.src = embedUrl;
+    const modal = document.getElementById('instagramVideoModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+}
+
+function closeInstagramModal(e) {
+    const modal = document.getElementById('instagramVideoModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+    const iframe = document.getElementById('instagramIframe');
     if (iframe) iframe.src = '';
 }
 </script>

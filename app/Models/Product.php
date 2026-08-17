@@ -54,6 +54,23 @@ class Product extends Model
         return $matches[1] ?? null;
     }
 
+    public function getInstagramCodeAttribute()
+    {
+        $url = $this->features['instagram_url'] ?? null;
+        if (!$url) return null;
+
+        preg_match('/(?:instagram\.com|instagr\.am)\/(?:p|reel|tv)\/([A-Za-z0-9_-]+)/i', $url, $matches);
+        return $matches[1] ?? null;
+    }
+
+    public function getInstagramEmbedUrlAttribute()
+    {
+        $code = $this->instagram_code;
+        if (!$code) return null;
+
+        return "https://www.instagram.com/p/{$code}/embed";
+    }
+
     public function getImageAttribute($value)
     {
         if (!$value) {

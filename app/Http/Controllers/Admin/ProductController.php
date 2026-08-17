@@ -56,10 +56,11 @@ class ProductController extends Controller
         }
 
         $features = [
-            'color'       => $request->color,
-            'size'        => $request->size,
-            'images'      => $galleryImages,
-            'youtube_url' => $request->youtube_url,
+            'color'         => $request->color,
+            'size'          => $request->size,
+            'images'        => $galleryImages,
+            'youtube_url'   => $request->youtube_url,
+            'instagram_url' => $request->instagram_url,
         ];
 
         $slugCandidate = $request->filled('slug') ? $request->slug : $request->name;
@@ -146,10 +147,11 @@ class ProductController extends Controller
             $originalPrice = null;
         }
 
-        $features['color']       = $request->color;
-        $features['size']        = $request->size;
-        $features['images']      = array_values($existingGallery);
-        $features['youtube_url'] = $request->youtube_url;
+        $features['color']         = $request->color;
+        $features['size']          = $request->size;
+        $features['images']        = array_values($existingGallery);
+        $features['youtube_url']   = $request->youtube_url;
+        $features['instagram_url'] = $request->instagram_url;
 
         $slugCandidate = $request->filled('slug') ? $request->slug : $request->name;
         $slug = Product::generateUniqueSlug($slugCandidate, $product->id);
@@ -206,6 +208,7 @@ class ProductController extends Controller
             'image'              => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'gallery.*'          => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:8192',
             'youtube_url'        => 'nullable|url|max:255',
+            'instagram_url'      => 'nullable|url|max:255',
             'three_d_template_id'=> 'required|exists:three_d_templates,id',
             'color'              => 'nullable|string',
             'size'               => 'nullable|string',

@@ -105,7 +105,15 @@
                         <i class="fa-brands fa-youtube text-red-600 text-base"></i> YouTube Tanıtım Video Linki (Opsiyonel)
                     </label>
                     <input type="url" name="youtube_url" value="{{ old('youtube_url') }}" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: https://www.youtube.com/watch?v=XXXXXX">
-                    <p class="text-[10px] text-gray-500 mt-1">Eklenirse ürün detay galerisinin sonuna video kapak resmi eklenir ve tıklanınca video açılır.</p>
+                    <p class="text-[10px] text-gray-500 mt-1">Eklenirse ürün detay galerisine YouTube video butonu eklenir.</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1">
+                        <i class="fa-brands fa-instagram text-pink-600 text-base"></i> Instagram Video / Reel Linki (Opsiyonel)
+                    </label>
+                    <input type="url" name="instagram_url" value="{{ old('instagram_url') }}" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: https://www.instagram.com/reel/CsqVN6MuKfV/">
+                    <p class="text-[10px] text-gray-500 mt-1">Eklenirse ürün detay galerisinde Instagram Reel rozeti ve pop-up oynatıcı gösterilir.</p>
                 </div>
 
                 <div class="p-4 bg-amber-50/50 border border-amber-200/50 rounded-xl">
