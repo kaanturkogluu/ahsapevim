@@ -44,6 +44,7 @@ class ThreeDTemplateController extends Controller
             'accessory_position' => 'nullable|string|max:255',
             'accessory_offset_x' => 'nullable|numeric',
             'accessory_offset_y' => 'nullable|numeric',
+            'accessory_offset_z' => 'nullable|numeric',
             'accessory_scale' => 'nullable|numeric',
         ]);
 
@@ -70,6 +71,7 @@ class ThreeDTemplateController extends Controller
             'accessory_position' => $request->accessory_position ?? 'right',
             'accessory_offset_x' => $request->accessory_offset_x ?? 0,
             'accessory_offset_y' => $request->accessory_offset_y ?? 0,
+            'accessory_offset_z' => $request->accessory_offset_z ?? 0,
             'accessory_scale' => $request->accessory_scale ?? 1.0,
         ]);
 
@@ -109,6 +111,7 @@ class ThreeDTemplateController extends Controller
             'accessory_position' => 'nullable|string|max:255',
             'accessory_offset_x' => 'nullable|numeric',
             'accessory_offset_y' => 'nullable|numeric',
+            'accessory_offset_z' => 'nullable|numeric',
             'accessory_scale' => 'nullable|numeric',
         ]);
 
@@ -135,6 +138,7 @@ class ThreeDTemplateController extends Controller
             'accessory_position' => $request->accessory_position ?? 'right',
             'accessory_offset_x' => $request->accessory_offset_x ?? 0,
             'accessory_offset_y' => $request->accessory_offset_y ?? 0,
+            'accessory_offset_z' => $request->accessory_offset_z ?? 0,
             'accessory_scale' => $request->accessory_scale ?? 1.0,
         ]);
 

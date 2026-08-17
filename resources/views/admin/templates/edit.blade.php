@@ -194,6 +194,17 @@
                                     <div>
                                         <div class="flex items-center justify-between mb-1">
                                             <label class="text-[10px] text-gray-600 font-medium">
+                                                Konum Z (Öne-Arkaya Derinlik): <span id="accOffsetZ_val" class="font-bold text-amber-700">{{ $template->accessory_offset_z ?? 0 }}</span>
+                                            </label>
+                                            <button type="button" onclick="document.getElementById('accOffsetZ').value=0; document.getElementById('accOffsetZ_val').innerText='0'; redrawModel();" class="text-[10px] text-amber-700 hover:text-amber-900 bg-amber-100 hover:bg-amber-200 px-1.5 py-0.5 rounded flex items-center gap-1 transition" title="Konum Z Sıfırla">
+                                                <i class="fa-solid fa-rotate-left text-[9px]"></i> Sıfırla
+                                            </button>
+                                        </div>
+                                        <input type="range" name="accessory_offset_z" id="accOffsetZ" min="-10" max="10" step="0.1" value="{{ $template->accessory_offset_z ?? 0 }}" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('accOffsetZ_val').innerText = this.value; redrawModel();">
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center justify-between mb-1">
+                                            <label class="text-[10px] text-gray-600 font-medium">
                                                 Obje Boyutu / Ölçek: <span id="accScale_val" class="font-bold text-amber-700">{{ $template->accessory_scale ?? 1.0 }}x</span>
                                             </label>
                                             <button type="button" onclick="document.getElementById('accScale').value=1.0; document.getElementById('accScale_val').innerText='1.0x'; redrawModel();" class="text-[10px] text-amber-700 hover:text-amber-900 bg-amber-100 hover:bg-amber-200 px-1.5 py-0.5 rounded flex items-center gap-1 transition" title="Boyutu Sıfırla">
@@ -203,10 +214,8 @@
                                         <input type="range" name="accessory_scale" id="accScale" min="0.3" max="2.5" step="0.05" value="{{ $template->accessory_scale ?? 1.0 }}" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('accScale_val').innerText = this.value + 'x'; redrawModel();">
                                     </div>
 
-
-
                                     <button type="button" onclick="resetAccessoryOffsets();" class="w-full mt-2 text-[11px] font-bold text-amber-800 bg-amber-100/90 hover:bg-amber-200 py-1.5 px-2 rounded-lg border border-amber-200 transition flex items-center justify-center gap-1.5 shadow-sm">
-                                        <i class="fa-solid fa-arrow-rotate-left"></i> Obje Ayarlarını Sıfırla (X:0, Y:0, 1.0x)
+                                        <i class="fa-solid fa-arrow-rotate-left"></i> Obje Ayarlarını Sıfırla (X:0, Y:0, Z:0, 1.0x)
                                     </button>
                                 </div>
                             </div>
@@ -382,15 +391,19 @@ function toggleAccessoryControls() {
 function resetAccessoryOffsets() {
     const xInput = document.getElementById('accOffsetX');
     const yInput = document.getElementById('accOffsetY');
+    const zInput = document.getElementById('accOffsetZ');
     const sInput = document.getElementById('accScale');
     if (xInput) xInput.value = 0;
     if (yInput) yInput.value = 0;
+    if (zInput) zInput.value = 0;
     if (sInput) sInput.value = 1.0;
     const xVal = document.getElementById('accOffsetX_val');
     const yVal = document.getElementById('accOffsetY_val');
+    const zVal = document.getElementById('accOffsetZ_val');
     const sVal = document.getElementById('accScale_val');
     if (xVal) xVal.innerText = '0';
     if (yVal) yVal.innerText = '0';
+    if (zVal) zVal.innerText = '0';
     if (sVal) sVal.innerText = '1.0x';
     redrawModel();
 }
@@ -972,6 +985,7 @@ function redrawModel() {
     const accessoryPos = document.getElementById('accessoryPos')?.value || 'right';
     const accOffsetX = parseFloat(document.getElementById('accOffsetX')?.value || 0);
     const accOffsetY = parseFloat(document.getElementById('accOffsetY')?.value || 0);
+    const accOffsetZ = parseFloat(document.getElementById('accOffsetZ')?.value || 0);
 
     if (hasAccessory) {
         const accScale = parseFloat(document.getElementById('accScale')?.value || 1.0);
@@ -980,7 +994,7 @@ function redrawModel() {
         if (accGroup) {
             const bottomBoardY = -height/2 + thickness;
             let posX = (accessoryPos === 'right') ? width/2 - thickness * 2.2 : (accessoryPos === 'left' ? -width/2 + thickness * 2.2 : 0);
-            accGroup.position.set(posX + accOffsetX, bottomBoardY + accOffsetY, depth * 0.1);
+            accGroup.position.set(posX + accOffsetX, bottomBoardY + accOffsetY, (depth * 0.1) + accOffsetZ);
             currentModelGroup.add(accGroup);
         }
     }
