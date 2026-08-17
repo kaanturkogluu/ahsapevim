@@ -57,37 +57,38 @@ class SeoController extends Controller
 
         $urls = [];
 
-        // Ana Sayfa & Sabit Sayfalar
-        $urls[] = [
-            'loc' => $baseUrl,
-            'lastmod' => date('Y-m-d'),
-            'changefreq' => 'daily',
-            'priority' => '1.0',
-        ];
+        // Ana Sayfa & Genel Sayfalar
+        $urls[] = ['loc' => $baseUrl, 'lastmod' => date('Y-m-d'), 'changefreq' => 'daily', 'priority' => '1.0'];
+        $urls[] = ['loc' => url('/urunler'), 'lastmod' => date('Y-m-d'), 'changefreq' => 'daily', 'priority' => '0.9'];
+        $urls[] = ['loc' => url('/giris'), 'lastmod' => date('Y-m-d'), 'changefreq' => 'monthly', 'priority' => '0.6'];
+        $urls[] = ['loc' => url('/kayit'), 'lastmod' => date('Y-m-d'), 'changefreq' => 'monthly', 'priority' => '0.5'];
+        $urls[] = ['loc' => url('/siparis-takip'), 'lastmod' => date('Y-m-d'), 'changefreq' => 'monthly', 'priority' => '0.5'];
 
-        $urls[] = [
-            'loc' => url('/urunler'),
-            'lastmod' => date('Y-m-d'),
-            'changefreq' => 'daily',
-            'priority' => '0.9',
-        ];
+        // Kurumsal Sayfalar (Page Model + Sabit Liste)
+        $knownSlugs = ['iletisim', 'hakkimizda', 'gizlilik-politikasi', 'mesafeli-satis-sozlesmesi', 'teslimat-ve-iade', 'sikca-sorulanlar'];
+        $addedSlugs = [];
 
-        $urls[] = [
-            'loc' => url('/siparis-takip'),
-            'lastmod' => date('Y-m-d'),
-            'changefreq' => 'monthly',
-            'priority' => '0.5',
-        ];
-
-        // Kurumsal Sayfalar (Page Model)
         $pages = Page::where('is_active', true)->get();
         foreach ($pages as $page) {
             $urls[] = [
                 'loc' => url('/' . $page->slug),
                 'lastmod' => $page->updated_at ? $page->updated_at->format('Y-m-d') : date('Y-m-d'),
                 'changefreq' => 'monthly',
-                'priority' => '0.6',
+                'priority' => '0.7',
             ];
+            $addedSlugs[] = $page->slug;
+        }
+
+        // Eksik kalan bilinen kurumsal sayfaları da garanti ekle
+        foreach ($knownSlugs as $ks) {
+            if (!in_array($ks, $addedSlugs)) {
+                $urls[] = [
+                    'loc' => url('/' . $ks),
+                    'lastmod' => date('Y-m-d'),
+                    'changefreq' => 'monthly',
+                    'priority' => '0.7',
+                ];
+            }
         }
 
         // Kategoriler

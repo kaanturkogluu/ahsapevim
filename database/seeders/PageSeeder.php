@@ -55,6 +55,11 @@ class PageSeeder extends Seeder
                 'content' => '<h3 class="font-bold text-gray-800 mb-2">Kişisel Verilerin Korunması</h3><p class="mb-4">Kişisel verileriniz 6698 sayılı KVKK kapsamında gizlilik içerisinde işlenmektedir ve üçüncü taraflarla paylaşılmamaktadır.</p><h3 class="font-bold text-gray-800 mb-2">Ödeme Güvenliği</h3><p class="mb-4">Ödemeleriniz Iyzico 256-bit SSL korumalı altyapısı ile güvence altındadır. Kredi kartı bilgileriniz sistemimizde saklanmaz.</p>',
             ],
             [
+                'slug' => 'hakkimizda',
+                'title' => 'Hakkımızda',
+                'content' => '<h3 class="font-bold text-gray-800 mb-2">AhşapEvim Manisa - Doğanın Zarafeti Evinizde</h3><p class="mb-4">Manisa atölyemizde birinci sınıf masif ağaçlar kullanarak el işçiliği ile ürettiğimiz çerçeveler ve ev dekorasyon ürünleri ile yaşam alanlarınıza sıcaklık katıyoruz.</p><h3 class="font-bold text-gray-800 mb-2">Vizyonumuz</h3><p class="mb-4">Geleneksel ahşap ustalığını modern tasarımlar ve 3D önizleme teknolojileri ile buluşturarak müşterilerimize eşsiz bir alışveriş deneyimi sunmaktır.</p>',
+            ],
+            [
                 'slug' => 'teslimat-ve-iade',
                 'title' => 'Teslimat ve İade Şartları',
                 'content' => '<h3 class="font-bold text-gray-800 mb-2">Teslimat Bilgileri</h3><p class="mb-4">Siparişleriniz Manisa atölyemizden özenle paketlenerek anlaşmalı kargo firmalarına teslim edilir. Kargo takip numaranız SMS ile tarafınıza iletilmektedir.</p><h3 class="font-bold text-gray-800 mb-2">İade ve Değişim</h3><p class="mb-4">Standart ürünlerde 14 gün koşulsuz iade hakkınız vardır. Kişiye özel fotoğraflı veya isimli hazırlanan ürünlerde cayma hakkı yönetmelik gereği geçerli değildir.</p>',
