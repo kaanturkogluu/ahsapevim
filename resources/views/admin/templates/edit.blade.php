@@ -652,6 +652,8 @@ let scene, camera, renderer, controls;
 let currentModelGroup = new THREE.Group();
 let outerGroup = null;
 let customRotatingFrame = null;
+let outerFrameMeshes = [];
+let innerFrameMeshes = [];
 
 const container3D = document.getElementById('studio3DContainer');
 
@@ -757,8 +759,10 @@ function redrawModel() {
     while(currentModelGroup.children.length > 0) { 
         currentModelGroup.remove(currentModelGroup.children[0]); 
     }
+    outerFrameMeshes = [];
+    innerFrameMeshes = [];
     outerGroup = new THREE.Group();
-    customRotatingFrame = new THREE.Group();
+    customRotatingFrame = null;
 
     const width = parseFloat(document.getElementById('frameWidth')?.value) || 22;
     const height = parseFloat(document.getElementById('frameHeight')?.value) || 28;
@@ -784,27 +788,75 @@ function redrawModel() {
 
     if(hasTop) {
         const mesh = new THREE.Mesh(createMiteredFramePiece(width, thickness, depth, hasLeft, hasRight), createPieceMaterial(woodTextures, bScale, 'top'));
-        mesh.position.y = height/2 - thickness/2; outerGroup.add(mesh);
+        mesh.position.y = height/2 - thickness/2; outerGroup.add(mesh); outerFrameMeshes.push(mesh);
     }
     if(hasBottom) {
         const mesh = new THREE.Mesh(createMiteredFramePiece(width, thickness, depth, hasRight, hasLeft), createPieceMaterial(woodTextures, bScale, 'bottom'));
-        mesh.rotation.z = Math.PI; mesh.position.y = -height/2 + thickness/2; outerGroup.add(mesh);
+        mesh.rotation.z = Math.PI; mesh.position.y = -height/2 + thickness/2; outerGroup.add(mesh); outerFrameMeshes.push(mesh);
     }
     if(hasLeft) {
         const mesh = new THREE.Mesh(createMiteredFramePiece(height, thickness, depth, hasBottom, hasTop), createPieceMaterial(woodTextures, bScale, 'left'));
-        mesh.rotation.z = Math.PI / 2; mesh.position.x = -width/2 + thickness/2; outerGroup.add(mesh);
+        mesh.rotation.z = Math.PI / 2; mesh.position.x = -width/2 + thickness/2; outerGroup.add(mesh); outerFrameMeshes.push(mesh);
     }
     if(hasRight) {
         const mesh = new THREE.Mesh(createMiteredFramePiece(height, thickness, depth, hasTop, hasBottom), createPieceMaterial(woodTextures, bScale, 'right'));
-        mesh.rotation.z = -Math.PI / 2; mesh.position.x = width/2 - thickness/2; outerGroup.add(mesh);
+        mesh.rotation.z = -Math.PI / 2; mesh.position.x = width/2 - thickness/2; outerGroup.add(mesh); outerFrameMeshes.push(mesh);
     }
 
     currentModelGroup.add(outerGroup);
+
+    customRotatingFrame = new THREE.Group();
     customRotatingFrame.position.set(px, py, 0);
 
-    const matIn = createPieceMaterial(woodTextures, bScale, 'inner');
-    customRotatingFrame.add(new THREE.Mesh(createMiteredFramePiece(innerW, innerB, innerD, true, true), matIn)); // Simplified
+    const matInTop = createPieceMaterial(woodTextures, bScale, 'inner_top');
+    const topIn = new THREE.Mesh(createMiteredFramePiece(innerW, innerB, innerD, true, true), matInTop);
+    topIn.position.y = innerH/2 - innerB/2;
+    customRotatingFrame.add(topIn); innerFrameMeshes.push(topIn);
+
+    const matInBot = createPieceMaterial(woodTextures, bScale, 'inner_bottom');
+    const botIn = new THREE.Mesh(createMiteredFramePiece(innerW, innerB, innerD, true, true), matInBot);
+    botIn.rotation.z = Math.PI;
+    botIn.position.y = -innerH/2 + innerB/2;
+    customRotatingFrame.add(botIn); innerFrameMeshes.push(botIn);
+
+    const matInLeft = createPieceMaterial(woodTextures, bScale, 'inner_left');
+    const leftIn = new THREE.Mesh(createMiteredFramePiece(innerH, innerB, innerD, true, true), matInLeft);
+    leftIn.rotation.z = Math.PI / 2;
+    leftIn.position.x = -innerW/2 + innerB/2;
+    customRotatingFrame.add(leftIn); innerFrameMeshes.push(leftIn);
+
+    const matInRight = createPieceMaterial(woodTextures, bScale, 'inner_right');
+    const rightIn = new THREE.Mesh(createMiteredFramePiece(innerH, innerB, innerD, true, true), matInRight);
+    rightIn.rotation.z = -Math.PI / 2;
+    rightIn.position.x = innerW/2 - innerB/2;
+    customRotatingFrame.add(rightIn); innerFrameMeshes.push(rightIn);
+
+    const matBacking = createPieceMaterial(woodTextures, bScale, 'backing');
+    const backingGeom = new THREE.BoxGeometry(innerW - innerB*1.5, innerH - innerB*1.5, 0.15);
+    const backing = new THREE.Mesh(backingGeom, matBacking);
+    customRotatingFrame.add(backing); innerFrameMeshes.push(backing);
+
+    const pinMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.9, roughness: 0.2 });
     
+    const innerEdgeTop = py + (innerH / 2);
+    const outerTargetTop = (height / 2) - (thickness / 2);
+    const lenTop = Math.max(0.15, outerTargetTop - innerEdgeTop);
+    const localYTop = (innerH / 2) + (lenTop / 2);
+
+    const pinTopGeo = new THREE.CylinderGeometry(0.18, 0.18, lenTop, 16);
+    const pinTop = new THREE.Mesh(pinTopGeo, pinMat);
+    pinTop.position.set(0, localYTop, 0);
+
+    const innerEdgeBot = py - (innerH / 2);
+    const outerTargetBot = -(height / 2) + (thickness / 2);
+    const lenBot = Math.max(0.15, innerEdgeBot - outerTargetBot);
+    const localYBot = -(innerH / 2) - (lenBot / 2);
+
+    const pinBotGeo = new THREE.CylinderGeometry(0.18, 0.18, lenBot, 16);
+    const pinBottom = new THREE.Mesh(pinBotGeo, pinMat);
+    pinBottom.position.set(0, localYBot, 0);
+
+    customRotatingFrame.add(pinTop, pinBottom);
     currentModelGroup.add(customRotatingFrame);
 
     const hasAccessory = document.getElementById('hasAccessory')?.checked;
