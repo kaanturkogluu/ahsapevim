@@ -147,15 +147,21 @@
             </a>
 
             <!-- Search Bar -->
-            <div class="flex-1 w-full max-w-2xl">
-                <div
-                    class="relative flex items-center w-full bg-amber-50 border-2 border-amber-100 focus-within:border-brand focus-within:bg-white rounded-xl transition-all">
-                    <input type="text" placeholder="Ürün, kategori veya tasarım arayın…"
+            <div class="flex-1 w-full max-w-2xl relative">
+                <form action="{{ url('/urunler') }}" method="GET" id="headerSearchForm" class="relative flex items-center w-full bg-amber-50 border-2 border-amber-100 focus-within:border-brand focus-within:bg-white rounded-xl transition-all">
+                    <input type="text" name="q" id="headerSearchInput" value="{{ request('q') ?: request('search') }}" autocomplete="off" oninput="handleLiveSearch(this.value)" placeholder="Ürün, kategori veya tasarım arayın…"
                         class="w-full bg-transparent py-2.5 px-4 pr-12 outline-none text-sm text-gray-700 placeholder-amber-400">
-                    <button
+                    <button type="submit"
                         class="absolute right-0 h-full px-4 bg-brand hover:bg-brand-dark rounded-r-xl text-white text-base flex items-center justify-center transition">
                         <i class="fa-solid fa-search"></i>
                     </button>
+                </form>
+
+                <!-- Live Search Dropdown -->
+                <div id="liveSearchDropdown" class="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-amber-200/80 z-[100] hidden overflow-hidden backdrop-blur-md">
+                    <div id="liveSearchResults" class="max-h-96 overflow-y-auto divide-y divide-gray-100 p-2">
+                        <!-- Dynamic search suggestions -->
+                    </div>
                 </div>
             </div>
 
@@ -859,6 +865,78 @@
             modal.classList.remove('flex');
         }
     }
+
+    // Live Auto-complete Search Script
+    let liveSearchTimer = null;
+    function handleLiveSearch(query) {
+        clearTimeout(liveSearchTimer);
+        const dropdown = document.getElementById('liveSearchDropdown');
+        const resultsContainer = document.getElementById('liveSearchResults');
+        if (!dropdown || !resultsContainer) return;
+
+        query = query.trim();
+        if (query.length < 2) {
+            dropdown.classList.add('hidden');
+            resultsContainer.innerHTML = '';
+            return;
+        }
+
+        resultsContainer.innerHTML = `
+            <div class="p-4 text-center text-xs text-gray-400 font-bold flex items-center justify-center gap-2">
+                <i class="fa-solid fa-spinner fa-spin text-[#C87A53] text-sm"></i> Aranıyor...
+            </div>
+        `;
+        dropdown.classList.remove('hidden');
+
+        liveSearchTimer = setTimeout(() => {
+            fetch('{{ route("search.live") }}?q=' + encodeURIComponent(query))
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success' && data.products.length > 0) {
+                        let html = '';
+                        data.products.forEach(p => {
+                            html += `
+                                <a href="${p.url}" class="flex items-center gap-3 p-2 hover:bg-amber-50/80 rounded-xl transition group">
+                                    <img src="${p.image}" class="w-11 h-11 object-cover rounded-lg border border-gray-200 shrink-0">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-xs font-bold text-gray-800 truncate group-hover:text-[#C87A53] transition">${p.name}</div>
+                                        <div class="text-[10px] text-gray-500 font-semibold">${p.category_name}</div>
+                                    </div>
+                                    <div class="text-xs font-black text-[#C87A53] shrink-0">${p.price}</div>
+                                </a>
+                            `;
+                        });
+
+                        html += `
+                            <div class="pt-2 pb-1 text-center border-t border-gray-100 mt-1">
+                                <button type="submit" form="headerSearchForm" class="w-full text-xs font-bold text-[#C87A53] hover:text-[#A65F38] py-1.5 transition">
+                                    Tüm Sonuçları Gör ("${query}") <i class="fa-solid fa-chevron-right text-[10px] ml-1"></i>
+                                </button>
+                            </div>
+                        `;
+                        resultsContainer.innerHTML = html;
+                    } else {
+                        resultsContainer.innerHTML = `
+                            <div class="p-4 text-center text-xs text-gray-500 font-semibold">
+                                <i class="fa-solid fa-search-minus text-amber-500 text-lg mb-1 block"></i>
+                                "${query}" ile eşleşen ürün bulunamadı.
+                            </div>
+                        `;
+                    }
+                })
+                .catch(err => {
+                    dropdown.classList.add('hidden');
+                });
+        }, 250);
+    }
+
+    document.addEventListener('click', function(e) {
+        const searchForm = document.getElementById('headerSearchForm');
+        const dropdown = document.getElementById('liveSearchDropdown');
+        if (searchForm && dropdown && !searchForm.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
     </script>
 </body>
 

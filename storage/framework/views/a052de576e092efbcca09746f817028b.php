@@ -29,13 +29,24 @@
         <div class="w-full">
 
             
-            <div class="flex justify-between items-center mb-5 bg-white px-5 py-3.5 rounded-2xl shadow-sm">
-                <div class="flex items-center gap-2.5">
+            <div class="flex flex-wrap justify-between items-center mb-5 bg-white px-5 py-3.5 rounded-2xl shadow-sm gap-3">
+                <div class="flex items-center gap-2.5 flex-wrap">
                     <span class="text-base font-extrabold text-gray-900">
-                        <?php echo e(request('category') ? ($categories->where('slug', request('category'))->first()->name ?? 'Ürünler') : 'Tüm El Yapımı Ürünler'); ?>
+                        <?php if(request('q') || request('search')): ?>
+                            Arama Sonuçları: "<?php echo e(request('q') ?: request('search')); ?>"
+                        <?php elseif(request('category')): ?>
+                            <?php echo e($categories->where('slug', request('category'))->first()->name ?? 'Ürünler'); ?>
 
+                        <?php else: ?>
+                            Tüm El Yapımı Ürünler
+                        <?php endif; ?>
                     </span>
                     <span class="text-xs bg-brand/10 text-brand font-bold px-2 py-0.5 rounded-full"><?php echo e($products->total()); ?> ürün</span>
+                    <?php if(request('q') || request('search')): ?>
+                        <a href="<?php echo e(url('/urunler')); ?>" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-2.5 py-1 rounded-lg transition inline-flex items-center gap-1">
+                            <i class="fa-solid fa-xmark"></i> Aramayı Temizle
+                        </a>
+                    <?php endif; ?>
                 </div>
                 <div class="hidden sm:flex items-center gap-1.5 text-xs text-gray-500 font-semibold">
                     <i class="fa-solid fa-clock text-brand"></i> Sipariş anında üretim başlar
@@ -115,11 +126,16 @@
                         </div>
                     </a>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                    <div class="col-span-full py-16 text-center">
-                        <i class="fa-solid fa-tree text-6xl text-brand/35 mb-4 block"></i>
-                        <div class="text-gray-500 font-medium">Bu kategoride henüz ürün bulunmamaktadır.</div>
-                        <a href="<?php echo e(url('/urunler')); ?>" class="inline-flex items-center gap-2 mt-4 text-sm text-brand font-bold hover:underline">
-                            <i class="fa-solid fa-arrow-left"></i> Tüm ürünlere dön
+                    <div class="col-span-full py-16 text-center bg-white rounded-2xl border border-gray-100 p-8 shadow-xs">
+                        <i class="fa-solid fa-magnifying-glass-location text-6xl text-brand/35 mb-4 block"></i>
+                        <?php if(request('q') || request('search')): ?>
+                            <div class="text-gray-900 font-bold text-lg mb-1">"<?php echo e(request('q') ?: request('search')); ?>" ile eşleşen ürün bulunamadı</div>
+                            <p class="text-xs text-gray-500 mb-6 max-w-sm mx-auto">Farklı bir kelime yazarak arama yapabilir veya tüm masif ahşap çerçeve koleksiyonumuzu inceleyebilirsiniz.</p>
+                        <?php else: ?>
+                            <div class="text-gray-500 font-medium mb-4">Bu kategoride henüz ürün bulunmamaktadır.</div>
+                        <?php endif; ?>
+                        <a href="<?php echo e(url('/urunler')); ?>" class="inline-flex items-center gap-2 text-xs bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold px-6 py-3 rounded-xl shadow-md transition">
+                            <i class="fa-solid fa-store"></i> Tüm Ürünleri İncele
                         </a>
                     </div>
                 <?php endif; ?>

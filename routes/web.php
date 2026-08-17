@@ -19,12 +19,83 @@ Route::get('/', function () {
             $q->where('slug', $categorySlug);
         });
     }
+
+    $search = trim(request('q') ?: request('search', ''));
+    if ($search !== '') {
+        $keywords = array_filter(explode(' ', $search));
+        $query->where(function ($q) use ($search, $keywords) {
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('description', 'like', "%{$search}%")
+              ->orWhere('barcode', 'like', "%{$search}%")
+              ->orWhere('model_code', 'like', "%{$search}%")
+              ->orWhere('features', 'like', "%{$search}%")
+              ->orWhereHas('category', function ($catQ) use ($search) {
+                  $catQ->where('name', 'like', "%{$search}%");
+              });
+
+            foreach ($keywords as $word) {
+                if (mb_strlen($word) >= 2) {
+                    $q->orWhere('name', 'like', "%{$word}%")
+                      ->orWhere('description', 'like', "%{$word}%")
+                      ->orWhere('features', 'like', "%{$word}%")
+                      ->orWhereHas('category', function ($catQ) use ($word) {
+                          $catQ->where('name', 'like', "%{$word}%");
+                      });
+                }
+            }
+        });
+    }
     
     $products = $query->latest()->paginate(16)->withQueryString();
     $categories = Category::withCount('products')->get();
     
     return view('home', compact('products', 'categories'));
 });
+
+Route::get('/canli-arama', function (\Illuminate\Http\Request $request) {
+    $q = trim($request->input('q', ''));
+    if (mb_strlen($q) < 2) {
+        return response()->json(['status' => 'success', 'products' => []]);
+    }
+
+    $keywords = array_filter(explode(' ', $q));
+    
+    $products = Product::where('is_active', true)
+        ->where(function ($query) use ($q, $keywords) {
+            $query->where('name', 'like', "%{$q}%")
+                  ->orWhere('description', 'like', "%{$q}%")
+                  ->orWhere('barcode', 'like', "%{$q}%")
+                  ->orWhere('model_code', 'like', "%{$q}%")
+                  ->orWhere('features', 'like', "%{$q}%")
+                  ->orWhereHas('category', function ($catQ) use ($q) {
+                      $catQ->where('name', 'like', "%{$q}%");
+                  });
+
+            foreach ($keywords as $word) {
+                if (mb_strlen($word) >= 2) {
+                    $query->orWhere('name', 'like', "%{$word}%")
+                          ->orWhere('description', 'like', "%{$word}%")
+                          ->orWhere('features', 'like', "%{$word}%");
+                }
+            }
+        })
+        ->with('category')
+        ->take(6)
+        ->get();
+
+    $data = $products->map(function ($p) {
+        return [
+            'id' => $p->id,
+            'name' => $p->name,
+            'category_name' => $p->category ? $p->category->name : 'Ahşap Çerçeve',
+            'price' => number_format($p->price, 2, ',', '.') . ' ₺',
+            'image' => url($p->image ?: '/cerceve.png'),
+            'url' => url('/urun/' . $p->id),
+        ];
+    });
+
+    return response()->json(['status' => 'success', 'products' => $data, 'count' => count($data)]);
+})->name('search.live');
 
 Route::get('/urun/{id}', function ($id) {
     $product = Product::with('category')->where('id', $id)->orWhere('slug', $id)->firstOrFail();
@@ -69,7 +140,34 @@ Route::get('/urunler', function () {
             $q->where('slug', $categorySlug);
         });
     }
-    $products = $query->latest()->paginate(16);
+
+    $search = trim(request('q') ?: request('search', ''));
+    if ($search !== '') {
+        $keywords = array_filter(explode(' ', $search));
+        $query->where(function ($q) use ($search, $keywords) {
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('description', 'like', "%{$search}%")
+              ->orWhere('barcode', 'like', "%{$search}%")
+              ->orWhere('model_code', 'like', "%{$search}%")
+              ->orWhere('features', 'like', "%{$search}%")
+              ->orWhereHas('category', function ($catQ) use ($search) {
+                  $catQ->where('name', 'like', "%{$search}%");
+              });
+
+            foreach ($keywords as $word) {
+                if (mb_strlen($word) >= 2) {
+                    $q->orWhere('name', 'like', "%{$word}%")
+                      ->orWhere('description', 'like', "%{$word}%")
+                      ->orWhere('features', 'like', "%{$word}%")
+                      ->orWhereHas('category', function ($catQ) use ($word) {
+                          $catQ->where('name', 'like', "%{$word}%");
+                      });
+                }
+            }
+        });
+    }
+
+    $products = $query->latest()->paginate(16)->withQueryString();
     $categories = Category::all();
     return view('products.index', compact('products', 'categories'));
 });
