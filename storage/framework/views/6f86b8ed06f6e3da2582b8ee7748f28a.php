@@ -20,24 +20,24 @@
             <span class="text-gray-800"><?php echo e($product->name); ?></span>
         </nav>
 
-        <div class="flex flex-col lg:flex-row gap-8">
+        <div class="flex flex-col lg:flex-row gap-6 lg:gap-8">
             
             <!-- Left Side: Images -->
-            <div class="w-full lg:w-[45%] flex gap-4">
-                <!-- Thumbnails -->
-                <div class="hidden md:flex flex-col gap-2 w-16 flex-shrink-0">
-                    <div class="thumb-box w-16 h-20 border-2 border-brand rounded-md cursor-pointer overflow-hidden p-1 bg-white transition" onclick="changeMainImage(this, '<?php echo e($product->image ?: '/cerceve.png'); ?>')">
+            <div class="w-full lg:w-[52%] flex flex-col md:flex-row gap-3 md:gap-4">
+                <!-- Desktop Thumbnails (Sol Taraf Dikey) -->
+                <div class="hidden md:flex flex-col gap-2.5 w-20 md:w-22 flex-shrink-0">
+                    <div class="thumb-box w-20 md:w-22 h-24 md:h-28 border-2 border-brand rounded-xl cursor-pointer overflow-hidden p-1 bg-white shadow-xs transition hover:scale-105" onclick="changeMainImage(this, '<?php echo e($product->image ?: '/cerceve.png'); ?>')">
                         <img src="<?php echo e($product->image ?: '/cerceve.png'); ?>" class="w-full h-full object-contain" alt="thumbnail">
                     </div>
                     <?php if(count($product->gallery_urls) > 0): ?>
                         <?php $__currentLoopData = $product->gallery_urls; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $addImg): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <div class="thumb-box w-16 h-20 border border-gray-200 rounded-md cursor-pointer overflow-hidden p-1 bg-white hover:border-gray-400 transition" onclick="changeMainImage(this, '<?php echo e($addImg); ?>')">
+                            <div class="thumb-box w-20 md:w-22 h-24 md:h-28 border border-gray-200 rounded-xl cursor-pointer overflow-hidden p-1 bg-white hover:border-brand transition hover:scale-105" onclick="changeMainImage(this, '<?php echo e($addImg); ?>')">
                                 <img src="<?php echo e($addImg); ?>" class="w-full h-full object-contain" alt="thumbnail">
                             </div>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     <?php endif; ?>
                     <?php if($product->youtube_id): ?>
-                        <div class="thumb-box w-16 h-20 border-2 border-red-300 rounded-md cursor-pointer overflow-hidden relative bg-black group shadow-sm hover:border-red-600 transition" onclick="openYoutubeModal('https://www.youtube.com/embed/<?php echo e($product->youtube_id); ?>')">
+                        <div class="thumb-box w-20 md:w-22 h-24 md:h-28 border-2 border-red-400 rounded-xl cursor-pointer overflow-hidden relative bg-black group shadow-xs hover:border-red-600 transition" onclick="openYoutubeModal('https://www.youtube.com/embed/<?php echo e($product->youtube_id); ?>')">
                             <img src="https://img.youtube.com/vi/<?php echo e($product->youtube_id); ?>/hqdefault.jpg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition" alt="video thumbnail">
                             <div class="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/20 transition">
                                 <i class="fa-brands fa-youtube text-red-600 text-2xl drop-shadow-md"></i>
@@ -45,7 +45,7 @@
                         </div>
                     <?php endif; ?>
                     <?php if($product->instagram_code): ?>
-                        <div class="thumb-box w-16 h-20 border-2 border-pink-400 rounded-md cursor-pointer overflow-hidden relative bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 group shadow-sm hover:border-pink-600 transition" onclick="openInstagramModal('<?php echo e($product->instagram_embed_url); ?>')">
+                        <div class="thumb-box w-20 md:w-22 h-24 md:h-28 border-2 border-pink-400 rounded-xl cursor-pointer overflow-hidden relative bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 group shadow-xs hover:border-pink-600 transition" onclick="openInstagramModal('<?php echo e($product->instagram_embed_url); ?>')">
                             <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/30 group-hover:bg-black/10 transition">
                                 <i class="fa-brands fa-instagram text-white text-2xl drop-shadow-md"></i>
                                 <span class="text-[9px] font-extrabold text-white mt-1 uppercase tracking-tighter">REEL</span>
@@ -54,26 +54,26 @@
                     <?php endif; ?>
                 </div>
                 
-                <!-- Main Image Container -->
-                <div class="flex-1 flex flex-col">
-                    <div id="mainImageContainer" class="w-full bg-gray-50 border border-gray-100 rounded-xl relative overflow-hidden flex items-center justify-center h-[360px] sm:h-[420px] md:h-[480px]">
-                        <img id="mainProductImage" src="<?php echo e($product->image ?: '/cerceve.png'); ?>" alt="<?php echo e($product->name); ?>" class="w-full h-full object-contain mix-blend-multiply p-4 transition-all duration-300 z-10">
+                <!-- Main Image Container (Mobilde Çerçeve Kaldırıldı ve Ekrana Uçtan Uca %100 Yayıldı) -->
+                <div class="flex-1 flex flex-col w-full">
+                    <div id="mainImageContainer" class="-mx-4 w-[calc(100%+2rem)] sm:mx-0 sm:w-full bg-white sm:bg-gray-50/80 border-0 sm:border sm:border-gray-200/80 rounded-none sm:rounded-2xl relative overflow-hidden flex items-center justify-center h-[460px] xs:h-[500px] sm:h-[540px] md:h-[580px] lg:h-[620px]">
+                        <img id="mainProductImage" src="<?php echo e($product->image ?: '/cerceve.png'); ?>" alt="<?php echo e($product->name); ?>" class="w-full h-full object-contain mix-blend-multiply p-0 sm:p-2 md:p-3 transition-all duration-300 z-10">
                     </div>
 
-                    <!-- Mobile Thumbnail Gallery (Parakende/Mobil Görünüm için Yatay Galeriyi Göster) -->
-                    <div class="flex md:hidden items-center gap-2 overflow-x-auto pt-3 pb-1 max-w-full text-center">
-                        <div class="thumb-box w-14 h-16 border-2 border-brand rounded-lg cursor-pointer overflow-hidden p-1 bg-white shrink-0 transition" onclick="changeMainImage(this, '<?php echo e($product->image ?: '/cerceve.png'); ?>')">
+                    <!-- Mobile Thumbnail Gallery (Mobil Görsel Galerisi Yatay Kaydırmalı & Kenarlara Sıfırlanmış) -->
+                    <div class="flex md:hidden items-center gap-2.5 overflow-x-auto -mx-4 px-4 pt-3 pb-1 max-w-[calc(100%+2rem)] text-center scrollbar-none">
+                        <div class="thumb-box w-16 h-20 border-2 border-brand rounded-xl cursor-pointer overflow-hidden p-0.5 bg-white shrink-0 shadow-xs transition" onclick="changeMainImage(this, '<?php echo e($product->image ?: '/cerceve.png'); ?>')">
                             <img src="<?php echo e($product->image ?: '/cerceve.png'); ?>" class="w-full h-full object-contain" alt="thumbnail">
                         </div>
                         <?php if(count($product->gallery_urls) > 0): ?>
                             <?php $__currentLoopData = $product->gallery_urls; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $addImg): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <div class="thumb-box w-14 h-16 border border-gray-200 rounded-lg cursor-pointer overflow-hidden p-1 bg-white hover:border-gray-400 shrink-0 transition" onclick="changeMainImage(this, '<?php echo e($addImg); ?>')">
+                                <div class="thumb-box w-16 h-20 border border-gray-200 rounded-xl cursor-pointer overflow-hidden p-0.5 bg-white hover:border-brand shrink-0 shadow-xs transition" onclick="changeMainImage(this, '<?php echo e($addImg); ?>')">
                                     <img src="<?php echo e($addImg); ?>" class="w-full h-full object-contain" alt="thumbnail">
                                 </div>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         <?php endif; ?>
                         <?php if($product->youtube_id): ?>
-                            <div class="thumb-box w-14 h-16 border-2 border-red-300 rounded-lg cursor-pointer overflow-hidden relative bg-black shrink-0 shadow-sm hover:border-red-600 transition" onclick="openYoutubeModal('https://www.youtube.com/embed/<?php echo e($product->youtube_id); ?>')">
+                            <div class="thumb-box w-16 h-20 border-2 border-red-400 rounded-xl cursor-pointer overflow-hidden relative bg-black shrink-0 shadow-xs hover:border-red-600 transition" onclick="openYoutubeModal('https://www.youtube.com/embed/<?php echo e($product->youtube_id); ?>')">
                                 <img src="https://img.youtube.com/vi/<?php echo e($product->youtube_id); ?>/hqdefault.jpg" class="w-full h-full object-cover opacity-80" alt="video thumbnail">
                                 <div class="absolute inset-0 flex items-center justify-center bg-black/40">
                                     <i class="fa-brands fa-youtube text-red-600 text-xl"></i>
@@ -81,7 +81,7 @@
                             </div>
                         <?php endif; ?>
                         <?php if($product->instagram_code): ?>
-                            <div class="thumb-box w-14 h-16 border-2 border-pink-400 rounded-lg cursor-pointer overflow-hidden relative bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 shrink-0 shadow-sm hover:border-pink-600 transition" onclick="openInstagramModal('<?php echo e($product->instagram_embed_url); ?>')">
+                            <div class="thumb-box w-16 h-20 border-2 border-pink-400 rounded-xl cursor-pointer overflow-hidden relative bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 shrink-0 shadow-xs hover:border-pink-600 transition" onclick="openInstagramModal('<?php echo e($product->instagram_embed_url); ?>')">
                                 <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/30">
                                     <i class="fa-brands fa-instagram text-white text-xl"></i>
                                     <span class="text-[8px] font-extrabold text-white mt-0.5 uppercase tracking-tighter">REEL</span>
@@ -151,7 +151,7 @@
                     <input type="hidden" name="custom_preview_base64" id="customPreviewBase64Input">
 
                     <!-- Stock Badge -->
-                    <div class="mb-4">
+                    <div class="mb-3">
                         <?php if($product->stock <= 0): ?>
                             <span class="inline-flex items-center gap-1.5 bg-red-100 text-red-700 text-xs font-extrabold px-3 py-1.5 rounded-full border border-red-200">
                                 <i class="fa-solid fa-circle-xmark"></i> Stokta Yok
@@ -165,6 +165,33 @@
                                 <i class="fa-solid fa-circle-check"></i> Stokta Mevcut
                             </span>
                         <?php endif; ?>
+                    </div>
+
+                    <!-- Kargo Teslimat Bilgisi (16:00 Kuralı - Türkiye Saati) -->
+                    <?php
+                        $nowIstanbul = \Carbon\Carbon::now('Europe/Istanbul');
+                        $currentHour = (int) $nowIstanbul->format('H');
+                        $isSameDayShipping = $currentHour < 16;
+                    ?>
+                    <div class="mb-4 rounded-xl p-3.5 border transition-all shadow-sm <?php echo e($isSameDayShipping ? 'bg-emerald-50 border-emerald-300 text-emerald-950' : 'bg-amber-50 border-amber-300 text-amber-950'); ?>">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl <?php echo e($isSameDayShipping ? 'bg-emerald-600' : 'bg-amber-600'); ?> text-white flex items-center justify-center shrink-0 shadow-sm">
+                                <i class="fa-solid <?php echo e($isSameDayShipping ? 'fa-bolt text-lg' : 'fa-truck-fast text-base'); ?>"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-xs font-black tracking-wide uppercase <?php echo e($isSameDayShipping ? 'text-emerald-700' : 'text-amber-700'); ?>">
+                                    <?php echo e($isSameDayShipping ? '⚡ AYNI GÜN KARGODA!' : '📦 YARIN KARGODA'); ?>
+
+                                </div>
+                                <p class="text-[12px] font-bold leading-tight mt-0.5 <?php echo e($isSameDayShipping ? 'text-emerald-900' : 'text-amber-900'); ?>">
+                                    <?php if($isSameDayShipping): ?>
+                                        Saat 16:00'a kadar verilen siparişler <strong>aynı gün kargoda!</strong>
+                                    <?php else: ?>
+                                        Saat 16:00 sonrası verilen siparişler <strong>yarın kargoda!</strong>
+                                    <?php endif; ?>
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Hediye Paketi & Notu Seçeneği -->
@@ -181,7 +208,7 @@
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="flex flex-col gap-3 mb-6">
+                    <div class="flex flex-col gap-3 mb-2">
                         <?php if($product->stock <= 0): ?>
                             <button type="button" disabled class="w-full bg-gray-300 text-gray-500 font-bold py-3.5 px-4 rounded-lg text-base cursor-not-allowed flex items-center justify-center gap-2">
                                 <i class="fa-solid fa-ban"></i>
@@ -198,15 +225,6 @@
                             <i class="<?php echo e($product->isFavoritedBy() ? 'fa-solid fa-heart text-red-500 text-lg drop-shadow-sm' : 'fa-regular fa-heart text-red-500 text-lg'); ?>"></i>
                             <span><?php echo e($product->isFavoritedBy() ? 'Favorilerinizde' : 'Favorilere Ekle'); ?></span>
                         </button>
-                    </div>
-
-                    <!-- Delivery Info -->
-                    <div class="flex items-center gap-3 text-[13px] text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-100">
-                        <i class="fa-solid fa-truck text-brand text-lg"></i>
-                        <div>
-                            <div class="font-bold text-gray-800">Hızlı Kargo</div>
-                            <div class="text-xs text-gray-500">Yarın kargoya verilir</div>
-                        </div>
                     </div>
                 </form>
             </div>
