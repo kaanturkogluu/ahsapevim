@@ -248,7 +248,7 @@
         </div>
         
         <!-- Workspace (3D Canvas Container) -->
-        <div class="flex-1 bg-stone-100 relative overflow-hidden flex items-center justify-center cursor-grab active:cursor-grabbing" id="workspaceContainer">
+        <div class="flex-1 relative overflow-hidden flex items-center justify-center cursor-grab active:cursor-grabbing" id="workspaceContainer" style="background-image: url('/images/template-bg.jpg'); background-position: center center; background-size: cover; background-repeat: no-repeat;">
             <!-- Uploaded Photo Badges -->
             <div class="absolute top-4 left-4 z-30 flex flex-col gap-2">
                 <div id="badgeFrontPhoto" class="hidden bg-orange-600 text-white font-extrabold text-xs px-3.5 py-2 rounded-xl shadow-lg flex items-center gap-2">
@@ -1000,7 +1000,7 @@ function handleEnd() {
 
         colorCtx.fillStyle = baseColor; colorCtx.fillRect(0, 0, size, size);
         bumpCtx.fillStyle = '#808080'; bumpCtx.fillRect(0, 0, size, size);
-        roughCtx.fillStyle = '#707070'; roughCtx.fillRect(0, 0, size, size);
+        roughCtx.fillStyle = '#d8d8d8'; roughCtx.fillRect(0, 0, size, size);
 
         for (let y = -50; y < size + 50; y += 7) {
             let freq = 0.003 + (y % 13) * 0.0003;
@@ -1062,7 +1062,7 @@ function handleEnd() {
         colorMap.offset.set(0, ry); bumpMap.offset.set(0, ry); roughnessMap.offset.set(0, ry);
 
         return new THREE.MeshStandardMaterial({
-            map: colorMap, bumpMap: bumpMap, bumpScale: bScale, roughnessMap: roughnessMap, roughness: 0.65, metalness: 0.02
+            map: colorMap, bumpMap: bumpMap, bumpScale: bScale, roughnessMap: roughnessMap, roughness: 0.88, metalness: 0.0
         });
     }
 

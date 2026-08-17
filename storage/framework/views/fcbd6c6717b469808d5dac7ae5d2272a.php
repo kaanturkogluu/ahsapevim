@@ -211,7 +211,7 @@
                 <span class="w-2.5 h-2.5 rounded-full bg-brand animate-pulse"></span>
                 <span>3D Canlı Tasarım Önizleme</span>
             </div>
-            <div id="studio3DContainer" class="flex-1 w-full bg-[#f9fafb] cursor-grab active:cursor-grabbing"></div>
+            <div id="studio3DContainer" class="flex-1 w-full cursor-grab active:cursor-grabbing" style="background-image: url('/images/template-bg.jpg'); background-position: center center; background-size: cover; background-repeat: no-repeat;"></div>
         </div>
 
     </div>
@@ -298,7 +298,7 @@
                     </div>
 
                     <!-- Mini 3D Preview Canvas -->
-                    <div class="bg-gray-900 rounded-xl overflow-hidden border border-gray-800 relative flex flex-col h-64 shadow-inner">
+                    <div class="rounded-xl overflow-hidden border border-gray-800 relative flex flex-col h-64 shadow-inner" style="background-image: url('/images/template-bg.jpg'); background-position: center center; background-size: cover; background-repeat: no-repeat;">
                         <div class="absolute top-2 left-2 z-10 bg-black/60 backdrop-blur px-2.5 py-1 rounded text-[10px] text-amber-400 font-bold flex items-center gap-1.5">
                             <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Canlı Obje Önizleme
                         </div>
@@ -423,7 +423,7 @@ function generateWoodTextures(woodType, rendererInstance) {
 
     colorCtx.fillStyle = baseColor; colorCtx.fillRect(0, 0, size, size);
     bumpCtx.fillStyle = '#808080'; bumpCtx.fillRect(0, 0, size, size);
-    roughCtx.fillStyle = '#656565'; roughCtx.fillRect(0, 0, size, size);
+    roughCtx.fillStyle = '#d8d8d8'; roughCtx.fillRect(0, 0, size, size);
 
     for (let y = -100; y < size + 100; y += 6) {
         let freq = 0.0025 + (y % 17) * 0.0002;
@@ -488,8 +488,8 @@ function createPieceMaterial(woodTextures, bScale, pieceName) {
         bumpMap: woodTextures.bumpMap,
         bumpScale: bScale,
         roughnessMap: woodTextures.roughnessMap,
-        roughness: 0.65,
-        metalness: 0.02
+        roughness: 0.88,
+        metalness: 0.0
     });
 }
 
