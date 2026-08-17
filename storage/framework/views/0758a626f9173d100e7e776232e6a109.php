@@ -229,25 +229,39 @@
                                     </span>
                                     <div class="flex flex-wrap items-center gap-3">
                                         <?php if($fImg): ?>
-                                            <div class="flex items-center gap-2 bg-orange-50 p-1.5 rounded-lg border border-orange-200">
-                                                <img src="<?php echo e(str_starts_with($fImg, 'http') ? $fImg : url($fImg)); ?>" class="w-10 h-10 object-cover rounded border border-orange-300">
+                                            <div class="flex items-center gap-2.5 bg-orange-50 p-2 rounded-xl border border-orange-200 shadow-2xs">
+                                                <a href="<?php echo e(str_starts_with($fImg, 'http') ? $fImg : url($fImg)); ?>" target="_blank" title="Tam Ekran Önizle">
+                                                    <img src="<?php echo e(str_starts_with($fImg, 'http') ? $fImg : url($fImg)); ?>" class="w-12 h-12 object-cover rounded-lg border border-orange-300 hover:opacity-90 transition">
+                                                </a>
                                                 <div>
-                                                    <span class="block text-[10px] font-bold text-orange-900">1. Ön Yüz Fotoğrafı</span>
-                                                    <a href="<?php echo e(str_starts_with($fImg, 'http') ? $fImg : url($fImg)); ?>" target="_blank" class="text-[10px] text-blue-600 hover:underline font-bold">
-                                                        <i class="fa-solid fa-download"></i> Orijinali İndir
-                                                    </a>
+                                                    <span class="block text-[11px] font-extrabold text-orange-950">1. Ön Yüz Fotoğrafı</span>
+                                                    <div class="flex items-center gap-2 mt-0.5">
+                                                        <a href="<?php echo e(route('admin.orders.download_image', ['path' => $fImg, 'filename' => 'Siparis_' . $order->id . '_1_On_Yuz'])); ?>" download class="px-2 py-0.5 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-extrabold rounded transition shadow-2xs inline-flex items-center gap-1">
+                                                            <i class="fa-solid fa-download"></i> Orijinali İndir
+                                                        </a>
+                                                        <a href="<?php echo e(str_starts_with($fImg, 'http') ? $fImg : url($fImg)); ?>" target="_blank" class="text-[10px] text-gray-500 hover:text-gray-800 font-bold transition">
+                                                            <i class="fa-solid fa-up-right-from-square"></i> Aç
+                                                        </a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         <?php endif; ?>
 
                                         <?php if($bImg): ?>
-                                            <div class="flex items-center gap-2 bg-emerald-50 p-1.5 rounded-lg border border-emerald-200">
-                                                <img src="<?php echo e(str_starts_with($bImg, 'http') ? $bImg : url($bImg)); ?>" class="w-10 h-10 object-cover rounded border border-emerald-300">
+                                            <div class="flex items-center gap-2.5 bg-emerald-50 p-2 rounded-xl border border-emerald-200 shadow-2xs">
+                                                <a href="<?php echo e(str_starts_with($bImg, 'http') ? $bImg : url($bImg)); ?>" target="_blank" title="Tam Ekran Önizle">
+                                                    <img src="<?php echo e(str_starts_with($bImg, 'http') ? $bImg : url($bImg)); ?>" class="w-12 h-12 object-cover rounded-lg border border-emerald-300 hover:opacity-90 transition">
+                                                </a>
                                                 <div>
-                                                    <span class="block text-[10px] font-bold text-emerald-900">2. Arka Yüz Fotoğrafı</span>
-                                                    <a href="<?php echo e(str_starts_with($bImg, 'http') ? $bImg : url($bImg)); ?>" target="_blank" class="text-[10px] text-blue-600 hover:underline font-bold">
-                                                        <i class="fa-solid fa-download"></i> Orijinali İndir
-                                                    </a>
+                                                    <span class="block text-[11px] font-extrabold text-emerald-950">2. Arka Yüz Fotoğrafı</span>
+                                                    <div class="flex items-center gap-2 mt-0.5">
+                                                        <a href="<?php echo e(route('admin.orders.download_image', ['path' => $bImg, 'filename' => 'Siparis_' . $order->id . '_2_Arka_Yuz'])); ?>" download class="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-800 text-white text-[10px] font-extrabold rounded transition shadow-2xs inline-flex items-center gap-1">
+                                                            <i class="fa-solid fa-download"></i> Orijinali İndir
+                                                        </a>
+                                                        <a href="<?php echo e(str_starts_with($bImg, 'http') ? $bImg : url($bImg)); ?>" target="_blank" class="text-[10px] text-gray-500 hover:text-gray-800 font-bold transition">
+                                                            <i class="fa-solid fa-up-right-from-square"></i> Aç
+                                                        </a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         <?php endif; ?>

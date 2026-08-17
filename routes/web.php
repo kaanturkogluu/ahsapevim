@@ -197,6 +197,7 @@ Route::prefix('yonetim')->middleware(['auth', 'admin'])->group(function () {
     Route::resource('3d-sablonlar', ThreeDTemplateController::class)->parameters(['3d-sablonlar' => 'template'])->except(['store', 'update'])->names('admin.templates');
 
     Route::resource('sayfalar', PageController::class)->names('admin.pages');
+    Route::get('/siparis-gorsel-indir', [OrderController::class, 'downloadImage'])->name('admin.orders.download_image');
     Route::resource('siparisler', OrderController::class)->only(['index', 'show', 'update', 'destroy'])->names('admin.orders');
     Route::resource('kargo-sirketleri', ShippingCompanyController::class)->except(['create', 'show', 'edit'])->names('admin.shipping_companies');
 

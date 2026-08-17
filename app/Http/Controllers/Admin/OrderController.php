@@ -201,4 +201,47 @@ class OrderController extends Controller
 
         return redirect()->route('admin.orders.index')->with('success', "İptal/Başarısız sipariş (#{$id}) ve ilişkili {$deletedPhotoCount} adet müşteri fotoğrafı sistemden kalıcı olarak silindi.");
     }
+
+    public function downloadImage(Request $request)
+    {
+        $path = $request->query('path');
+        if (!$path) {
+            abort(404, 'Görsel yolu bulunamadı.');
+        }
+
+        $relativePath = parse_url($path, PHP_URL_PATH);
+        if (!$relativePath) {
+            $relativePath = $path;
+        }
+
+        $relativePath = ltrim($relativePath, '/');
+
+        if (!str_starts_with($relativePath, 'uploads/')) {
+            abort(403, 'Erişim yetkiniz bulunmamaktadır.');
+        }
+
+        $fullPath = public_path($relativePath);
+
+        if (!file_exists($fullPath) || !is_file($fullPath)) {
+            abort(404, 'İstenen görsel dosyası bulunamadı.');
+        }
+
+        $extension = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
+        $customName = $request->query('filename');
+
+        if ($customName) {
+            $cleanName = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $customName);
+            $downloadFileName = $cleanName . '.' . $extension;
+        } else {
+            $downloadFileName = basename($fullPath);
+        }
+
+        return response()->download($fullPath, $downloadFileName, [
+            'Content-Type' => mime_content_type($fullPath) ?: 'application/octet-stream',
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
+        ]);
+    }
 }
+

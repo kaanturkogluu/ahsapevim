@@ -172,13 +172,13 @@
                                             @if($fImg || $bImg)
                                                 <div class="mt-1 flex items-center gap-2">
                                                     @if($fImg)
-                                                        <a href="{{ str_starts_with($fImg, 'http') ? $fImg : url($fImg) }}" target="_blank" class="inline-flex items-center gap-1 bg-amber-50 text-amber-900 border border-amber-200 text-[10px] font-bold px-2 py-0.5 rounded">
-                                                            <i class="fa-solid fa-image text-amber-600"></i> Ön Yüz
+                                                        <a href="{{ str_starts_with($fImg, 'http') ? $fImg : url($fImg) }}" download target="_blank" class="inline-flex items-center gap-1 bg-amber-50 text-amber-900 border border-amber-200 text-[10px] font-bold px-2 py-0.5 rounded hover:bg-amber-100 transition">
+                                                            <i class="fa-solid fa-image text-amber-600"></i> 1. Ön Yüz Fotoğrafı
                                                         </a>
                                                     @endif
                                                     @if($bImg)
-                                                        <a href="{{ str_starts_with($bImg, 'http') ? $bImg : url($bImg) }}" target="_blank" class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-900 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded">
-                                                            <i class="fa-solid fa-image text-emerald-600"></i> Arka Yüz
+                                                        <a href="{{ str_starts_with($bImg, 'http') ? $bImg : url($bImg) }}" download target="_blank" class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-900 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded hover:bg-emerald-100 transition">
+                                                            <i class="fa-solid fa-image text-emerald-600"></i> 2. Arka Yüz Fotoğrafı
                                                         </a>
                                                     @endif
                                                 </div>
