@@ -132,18 +132,39 @@
             <button type="button" onclick="closeSendSmsModal()" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
         </div>
 
-        <form action="{{ route('admin.sms.send_manual') }}" method="POST" class="space-y-4">
+        <form action="{{ route('admin.sms.send_manual') }}" method="POST" class="space-y-4" id="manualSmsForm">
             @csrf
             <div>
                 <label class="block text-[11px] font-extrabold text-gray-500 uppercase mb-1">Alıcı GSM / Telefon Numarası *</label>
-                <input type="text" name="to_phone" id="modalToPhone" required placeholder="05XXXXXXXXX" class="w-full text-xs font-mono border border-gray-300 rounded-xl p-2.5 outline-none focus:border-[#C87A53]">
+                <div class="relative">
+                    <input
+                        type="text"
+                        name="to_phone"
+                        id="modalToPhone"
+                        required
+                        placeholder="0532 123 45 67"
+                        maxlength="19"
+                        autocomplete="tel"
+                        inputmode="tel"
+                        class="w-full text-xs font-mono border border-gray-300 rounded-xl p-2.5 pr-9 outline-none focus:border-[#C87A53] transition"
+                        oninput="formatPhoneInput(this)"
+                        onblur="validatePhoneInput(this)"
+                    >
+                    <span id="phoneValidIcon" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs hidden"></span>
+                </div>
+                <p id="phoneError" class="text-[10px] text-rose-600 font-bold mt-1 hidden">
+                    <i class="fa-solid fa-circle-exclamation mr-1"></i>
+                    Geçerli bir Türk GSM numarası girin. Örn: 05XXXXXXXXX
+                </p>
+                <p class="text-[10px] text-gray-400 mt-1">Desteklenen formatlar: 05XX, +905XX, 905XX</p>
             </div>
 
             <div>
                 <label class="block text-[11px] font-extrabold text-gray-500 uppercase mb-1">SMS Mesaj Metni *</label>
-                <textarea name="message" id="modalSmsBody" rows="4" maxlength="1000" required placeholder="Müşterinize gitmesini istediğiniz SMS metni..." class="w-full text-xs border border-gray-300 rounded-xl p-2.5 outline-none focus:border-[#C87A53]" oninput="updateSmsCharCount(this)"></textarea>
-                <div class="text-[10px] text-gray-400 text-right mt-1 font-mono">
-                    <span id="smsCharCount">0</span> Karakter
+                <textarea name="message" id="modalSmsBody" rows="4" maxlength="918" required placeholder="Müşterinize gitmesini istediğiniz SMS metni..." class="w-full text-xs border border-gray-300 rounded-xl p-2.5 outline-none focus:border-[#C87A53]" oninput="updateSmsCharCount(this)"></textarea>
+                <div class="text-[10px] text-gray-400 text-right mt-1 font-mono flex items-center justify-end gap-2">
+                    <span id="smsParts" class="px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded font-bold hidden"></span>
+                    <span><span id="smsCharCount">0</span> / 918 Karakter</span>
                 </div>
             </div>
 
@@ -153,7 +174,7 @@
                 <button type="button" onclick="closeSendSmsModal()" class="py-2 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-xl transition">
                     Vazgeç
                 </button>
-                <button type="submit" class="py-2 px-5 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold text-xs rounded-xl transition shadow-sm flex items-center gap-1.5">
+                <button type="submit" id="smsSubmitBtn" class="py-2 px-5 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold text-xs rounded-xl transition shadow-sm flex items-center gap-1.5">
                     <i class="fa-solid fa-paper-plane"></i> Netgsm İle Gönder
                 </button>
             </div>
@@ -203,14 +224,134 @@
 </div>
 
 <script>
-function openSendSmsModal(phone = '', orderId = '') {
-    const modal = document.getElementById('sendSmsModal');
-    if (modal) {
-        document.getElementById('modalToPhone').value = phone;
-        document.getElementById('modalSmsOrderId').value = orderId;
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
+// ── Telefon Numarası Formatlama ──────────────────────────────────────────────
+
+/**
+ * Türk GSM numarasını "0532 123 45 67" formatında gösterir.
+ * Girilen metni hidden input'a ham (rakam-only) olarak yazar.
+ */
+function formatPhoneInput(el) {
+    // Sadece rakam al
+    let digits = el.value.replace(/\D/g, '');
+
+    // Başında 90 ile geliyorsa at (kullanıcı +90 yazmış olabilir)
+    if (digits.startsWith('90') && digits.length > 10) {
+        digits = digits.slice(2);
     }
+
+    // Başında 0 yoksa ekle (5 ile başlıyorsa)
+    if (digits.startsWith('5')) {
+        digits = '0' + digits;
+    }
+
+    // Maksimum 11 hane (0 + 10 hane)
+    digits = digits.slice(0, 11);
+
+    // Format: 0532 123 45 67
+    let formatted = '';
+    if (digits.length > 0)  formatted  = digits.slice(0, 4);
+    if (digits.length > 4)  formatted += ' ' + digits.slice(4, 7);
+    if (digits.length > 7)  formatted += ' ' + digits.slice(7, 9);
+    if (digits.length > 9)  formatted += ' ' + digits.slice(9, 11);
+
+    el.value = formatted;
+
+    // Geçerlilik kontrolü (canlı)
+    if (digits.length === 11) {
+        validatePhoneInput(el);
+    } else {
+        clearPhoneValidation();
+    }
+}
+
+function validatePhoneInput(el) {
+    const digits = el.value.replace(/\D/g, '');
+    const validIcon = document.getElementById('phoneValidIcon');
+    const errorMsg  = document.getElementById('phoneError');
+    const submitBtn = document.getElementById('smsSubmitBtn');
+
+    // Türk GSM: 0 + 5XX + 8 hane = 11 hane
+    const isValid = /^05[0-9]{9}$/.test(digits);
+
+    if (isValid) {
+        validIcon.textContent = '✓';
+        validIcon.className = 'absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-emerald-600 font-bold';
+        validIcon.classList.remove('hidden');
+        errorMsg.classList.add('hidden');
+        el.classList.remove('border-rose-400');
+        el.classList.add('border-emerald-400');
+        if (submitBtn) submitBtn.disabled = false;
+    } else if (digits.length > 0) {
+        validIcon.textContent = '✗';
+        validIcon.className = 'absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-rose-500 font-bold';
+        validIcon.classList.remove('hidden');
+        errorMsg.classList.remove('hidden');
+        el.classList.remove('border-emerald-400');
+        el.classList.add('border-rose-400');
+        if (submitBtn) submitBtn.disabled = true;
+    } else {
+        clearPhoneValidation();
+    }
+}
+
+function clearPhoneValidation() {
+    const validIcon = document.getElementById('phoneValidIcon');
+    const errorMsg  = document.getElementById('phoneError');
+    const phoneEl   = document.getElementById('modalToPhone');
+    const submitBtn = document.getElementById('smsSubmitBtn');
+    if (validIcon) validIcon.classList.add('hidden');
+    if (errorMsg)  errorMsg.classList.add('hidden');
+    if (phoneEl)   phoneEl.classList.remove('border-rose-400', 'border-emerald-400');
+    if (submitBtn) submitBtn.disabled = false;
+}
+
+// ── SMS Karakter Sayacı & Bölüm Göstergesi ──────────────────────────────────
+
+function updateSmsCharCount(el) {
+    const len     = el.value.length;
+    const counter = document.getElementById('smsCharCount');
+    const parts   = document.getElementById('smsParts');
+
+    if (counter) counter.textContent = len;
+
+    // SMS bölüm hesabı (Türkçe karakter varsa 153, yoksa 160 karakter/bölüm)
+    const hasTurkish = /[çğışöüÇĞİŞÖÜ]/.test(el.value);
+    const smsLimit   = hasTurkish ? 153 : 160;
+    const smsCount   = Math.ceil(len / smsLimit) || 1;
+
+    if (parts) {
+        if (len > smsLimit) {
+            parts.textContent = smsCount + ' SMS';
+            parts.classList.remove('hidden');
+        } else {
+            parts.classList.add('hidden');
+        }
+    }
+}
+
+// ── Modal Kontrolleri ────────────────────────────────────────────────────────
+
+function openSendSmsModal(phone = '', orderId = '') {
+    const modal   = document.getElementById('sendSmsModal');
+    const phoneEl = document.getElementById('modalToPhone');
+    if (!modal) return;
+
+    // Numarayı formatla
+    if (phone) {
+        phoneEl.value = phone;
+        formatPhoneInput(phoneEl);
+    } else {
+        phoneEl.value = '';
+        clearPhoneValidation();
+    }
+
+    document.getElementById('modalSmsOrderId').value = orderId;
+    document.getElementById('modalSmsBody').value = '';
+    updateSmsCharCount(document.getElementById('modalSmsBody'));
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    setTimeout(() => phoneEl.focus(), 100);
 }
 
 function closeSendSmsModal() {
@@ -218,17 +359,14 @@ function closeSendSmsModal() {
     if (modal) {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
+        clearPhoneValidation();
     }
 }
 
-function updateSmsCharCount(el) {
-    document.getElementById('smsCharCount').textContent = el.value.length;
-}
-
 function viewSmsDetail(log) {
-    document.getElementById('detailSmsLogId').textContent = log.id;
+    document.getElementById('detailSmsLogId').textContent   = log.id;
     document.getElementById('detailSmsToPhone').textContent = log.to_phone;
-    document.getElementById('detailSmsMeta').textContent = (log.created_at || '') + ' | Kod: ' + (log.response_code || 'N/A');
+    document.getElementById('detailSmsMeta').textContent    = (log.created_at || '') + ' | Kod: ' + (log.response_code || 'N/A');
     document.getElementById('detailSmsMessage').textContent = log.message || 'Mesaj bulunamadı.';
 
     const errBox = document.getElementById('detailSmsErrorBox');
@@ -253,5 +391,16 @@ function closeSmsDetailModal() {
         modal.classList.remove('flex');
     }
 }
+
+// Modal dışına tıklayınca kapat
+document.addEventListener('click', function(e) {
+    ['sendSmsModal', 'smsDetailModal'].forEach(function(id) {
+        const modal = document.getElementById(id);
+        if (modal && e.target === modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    });
+});
 </script>
 @endsection

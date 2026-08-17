@@ -93,12 +93,31 @@ class MessageLogController extends Controller
     public function sendManualSms(Request $request)
     {
         $request->validate([
-            'to_phone' => 'required|string|max:25',
-            'message' => 'required|string|max:1000',
+            // Türkiye GSM: 05XXXXXXXXX veya +905XXXXXXXXX veya 905XXXXXXXXX
+            'to_phone' => ['required', 'string', 'max:25', 'regex:/^(\+?90|0)?5[0-9]{9}$/'],
+            'message'  => 'required|string|max:918', // 6 SMS'e kadar (153 karakter × 6)
             'order_id' => 'nullable|exists:orders,id',
+        ], [
+            'to_phone.regex' => 'Geçerli bir Türk GSM numarası girin. Örn: 05XXXXXXXXX veya +905XXXXXXXXX',
+            'message.max'    => 'Mesaj 918 karakteri aşamaz (6 SMS).',
         ]);
 
-        $netgsm = app(NetgsmService::class);
+        $netgsm     = app(NetgsmService::class);
+        $cleanPhone = $netgsm->formatPhone($request->to_phone);
+
+        // Spam koruması: Aynı numaraya son 1 dakikada 3'ten fazla manuel SMS engellensin
+        $recentCount = SmsLog::where('to_phone', $cleanPhone ?? $request->to_phone)
+            ->where('type', 'manual')
+            ->where('created_at', '>=', now()->subMinute())
+            ->count();
+
+        if ($recentCount >= 3) {
+            return redirect()->back()->with(
+                'error',
+                "'{$request->to_phone}' numarasına son 1 dakika içinde çok fazla SMS gönderildi. Lütfen bekleyin."
+            );
+        }
+
         $success = $netgsm->sendSms(
             $request->to_phone,
             $request->message,
@@ -112,4 +131,5 @@ class MessageLogController extends Controller
 
         return redirect()->back()->with('error', "'{$request->to_phone}' numarasına SMS gönderimi başarısız oldu! Hata detayı için SMS Loglarını inceleyebilirsiniz.");
     }
+
 }
