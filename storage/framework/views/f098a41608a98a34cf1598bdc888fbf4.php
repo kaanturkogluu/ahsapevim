@@ -1,10 +1,8 @@
-@extends('layouts.admin')
+<?php $__env->startSection('title', 'Yeni 3D Çerçeve Şablonu - AhşapEvim'); ?>
 
-@section('title', 'Yeni 3D Çerçeve Şablonu - AhşapEvim')
+<?php $__env->startSection('header', 'Yeni 3D Çerçeve Şablonu'); ?>
 
-@section('header', 'Yeni 3D Çerçeve Şablonu')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <!-- Three.js Loaders -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -15,8 +13,8 @@
         <!-- Sidebar Controls / Form -->
         <div class="w-full lg:w-96 flex-shrink-0 flex flex-col gap-4">
             
-            <form action="{{ route('admin.templates.store') }}" method="POST" id="templateForm" class="space-y-4" onsubmit="preventSpamSubmit(this)">
-                @csrf
+            <form action="<?php echo e(route('admin.templates.store')); ?>" method="POST" id="templateForm" class="space-y-4" onsubmit="preventSpamSubmit(this)">
+                <?php echo csrf_field(); ?>
                 
                 <!-- General Info -->
                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
@@ -30,7 +28,7 @@
                             <label class="block text-xs font-bold text-gray-700 mb-1">Ahşap Rengi / Renk Paleti *</label>
                             <div class="flex items-center gap-2">
                                 <input type="color" id="woodColorPicker" value="#4a3319" class="w-10 h-10 rounded border border-gray-300 cursor-pointer p-0.5 shrink-0" onchange="updateWoodColorFromPicker(this.value)">
-                                <input type="text" name="wood_type" id="woodTypeSelect" required value="{{ old('wood_type', 'Ceviz') }}" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Renk kodu veya adı (#4a3319, Ceviz vb.)">
+                                <input type="text" name="wood_type" id="woodTypeSelect" required value="<?php echo e(old('wood_type', 'Ceviz')); ?>" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Renk kodu veya adı (#4a3319, Ceviz vb.)">
                             </div>
                             <div class="flex flex-wrap gap-1.5 mt-2">
                                 <button type="button" onclick="setWoodPreset('#4a3319', 'Ceviz')" class="px-2 py-1 bg-[#4a3319] text-white text-[10px] font-bold rounded shadow-sm hover:opacity-90">Ceviz</button>
@@ -625,4 +623,6 @@ function preventSpamSubmit(form) {
     }
 }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\ahsapevim\resources\views/admin/templates/create.blade.php ENDPATH**/ ?>

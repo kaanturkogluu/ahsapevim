@@ -126,10 +126,10 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-gray-700 mb-1">Damar/Bump Kabartma Pürüzü</label>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">3D Ahşap Doku & Tırtık Derinliği (Bump Scale)</label>
                             <div class="flex items-center gap-3">
-                                <input type="range" name="bump_scale" id="bumpScale" min="0" max="0.5" step="0.01" value="{{ $template->bump_scale }}" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('bumpVal').innerText = this.value">
-                                <span id="bumpVal" class="text-xs font-bold text-gray-600 w-8">{{ $template->bump_scale }}</span>
+                                <input type="range" name="bump_scale" id="bumpScale" min="0" max="0.6" step="0.01" value="{{ $template->bump_scale ?: '0.28' }}" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('bumpVal').innerText = this.value">
+                                <span id="bumpVal" class="text-xs font-bold text-gray-600 w-8">{{ $template->bump_scale ?: '0.28' }}</span>
                             </div>
                         </div>
                     </div>
@@ -183,12 +183,27 @@ function setWoodPreset(hex, name) {
     redrawModel();
 }
 
-// --- WOOD TEXTURE GENERATOR ---
-function generateWoodTexture(woodType, rendererInstance) {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1024;
-    canvas.height = 1024;
-    const ctx = canvas.getContext('2d');
+// --- WOOD TEXTURE & TACTILE BUMP MAP GENERATOR ---
+function generateWoodTextures(woodType, rendererInstance) {
+    const size = 1024;
+    
+    // 1. Color Map Canvas (Diffuse)
+    const colorCanvas = document.createElement('canvas');
+    colorCanvas.width = size;
+    colorCanvas.height = size;
+    const colorCtx = colorCanvas.getContext('2d');
+
+    // 2. Bump Map Canvas (Tactile 3D Heightmap for Grooves & Pores / Tırtık)
+    const bumpCanvas = document.createElement('canvas');
+    bumpCanvas.width = size;
+    bumpCanvas.height = size;
+    const bumpCtx = bumpCanvas.getContext('2d');
+
+    // 3. Roughness Map Canvas (Surface Reflection Variation)
+    const roughCanvas = document.createElement('canvas');
+    roughCanvas.width = size;
+    roughCanvas.height = size;
+    const roughCtx = roughCanvas.getContext('2d');
 
     let baseColor, lineColor, poreColor;
     if (woodType && (woodType.startsWith('#') || /^[0-9a-fA-F]{6}$/.test(woodType.replace('#','')))) {
@@ -218,93 +233,166 @@ function generateWoodTexture(woodType, rendererInstance) {
         poreColor = darkenColor(baseColor, 45);
     }
 
-    // Base color
-    ctx.fillStyle = baseColor;
-    ctx.fillRect(0, 0, 1024, 1024);
+    // --- Base Fills ---
+    colorCtx.fillStyle = baseColor;
+    colorCtx.fillRect(0, 0, size, size);
 
-    // 1. Dark micro-pores (fibers)
-    ctx.fillStyle = poreColor;
-    ctx.globalAlpha = 0.25;
-    for (let i = 0; i < 60000; i++) {
-        let px = Math.random() * 1024;
-        let py = Math.random() * 1024;
+    bumpCtx.fillStyle = '#808080'; // neutral height offset
+    bumpCtx.fillRect(0, 0, size, size);
+
+    roughCtx.fillStyle = '#707070'; // ~0.44 roughness base
+    roughCtx.fillRect(0, 0, size, size);
+
+    // --- 1. Micro-Noise & Pores (Tactile 3D Tırtık) ---
+    colorCtx.fillStyle = poreColor;
+    colorCtx.globalAlpha = 0.28;
+    for (let i = 0; i < 70000; i++) {
+        let px = Math.random() * size;
+        let py = Math.random() * size;
         let pw = 2 + Math.random() * 4;
         let ph = 1 + Math.random() * 1.2;
-        ctx.fillRect(px, py, pw, ph);
+        colorCtx.fillRect(px, py, pw, ph);
     }
-
-    // 2. Light wood fibers for realistic raw roughness
-    ctx.fillStyle = '#ffffff';
-    ctx.globalAlpha = 0.12;
-    for (let i = 0; i < 25000; i++) {
-        let px = Math.random() * 1024;
-        let py = Math.random() * 1024;
+    colorCtx.fillStyle = '#ffffff';
+    colorCtx.globalAlpha = 0.14;
+    for (let i = 0; i < 30000; i++) {
+        let px = Math.random() * size;
+        let py = Math.random() * size;
         let pw = 3 + Math.random() * 6;
         let ph = 0.8 + Math.random() * 0.8;
-        ctx.fillRect(px, py, pw, ph);
+        colorCtx.fillRect(px, py, pw, ph);
     }
-    ctx.globalAlpha = 1.0;
+    colorCtx.globalAlpha = 1.0;
 
-    // Soft grain variation rings (horizontal waves)
-    ctx.strokeStyle = poreColor;
-    ctx.globalAlpha = 0.12;
-    ctx.lineWidth = 16;
-    for (let i = -200; i < 1224; i += 45) {
-        ctx.beginPath();
+    // High-contrast heightmap specks for physical 3D bumpiness/tırtık
+    for (let i = 0; i < 45000; i++) {
+        let bx = Math.random() * size;
+        let by = Math.random() * size;
+        let bw = 1.5 + Math.random() * 3.5;
+        let bh = 1.0 + Math.random() * 1.5;
+        bumpCtx.fillStyle = Math.random() > 0.45 ? '#151515' : '#d8d8d8';
+        bumpCtx.fillRect(bx, by, bw, bh);
+
+        roughCtx.fillStyle = '#c5c5c5'; // matte pores
+        roughCtx.fillRect(bx, by, bw, bh);
+    }
+
+    // --- 2. Soft Grain Rings / Waves ---
+    colorCtx.strokeStyle = poreColor;
+    colorCtx.globalAlpha = 0.14;
+    colorCtx.lineWidth = 18;
+
+    bumpCtx.strokeStyle = '#505050';
+    bumpCtx.lineWidth = 14;
+
+    for (let i = -200; i < 1224; i += 40) {
+        colorCtx.beginPath();
+        bumpCtx.beginPath();
         let y = i;
-        ctx.moveTo(0, y);
+        colorCtx.moveTo(0, y);
+        bumpCtx.moveTo(0, y);
         let freq = 0.003;
         let amp = 35;
         let phase = i * 0.05;
-        for (let x = 0; x <= 1024; x += 30) {
+        for (let x = 0; x <= size; x += 25) {
             let offset = Math.sin(x * freq + phase) * amp;
-            ctx.lineTo(x, y + offset);
+            colorCtx.lineTo(x, y + offset);
+            bumpCtx.lineTo(x, y + offset);
         }
-        ctx.stroke();
+        colorCtx.stroke();
+        bumpCtx.stroke();
     }
-    ctx.globalAlpha = 1.0;
+    colorCtx.globalAlpha = 1.0;
 
-    // Sharp horizontal grain lines
-    ctx.strokeStyle = lineColor;
-    ctx.lineWidth = 2.4;
-    for (let i = -200; i < 1224; i += 12) {
-        ctx.beginPath();
+    // --- 3. Deep Linear Grain Grooves (Girintiler) ---
+    colorCtx.strokeStyle = lineColor;
+    colorCtx.lineWidth = 2.6;
+
+    bumpCtx.strokeStyle = '#080808'; // deep groove heightmap (black = carved valley)
+    bumpCtx.lineWidth = 3.2;
+
+    roughCtx.strokeStyle = '#e5e5e5';
+    roughCtx.lineWidth = 2.6;
+
+    for (let i = -200; i < 1224; i += 11) {
+        colorCtx.beginPath();
+        bumpCtx.beginPath();
+        roughCtx.beginPath();
+
         let y = i;
-        ctx.moveTo(0, y);
+        colorCtx.moveTo(0, y);
+        bumpCtx.moveTo(0, y);
+        roughCtx.moveTo(0, y);
         
         let frequency = 0.004 + Math.random() * 0.003;
         let amplitude = 22 + Math.random() * 22;
         let phase = Math.random() * Math.PI;
 
-        for (let x = 0; x <= 1024; x += 15) {
+        for (let x = 0; x <= size; x += 15) {
             let offset = Math.sin(x * frequency + phase) * amplitude;
-            offset += (Math.random() - 0.5) * 1.5;
-            ctx.lineTo(x, y + offset);
+            offset += (Math.random() - 0.5) * 1.8;
+            colorCtx.lineTo(x, y + offset);
+            bumpCtx.lineTo(x, y + offset);
+            roughCtx.lineTo(x, y + offset);
         }
-        ctx.stroke();
+        colorCtx.stroke();
+        bumpCtx.stroke();
+        roughCtx.stroke();
     }
 
-    // Horizontal knots (budaklar)
-    ctx.lineWidth = 1.6;
+    // --- 4. Knotholes & Ring Height Gradients (Budaklar) ---
+    colorCtx.lineWidth = 1.6;
     for (let k = 0; k < 3; k++) {
         let knotX = Math.random() * 624 + 200;
         let knotY = Math.random() * 624 + 200;
         let knotR = 30 + Math.random() * 40;
         
         for (let r = 8; r < knotR; r += 8) {
-            ctx.beginPath();
-            ctx.ellipse(knotX, knotY, r * 2.3, r, Math.PI / (6 + Math.random() * 4), 0, Math.PI * 2);
-            ctx.stroke();
+            colorCtx.beginPath();
+            bumpCtx.beginPath();
+            roughCtx.beginPath();
+
+            let radX = r * 2.3;
+            let radY = r;
+            let rot = Math.PI / (6 + Math.random() * 4);
+
+            colorCtx.ellipse(knotX, knotY, radX, radY, rot, 0, Math.PI * 2);
+            bumpCtx.ellipse(knotX, knotY, radX, radY, rot, 0, Math.PI * 2);
+            roughCtx.ellipse(knotX, knotY, radX, radY, rot, 0, Math.PI * 2);
+
+            colorCtx.strokeStyle = lineColor;
+            colorCtx.stroke();
+
+            bumpCtx.strokeStyle = (r % 16 === 0) ? '#050505' : '#e8e8e8';
+            bumpCtx.lineWidth = 2.0;
+            bumpCtx.stroke();
+
+            roughCtx.strokeStyle = '#f5f5f5';
+            roughCtx.stroke();
         }
     }
 
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
+    // THREE Canvas Textures
+    const colorTex = new THREE.CanvasTexture(colorCanvas);
+    colorTex.wrapS = THREE.RepeatWrapping;
+    colorTex.wrapT = THREE.RepeatWrapping;
+
+    const bumpTex = new THREE.CanvasTexture(bumpCanvas);
+    bumpTex.wrapS = THREE.RepeatWrapping;
+    bumpTex.wrapT = THREE.RepeatWrapping;
+
+    const roughTex = new THREE.CanvasTexture(roughCanvas);
+    roughTex.wrapS = THREE.RepeatWrapping;
+    roughTex.wrapT = THREE.RepeatWrapping;
+
     if (rendererInstance && rendererInstance.capabilities) {
-        texture.anisotropy = rendererInstance.capabilities.getMaxAnisotropy();
+        const maxAniso = rendererInstance.capabilities.getMaxAnisotropy();
+        colorTex.anisotropy = maxAniso;
+        bumpTex.anisotropy = maxAniso;
+        roughTex.anisotropy = maxAniso;
     }
-    return texture;
+
+    return { colorMap: colorTex, bumpMap: bumpTex, roughnessMap: roughTex };
 }
 
 // --- 3D RENDER ENGINE ---
@@ -354,14 +442,18 @@ function init3D() {
 
     scene.add(currentModelGroup);
 
-    // Lightings
-    const ambient = new THREE.AmbientLight(0xffffff, 0.65);
-    const keyLight = new THREE.DirectionalLight(0xffffff, 0.85);
-    keyLight.position.set(25, 45, 30);
+    // Dual-angle Lightings for realistic 3D tactile highlights & relief shadows
+    const ambient = new THREE.AmbientLight(0xffffff, 0.55);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 0.95);
+    keyLight.position.set(25, 45, 35);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.width = 1024;
     keyLight.shadow.mapSize.height = 1024;
-    scene.add(ambient, keyLight);
+
+    const fillLight = new THREE.DirectionalLight(0xffeedd, 0.45);
+    fillLight.position.set(-30, -20, 20);
+
+    scene.add(ambient, keyLight, fillLight);
 
     const animate = () => {
         requestAnimationFrame(animate);
@@ -427,14 +519,15 @@ function redrawModel() {
     const woodType = document.getElementById('woodTypeSelect').value;
 
     // Materials map based on selected wood type
-    const woodTexture = generateWoodTexture(woodType, renderer);
-    const bScale = parseFloat(document.getElementById('bumpScale').value) || 0.08;
+    const woodTextures = generateWoodTextures(woodType, renderer);
+    const bScale = parseFloat(document.getElementById('bumpScale').value) || 0.28;
     const materialObj = new THREE.MeshStandardMaterial({ 
-        map: woodTexture, 
-        bumpMap: woodTexture,
+        map: woodTextures.colorMap, 
+        bumpMap: woodTextures.bumpMap,
         bumpScale: bScale,
-        roughness: 0.88,
-        metalness: 0.0
+        roughnessMap: woodTextures.roughnessMap,
+        roughness: 0.68,
+        metalness: 0.02
     });
 
     const hasTop = document.getElementById('partTop').checked;

@@ -1,10 +1,8 @@
-@extends('layouts.admin')
+<?php $__env->startSection('title', '3D Çerçeve Şablonu Düzenle - AhşapEvim'); ?>
 
-@section('title', 'Yeni 3D Çerçeve Şablonu - AhşapEvim')
+<?php $__env->startSection('header', '3D Çerçeve Şablonu Düzenle'); ?>
 
-@section('header', 'Yeni 3D Çerçeve Şablonu')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <!-- Three.js Loaders -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -15,8 +13,9 @@
         <!-- Sidebar Controls / Form -->
         <div class="w-full lg:w-96 flex-shrink-0 flex flex-col gap-4">
             
-            <form action="{{ route('admin.templates.store') }}" method="POST" id="templateForm" class="space-y-4" onsubmit="preventSpamSubmit(this)">
-                @csrf
+            <form action="<?php echo e(route('admin.templates.update', $template->id)); ?>" method="POST" id="templateForm" class="space-y-4" onsubmit="preventSpamSubmit(this)">
+                <?php echo csrf_field(); ?>
+                <?php echo method_field('PUT'); ?>
                 
                 <!-- General Info -->
                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
@@ -24,13 +23,13 @@
                     <div class="space-y-3">
                         <div>
                             <label class="block text-xs font-bold text-gray-700 mb-1">Şablon Adı *</label>
-                            <input type="text" name="name" required class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: 20x25 Standart Dönen Çerçeve">
+                            <input type="text" name="name" required value="<?php echo e(old('name', $template->name)); ?>" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: 20x25 Standart Dönen Çerçeve">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-700 mb-1">Ahşap Rengi / Renk Paleti *</label>
                             <div class="flex items-center gap-2">
-                                <input type="color" id="woodColorPicker" value="#4a3319" class="w-10 h-10 rounded border border-gray-300 cursor-pointer p-0.5 shrink-0" onchange="updateWoodColorFromPicker(this.value)">
-                                <input type="text" name="wood_type" id="woodTypeSelect" required value="{{ old('wood_type', 'Ceviz') }}" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Renk kodu veya adı (#4a3319, Ceviz vb.)">
+                                <input type="color" id="woodColorPicker" value="<?php echo e(str_starts_with($template->wood_type, '#') ? $template->wood_type : '#4a3319'); ?>" class="w-10 h-10 rounded border border-gray-300 cursor-pointer p-0.5 shrink-0" onchange="updateWoodColorFromPicker(this.value)">
+                                <input type="text" name="wood_type" id="woodTypeSelect" required value="<?php echo e(old('wood_type', $template->wood_type)); ?>" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Renk kodu veya adı (#4a3319, Ceviz vb.)">
                             </div>
                             <div class="flex flex-wrap gap-1.5 mt-2">
                                 <button type="button" onclick="setWoodPreset('#4a3319', 'Ceviz')" class="px-2 py-1 bg-[#4a3319] text-white text-[10px] font-bold rounded shadow-sm hover:opacity-90">Ceviz</button>
@@ -53,29 +52,29 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Genişlik (X)</label>
-                                <input type="number" name="width" id="frameWidth" value="22" min="5" max="100" step="0.5" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
+                                <input type="number" name="width" id="frameWidth" value="<?php echo e($template->width); ?>" min="5" max="100" step="0.5" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Yükseklik (Y)</label>
-                                <input type="number" name="height" id="frameHeight" value="28" min="5" max="100" step="0.5" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
+                                <input type="number" name="height" id="frameHeight" value="<?php echo e($template->height); ?>" min="5" max="100" step="0.5" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Derinlik (Z)</label>
-                                <input type="number" name="depth" id="frameDepth" value="3.0" min="1" max="20" step="0.1" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
+                                <input type="number" name="depth" id="frameDepth" value="<?php echo e($template->depth); ?>" min="1" max="20" step="0.1" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Et Kalınlığı</label>
-                                <input type="number" name="thickness" id="frameThickness" value="3.0" min="1" max="10" step="0.1" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
+                                <input type="number" name="thickness" id="frameThickness" value="<?php echo e($template->thickness); ?>" min="1" max="10" step="0.1" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
                             </div>
                         </div>
 
                         <div class="mt-4 border-t border-gray-100 pt-3">
                             <label class="block text-xs font-bold text-gray-700 mb-2">Çizilecek Kenarlar</label>
                             <div class="grid grid-cols-2 gap-2 text-sm text-gray-600">
-                                <label class="flex items-center gap-2"><input type="checkbox" name="has_top" id="partTop" value="1" checked class="rounded text-brand focus:ring-brand"> Üst</label>
-                                <label class="flex items-center gap-2"><input type="checkbox" name="has_bottom" id="partBottom" value="1" checked class="rounded text-brand focus:ring-brand"> Alt</label>
-                                <label class="flex items-center gap-2"><input type="checkbox" name="has_left" id="partLeft" value="1" checked class="rounded text-brand focus:ring-brand"> Sol</label>
-                                <label class="flex items-center gap-2"><input type="checkbox" name="has_right" id="partRight" value="1" checked class="rounded text-brand focus:ring-brand"> Sağ</label>
+                                <label class="flex items-center gap-2"><input type="checkbox" name="has_top" id="partTop" value="1" <?php echo e($template->has_top ? 'checked' : ''); ?> class="rounded text-brand focus:ring-brand"> Üst</label>
+                                <label class="flex items-center gap-2"><input type="checkbox" name="has_bottom" id="partBottom" value="1" <?php echo e($template->has_bottom ? 'checked' : ''); ?> class="rounded text-brand focus:ring-brand"> Alt</label>
+                                <label class="flex items-center gap-2"><input type="checkbox" name="has_left" id="partLeft" value="1" <?php echo e($template->has_left ? 'checked' : ''); ?> class="rounded text-brand focus:ring-brand"> Sol</label>
+                                <label class="flex items-center gap-2"><input type="checkbox" name="has_right" id="partRight" value="1" <?php echo e($template->has_right ? 'checked' : ''); ?> class="rounded text-brand focus:ring-brand"> Sağ</label>
                             </div>
                         </div>
                     </div>
@@ -90,19 +89,19 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Genişlik</label>
-                                <input type="number" name="inner_width" id="innerWidth" value="15" min="2" max="90" step="0.5" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
+                                <input type="number" name="inner_width" id="innerWidth" value="<?php echo e($template->inner_width); ?>" min="2" max="90" step="0.5" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Yükseklik</label>
-                                <input type="number" name="inner_height" id="innerHeight" value="21" min="2" max="90" step="0.5" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
+                                <input type="number" name="inner_height" id="innerHeight" value="<?php echo e($template->inner_height); ?>" min="2" max="90" step="0.5" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Derinlik</label>
-                                <input type="number" name="inner_depth" id="innerDepth" value="2.6" min="0.5" max="15" step="0.1" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
+                                <input type="number" name="inner_depth" id="innerDepth" value="<?php echo e($template->inner_depth); ?>" min="0.5" max="15" step="0.1" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Kenar Kalınlığı</label>
-                                <input type="number" name="inner_border" id="innerBorder" value="1.4" min="0.5" max="10" step="0.1" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
+                                <input type="number" name="inner_border" id="innerBorder" value="<?php echo e($template->inner_border); ?>" min="0.5" max="10" step="0.1" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
                             </div>
                         </div>
 
@@ -111,15 +110,15 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-[10px] text-gray-600 mb-1 flex justify-between">
-                                        <span>Sağ/Sol (X)</span> <span id="posX_val" class="font-bold text-brand">0</span>
+                                        <span>Sağ/Sol (X)</span> <span id="posX_val" class="font-bold text-brand"><?php echo e($template->pos_x); ?></span>
                                     </label>
-                                    <input type="range" name="pos_x" id="posX" min="-10" max="10" step="0.1" value="0" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('posX_val').innerText = this.value">
+                                    <input type="range" name="pos_x" id="posX" min="-10" max="10" step="0.1" value="<?php echo e($template->pos_x); ?>" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('posX_val').innerText = this.value">
                                 </div>
                                 <div>
                                     <label class="block text-[10px] text-gray-600 mb-1 flex justify-between">
-                                        <span>Yukarı/Aşağı (Y)</span> <span id="posY_val" class="font-bold text-brand">0</span>
+                                        <span>Yukarı/Aşağı (Y)</span> <span id="posY_val" class="font-bold text-brand"><?php echo e($template->pos_y); ?></span>
                                     </label>
-                                    <input type="range" name="pos_y" id="posY" min="-10" max="10" step="0.1" value="0" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('posY_val').innerText = this.value">
+                                    <input type="range" name="pos_y" id="posY" min="-10" max="10" step="0.1" value="<?php echo e($template->pos_y); ?>" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('posY_val').innerText = this.value">
                                 </div>
                             </div>
                         </div>
@@ -127,15 +126,15 @@
                         <div>
                             <label class="block text-xs font-bold text-gray-700 mb-1">3D Ahşap Doku & Tırtık Derinliği (Bump Scale)</label>
                             <div class="flex items-center gap-3">
-                                <input type="range" name="bump_scale" id="bumpScale" min="0" max="0.6" step="0.01" value="0.28" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('bumpVal').innerText = this.value">
-                                <span id="bumpVal" class="text-xs font-bold text-gray-600 w-8">0.28</span>
+                                <input type="range" name="bump_scale" id="bumpScale" min="0" max="0.6" step="0.01" value="<?php echo e($template->bump_scale ?: '0.28'); ?>" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('bumpVal').innerText = this.value">
+                                <span id="bumpVal" class="text-xs font-bold text-gray-600 w-8"><?php echo e($template->bump_scale ?: '0.28'); ?></span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <button type="submit" class="w-full py-3.5 px-6 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-xl text-sm shadow transition-all flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-save"></i> Şablonu Kaydet
+                    <i class="fa-solid fa-save"></i> Değişiklikleri Kaydet
                 </button>
             </form>
         </div>
@@ -625,4 +624,6 @@ function preventSpamSubmit(form) {
     }
 }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\ahsapevim\resources\views/admin/templates/edit.blade.php ENDPATH**/ ?>
