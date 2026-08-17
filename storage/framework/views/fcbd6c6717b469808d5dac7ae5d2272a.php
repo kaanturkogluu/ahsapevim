@@ -1,10 +1,8 @@
-@extends('layouts.admin')
+<?php $__env->startSection('title', '3D Çerçeve Şablonu Düzenle - AhşapEvim'); ?>
 
-@section('title', 'Yeni 3D Çerçeve Şablonu - AhşapEvim')
+<?php $__env->startSection('header', '3D Çerçeve Şablonu Düzenle'); ?>
 
-@section('header', 'Yeni 3D Çerçeve Şablonu')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <!-- Three.js Loaders -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -16,8 +14,9 @@
         <!-- Sidebar Controls / Form -->
         <div class="w-full lg:w-96 flex-shrink-0 flex flex-col gap-4">
             
-            <form action="{{ route('admin.templates.store') }}" method="POST" id="templateForm" class="space-y-4" onsubmit="preventSpamSubmit(this)">
-                @csrf
+            <form action="<?php echo e(route('admin.templates.update', $template->id)); ?>" method="POST" id="templateForm" class="space-y-4" onsubmit="preventSpamSubmit(this)">
+                <?php echo csrf_field(); ?>
+                <?php echo method_field('PUT'); ?>
                 
                 <!-- General Info -->
                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
@@ -25,13 +24,13 @@
                     <div class="space-y-3">
                         <div>
                             <label class="block text-xs font-bold text-gray-700 mb-1">Şablon Adı *</label>
-                            <input type="text" name="name" required class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: 20x25 Standart Dönen Çerçeve">
+                            <input type="text" name="name" required value="<?php echo e(old('name', $template->name)); ?>" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: 20x25 Standart Dönen Çerçeve">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-700 mb-1">Ahşap Rengi / Renk Paleti *</label>
                             <div class="flex items-center gap-2">
-                                <input type="color" id="woodColorPicker" value="#4a3319" class="w-10 h-10 rounded border border-gray-300 cursor-pointer p-0.5 shrink-0" onchange="updateWoodColorFromPicker(this.value)">
-                                <input type="text" name="wood_type" id="woodTypeSelect" required value="{{ old('wood_type', 'Ceviz') }}" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Renk kodu veya adı (#4a3319, Ceviz vb.)">
+                                <input type="color" id="woodColorPicker" value="<?php echo e(str_starts_with($template->wood_type, '#') ? $template->wood_type : '#4a3319'); ?>" class="w-10 h-10 rounded border border-gray-300 cursor-pointer p-0.5 shrink-0" onchange="updateWoodColorFromPicker(this.value)">
+                                <input type="text" name="wood_type" id="woodTypeSelect" required value="<?php echo e(old('wood_type', $template->wood_type)); ?>" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Renk kodu veya adı (#4a3319, Ceviz vb.)">
                             </div>
                             <div class="flex flex-wrap gap-1.5 mt-2">
                                 <button type="button" onclick="setWoodPreset('#4a3319', 'Ceviz')" class="px-2 py-1 bg-[#4a3319] text-white text-[10px] font-bold rounded shadow-sm hover:opacity-90">Ceviz</button>
@@ -54,29 +53,29 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Genişlik (X)</label>
-                                <input type="number" name="width" id="frameWidth" value="22" min="5" max="100" step="0.5" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
+                                <input type="number" name="width" id="frameWidth" value="<?php echo e($template->width); ?>" min="5" max="100" step="0.5" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Yükseklik (Y)</label>
-                                <input type="number" name="height" id="frameHeight" value="28" min="5" max="100" step="0.5" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
+                                <input type="number" name="height" id="frameHeight" value="<?php echo e($template->height); ?>" min="5" max="100" step="0.5" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Derinlik (Z)</label>
-                                <input type="number" name="depth" id="frameDepth" value="3.0" min="1" max="20" step="0.1" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
+                                <input type="number" name="depth" id="frameDepth" value="<?php echo e($template->depth); ?>" min="1" max="20" step="0.1" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Et Kalınlığı</label>
-                                <input type="number" name="thickness" id="frameThickness" value="3.0" min="1" max="10" step="0.1" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
+                                <input type="number" name="thickness" id="frameThickness" value="<?php echo e($template->thickness); ?>" min="1" max="10" step="0.1" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
                             </div>
                         </div>
 
                         <div class="mt-4 border-t border-gray-100 pt-3">
                             <label class="block text-xs font-bold text-gray-700 mb-2">Çizilecek Kenarlar</label>
                             <div class="grid grid-cols-2 gap-2 text-sm text-gray-600">
-                                <label class="flex items-center gap-2"><input type="checkbox" name="has_top" id="partTop" value="1" checked class="rounded text-brand focus:ring-brand"> Üst</label>
-                                <label class="flex items-center gap-2"><input type="checkbox" name="has_bottom" id="partBottom" value="1" checked class="rounded text-brand focus:ring-brand"> Alt</label>
-                                <label class="flex items-center gap-2"><input type="checkbox" name="has_left" id="partLeft" value="1" checked class="rounded text-brand focus:ring-brand"> Sol</label>
-                                <label class="flex items-center gap-2"><input type="checkbox" name="has_right" id="partRight" value="1" checked class="rounded text-brand focus:ring-brand"> Sağ</label>
+                                <label class="flex items-center gap-2"><input type="checkbox" name="has_top" id="partTop" value="1" <?php echo e($template->has_top ? 'checked' : ''); ?> class="rounded text-brand focus:ring-brand"> Üst</label>
+                                <label class="flex items-center gap-2"><input type="checkbox" name="has_bottom" id="partBottom" value="1" <?php echo e($template->has_bottom ? 'checked' : ''); ?> class="rounded text-brand focus:ring-brand"> Alt</label>
+                                <label class="flex items-center gap-2"><input type="checkbox" name="has_left" id="partLeft" value="1" <?php echo e($template->has_left ? 'checked' : ''); ?> class="rounded text-brand focus:ring-brand"> Sol</label>
+                                <label class="flex items-center gap-2"><input type="checkbox" name="has_right" id="partRight" value="1" <?php echo e($template->has_right ? 'checked' : ''); ?> class="rounded text-brand focus:ring-brand"> Sağ</label>
                             </div>
                         </div>
                     </div>
@@ -91,19 +90,19 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Genişlik</label>
-                                <input type="number" name="inner_width" id="innerWidth" value="15" min="2" max="90" step="0.5" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
+                                <input type="number" name="inner_width" id="innerWidth" value="<?php echo e($template->inner_width); ?>" min="2" max="90" step="0.5" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Yükseklik</label>
-                                <input type="number" name="inner_height" id="innerHeight" value="21" min="2" max="90" step="0.5" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
+                                <input type="number" name="inner_height" id="innerHeight" value="<?php echo e($template->inner_height); ?>" min="2" max="90" step="0.5" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Derinlik</label>
-                                <input type="number" name="inner_depth" id="innerDepth" value="2.6" min="0.5" max="15" step="0.1" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
+                                <input type="number" name="inner_depth" id="innerDepth" value="<?php echo e($template->inner_depth); ?>" min="0.5" max="15" step="0.1" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Kenar Kalınlığı</label>
-                                <input type="number" name="inner_border" id="innerBorder" value="1.4" min="0.5" max="10" step="0.1" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
+                                <input type="number" name="inner_border" id="innerBorder" value="<?php echo e($template->inner_border); ?>" min="0.5" max="10" step="0.1" class="w-full text-sm border-gray-300 rounded-md p-2 border focus:border-brand">
                             </div>
                         </div>
 
@@ -112,15 +111,15 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-[10px] text-gray-600 mb-1 flex justify-between">
-                                        <span>Sağ/Sol (X)</span> <span id="posX_val" class="font-bold text-brand">0</span>
+                                        <span>Sağ/Sol (X)</span> <span id="posX_val" class="font-bold text-brand"><?php echo e($template->pos_x); ?></span>
                                     </label>
-                                    <input type="range" name="pos_x" id="posX" min="-10" max="10" step="0.1" value="0" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('posX_val').innerText = this.value">
+                                    <input type="range" name="pos_x" id="posX" min="-10" max="10" step="0.1" value="<?php echo e($template->pos_x); ?>" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('posX_val').innerText = this.value">
                                 </div>
                                 <div>
                                     <label class="block text-[10px] text-gray-600 mb-1 flex justify-between">
-                                        <span>Yukarı/Aşağı (Y)</span> <span id="posY_val" class="font-bold text-brand">0</span>
+                                        <span>Yukarı/Aşağı (Y)</span> <span id="posY_val" class="font-bold text-brand"><?php echo e($template->pos_y); ?></span>
                                     </label>
-                                    <input type="range" name="pos_y" id="posY" min="-10" max="10" step="0.1" value="0" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('posY_val').innerText = this.value">
+                                    <input type="range" name="pos_y" id="posY" min="-10" max="10" step="0.1" value="<?php echo e($template->pos_y); ?>" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('posY_val').innerText = this.value">
                                 </div>
                             </div>
                         </div>
@@ -128,8 +127,8 @@
                         <div>
                             <label class="block text-xs font-bold text-gray-700 mb-1">3D Ahşap Doku & Tırtık Derinliği (Bump Scale)</label>
                             <div class="flex items-center gap-3">
-                                <input type="range" name="bump_scale" id="bumpScale" min="0" max="1.2" step="0.02" value="0.45" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('bumpVal').innerText = this.value">
-                                <span id="bumpVal" class="text-xs font-bold text-gray-600 w-8">0.45</span>
+                                <input type="range" name="bump_scale" id="bumpScale" min="0" max="1.2" step="0.02" value="<?php echo e($template->bump_scale ?: '0.45'); ?>" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('bumpVal').innerText = this.value">
+                                <span id="bumpVal" class="text-xs font-bold text-gray-600 w-8"><?php echo e($template->bump_scale ?: '0.45'); ?></span>
                             </div>
                         </div>
 
@@ -139,19 +138,19 @@
                                 <label for="hasAccessory" class="text-xs font-bold text-gray-800 flex items-center gap-1.5 cursor-pointer">
                                     <i class="fa-solid fa-lightbulb text-amber-500"></i> 3D Obje / Aksesuar Ekle
                                 </label>
-                                <input type="checkbox" name="has_accessory" id="hasAccessory" value="1" class="w-4 h-4 text-brand rounded border-gray-300 focus:ring-brand cursor-pointer" onchange="toggleAccessoryControls(); redrawModel();">
+                                <input type="checkbox" name="has_accessory" id="hasAccessory" value="1" <?php echo e($template->has_accessory ? 'checked' : ''); ?> class="w-4 h-4 text-brand rounded border-gray-300 focus:ring-brand cursor-pointer" onchange="toggleAccessoryControls(); redrawModel();">
                             </div>
 
-                            <div id="accessoryControls" class="space-y-3 hidden bg-amber-50/70 p-3 rounded-xl border border-amber-100">
+                            <div id="accessoryControls" class="space-y-3 <?php echo e($template->has_accessory ? '' : 'hidden'); ?> bg-amber-50/70 p-3 rounded-xl border border-amber-100">
                                 <div>
                                     <label class="block text-[11px] font-bold text-gray-700 mb-1">Obje Tipi</label>
                                     <select name="accessory_type" id="accessoryType" class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-brand focus:ring-0 outline-none bg-white font-medium" onchange="redrawModel();">
-                                        <option value="street_lamp" selected>Nostaljik Sokak Lambası (Işıklı)</option>
-                                        <option value="wooden_clock">Nostaljik Ahşap Masa Saati</option>
-                                        <option value="flower_vase">Saksılı Mini Çiçek / Bitki</option>
-                                        <option value="mini_bookshelf">Minyatür Ahşap Kitap Dizimi</option>
-                                        <option value="candle_holder">🕯️ Nostaljik Şamdan & Mum</option>
-                                        <option value="abstract_sculpture">🗿 Modern Geometrik Heykel</option>
+                                        <option value="street_lamp" <?php echo e(($template->accessory_type ?? 'street_lamp') === 'street_lamp' ? 'selected' : ''); ?>>Nostaljik Sokak Lambası (Işıklı)</option>
+                                        <option value="wooden_clock" <?php echo e(($template->accessory_type ?? '') === 'wooden_clock' ? 'selected' : ''); ?>>Nostaljik Ahşap Masa Saati</option>
+                                        <option value="flower_vase" <?php echo e(($template->accessory_type ?? '') === 'flower_vase' ? 'selected' : ''); ?>>Saksılı Mini Çiçek / Bitki</option>
+                                        <option value="mini_bookshelf" <?php echo e(($template->accessory_type ?? '') === 'mini_bookshelf' ? 'selected' : ''); ?>>Minyatür Ahşap Kitap Dizimi</option>
+                                        <option value="candle_holder" <?php echo e(($template->accessory_type ?? '') === 'candle_holder' ? 'selected' : ''); ?>>🕯️ Nostaljik Şamdan & Mum</option>
+                                        <option value="abstract_sculpture" <?php echo e(($template->accessory_type ?? '') === 'abstract_sculpture' ? 'selected' : ''); ?>>🗿 Modern Geometrik Heykel</option>
                                     </select>
                                     <button type="button" onclick="openAddAccessoryModal()" class="w-full mt-2 py-1.5 px-3 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white text-xs font-bold rounded-lg shadow-sm flex items-center justify-center gap-2 transition cursor-pointer">
                                         <i class="fa-solid fa-wand-magic-sparkles text-amber-200"></i> Yeni Obje Ekle / Tasarla (Pop-up)
@@ -161,9 +160,9 @@
                                 <div>
                                     <label class="block text-[11px] font-bold text-gray-700 mb-1">Obje Konumu</label>
                                     <select name="accessory_position" id="accessoryPos" class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-brand focus:ring-0 outline-none bg-white font-medium" onchange="redrawModel();">
-                                        <option value="right" selected>Sağ Taraf</option>
-                                        <option value="left">Sol Taraf</option>
-                                        <option value="center">Orta</option>
+                                        <option value="right" <?php echo e(($template->accessory_position ?? 'right') === 'right' ? 'selected' : ''); ?>>Sağ Taraf</option>
+                                        <option value="left" <?php echo e(($template->accessory_position ?? '') === 'left' ? 'selected' : ''); ?>>Sol Taraf</option>
+                                        <option value="center" <?php echo e(($template->accessory_position ?? '') === 'center' ? 'selected' : ''); ?>>Orta</option>
                                     </select>
                                 </div>
 
@@ -171,46 +170,46 @@
                                     <div>
                                         <div class="flex items-center justify-between mb-1">
                                             <label class="text-[10px] text-gray-600 font-medium">
-                                                Konum X: <span id="accOffsetX_val" class="font-bold text-amber-700">0</span>
+                                                Konum X: <span id="accOffsetX_val" class="font-bold text-amber-700"><?php echo e($template->accessory_offset_x ?? 0); ?></span>
                                             </label>
                                             <button type="button" onclick="document.getElementById('accOffsetX').value=0; document.getElementById('accOffsetX_val').innerText='0'; redrawModel();" class="text-[10px] text-amber-700 hover:text-amber-900 bg-amber-100 hover:bg-amber-200 px-1.5 py-0.5 rounded flex items-center gap-1 transition" title="Konum X Sıfırla">
                                                 <i class="fa-solid fa-rotate-left text-[9px]"></i> Sıfırla
                                             </button>
                                         </div>
-                                        <input type="range" name="accessory_offset_x" id="accOffsetX" min="-10" max="10" step="0.1" value="0" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('accOffsetX_val').innerText = this.value; redrawModel();">
+                                        <input type="range" name="accessory_offset_x" id="accOffsetX" min="-10" max="10" step="0.1" value="<?php echo e($template->accessory_offset_x ?? 0); ?>" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('accOffsetX_val').innerText = this.value; redrawModel();">
                                     </div>
                                     <div>
                                         <div class="flex items-center justify-between mb-1">
                                             <label class="text-[10px] text-gray-600 font-medium">
-                                                Konum Y: <span id="accOffsetY_val" class="font-bold text-amber-700">0</span>
+                                                Konum Y: <span id="accOffsetY_val" class="font-bold text-amber-700"><?php echo e($template->accessory_offset_y ?? 0); ?></span>
                                             </label>
                                             <button type="button" onclick="document.getElementById('accOffsetY').value=0; document.getElementById('accOffsetY_val').innerText='0'; redrawModel();" class="text-[10px] text-amber-700 hover:text-amber-900 bg-amber-100 hover:bg-amber-200 px-1.5 py-0.5 rounded flex items-center gap-1 transition" title="Konum Y Sıfırla">
                                                 <i class="fa-solid fa-rotate-left text-[9px]"></i> Sıfırla
                                             </button>
                                         </div>
-                                        <input type="range" name="accessory_offset_y" id="accOffsetY" min="-5" max="10" step="0.1" value="0" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('accOffsetY_val').innerText = this.value; redrawModel();">
+                                        <input type="range" name="accessory_offset_y" id="accOffsetY" min="-5" max="10" step="0.1" value="<?php echo e($template->accessory_offset_y ?? 0); ?>" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('accOffsetY_val').innerText = this.value; redrawModel();">
                                     </div>
                                     <div>
                                         <div class="flex items-center justify-between mb-1">
                                             <label class="text-[10px] text-gray-600 font-medium">
-                                                Konum Z (Öne-Arkaya Derinlik): <span id="accOffsetZ_val" class="font-bold text-amber-700">0</span>
+                                                Konum Z (Öne-Arkaya Derinlik): <span id="accOffsetZ_val" class="font-bold text-amber-700"><?php echo e($template->accessory_offset_z ?? 0); ?></span>
                                             </label>
                                             <button type="button" onclick="document.getElementById('accOffsetZ').value=0; document.getElementById('accOffsetZ_val').innerText='0'; redrawModel();" class="text-[10px] text-amber-700 hover:text-amber-900 bg-amber-100 hover:bg-amber-200 px-1.5 py-0.5 rounded flex items-center gap-1 transition" title="Konum Z Sıfırla">
                                                 <i class="fa-solid fa-rotate-left text-[9px]"></i> Sıfırla
                                             </button>
                                         </div>
-                                        <input type="range" name="accessory_offset_z" id="accOffsetZ" min="-10" max="10" step="0.1" value="0" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('accOffsetZ_val').innerText = this.value; redrawModel();">
+                                        <input type="range" name="accessory_offset_z" id="accOffsetZ" min="-10" max="10" step="0.1" value="<?php echo e($template->accessory_offset_z ?? 0); ?>" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('accOffsetZ_val').innerText = this.value; redrawModel();">
                                     </div>
                                     <div>
                                         <div class="flex items-center justify-between mb-1">
                                             <label class="text-[10px] text-gray-600 font-medium">
-                                                Obje Boyutu / Ölçek: <span id="accScale_val" class="font-bold text-amber-700">1.0x</span>
+                                                Obje Boyutu / Ölçek: <span id="accScale_val" class="font-bold text-amber-700"><?php echo e($template->accessory_scale ?? 1.0); ?>x</span>
                                             </label>
                                             <button type="button" onclick="document.getElementById('accScale').value=1.0; document.getElementById('accScale_val').innerText='1.0x'; redrawModel();" class="text-[10px] text-amber-700 hover:text-amber-900 bg-amber-100 hover:bg-amber-200 px-1.5 py-0.5 rounded flex items-center gap-1 transition" title="Boyutu Sıfırla">
                                                 <i class="fa-solid fa-rotate-left text-[9px]"></i> Sıfırla
                                             </button>
                                         </div>
-                                        <input type="range" name="accessory_scale" id="accScale" min="0.3" max="2.5" step="0.05" value="1.0" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('accScale_val').innerText = this.value + 'x'; redrawModel();">
+                                        <input type="range" name="accessory_scale" id="accScale" min="0.3" max="2.5" step="0.05" value="<?php echo e($template->accessory_scale ?? 1.0); ?>" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('accScale_val').innerText = this.value + 'x'; redrawModel();">
                                     </div>
 
                                     <button type="button" onclick="resetAccessoryOffsets();" class="w-full mt-2 text-[11px] font-bold text-amber-800 bg-amber-100/90 hover:bg-amber-200 py-1.5 px-2 rounded-lg border border-amber-200 transition flex items-center justify-center gap-1.5 shadow-sm">
@@ -223,7 +222,7 @@
                 </div>
 
                 <button type="submit" class="w-full py-3.5 px-6 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-xl text-sm shadow transition-all flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-save"></i> Şablonu Kaydet
+                    <i class="fa-solid fa-save"></i> Değişiklikleri Kaydet
                 </button>
             </form>
         </div>
@@ -279,7 +278,7 @@
                     <div class="space-y-3">
                         <div>
                             <label class="block text-xs font-bold text-gray-700 mb-1">Obje Adı *</label>
-                            <input type="text" id="modalAccName" value="Özel Dekoratif Şamdan" class="w-full text-xs border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none">
+                            <input type="text" id="modalAccName" value="Özel Dekoratif Obje" class="w-full text-xs border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none">
                         </div>
 
                         <div>
@@ -423,7 +422,6 @@ function setWoodPreset(hex, name) {
     redrawModel();
 }
 
-// --- 2048x2048 ULTRA HIGH-DEPTH WOOD TEXTURE ENGINE ---
 function generateWoodTextures(woodType, rendererInstance) {
     const size = 2048;
     const colorCanvas = document.createElement('canvas'); colorCanvas.width = size; colorCanvas.height = size;
@@ -457,49 +455,39 @@ function generateWoodTextures(woodType, rendererInstance) {
     bumpCtx.fillStyle = '#808080'; bumpCtx.fillRect(0, 0, size, size);
     roughCtx.fillStyle = '#d8d8d8'; roughCtx.fillRect(0, 0, size, size);
 
-    // Primary Wood Fibers & Deep Grooves
     for (let y = -100; y < size + 100; y += 6) {
         let freq = 0.0025 + (y % 17) * 0.0002;
         let amp = 24 + (y % 19) * 2.2;
         let phase = y * 0.015;
-        
         colorCtx.beginPath(); bumpCtx.beginPath(); roughCtx.beginPath();
         colorCtx.moveTo(0, y); bumpCtx.moveTo(0, y); roughCtx.moveTo(0, y);
         for (let x = 0; x <= size; x += 15) {
             let dy = Math.sin(x * freq + phase) * amp + Math.cos(x * 0.008) * 6;
             colorCtx.lineTo(x, y + dy); bumpCtx.lineTo(x, y + dy); roughCtx.lineTo(x, y + dy);
         }
-        
         const isMajorRing = (y % 24 === 0);
         colorCtx.strokeStyle = isMajorRing ? lineColor : poreColor;
         colorCtx.globalAlpha = isMajorRing ? 0.42 : 0.22;
         colorCtx.lineWidth = isMajorRing ? 4.5 : 2.0;
         colorCtx.stroke();
-
         bumpCtx.strokeStyle = isMajorRing ? '#050505' : '#303030';
         bumpCtx.globalAlpha = isMajorRing ? 0.65 : 0.35;
         bumpCtx.lineWidth = isMajorRing ? 5.0 : 2.2;
         bumpCtx.stroke();
-
         roughCtx.strokeStyle = '#e0e0e0';
         roughCtx.globalAlpha = isMajorRing ? 0.35 : 0.15;
         roughCtx.lineWidth = isMajorRing ? 4.0 : 2.0;
         roughCtx.stroke();
     }
 
-    // Wood Pores
     colorCtx.globalAlpha = 0.18; colorCtx.fillStyle = poreColor;
     bumpCtx.globalAlpha = 0.4; bumpCtx.fillStyle = '#0a0a0a';
     for (let i = 0; i < 600; i++) {
-        let px = Math.random() * size;
-        let py = Math.random() * size;
-        let pw = 3 + Math.random() * 25;
-        let ph = 1.2 + Math.random() * 2.2;
-        colorCtx.fillRect(px, py, pw, ph);
-        bumpCtx.fillRect(px, py, pw, ph);
+        let px = Math.random() * size; let py = Math.random() * size;
+        let pw = 3 + Math.random() * 25; let ph = 1.2 + Math.random() * 2.2;
+        colorCtx.fillRect(px, py, pw, ph); bumpCtx.fillRect(px, py, pw, ph);
     }
 
-    // Wood Knots
     colorCtx.globalAlpha = 1.0; bumpCtx.globalAlpha = 1.0; roughCtx.globalAlpha = 1.0;
     let knotX = size * 0.42; let knotY = size * 0.48;
     for (let r = 12; r < 80; r += 9) {
@@ -511,14 +499,12 @@ function generateWoodTextures(woodType, rendererInstance) {
     }
 
     colorCtx.globalAlpha = 1.0; bumpCtx.globalAlpha = 1.0; roughCtx.globalAlpha = 1.0;
-
     const colorTex = new THREE.CanvasTexture(colorCanvas);
     const bumpTex = new THREE.CanvasTexture(bumpCanvas);
     const roughTex = new THREE.CanvasTexture(roughCanvas);
     colorTex.wrapS = THREE.RepeatWrapping; colorTex.wrapT = THREE.RepeatWrapping;
     bumpTex.wrapS = THREE.RepeatWrapping; bumpTex.wrapT = THREE.RepeatWrapping;
     roughTex.wrapS = THREE.RepeatWrapping; roughTex.wrapT = THREE.RepeatWrapping;
-
     if (rendererInstance && rendererInstance.capabilities) {
         const maxAniso = rendererInstance.capabilities.getMaxAnisotropy();
         colorTex.anisotropy = bumpTex.anisotropy = roughTex.anisotropy = maxAniso;
@@ -537,7 +523,6 @@ function createPieceMaterial(woodTextures, bScale, pieceName) {
     });
 }
 
-// --- 3D ACCESSORY OBJECT GENERATORS ---
 function createStreetLampGroup(targetHeight) {
     const lampGroup = new THREE.Group();
     const scale = (targetHeight || 14) / 16.0;
@@ -846,7 +831,6 @@ function init3D() {
 
     window.addEventListener('resize', onWindowResize);
     setTimeout(onWindowResize, 150);
-    setTimeout(onWindowResize, 500);
 }
 
 function onWindowResize() {
@@ -922,31 +906,20 @@ function redrawModel() {
     const hasRight = document.getElementById('partRight')?.checked ?? true;
 
     if(hasTop) {
-        const mat = createPieceMaterial(woodTextures, bScale, 'top');
-        const mesh = new THREE.Mesh(createMiteredFramePiece(width, thickness, depth, hasLeft, hasRight), mat);
-        mesh.position.y = height/2 - thickness/2;
-        outerGroup.add(mesh); outerFrameMeshes.push(mesh);
+        const mesh = new THREE.Mesh(createMiteredFramePiece(width, thickness, depth, hasLeft, hasRight), createPieceMaterial(woodTextures, bScale, 'top'));
+        mesh.position.y = height/2 - thickness/2; outerGroup.add(mesh); outerFrameMeshes.push(mesh);
     }
     if(hasBottom) {
-        const mat = createPieceMaterial(woodTextures, bScale, 'bottom');
-        const mesh = new THREE.Mesh(createMiteredFramePiece(width, thickness, depth, hasRight, hasLeft), mat);
-        mesh.rotation.z = Math.PI;
-        mesh.position.y = -height/2 + thickness/2;
-        outerGroup.add(mesh); outerFrameMeshes.push(mesh);
+        const mesh = new THREE.Mesh(createMiteredFramePiece(width, thickness, depth, hasRight, hasLeft), createPieceMaterial(woodTextures, bScale, 'bottom'));
+        mesh.rotation.z = Math.PI; mesh.position.y = -height/2 + thickness/2; outerGroup.add(mesh); outerFrameMeshes.push(mesh);
     }
     if(hasLeft) {
-        const mat = createPieceMaterial(woodTextures, bScale, 'left');
-        const mesh = new THREE.Mesh(createMiteredFramePiece(height, thickness, depth, hasBottom, hasTop), mat);
-        mesh.rotation.z = Math.PI / 2;
-        mesh.position.x = -width/2 + thickness/2;
-        outerGroup.add(mesh); outerFrameMeshes.push(mesh);
+        const mesh = new THREE.Mesh(createMiteredFramePiece(height, thickness, depth, hasBottom, hasTop), createPieceMaterial(woodTextures, bScale, 'left'));
+        mesh.rotation.z = Math.PI / 2; mesh.position.x = -width/2 + thickness/2; outerGroup.add(mesh); outerFrameMeshes.push(mesh);
     }
     if(hasRight) {
-        const mat = createPieceMaterial(woodTextures, bScale, 'right');
-        const mesh = new THREE.Mesh(createMiteredFramePiece(height, thickness, depth, hasTop, hasBottom), mat);
-        mesh.rotation.z = -Math.PI / 2;
-        mesh.position.x = width/2 - thickness/2;
-        outerGroup.add(mesh); outerFrameMeshes.push(mesh);
+        const mesh = new THREE.Mesh(createMiteredFramePiece(height, thickness, depth, hasTop, hasBottom), createPieceMaterial(woodTextures, bScale, 'right'));
+        mesh.rotation.z = -Math.PI / 2; mesh.position.x = width/2 - thickness/2; outerGroup.add(mesh); outerFrameMeshes.push(mesh);
     }
 
     currentModelGroup.add(outerGroup);
@@ -1005,7 +978,6 @@ function redrawModel() {
     customRotatingFrame.add(pinTop, pinBottom);
     currentModelGroup.add(customRotatingFrame);
 
-    // Render 3D Accessory / Object
     const hasAccessory = document.getElementById('hasAccessory')?.checked;
     const accessoryType = document.getElementById('accessoryType')?.value || 'street_lamp';
     const accessoryPos = document.getElementById('accessoryPos')?.value || 'right';
@@ -1017,11 +989,9 @@ function redrawModel() {
         const accScale = parseFloat(document.getElementById('accScale')?.value || 1.0);
         const targetH = Math.min(height * 0.65, 18);
         const accGroup = buildAccessoryGroup(accessoryType, targetH, accScale);
-
         if (accGroup) {
             const bottomBoardY = -height/2 + thickness;
             let posX = (accessoryPos === 'right') ? width/2 - thickness * 2.2 : (accessoryPos === 'left' ? -width/2 + thickness * 2.2 : 0);
-            
             accGroup.position.set(posX + accOffsetX, bottomBoardY + accOffsetY, (depth * 0.1) + accOffsetZ);
             currentModelGroup.add(accGroup);
         }
@@ -1039,21 +1009,14 @@ let modalPreviewGroup = new THREE.Group();
 function openAddAccessoryModal() {
     const modal = document.getElementById('addAccessoryModal');
     if (modal) {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        setTimeout(() => {
-            initModal3DPreview();
-            updateModal3DPreview();
-        }, 120);
+        modal.classList.remove('hidden'); modal.classList.add('flex');
+        setTimeout(() => { initModal3DPreview(); updateModal3DPreview(); }, 120);
     }
 }
 
 function closeAddAccessoryModal() {
     const modal = document.getElementById('addAccessoryModal');
-    if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }
+    if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
 }
 
 function switchAccessoryModalTab(tab) {
@@ -1065,55 +1028,35 @@ function switchAccessoryModalTab(tab) {
     if (tab === 'design') {
         dBtn.className = 'px-4 py-2 text-xs font-bold rounded-t-lg border-b-2 border-amber-600 text-amber-700 bg-white shadow-sm flex items-center gap-2';
         uBtn.className = 'px-4 py-2 text-xs font-bold rounded-t-lg border-b-2 border-transparent text-gray-500 hover:text-gray-800 flex items-center gap-2';
-        dSec.classList.remove('hidden');
-        uSec.classList.add('hidden');
+        dSec.classList.remove('hidden'); uSec.classList.add('hidden');
     } else {
         uBtn.className = 'px-4 py-2 text-xs font-bold rounded-t-lg border-b-2 border-amber-600 text-amber-700 bg-white shadow-sm flex items-center gap-2';
         dBtn.className = 'px-4 py-2 text-xs font-bold rounded-t-lg border-b-2 border-transparent text-gray-500 hover:text-gray-800 flex items-center gap-2';
-        uSec.classList.remove('hidden');
-        dSec.classList.add('hidden');
+        uSec.classList.remove('hidden'); dSec.classList.add('hidden');
     }
 }
 
 function initModal3DPreview() {
     const container = document.getElementById('modal3DPreviewContainer');
     if (!container || modalRenderer) return;
-    const w = container.clientWidth || 300;
-    const h = container.clientHeight || 250;
-
+    const w = container.clientWidth || 300; const h = container.clientHeight || 250;
     modalScene = new THREE.Scene();
     modalCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
     modalCamera.position.set(0, 8, 22);
-
     modalRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     modalRenderer.setSize(w, h);
-    modalRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(modalRenderer.domElement);
-
     modalControls = new THREE.OrbitControls(modalCamera, modalRenderer.domElement);
-    modalControls.enableDamping = true;
-    modalControls.dampingFactor = 0.05;
-
-    modalScene.add(modalPreviewGroup);
-    modalScene.add(new THREE.AmbientLight(0xffffff, 0.7));
-    const light = new THREE.DirectionalLight(0xffffff, 0.9);
-    light.position.set(15, 25, 20);
-    modalScene.add(light);
-
-    const animateModal = () => {
-        requestAnimationFrame(animateModal);
-        modalControls.update();
-        modalRenderer.render(modalScene, modalCamera);
-    };
-    animateModal();
+    modalScene.add(modalPreviewGroup, new THREE.AmbientLight(0xffffff, 0.7));
+    const light = new THREE.DirectionalLight(0xffffff, 0.9); light.position.set(15, 25, 20); modalScene.add(light);
+    const animate = () => { requestAnimationFrame(animate); modalControls.update(); modalRenderer.render(modalScene, modalCamera); };
+    animate();
 }
 
 function updateModal3DPreview() {
     if (!modalScene) return;
-    while(modalPreviewGroup.children.length > 0) {
-        modalPreviewGroup.remove(modalPreviewGroup.children[0]);
-    }
-
+    while(modalPreviewGroup.children.length > 0) modalPreviewGroup.remove(modalPreviewGroup.children[0]);
+    
     const scale = parseFloat(document.getElementById('modalAccScale')?.value || 1.0);
 
     if (modalUploadedObject) {
@@ -1133,37 +1076,27 @@ function updateModal3DPreview() {
         return;
     }
 
-    const preset = document.getElementById('modalAccPreset')?.value || 'candle_holder';
+    const preset = document.getElementById('modalAccPreset')?.value;
     const c1 = document.getElementById('modalAccColor1')?.value;
     const c2 = document.getElementById('modalAccColor2')?.value;
     const c3 = document.getElementById('modalAccColor3')?.value;
-
     let group = null;
     const targetH = 14 * scale;
-
     if (preset === 'candle_holder') group = createCandleHolderGroup(targetH, c1, c2, c3);
     else if (preset === 'street_lamp') group = createStreetLampGroup(targetH, c1, c2, c3);
     else if (preset === 'wooden_clock') group = createWoodenClockGroup(targetH, c1, c2);
     else if (preset === 'flower_vase') group = createFlowerVaseGroup(targetH, c1, c2, c3);
     else if (preset === 'mini_bookshelf') group = createMiniBookshelfGroup(targetH, c1);
     else if (preset === 'abstract_sculpture') group = createAbstractSculptureGroup(targetH, c1, c2);
-
-    if (group) {
-        group.position.set(0, -targetH/2, 0);
-        modalPreviewGroup.add(group);
-    }
+    if (group) { group.position.set(0, -targetH/2, 0); modalPreviewGroup.add(group); }
 }
 
 function saveModalCustomAccessory() {
     const name = document.getElementById('modalAccName')?.value || 'Özel 3D Obje';
-    const preset = document.getElementById('modalAccPreset')?.value || 'candle_holder';
-    const c1 = document.getElementById('modalAccColor1')?.value;
-    const c2 = document.getElementById('modalAccColor2')?.value;
-    const c3 = document.getElementById('modalAccColor3')?.value;
+    const preset = document.getElementById('modalAccPreset')?.value || 'street_lamp';
+    const id = 'custom_' + Date.now();
     const scale = parseFloat(document.getElementById('modalAccScale')?.value || 1.0);
 
-    const id = 'custom_' + Date.now();
-    
     if (modalUploadedObject) {
         customAccessoriesRegistry[id] = {
             name: name + ' (Yüklenen 3D)',
@@ -1175,58 +1108,45 @@ function saveModalCustomAccessory() {
         customAccessoriesRegistry[id] = {
             name: name,
             preset: preset,
-            c1: c1,
-            c2: c2,
-            c3: c3,
+            c1: document.getElementById('modalAccColor1')?.value,
+            c2: document.getElementById('modalAccColor2')?.value,
+            c3: document.getElementById('modalAccColor3')?.value,
             scale: scale
         };
     }
-
     const select = document.getElementById('accessoryType');
     if (select) {
-        const opt = document.createElement('option');
-        opt.value = id;
-        opt.innerText = '✨ ' + name;
-        opt.selected = true;
+        const opt = document.createElement('option'); opt.value = id; opt.innerText = '✨ ' + name; opt.selected = true;
         select.appendChild(opt);
     }
-
-    closeAddAccessoryModal();
-    redrawModel();
+    closeAddAccessoryModal(); redrawModel();
 }
 
 function handleModalAccFileUpload(e) {
     const file = e.target.files[0];
     if (!file) return;
-    const statusBox = document.getElementById('modalFileUploadStatus');
     const statusText = document.getElementById('modalFileNameText');
-
-    if (statusBox) statusBox.classList.remove('hidden');
-    if (statusText) statusText.innerText = 'Yükleniyor: ' + file.name;
-
+    document.getElementById('modalFileUploadStatus').classList.remove('hidden');
+    statusText.innerText = 'Yükleniyor: ' + file.name;
     const reader = new FileReader();
     reader.onload = function(evt) {
-        try {
-            if (file.name.endsWith('.gltf') || file.name.endsWith('.glb')) {
-                const loader = new THREE.GLTFLoader();
-                loader.parse(evt.target.result, '', function(gltf) {
-                    modalUploadedObject = gltf.scene;
-                    if (statusText) statusText.innerText = '✨ 3D Model Başarıyla Yüklendi! (' + file.name + ')';
-                    updateModal3DPreview();
-                });
-            } else {
-                if (statusText) statusText.innerText = 'Model dosyası alındı: ' + file.name;
-            }
-        } catch(err) {
-            console.error(err);
-        }
+        const loader = new THREE.GLTFLoader();
+        loader.parse(evt.target.result, '', (gltf) => {
+            modalUploadedObject = gltf.scene;
+            statusText.innerText = '✨ 3D Obje Başarıyla Yüklendi!';
+            updateModal3DPreview();
+        });
     };
     reader.readAsArrayBuffer(file);
 }
 
 function preventSpamSubmit(form) {
     const btn = form.querySelector('button[type="submit"]');
-    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Kaydediliyor...'; }
+    if (btn && !btn.disabled) {
+        btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Kaydediliyor...';
+    }
 }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\ahsapevim\resources\views/admin/templates/edit.blade.php ENDPATH**/ ?>

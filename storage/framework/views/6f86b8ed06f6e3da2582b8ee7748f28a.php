@@ -1,25 +1,23 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', ($product->name ?? 'Ürün Detayı') . ' - AhşapEvim'); ?>
 
-@section('title', ($product->name ?? 'Ürün Detayı') . ' - AhşapEvim')
-
-@if($product->threeDTemplate)
-    @push('head_scripts')
+<?php if($product->threeDTemplate): ?>
+    <?php $__env->startPush('head_scripts'); ?>
         <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    @endpush
-@endif
+    <?php $__env->stopPush(); ?>
+<?php endif; ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="bg-white pb-12">
     <div class="container mx-auto px-4 py-4">
         <!-- Breadcrumb -->
         <nav class="flex text-[13px] text-gray-500 mb-6">
-            <a href="{{ url('/') }}" class="hover:underline">Anasayfa</a>
+            <a href="<?php echo e(url('/')); ?>" class="hover:underline">Anasayfa</a>
             <span class="mx-2">></span>
-            <a href="{{ url('/urunler') }}?category={{ $product->category->slug ?? '' }}" class="hover:underline">{{ $product->category->name ?? 'Kategori' }}</a>
+            <a href="<?php echo e(url('/urunler')); ?>?category=<?php echo e($product->category->slug ?? ''); ?>" class="hover:underline"><?php echo e($product->category->name ?? 'Kategori'); ?></a>
             <span class="mx-2">></span>
-            <span class="text-gray-800">{{ $product->name }}</span>
+            <span class="text-gray-800"><?php echo e($product->name); ?></span>
         </nav>
 
         <div class="flex flex-col lg:flex-row gap-8">
@@ -28,68 +26,68 @@
             <div class="w-full lg:w-[45%] flex gap-4">
                 <!-- Thumbnails -->
                 <div class="hidden md:flex flex-col gap-2 w-16 flex-shrink-0">
-                    <div class="thumb-box w-16 h-20 border-2 border-brand rounded-md cursor-pointer overflow-hidden p-1 bg-white transition" onclick="changeMainImage(this, '{{ $product->image ?: '/cerceve.png' }}')">
-                        <img src="{{ $product->image ?: '/cerceve.png' }}" class="w-full h-full object-contain" alt="thumbnail">
+                    <div class="thumb-box w-16 h-20 border-2 border-brand rounded-md cursor-pointer overflow-hidden p-1 bg-white transition" onclick="changeMainImage(this, '<?php echo e($product->image ?: '/cerceve.png'); ?>')">
+                        <img src="<?php echo e($product->image ?: '/cerceve.png'); ?>" class="w-full h-full object-contain" alt="thumbnail">
                     </div>
-                    @if(count($product->gallery_urls) > 0)
-                        @foreach($product->gallery_urls as $addImg)
-                            <div class="thumb-box w-16 h-20 border border-gray-200 rounded-md cursor-pointer overflow-hidden p-1 bg-white hover:border-gray-400 transition" onclick="changeMainImage(this, '{{ $addImg }}')">
-                                <img src="{{ $addImg }}" class="w-full h-full object-contain" alt="thumbnail">
+                    <?php if(count($product->gallery_urls) > 0): ?>
+                        <?php $__currentLoopData = $product->gallery_urls; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $addImg): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div class="thumb-box w-16 h-20 border border-gray-200 rounded-md cursor-pointer overflow-hidden p-1 bg-white hover:border-gray-400 transition" onclick="changeMainImage(this, '<?php echo e($addImg); ?>')">
+                                <img src="<?php echo e($addImg); ?>" class="w-full h-full object-contain" alt="thumbnail">
                             </div>
-                        @endforeach
-                    @endif
-                    @if($product->youtube_id)
-                        <div class="thumb-box w-16 h-20 border-2 border-red-300 rounded-md cursor-pointer overflow-hidden relative bg-black group shadow-sm hover:border-red-600 transition" onclick="openYoutubeModal('https://www.youtube.com/embed/{{ $product->youtube_id }}')">
-                            <img src="https://img.youtube.com/vi/{{ $product->youtube_id }}/hqdefault.jpg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition" alt="video thumbnail">
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    <?php endif; ?>
+                    <?php if($product->youtube_id): ?>
+                        <div class="thumb-box w-16 h-20 border-2 border-red-300 rounded-md cursor-pointer overflow-hidden relative bg-black group shadow-sm hover:border-red-600 transition" onclick="openYoutubeModal('https://www.youtube.com/embed/<?php echo e($product->youtube_id); ?>')">
+                            <img src="https://img.youtube.com/vi/<?php echo e($product->youtube_id); ?>/hqdefault.jpg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition" alt="video thumbnail">
                             <div class="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/20 transition">
                                 <i class="fa-brands fa-youtube text-red-600 text-2xl drop-shadow-md"></i>
                             </div>
                         </div>
-                    @endif
-                    @if($product->instagram_code)
-                        <div class="thumb-box w-16 h-20 border-2 border-pink-400 rounded-md cursor-pointer overflow-hidden relative bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 group shadow-sm hover:border-pink-600 transition" onclick="openInstagramModal('{{ $product->instagram_embed_url }}')">
+                    <?php endif; ?>
+                    <?php if($product->instagram_code): ?>
+                        <div class="thumb-box w-16 h-20 border-2 border-pink-400 rounded-md cursor-pointer overflow-hidden relative bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 group shadow-sm hover:border-pink-600 transition" onclick="openInstagramModal('<?php echo e($product->instagram_embed_url); ?>')">
                             <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/30 group-hover:bg-black/10 transition">
                                 <i class="fa-brands fa-instagram text-white text-2xl drop-shadow-md"></i>
                                 <span class="text-[9px] font-extrabold text-white mt-1 uppercase tracking-tighter">REEL</span>
                             </div>
                         </div>
-                    @endif
+                    <?php endif; ?>
                 </div>
                 
                 <!-- Main Image Container -->
                 <div class="flex-1 flex flex-col">
                     <div id="mainImageContainer" class="w-full bg-gray-50 border border-gray-100 rounded-xl relative overflow-hidden flex items-center justify-center h-[360px] sm:h-[420px] md:h-[480px]">
-                        <img id="mainProductImage" src="{{ $product->image ?: '/cerceve.png' }}" alt="{{ $product->name }}" class="w-full h-full object-contain mix-blend-multiply p-4 transition-all duration-300 z-10">
+                        <img id="mainProductImage" src="<?php echo e($product->image ?: '/cerceve.png'); ?>" alt="<?php echo e($product->name); ?>" class="w-full h-full object-contain mix-blend-multiply p-4 transition-all duration-300 z-10">
                     </div>
 
                     <!-- Mobile Thumbnail Gallery (Parakende/Mobil Görünüm için Yatay Galeriyi Göster) -->
                     <div class="flex md:hidden items-center gap-2 overflow-x-auto pt-3 pb-1 max-w-full text-center">
-                        <div class="thumb-box w-14 h-16 border-2 border-brand rounded-lg cursor-pointer overflow-hidden p-1 bg-white shrink-0 transition" onclick="changeMainImage(this, '{{ $product->image ?: '/cerceve.png' }}')">
-                            <img src="{{ $product->image ?: '/cerceve.png' }}" class="w-full h-full object-contain" alt="thumbnail">
+                        <div class="thumb-box w-14 h-16 border-2 border-brand rounded-lg cursor-pointer overflow-hidden p-1 bg-white shrink-0 transition" onclick="changeMainImage(this, '<?php echo e($product->image ?: '/cerceve.png'); ?>')">
+                            <img src="<?php echo e($product->image ?: '/cerceve.png'); ?>" class="w-full h-full object-contain" alt="thumbnail">
                         </div>
-                        @if(count($product->gallery_urls) > 0)
-                            @foreach($product->gallery_urls as $addImg)
-                                <div class="thumb-box w-14 h-16 border border-gray-200 rounded-lg cursor-pointer overflow-hidden p-1 bg-white hover:border-gray-400 shrink-0 transition" onclick="changeMainImage(this, '{{ $addImg }}')">
-                                    <img src="{{ $addImg }}" class="w-full h-full object-contain" alt="thumbnail">
+                        <?php if(count($product->gallery_urls) > 0): ?>
+                            <?php $__currentLoopData = $product->gallery_urls; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $addImg): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <div class="thumb-box w-14 h-16 border border-gray-200 rounded-lg cursor-pointer overflow-hidden p-1 bg-white hover:border-gray-400 shrink-0 transition" onclick="changeMainImage(this, '<?php echo e($addImg); ?>')">
+                                    <img src="<?php echo e($addImg); ?>" class="w-full h-full object-contain" alt="thumbnail">
                                 </div>
-                            @endforeach
-                        @endif
-                        @if($product->youtube_id)
-                            <div class="thumb-box w-14 h-16 border-2 border-red-300 rounded-lg cursor-pointer overflow-hidden relative bg-black shrink-0 shadow-sm hover:border-red-600 transition" onclick="openYoutubeModal('https://www.youtube.com/embed/{{ $product->youtube_id }}')">
-                                <img src="https://img.youtube.com/vi/{{ $product->youtube_id }}/hqdefault.jpg" class="w-full h-full object-cover opacity-80" alt="video thumbnail">
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        <?php endif; ?>
+                        <?php if($product->youtube_id): ?>
+                            <div class="thumb-box w-14 h-16 border-2 border-red-300 rounded-lg cursor-pointer overflow-hidden relative bg-black shrink-0 shadow-sm hover:border-red-600 transition" onclick="openYoutubeModal('https://www.youtube.com/embed/<?php echo e($product->youtube_id); ?>')">
+                                <img src="https://img.youtube.com/vi/<?php echo e($product->youtube_id); ?>/hqdefault.jpg" class="w-full h-full object-cover opacity-80" alt="video thumbnail">
                                 <div class="absolute inset-0 flex items-center justify-center bg-black/40">
                                     <i class="fa-brands fa-youtube text-red-600 text-xl"></i>
                                 </div>
                             </div>
-                        @endif
-                        @if($product->instagram_code)
-                            <div class="thumb-box w-14 h-16 border-2 border-pink-400 rounded-lg cursor-pointer overflow-hidden relative bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 shrink-0 shadow-sm hover:border-pink-600 transition" onclick="openInstagramModal('{{ $product->instagram_embed_url }}')">
+                        <?php endif; ?>
+                        <?php if($product->instagram_code): ?>
+                            <div class="thumb-box w-14 h-16 border-2 border-pink-400 rounded-lg cursor-pointer overflow-hidden relative bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 shrink-0 shadow-sm hover:border-pink-600 transition" onclick="openInstagramModal('<?php echo e($product->instagram_embed_url); ?>')">
                                 <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/30">
                                     <i class="fa-brands fa-instagram text-white text-xl"></i>
                                     <span class="text-[8px] font-extrabold text-white mt-0.5 uppercase tracking-tighter">REEL</span>
                                 </div>
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -97,26 +95,27 @@
             <!-- Middle Side: Info -->
             <div class="w-full lg:w-[30%] flex flex-col">
                 <h1 class="text-2xl font-bold text-gray-800 mb-3 leading-tight">
-                    {{ $product->name }}
+                    <?php echo e($product->name); ?>
+
                 </h1>
                 
                 <hr class="border-gray-200 mb-4">
 
                 <!-- Specs -->
                 <div class="text-[13px] text-gray-700 mb-4 space-y-2">
-                    @if(isset($product->features['color']) && $product->features['color'])
-                        <p><span class="font-bold text-gray-800">Renk:</span> {{ $product->features['color'] }}</p>
-                    @endif
-                    @if(isset($product->features['size']) && $product->features['size'])
-                        <p><span class="font-bold text-gray-800">Boyut/Ebat:</span> {{ $product->features['size'] }}</p>
-                    @endif
+                    <?php if(isset($product->features['color']) && $product->features['color']): ?>
+                        <p><span class="font-bold text-gray-800">Renk:</span> <?php echo e($product->features['color']); ?></p>
+                    <?php endif; ?>
+                    <?php if(isset($product->features['size']) && $product->features['size']): ?>
+                        <p><span class="font-bold text-gray-800">Boyut/Ebat:</span> <?php echo e($product->features['size']); ?></p>
+                    <?php endif; ?>
                 </div>
                 
                 <!-- Expanded Description Area -->
                 <div class="mt-4 pt-4 border-t border-gray-200">
                     <h3 class="text-base font-bold text-gray-800 mb-2">Ürün Açıklaması</h3>
                     <div class="prose max-w-none text-gray-600 text-sm leading-relaxed mb-6">
-                        <p>{{ $product->description ?: 'Özel ahşap işçiliği ile hazırlanmış yüksek kaliteli dekoratif ürün.' }}</p>
+                        <p><?php echo e($product->description ?: 'Özel ahşap işçiliği ile hazırlanmış yüksek kaliteli dekoratif ürün.'); ?></p>
                     </div>
                     
                     <button type="button" onclick="openCustomizationModal()" class="bg-brand/5 border-2 border-brand/20 hover:bg-brand/10 text-brand font-bold py-4 px-6 rounded-xl transition-colors flex items-center justify-center gap-3 w-full md:w-auto shadow-sm">
@@ -128,21 +127,21 @@
 
             <!-- Right Side: Buybox -->
             <div class="w-full lg:w-[25%]">
-                <form id="addToCartForm" action="{{ url('/sepet/ekle') }}" method="POST" enctype="multipart/form-data" class="border border-gray-200 rounded-xl p-5 bg-white shadow-sm sticky top-24" onsubmit="return confirmAddToCart(event)">
-                    @csrf
-                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+                <form id="addToCartForm" action="<?php echo e(url('/sepet/ekle')); ?>" method="POST" enctype="multipart/form-data" class="border border-gray-200 rounded-xl p-5 bg-white shadow-sm sticky top-24" onsubmit="return confirmAddToCart(event)">
+                    <?php echo csrf_field(); ?>
+                    <input type="hidden" name="product_id" value="<?php echo e($product->id); ?>">
                     
                     <!-- Price -->
                     <div class="mb-6">
                         <div class="flex items-center gap-3">
-                            <div class="text-3xl font-extrabold text-brand">{{ number_format($product->price, 2, ',', '.') }} TL</div>
-                            @if($product->discount_percent > 0)
-                                <span class="bg-red-600 text-white font-extrabold text-xs px-2.5 py-1 rounded-full shadow-sm">%{{ $product->discount_percent }} İNDİRİM</span>
-                            @endif
+                            <div class="text-3xl font-extrabold text-brand"><?php echo e(number_format($product->price, 2, ',', '.')); ?> TL</div>
+                            <?php if($product->discount_percent > 0): ?>
+                                <span class="bg-red-600 text-white font-extrabold text-xs px-2.5 py-1 rounded-full shadow-sm">%<?php echo e($product->discount_percent); ?> İNDİRİM</span>
+                            <?php endif; ?>
                         </div>
-                        @if($product->discount_percent > 0)
-                            <div class="text-sm text-gray-400 line-through mt-1">{{ number_format($product->original_price, 2, ',', '.') }} TL</div>
-                        @endif
+                        <?php if($product->discount_percent > 0): ?>
+                            <div class="text-sm text-gray-400 line-through mt-1"><?php echo e(number_format($product->original_price, 2, ',', '.')); ?> TL</div>
+                        <?php endif; ?>
                     </div>
 
                     <!-- Hidden Image Inputs (Ön Yüz & Arka Yüz Fotoğrafları) -->
@@ -153,19 +152,19 @@
 
                     <!-- Stock Badge -->
                     <div class="mb-4">
-                        @if($product->stock <= 0)
+                        <?php if($product->stock <= 0): ?>
                             <span class="inline-flex items-center gap-1.5 bg-red-100 text-red-700 text-xs font-extrabold px-3 py-1.5 rounded-full border border-red-200">
                                 <i class="fa-solid fa-circle-xmark"></i> Stokta Yok
                             </span>
-                        @elseif($product->stock <= 5)
+                        <?php elseif($product->stock <= 5): ?>
                             <span class="inline-flex items-center gap-1.5 bg-amber-100 text-amber-800 text-xs font-extrabold px-3 py-1.5 rounded-full border border-amber-200">
-                                <i class="fa-solid fa-triangle-exclamation"></i> Son {{ $product->stock }} adet kaldı!
+                                <i class="fa-solid fa-triangle-exclamation"></i> Son <?php echo e($product->stock); ?> adet kaldı!
                             </span>
-                        @else
+                        <?php else: ?>
                             <span class="inline-flex items-center gap-1.5 bg-green-100 text-green-700 text-xs font-bold px-3 py-1.5 rounded-full border border-green-200">
                                 <i class="fa-solid fa-circle-check"></i> Stokta Mevcut
                             </span>
-                        @endif
+                        <?php endif; ?>
                     </div>
 
                     <!-- Hediye Paketi & Notu Seçeneği -->
@@ -183,21 +182,21 @@
 
                     <!-- Action Buttons -->
                     <div class="flex flex-col gap-3 mb-6">
-                        @if($product->stock <= 0)
+                        <?php if($product->stock <= 0): ?>
                             <button type="button" disabled class="w-full bg-gray-300 text-gray-500 font-bold py-3.5 px-4 rounded-lg text-base cursor-not-allowed flex items-center justify-center gap-2">
                                 <i class="fa-solid fa-ban"></i>
                                 Stokta Yok
                             </button>
-                        @else
+                        <?php else: ?>
                             <button type="submit" class="w-full bg-brand hover:bg-brand-dark text-white font-bold py-3.5 px-4 rounded-lg transition text-base shadow-md flex items-center justify-center gap-2">
                                 <i class="fa-solid fa-cart-shopping"></i>
                                 Sepete Ekle
                             </button>
-                        @endif
+                        <?php endif; ?>
                         
-                        <button type="button" onclick="toggleFavorite({{ $product->id }}, this)" class="w-full bg-rose-50 hover:bg-rose-100 border border-rose-200/80 text-rose-700 font-bold py-3 px-4 rounded-xl transition text-sm flex items-center justify-center gap-2 shadow-sm">
-                            <i class="{{ $product->isFavoritedBy() ? 'fa-solid fa-heart text-red-500 text-lg drop-shadow-sm' : 'fa-regular fa-heart text-red-500 text-lg' }}"></i>
-                            <span>{{ $product->isFavoritedBy() ? 'Favorilerinizde' : 'Favorilere Ekle' }}</span>
+                        <button type="button" onclick="toggleFavorite(<?php echo e($product->id); ?>, this)" class="w-full bg-rose-50 hover:bg-rose-100 border border-rose-200/80 text-rose-700 font-bold py-3 px-4 rounded-xl transition text-sm flex items-center justify-center gap-2 shadow-sm">
+                            <i class="<?php echo e($product->isFavoritedBy() ? 'fa-solid fa-heart text-red-500 text-lg drop-shadow-sm' : 'fa-regular fa-heart text-red-500 text-lg'); ?>"></i>
+                            <span><?php echo e($product->isFavoritedBy() ? 'Favorilerinizde' : 'Favorilere Ekle'); ?></span>
                         </button>
                     </div>
 
@@ -215,49 +214,49 @@
         </div>
 
         <!-- Similar Products -->
-        @if(isset($similarProducts) && $similarProducts->count() > 0)
+        <?php if(isset($similarProducts) && $similarProducts->count() > 0): ?>
         <div class="mt-16">
             <h2 class="text-xl font-bold text-gray-800 mb-6 border-b border-gray-200 pb-2">Benzer Ürünler</h2>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                @foreach($similarProducts as $simProduct)
+                <?php $__currentLoopData = $similarProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $simProduct): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="bg-white border border-gray-200 rounded-xl p-3 hover:shadow-lg transition-all product-card flex flex-col h-full group relative">
-                    <a href="{{ $simProduct->url }}" class="block mb-3 relative overflow-hidden rounded-lg bg-gray-50 pt-[100%]">
-                        <img src="{{ $simProduct->image ?: '/cerceve.png' }}" alt="{{ $simProduct->name }}" class="absolute inset-0 w-full h-full object-contain mix-blend-multiply p-2 transition-transform duration-500 group-hover:scale-105">
+                    <a href="<?php echo e($simProduct->url); ?>" class="block mb-3 relative overflow-hidden rounded-lg bg-gray-50 pt-[100%]">
+                        <img src="<?php echo e($simProduct->image ?: '/cerceve.png'); ?>" alt="<?php echo e($simProduct->name); ?>" class="absolute inset-0 w-full h-full object-contain mix-blend-multiply p-2 transition-transform duration-500 group-hover:scale-105">
                     </a>
                     <div class="flex-grow flex flex-col">
-                        <div class="text-xs text-brand font-semibold mb-1">{{ $simProduct->category->name ?? '' }}</div>
-                        <h3 class="text-sm font-medium text-gray-800 mb-2 line-clamp-2 leading-tight group-hover:text-brand transition"><a href="{{ $simProduct->url }}">{{ $simProduct->name }}</a></h3>
+                        <div class="text-xs text-brand font-semibold mb-1"><?php echo e($simProduct->category->name ?? ''); ?></div>
+                        <h3 class="text-sm font-medium text-gray-800 mb-2 line-clamp-2 leading-tight group-hover:text-brand transition"><a href="<?php echo e($simProduct->url); ?>"><?php echo e($simProduct->name); ?></a></h3>
                         <div class="mt-auto pt-2 flex items-center justify-between">
-                            <div class="text-lg font-extrabold text-brand">{{ number_format($simProduct->price, 2, ',', '.') }} TL</div>
+                            <div class="text-lg font-extrabold text-brand"><?php echo e(number_format($simProduct->price, 2, ',', '.')); ?> TL</div>
                         </div>
                     </div>
                 </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
         </div>
-        @endif
+        <?php endif; ?>
 
         <!-- Recently Viewed Products -->
-        @if(isset($recentlyViewed) && $recentlyViewed->count() > 0)
+        <?php if(isset($recentlyViewed) && $recentlyViewed->count() > 0): ?>
         <div class="mt-16">
             <h2 class="text-xl font-bold text-gray-800 mb-6 border-b border-gray-200 pb-2">Daha Önce Ziyaret Ettikleriniz</h2>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                @foreach($recentlyViewed as $recentProduct)
+                <?php $__currentLoopData = $recentlyViewed; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $recentProduct): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="bg-white border border-gray-200 rounded-xl p-3 hover:shadow-lg transition-all product-card flex flex-col h-full group relative">
-                    <a href="{{ $recentProduct->url }}" class="block mb-3 relative overflow-hidden rounded-lg bg-gray-50 pt-[100%]">
-                        <img src="{{ $recentProduct->image ?: '/cerceve.png' }}" alt="{{ $recentProduct->name }}" class="absolute inset-0 w-full h-full object-contain mix-blend-multiply p-2 transition-transform duration-500 group-hover:scale-105">
+                    <a href="<?php echo e($recentProduct->url); ?>" class="block mb-3 relative overflow-hidden rounded-lg bg-gray-50 pt-[100%]">
+                        <img src="<?php echo e($recentProduct->image ?: '/cerceve.png'); ?>" alt="<?php echo e($recentProduct->name); ?>" class="absolute inset-0 w-full h-full object-contain mix-blend-multiply p-2 transition-transform duration-500 group-hover:scale-105">
                     </a>
                     <div class="flex-grow flex flex-col">
-                        <h3 class="text-sm font-medium text-gray-800 mb-2 line-clamp-2 leading-tight group-hover:text-brand transition"><a href="{{ $recentProduct->url }}">{{ $recentProduct->name }}</a></h3>
+                        <h3 class="text-sm font-medium text-gray-800 mb-2 line-clamp-2 leading-tight group-hover:text-brand transition"><a href="<?php echo e($recentProduct->url); ?>"><?php echo e($recentProduct->name); ?></a></h3>
                         <div class="mt-auto pt-2 flex items-center justify-between">
-                            <div class="text-lg font-extrabold text-brand">{{ number_format($recentProduct->price, 2, ',', '.') }} TL</div>
+                            <div class="text-lg font-extrabold text-brand"><?php echo e(number_format($recentProduct->price, 2, ',', '.')); ?> TL</div>
                         </div>
                     </div>
                 </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
         </div>
-        @endif
+        <?php endif; ?>
 
     </div>
 </div>
@@ -370,7 +369,7 @@ function closeCustomizationModal() {
     }
 }
 
-@if($product->threeDTemplate)
+<?php if($product->threeDTemplate): ?>
 let modalScene, modalCamera, modalRenderer, modalControls, modalAnimationId;
 let modalModelGroup = new THREE.Group();
 let modalOuterGroup, modalCustomRotatingFrame, modalCustomPhotoFront, modalCustomPhotoBack;
@@ -518,30 +517,30 @@ function destroyModal3D() {
 }
 
 function buildModalFrame() {
-    const width = {{ $product->threeDTemplate->width }};
-    const height = {{ $product->threeDTemplate->height }};
-    const depth = {{ $product->threeDTemplate->depth }};
-    const thickness = {{ $product->threeDTemplate->thickness }};
+    const width = <?php echo e($product->threeDTemplate->width); ?>;
+    const height = <?php echo e($product->threeDTemplate->height); ?>;
+    const depth = <?php echo e($product->threeDTemplate->depth); ?>;
+    const thickness = <?php echo e($product->threeDTemplate->thickness); ?>;
 
-    const innerW = {{ $product->threeDTemplate->inner_width }};
-    const innerH = {{ $product->threeDTemplate->inner_height }};
-    const innerD = {{ $product->threeDTemplate->inner_depth }};
-    const innerB = {{ $product->threeDTemplate->inner_border }};
+    const innerW = <?php echo e($product->threeDTemplate->inner_width); ?>;
+    const innerH = <?php echo e($product->threeDTemplate->inner_height); ?>;
+    const innerD = <?php echo e($product->threeDTemplate->inner_depth); ?>;
+    const innerB = <?php echo e($product->threeDTemplate->inner_border); ?>;
 
-    const px = {{ $product->threeDTemplate->pos_x }};
-    const py = {{ $product->threeDTemplate->pos_y }};
+    const px = <?php echo e($product->threeDTemplate->pos_x); ?>;
+    const py = <?php echo e($product->threeDTemplate->pos_y); ?>;
 
-    const woodType = "{{ $product->threeDTemplate->wood_type }}";
+    const woodType = "<?php echo e($product->threeDTemplate->wood_type); ?>";
 
     // Use modalRenderer for anisotropy
     const woodTextures = generateWoodTextures(woodType, modalRenderer);
-    const bScaleRaw = {{ $product->threeDTemplate->bump_scale ?: 0.28 }};
+    const bScaleRaw = <?php echo e($product->threeDTemplate->bump_scale ?: 0.28); ?>;
     const bScale = bScaleRaw < 0.12 ? 0.28 : bScaleRaw;
 
-    const hasTop = {{ $product->threeDTemplate->has_top ? 'true' : 'false' }};
-    const hasBottom = {{ $product->threeDTemplate->has_bottom ? 'true' : 'false' }};
-    const hasLeft = {{ $product->threeDTemplate->has_left ? 'true' : 'false' }};
-    const hasRight = {{ $product->threeDTemplate->has_right ? 'true' : 'false' }};
+    const hasTop = <?php echo e($product->threeDTemplate->has_top ? 'true' : 'false'); ?>;
+    const hasBottom = <?php echo e($product->threeDTemplate->has_bottom ? 'true' : 'false'); ?>;
+    const hasLeft = <?php echo e($product->threeDTemplate->has_left ? 'true' : 'false'); ?>;
+    const hasRight = <?php echo e($product->threeDTemplate->has_right ? 'true' : 'false'); ?>;
 
     modalOuterGroup = new THREE.Group();
 
@@ -657,13 +656,13 @@ function buildModalFrame() {
     modalModelGroup.add(modalCustomRotatingFrame);
 
     // Render 3D Accessory / Object (Nostaljik Sokak Lambası)
-    const modalHasAccessory = {{ $product->threeDTemplate->has_accessory ? 'true' : 'false' }};
-    const modalAccessoryType = "{{ $product->threeDTemplate->accessory_type ?? 'street_lamp' }}";
-    const modalAccessoryPos = "{{ $product->threeDTemplate->accessory_position ?? 'right' }}";
-    const modalAccOffsetX = {{ $product->threeDTemplate->accessory_offset_x ?? 0 }};
-    const modalAccOffsetY = {{ $product->threeDTemplate->accessory_offset_y ?? 0 }};
-    const modalAccOffsetZ = {{ $product->threeDTemplate->accessory_offset_z ?? 0 }};
-    const modalAccScale = {{ $product->threeDTemplate->accessory_scale ?? 1.0 }};
+    const modalHasAccessory = <?php echo e($product->threeDTemplate->has_accessory ? 'true' : 'false'); ?>;
+    const modalAccessoryType = "<?php echo e($product->threeDTemplate->accessory_type ?? 'street_lamp'); ?>";
+    const modalAccessoryPos = "<?php echo e($product->threeDTemplate->accessory_position ?? 'right'); ?>";
+    const modalAccOffsetX = <?php echo e($product->threeDTemplate->accessory_offset_x ?? 0); ?>;
+    const modalAccOffsetY = <?php echo e($product->threeDTemplate->accessory_offset_y ?? 0); ?>;
+    const modalAccOffsetZ = <?php echo e($product->threeDTemplate->accessory_offset_z ?? 0); ?>;
+    const modalAccScale = <?php echo e($product->threeDTemplate->accessory_scale ?? 1.0); ?>;
 
     if (modalHasAccessory && modalAccessoryType === 'street_lamp') {
         const lampHeight = Math.min(height * 0.65, 18) * modalAccScale;
@@ -707,7 +706,7 @@ function buildModalFrame() {
         reader.readAsDataURL(file);
     }
 }
-@endif
+<?php endif; ?>
 
 function resetBox(el) {
     if (!el) return;
@@ -1074,7 +1073,7 @@ function handleEnd() {
 
 </script>
 
-@if($product->threeDTemplate)
+<?php if($product->threeDTemplate): ?>
 <script>
     function darkenColor(hex, percent) {
         if (!hex) return '#333333';
@@ -1401,29 +1400,29 @@ function handleEnd() {
     }
 
     function buildProductFrame() {
-        const width = {{ $product->threeDTemplate->width }};
-        const height = {{ $product->threeDTemplate->height }};
-        const depth = {{ $product->threeDTemplate->depth }};
-        const thickness = {{ $product->threeDTemplate->thickness }};
+        const width = <?php echo e($product->threeDTemplate->width); ?>;
+        const height = <?php echo e($product->threeDTemplate->height); ?>;
+        const depth = <?php echo e($product->threeDTemplate->depth); ?>;
+        const thickness = <?php echo e($product->threeDTemplate->thickness); ?>;
 
-        const innerW = {{ $product->threeDTemplate->inner_width }};
-        const innerH = {{ $product->threeDTemplate->inner_height }};
-        const innerD = {{ $product->threeDTemplate->inner_depth }};
-        const innerB = {{ $product->threeDTemplate->inner_border }};
+        const innerW = <?php echo e($product->threeDTemplate->inner_width); ?>;
+        const innerH = <?php echo e($product->threeDTemplate->inner_height); ?>;
+        const innerD = <?php echo e($product->threeDTemplate->inner_depth); ?>;
+        const innerB = <?php echo e($product->threeDTemplate->inner_border); ?>;
 
-        const px = {{ $product->threeDTemplate->pos_x }};
-        const py = {{ $product->threeDTemplate->pos_y }};
+        const px = <?php echo e($product->threeDTemplate->pos_x); ?>;
+        const py = <?php echo e($product->threeDTemplate->pos_y); ?>;
 
-        const woodType = "{{ $product->threeDTemplate->wood_type }}";
+        const woodType = "<?php echo e($product->threeDTemplate->wood_type); ?>";
 
         const woodTextures = generateWoodTextures(woodType, renderer);
-        const bScaleRaw = {{ $product->threeDTemplate->bump_scale ?: 0.28 }};
+        const bScaleRaw = <?php echo e($product->threeDTemplate->bump_scale ?: 0.28); ?>;
         const bScale = bScaleRaw < 0.12 ? 0.28 : bScaleRaw;
 
-        const hasTop = {{ $product->threeDTemplate->has_top ? 'true' : 'false' }};
-        const hasBottom = {{ $product->threeDTemplate->has_bottom ? 'true' : 'false' }};
-        const hasLeft = {{ $product->threeDTemplate->has_left ? 'true' : 'false' }};
-        const hasRight = {{ $product->threeDTemplate->has_right ? 'true' : 'false' }};
+        const hasTop = <?php echo e($product->threeDTemplate->has_top ? 'true' : 'false'); ?>;
+        const hasBottom = <?php echo e($product->threeDTemplate->has_bottom ? 'true' : 'false'); ?>;
+        const hasLeft = <?php echo e($product->threeDTemplate->has_left ? 'true' : 'false'); ?>;
+        const hasRight = <?php echo e($product->threeDTemplate->has_right ? 'true' : 'false'); ?>;
 
         outerGroup = new THREE.Group();
 
@@ -1535,13 +1534,13 @@ function handleEnd() {
         currentModelGroup.add(customRotatingFrame);
 
         // Render 3D Accessory / Object
-        const hasAccessory = {{ $product->threeDTemplate->has_accessory ? 'true' : 'false' }};
-        const accessoryType = "{{ $product->threeDTemplate->accessory_type ?? 'street_lamp' }}";
-        const accessoryPos = "{{ $product->threeDTemplate->accessory_position ?? 'right' }}";
-        const accOffsetX = {{ $product->threeDTemplate->accessory_offset_x ?? 0 }};
-        const accOffsetY = {{ $product->threeDTemplate->accessory_offset_y ?? 0 }};
-        const accOffsetZ = {{ $product->threeDTemplate->accessory_offset_z ?? 0 }};
-        const accScale = {{ $product->threeDTemplate->accessory_scale ?? 1.0 }};
+        const hasAccessory = <?php echo e($product->threeDTemplate->has_accessory ? 'true' : 'false'); ?>;
+        const accessoryType = "<?php echo e($product->threeDTemplate->accessory_type ?? 'street_lamp'); ?>";
+        const accessoryPos = "<?php echo e($product->threeDTemplate->accessory_position ?? 'right'); ?>";
+        const accOffsetX = <?php echo e($product->threeDTemplate->accessory_offset_x ?? 0); ?>;
+        const accOffsetY = <?php echo e($product->threeDTemplate->accessory_offset_y ?? 0); ?>;
+        const accOffsetZ = <?php echo e($product->threeDTemplate->accessory_offset_z ?? 0); ?>;
+        const accScale = <?php echo e($product->threeDTemplate->accessory_scale ?? 1.0); ?>;
 
         if (hasAccessory) {
             const targetH = Math.min(height * 0.65, 18) * accScale;
@@ -1610,7 +1609,7 @@ function handleEnd() {
         }
     };
 </script>
-@endif
+<?php endif; ?>
 
 <!-- YouTube Video Modal -->
 <div id="youtubeVideoModal" class="fixed inset-0 z-[999999] bg-black/90 hidden items-center justify-center p-4 backdrop-blur-md" onclick="closeYoutubeModal(event)">
@@ -1669,4 +1668,6 @@ function closeInstagramModal(e) {
     if (iframe) iframe.src = '';
 }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\ahsapevim\resources\views/products/show.blade.php ENDPATH**/ ?>
