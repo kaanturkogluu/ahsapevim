@@ -155,6 +155,10 @@ function calculateDiscount() {
     } else {
         badge.classList.add('hidden');
     }
+}
+
+document.addEventListener('DOMContentLoaded', calculateDiscount);
+
 function preventSpamSubmit(form) {
     const btn = form.querySelector('button[type="submit"]');
     if (btn && !btn.disabled) {
