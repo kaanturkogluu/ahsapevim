@@ -478,9 +478,15 @@
                 <a href="<?php echo e(url('/urunler')); ?>" onclick="closeCartDrawer()" class="py-3 px-4 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-xl transition text-center text-xs flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-store"></i> Ürünleri Keşfet
                 </a>
-                <a href="<?php echo e(route('checkout.index')); ?>" class="py-3 px-4 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-xl transition text-center text-xs shadow-md flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-lock"></i> Ödemeye Geç
-                </a>
+                <?php if(auth()->guard()->check()): ?>
+                    <a href="<?php echo e(route('checkout.index')); ?>" class="py-3 px-4 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-xl transition text-center text-xs shadow-md flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-lock"></i> Ödemeye Geç
+                    </a>
+                <?php else: ?>
+                    <button type="button" onclick="openGuestCheckoutModal()" class="py-3 px-4 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-xl transition text-center text-xs shadow-md flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-lock"></i> Ödemeye Geç
+                    </button>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -815,6 +821,50 @@
     <button type="button" id="scrollToTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Yukarı Çık" class="fixed bottom-5 right-5 z-[9999] w-11 h-11 bg-[#C87A53] hover:bg-[#A65F38] text-white rounded-full flex items-center justify-center text-lg shadow-xl hover:scale-110 transition-all duration-200 border-2 border-white opacity-0 pointer-events-none">
         <i class="fa-solid fa-chevron-up"></i>
     </button>
+
+    <!-- Guest Checkout Option Modal -->
+    <div id="guestCheckoutModal" class="fixed inset-0 z-[100000] bg-black/80 hidden items-center justify-center p-4 backdrop-blur-sm" onclick="closeGuestCheckoutModal()">
+        <div class="bg-white rounded-2xl p-6 md:p-8 max-w-md w-full relative shadow-2xl border border-amber-100 text-center" onclick="event.stopPropagation()">
+            <button type="button" onclick="closeGuestCheckoutModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold leading-none">&times;</button>
+            
+            <div class="w-14 h-14 bg-amber-100 text-[#C87A53] rounded-full flex items-center justify-center text-2xl mx-auto mb-4 border border-amber-200">
+                <i class="fa-solid fa-user-lock"></i>
+            </div>
+
+            <h3 class="text-xl font-bold text-gray-800 font-serif mb-2">Siparişe Nasıl Devam Etmek İstersiniz?</h3>
+            <p class="text-xs text-gray-500 mb-6 leading-relaxed">Üye girişi yaparak tüm siparişlerinizi kolayca takip edebilir veya üye olmadan hızlıca üyeliksiz sipariş verebilirsiniz.</p>
+
+            <div class="space-y-3">
+                <!-- Option 1: Log in & Continue -->
+                <a href="<?php echo e(route('login')); ?>" class="w-full bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold py-3.5 px-4 rounded-xl transition text-xs shadow-md flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Üye Girişi Yap ve Devam Et
+                </a>
+
+                <!-- Option 2: Guest Continue -->
+                <a href="<?php echo e(route('checkout.index')); ?>" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-3.5 px-4 rounded-xl transition text-xs border border-stone-200 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-bolt"></i> Üyeliksiz Devam Et
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function openGuestCheckoutModal() {
+        const modal = document.getElementById('guestCheckoutModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+    }
+
+    function closeGuestCheckoutModal() {
+        const modal = document.getElementById('guestCheckoutModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    }
+    </script>
 </body>
 
 </html><?php /**PATH C:\xampp\htdocs\ahsapevim\resources\views/layouts/app.blade.php ENDPATH**/ ?>

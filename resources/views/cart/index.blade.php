@@ -168,49 +168,6 @@
     </div>
 </div>
 
-<!-- Guest Checkout Modal -->
-<div id="guestCheckoutModal" class="fixed inset-0 z-[99999] bg-black/80 hidden items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-white rounded-2xl p-6 md:p-8 max-w-md w-full relative shadow-2xl border border-amber-100 text-center" onclick="event.stopPropagation()">
-        <button type="button" onclick="closeGuestCheckoutModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold leading-none">&times;</button>
-        
-        <div class="w-14 h-14 bg-amber-100 text-[#C87A53] rounded-full flex items-center justify-center text-2xl mx-auto mb-4 border border-amber-200">
-            <i class="fa-solid fa-user-lock"></i>
-        </div>
-
-        <h3 class="text-xl font-bold text-gray-800 font-serif mb-2">Siparişe Nasıl Devam Etmek İstersiniz?</h3>
-        <p class="text-xs text-gray-500 mb-6 leading-relaxed">Üye girişi yaparak tüm siparişlerinizi kolayca takip edebilir veya üye olmadan üyeliksiz sipariş verebilirsiniz.</p>
-
-        <div class="space-y-3">
-            <!-- Option 1: Log in & Continue -->
-            <a href="{{ route('login') }}" class="w-full bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold py-3.5 px-4 rounded-xl transition text-xs shadow-md flex items-center justify-center gap-2">
-                <i class="fa-solid fa-arrow-right-to-bracket"></i> Üye Girişi Yap ve Devam Et
-            </a>
-
-            <!-- Option 2: Guest Continue -->
-            <a href="{{ route('checkout.index') }}" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-3.5 px-4 rounded-xl transition text-xs border border-stone-200 flex items-center justify-center gap-2">
-                <i class="fa-solid fa-bolt"></i> Üyeliksiz Devam Et
-            </a>
-        </div>
-    </div>
-</div>
-
-<script>
-function openGuestCheckoutModal() {
-    const modal = document.getElementById('guestCheckoutModal');
-    if (modal) {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-    }
-}
-
-function closeGuestCheckoutModal() {
-    const modal = document.getElementById('guestCheckoutModal');
-    if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }
-}
-</script>
 
 <!-- Image Preview Modal -->
 <div id="cartPreviewModal" class="fixed inset-0 z-[99999] bg-black/80 hidden items-center justify-center p-4 backdrop-blur-sm" onclick="closeCartPreviewModal()">

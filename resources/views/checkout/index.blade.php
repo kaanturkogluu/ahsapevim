@@ -114,21 +114,26 @@
 
                             <!-- EFT Account Details Box -->
                             <div id="eftDetailsBox" class="p-4 bg-amber-50/90 border border-amber-200/90 rounded-2xl hidden space-y-3">
-                                <div class="flex items-center gap-2 text-[#C87A53] font-extrabold text-sm border-b border-amber-200/60 pb-2">
-                                    <i class="fa-solid fa-building-columns"></i>
-                                    <span>Havale / EFT Hesap Bilgileri</span>
+                                <div class="flex items-center justify-between border-b border-amber-200/60 pb-2">
+                                    <div class="flex items-center gap-2 text-[#C87A53] font-extrabold text-sm">
+                                        <i class="fa-solid fa-building-columns"></i>
+                                        <span>Havale / EFT Hesap Bilgileri</span>
+                                    </div>
+                                    <span class="px-2.5 py-0.5 bg-blue-100 text-blue-800 text-[11px] font-black rounded-md flex items-center gap-1 shadow-sm">
+                                        <i class="fa-solid fa-building text-[10px]"></i> Halkbank
+                                    </span>
                                 </div>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                                    <div class="bg-white p-3 rounded-xl border border-amber-100">
+                                    <div class="bg-white p-3 rounded-xl border border-amber-100 shadow-sm">
                                         <span class="text-gray-500 font-bold block text-[10px] uppercase">Alıcı Ad Soyad</span>
                                         <span class="font-extrabold text-gray-900 text-sm">Mete Sapmaz</span>
                                     </div>
-                                    <div class="bg-white p-3 rounded-xl border border-amber-100 flex items-center justify-between gap-2">
+                                    <div class="bg-white p-3 rounded-xl border border-amber-100 flex items-center justify-between gap-2 shadow-sm">
                                         <div>
-                                            <span class="text-gray-500 font-bold block text-[10px] uppercase">IBAN Numarası</span>
-                                            <span class="font-mono font-extrabold text-[#C87A53] text-sm tracking-wider">TR00 0000 0000 0000 0000</span>
+                                            <span class="text-gray-500 font-bold block text-[10px] uppercase">IBAN Numarası (Halkbank)</span>
+                                            <span class="font-mono font-extrabold text-[#C87A53] text-xs sm:text-sm tracking-wider">TR67 0001 2009 5620 0009 0180 61</span>
                                         </div>
-                                        <button type="button" onclick="navigator.clipboard.writeText('TR0000000000000000'); showToast('IBAN kopyalandı!', 'info');" class="px-2.5 py-1.5 bg-amber-100 text-amber-900 hover:bg-amber-200 rounded-lg font-bold text-[11px] transition shrink-0">
+                                        <button type="button" onclick="navigator.clipboard.writeText('TR670001200956200009018061'); showToast('IBAN kopyalandı!', 'info');" class="px-2.5 py-1.5 bg-amber-100 text-amber-900 hover:bg-amber-200 rounded-lg font-bold text-[11px] transition shrink-0 flex items-center gap-1">
                                             <i class="fa-solid fa-copy"></i> Kopyala
                                         </button>
                                     </div>
