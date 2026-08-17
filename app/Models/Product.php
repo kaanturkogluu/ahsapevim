@@ -83,6 +83,49 @@ class Product extends Model
         }, $images);
     }
 
+    /**
+     * SEO Uyumlu ve Benzersiz URL / Slug Oluşturucu
+     */
+    public static function generateUniqueSlug(string $title, ?int $ignoreId = null): string
+    {
+        $slug = \Illuminate\Support\Str::slug($title);
+        if (empty($slug)) {
+            $slug = 'urun';
+        }
+
+        $originalSlug = $slug;
+        $count = 1;
+
+        while (static::where('slug', $slug)
+            ->when($ignoreId, fn($q) => $q->where('id', '!=', $ignoreId))
+            ->exists()) {
+            $slug = "{$originalSlug}-{$count}";
+            $count++;
+        }
+
+        return $slug;
+    }
+
+    /**
+     * Otomatik model dinleyicisi - Slug boşsa ürün başlığından üretilir.
+     */
+    protected static function booted()
+    {
+        static::saving(function ($product) {
+            if (empty($product->slug) && !empty($product->name)) {
+                $product->slug = static::generateUniqueSlug($product->name, $product->id ?? null);
+            }
+        });
+    }
+
+    /**
+     * Ürün detay URL'i ($product->url)
+     */
+    public function getUrlAttribute(): string
+    {
+        return url('/urun/' . ($this->slug ?: $this->id));
+    }
+
     public function favorites()
     {
         return $this->hasMany(Favorite::class);

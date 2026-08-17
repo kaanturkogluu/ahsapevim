@@ -181,12 +181,12 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                 @foreach($similarProducts as $simProduct)
                 <div class="bg-white border border-gray-200 rounded-xl p-3 hover:shadow-lg transition-all product-card flex flex-col h-full group relative">
-                    <a href="{{ url('/urun/' . $simProduct->id) }}" class="block mb-3 relative overflow-hidden rounded-lg bg-gray-50 pt-[100%]">
+                    <a href="{{ $simProduct->url }}" class="block mb-3 relative overflow-hidden rounded-lg bg-gray-50 pt-[100%]">
                         <img src="{{ $simProduct->image ?: '/cerceve.png' }}" alt="{{ $simProduct->name }}" class="absolute inset-0 w-full h-full object-contain mix-blend-multiply p-2 transition-transform duration-500 group-hover:scale-105">
                     </a>
                     <div class="flex-grow flex flex-col">
                         <div class="text-xs text-brand font-semibold mb-1">{{ $simProduct->category->name ?? '' }}</div>
-                        <h3 class="text-sm font-medium text-gray-800 mb-2 line-clamp-2 leading-tight group-hover:text-brand transition"><a href="{{ url('/urun/' . $simProduct->id) }}">{{ $simProduct->name }}</a></h3>
+                        <h3 class="text-sm font-medium text-gray-800 mb-2 line-clamp-2 leading-tight group-hover:text-brand transition"><a href="{{ $simProduct->url }}">{{ $simProduct->name }}</a></h3>
                         <div class="mt-auto pt-2 flex items-center justify-between">
                             <div class="text-lg font-extrabold text-brand">{{ number_format($simProduct->price, 2, ',', '.') }} TL</div>
                         </div>
@@ -204,11 +204,11 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                 @foreach($recentlyViewed as $recentProduct)
                 <div class="bg-white border border-gray-200 rounded-xl p-3 hover:shadow-lg transition-all product-card flex flex-col h-full group relative">
-                    <a href="{{ url('/urun/' . $recentProduct->id) }}" class="block mb-3 relative overflow-hidden rounded-lg bg-gray-50 pt-[100%]">
+                    <a href="{{ $recentProduct->url }}" class="block mb-3 relative overflow-hidden rounded-lg bg-gray-50 pt-[100%]">
                         <img src="{{ $recentProduct->image ?: '/cerceve.png' }}" alt="{{ $recentProduct->name }}" class="absolute inset-0 w-full h-full object-contain mix-blend-multiply p-2 transition-transform duration-500 group-hover:scale-105">
                     </a>
                     <div class="flex-grow flex flex-col">
-                        <h3 class="text-sm font-medium text-gray-800 mb-2 line-clamp-2 leading-tight group-hover:text-brand transition"><a href="{{ url('/urun/' . $recentProduct->id) }}">{{ $recentProduct->name }}</a></h3>
+                        <h3 class="text-sm font-medium text-gray-800 mb-2 line-clamp-2 leading-tight group-hover:text-brand transition"><a href="{{ $recentProduct->url }}">{{ $recentProduct->name }}</a></h3>
                         <div class="mt-auto pt-2 flex items-center justify-between">
                             <div class="text-lg font-extrabold text-brand">{{ number_format($recentProduct->price, 2, ',', '.') }} TL</div>
                         </div>

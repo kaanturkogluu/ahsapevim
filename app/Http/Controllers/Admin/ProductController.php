@@ -62,10 +62,13 @@ class ProductController extends Controller
             'youtube_url' => $request->youtube_url,
         ];
 
-        Product::create([
+        $slugCandidate = $request->filled('slug') ? $request->slug : $request->name;
+        $slug = Product::generateUniqueSlug($slugCandidate);
+
+        $product = Product::create([
             'category_id'       => $request->category_id,
             'name'              => $request->name,
-            'slug'              => Str::slug($request->name) . '-' . rand(1000, 9999),
+            'slug'              => $slug,
             'price'             => $price,
             'original_price'    => $originalPrice,
             'stock'             => $request->stock,
@@ -76,7 +79,11 @@ class ProductController extends Controller
             'is_active'         => $request->has('is_active'),
         ]);
 
-        return redirect()->route('admin.products.index')->with('success', 'Ürün başarıyla eklendi.');
+        // Auto update XML and Sitemap
+        app(\App\Http\Controllers\SeoController::class)->sitemap();
+        app(\App\Http\Controllers\SeoController::class)->urunlerXml();
+
+        return redirect()->route('admin.products.index')->with('success', 'Ürün başarıyla eklendi (SEO Bağlantısı: /urun/' . $product->slug . ').');
     }
 
     public function edit($id)
@@ -144,10 +151,13 @@ class ProductController extends Controller
         $features['images']      = array_values($existingGallery);
         $features['youtube_url'] = $request->youtube_url;
 
+        $slugCandidate = $request->filled('slug') ? $request->slug : $request->name;
+        $slug = Product::generateUniqueSlug($slugCandidate, $product->id);
+
         $product->update([
             'category_id'       => $request->category_id,
             'name'              => $request->name,
-            'slug'              => Str::slug($request->name) . '-' . $product->id,
+            'slug'              => $slug,
             'price'             => $price,
             'original_price'    => $originalPrice,
             'stock'             => $request->stock,
@@ -158,7 +168,11 @@ class ProductController extends Controller
             'is_active'         => $request->has('is_active'),
         ]);
 
-        return redirect()->route('admin.products.index')->with('success', 'Ürün başarıyla güncellendi.');
+        // Auto update XML and Sitemap
+        app(\App\Http\Controllers\SeoController::class)->sitemap();
+        app(\App\Http\Controllers\SeoController::class)->urunlerXml();
+
+        return redirect()->route('admin.products.index')->with('success', 'Ürün başarıyla güncellendi (SEO Bağlantısı: /urun/' . $product->slug . ').');
     }
 
     public function destroy($id)
@@ -168,6 +182,10 @@ class ProductController extends Controller
             File::delete(public_path($product->image));
         }
         $product->delete();
+
+        // Auto update XML and Sitemap
+        app(\App\Http\Controllers\SeoController::class)->sitemap();
+        app(\App\Http\Controllers\SeoController::class)->urunlerXml();
 
         return redirect()->route('admin.products.index')->with('success', 'Ürün başarıyla silindi.');
     }
@@ -179,6 +197,7 @@ class ProductController extends Controller
     {
         return [
             'name'               => 'required|string|max:255',
+            'slug'               => 'nullable|string|max:255',
             'category_id'        => 'required|exists:categories,id',
             'price'              => 'required|numeric|min:0',
             'discounted_price'   => 'nullable|numeric|min:0',

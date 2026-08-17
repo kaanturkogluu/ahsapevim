@@ -19,6 +19,11 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\EmailTemplateController;
 use App\Http\Controllers\Admin\ShippingCompanyController;
 use App\Http\Controllers\Admin\MessageLogController;
+use App\Http\Controllers\SeoController;
+
+// ─── SEO, Sitemap & XML Product Feed ──────────────────────────────────────────
+Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('seo.sitemap');
+Route::get('/urunler.xml', [SeoController::class, 'urunlerXml'])->name('seo.urunler_xml');
 
 // ─── Shared Search Helper ─────────────────────────────────────────────────────
 // Applies partial-word product search filter to an existing Eloquent query.
@@ -92,7 +97,7 @@ Route::get('/canli-arama', function (Request $request) {
         'category_name' => $p->category ? $p->category->name : 'Ahşap Çerçeve',
         'price'         => number_format($p->price, 2, ',', '.') . ' ₺',
         'image'         => url($p->image ?: '/cerceve.png'),
-        'url'           => url('/urun/' . $p->id),
+        'url'           => $p->url,
     ]);
 
     return response()->json(['status' => 'success', 'products' => $data, 'count' => count($data)]);

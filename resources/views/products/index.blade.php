@@ -62,7 +62,7 @@
                     @endphp
 
                     {{-- Product Card (Warm Artisan Style) --}}
-                    <a href="{{ url('/urun/' . $product->id) }}" class="product-card group flex flex-col rounded-2xl overflow-hidden transition-all duration-300 relative">
+                    <a href="{{ $product->url }}" class="product-card group flex flex-col rounded-2xl overflow-hidden transition-all duration-300 relative">
                         
                         {{-- Favorite --}}
                         <button type="button" class="absolute top-3 right-3 z-30 w-9 h-9 bg-white/95 backdrop-blur-sm rounded-full shadow-md border border-gray-100 flex items-center justify-center hover:scale-110 transition duration-200" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorite({{ $product->id }}, this);" title="Favorilere Ekle">

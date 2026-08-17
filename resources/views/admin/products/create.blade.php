@@ -22,7 +22,18 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Ürün Adı *</label>
-                    <input type="text" name="name" required value="{{ old('name') }}" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: 360 Dönen Masif Çerçeve">
+                    <input type="text" name="name" id="productNameInput" required value="{{ old('name') }}" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: 360 Dönen Masif Çerçeve" oninput="autoGenerateSlug(this.value)">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1 flex items-center justify-between">
+                        <span>URL Adresi (SEO Slug) *</span>
+                        <span class="text-[11px] font-normal text-gray-400">Otomatik türetilir, isterseniz değiştirebilirsiniz</span>
+                    </label>
+                    <div class="flex items-center">
+                        <span class="bg-gray-100 text-gray-500 text-xs px-3 py-2.5 border border-r-0 border-gray-300 rounded-l-lg font-mono shrink-0">/urun/</span>
+                        <input type="text" name="slug" id="productSlugInput" value="{{ old('slug') }}" class="w-full text-sm border-gray-300 rounded-r-lg p-2.5 border focus:border-brand focus:ring-0 outline-none font-mono text-gray-700" placeholder="360-donen-masif-cerceve" oninput="isSlugManuallyEdited = true">
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
@@ -131,6 +142,26 @@
 </div>
 
 <script>
+let isSlugManuallyEdited = false;
+
+function autoGenerateSlug(title) {
+    if (isSlugManuallyEdited) return;
+    
+    let slug = title.toLowerCase()
+        .replace(/ğ/g, 'g')
+        .replace(/ü/g, 'u')
+        .replace(/ş/g, 's')
+        .replace(/ı/g, 'i')
+        .replace(/ö/g, 'o')
+        .replace(/ç/g, 'c')
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
+        
+    document.getElementById('productSlugInput').value = slug;
+}
+
 function toggleDiscountBlock() {
     const hasDiscount = document.getElementById('hasDiscount').checked;
     const block = document.getElementById('discountBlock');

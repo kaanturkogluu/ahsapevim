@@ -9,9 +9,17 @@
             <h3 class="text-lg font-bold text-gray-800">Ürün Listesi</h3>
             <p class="text-xs text-gray-500 mt-1">Mağazadaki tüm aktif ve pasif ürünleri yönetin.</p>
         </div>
-        <a href="{{ route('admin.products.create') }}" class="py-2.5 px-5 bg-[#C87A53] hover:bg-[#A65F38] text-white font-bold rounded-lg text-sm transition flex items-center gap-2">
-            <i class="fa-solid fa-plus text-xs"></i> Yeni Ürün Ekle
-        </a>
+        <div class="flex items-center gap-2 flex-wrap">
+            <a href="{{ route('seo.sitemap') }}" target="_blank" class="py-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg text-xs transition flex items-center gap-1.5 border border-gray-200">
+                <i class="fa-solid fa-sitemap text-amber-700"></i> sitemap.xml
+            </a>
+            <a href="{{ route('seo.urunler_xml') }}" target="_blank" class="py-2 px-3 bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold rounded-lg text-xs transition flex items-center gap-1.5 border border-amber-200">
+                <i class="fa-solid fa-file-code text-amber-700"></i> urunler.xml
+            </a>
+            <a href="{{ route('admin.products.create') }}" class="py-2 px-4 bg-[#C87A53] hover:bg-[#A65F38] text-white font-bold rounded-lg text-xs transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-plus"></i> Yeni Ürün Ekle
+            </a>
+        </div>
     </div>
 
     <div class="admin-table-wrapper">
@@ -38,6 +46,12 @@
                         </td>
                         <td class="py-3.5" data-label="Ürün">
                             <div class="font-bold text-gray-800">{{ $product->name }}</div>
+                            <div class="text-[11px] font-mono text-gray-400 flex items-center gap-1 mt-0.5">
+                                <a href="{{ $product->url }}" target="_blank" class="hover:text-brand hover:underline flex items-center gap-0.5">
+                                    /urun/{{ $product->slug ?: $product->id }}
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                                </a>
+                            </div>
                             @if($product->discount_percent > 0)
                                 <div class="mt-1">
                                     <span class="px-2 py-0.5 bg-red-100 text-red-700 font-extrabold text-[10px] rounded-full">%{{ $product->discount_percent }} İNDİRİMLİ</span>

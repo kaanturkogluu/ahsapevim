@@ -44,7 +44,7 @@
                             </div>
                         @endif
 
-                        <a href="{{ url('/urun/' . $product->id) }}" class="block p-4">
+                        <a href="{{ $product->url }}" class="block p-4">
                             <div class="aspect-square w-full rounded-xl bg-stone-100 overflow-hidden mb-3 relative flex items-center justify-center p-2">
                                 <img src="{{ $product->image ?: '/cerceve.png' }}" alt="{{ $product->name }}" class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition duration-300">
                             </div>
@@ -69,7 +69,7 @@
                         </a>
 
                         <div class="p-4 pt-0">
-                            <a href="{{ url('/urun/' . $product->id) }}" class="w-full py-2.5 bg-amber-50 hover:bg-[#C87A53] text-[#C87A53] hover:text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-1.5 border border-amber-200 hover:border-[#C87A53]">
+                            <a href="{{ $product->url }}" class="w-full py-2.5 bg-amber-50 hover:bg-[#C87A53] text-[#C87A53] hover:text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-1.5 border border-amber-200 hover:border-[#C87A53]">
                                 <i class="fa-solid fa-eye"></i> İncele & Sepete Ekle
                             </a>
                         </div>
