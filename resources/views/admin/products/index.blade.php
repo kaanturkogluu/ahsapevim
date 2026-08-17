@@ -14,8 +14,8 @@
         </a>
     </div>
 
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
+    <div class="admin-table-wrapper">
+        <table class="w-full text-left border-collapse responsive-stack" style="min-width: 600px">
             <thead>
                 <tr class="border-b border-gray-200 text-xs font-bold text-gray-400 uppercase tracking-wider">
                     <th class="pb-3 w-16 text-center">Görsel</th>
@@ -31,12 +31,12 @@
             <tbody class="divide-y divide-gray-100 text-sm">
                 @forelse($products as $product)
                     <tr>
-                        <td class="py-3.5 text-center">
+                        <td class="py-3.5 text-center" data-label="Görsel">
                             <div class="w-12 h-14 bg-gray-50 rounded-lg border border-gray-150 overflow-hidden flex items-center justify-center p-1">
                                 <img src="{{ $product->image ?: '/cerceve.png' }}" class="max-w-full max-h-full object-contain" alt="product">
                             </div>
                         </td>
-                        <td class="py-3.5">
+                        <td class="py-3.5" data-label="Ürün">
                             <div class="font-bold text-gray-800">{{ $product->name }}</div>
                             @if($product->discount_percent > 0)
                                 <div class="mt-1">
@@ -44,10 +44,10 @@
                                 </div>
                             @endif
                         </td>
-                        <td class="py-3.5">
+                        <td class="py-3.5" data-label="Kategori">
                             <span class="px-2.5 py-1 bg-stone-100 text-stone-700 rounded-md font-semibold text-xs">{{ $product->category->name ?? 'Kategorisiz' }}</span>
                         </td>
-                        <td class="py-3.5">
+                        <td class="py-3.5" data-label="3D Şablon">
                             @if($product->threeDTemplate)
                                 <span class="px-2.5 py-1 bg-amber-50 text-amber-800 rounded-md font-bold text-xs border border-amber-200/50 flex items-center gap-1.5 w-max">
                                     <i class="fa-solid fa-cube text-amber-600"></i> {{ $product->threeDTemplate->name }}
@@ -56,21 +56,21 @@
                                 <span class="text-xs text-gray-400 font-semibold"><i class="fa-solid fa-ban mr-1"></i> Yok (Sadece 2D)</span>
                             @endif
                         </td>
-                        <td class="py-3.5 text-right font-bold text-gray-900">
+                        <td class="py-3.5 text-right font-bold text-gray-900" data-label="Fiyat">
                             @if($product->discount_percent > 0)
                                 <div class="text-xs text-gray-400 line-through">{{ number_format($product->original_price, 2, ',', '.') }} TL</div>
                             @endif
                             <div class="text-[#C87A53]">{{ number_format($product->price, 2, ',', '.') }} TL</div>
                         </td>
-                        <td class="py-3.5 text-center font-semibold text-gray-600">{{ $product->stock }}</td>
-                        <td class="py-3.5 text-center">
+                        <td class="py-3.5 text-center font-semibold text-gray-600" data-label="Stok">{{ $product->stock }}</td>
+                        <td class="py-3.5 text-center" data-label="Durum">
                             @if($product->is_active)
                                 <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-bold text-[10px]">Aktif</span>
                             @else
                                 <span class="px-2 py-0.5 bg-gray-150 text-gray-500 rounded-full font-bold text-[10px]">Pasif</span>
                             @endif
                         </td>
-                        <td class="py-3.5 text-right space-x-2 whitespace-nowrap">
+                        <td class="py-3.5 text-right space-x-2 whitespace-nowrap" data-label="İşlem">
                             <a href="{{ route('admin.products.edit', $product->id) }}" class="text-blue-600 hover:text-blue-800 font-bold text-xs"><i class="fa-solid fa-edit"></i> Düzenle</a>
                             <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="inline" onsubmit="return confirm('Bu ürünü silmek istediğinize emin misiniz?')">
                                 @csrf

@@ -12,7 +12,7 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Order::with(['items.product', 'shippingCompany'])->latest();
+        $query = Order::with(['items', 'shippingCompany'])->latest();
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);

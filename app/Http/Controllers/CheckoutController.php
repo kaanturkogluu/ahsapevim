@@ -270,9 +270,6 @@ class CheckoutController extends Controller
                     }
                 }
 
-                // Clear Cart Session
-                session()->forget('cart');
-
                 // Queue Order Confirmation Email to Customer using Dynamic Mail Template
                 $orderData = [
                     'user_name' => $order->name,

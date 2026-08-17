@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Page;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class PageController extends Controller
 {
@@ -146,10 +147,13 @@ class PageController extends Controller
             ];
 
             $page->update([
-                'title' => $request->title,
-                'content' => json_encode($contactData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
+                'title'     => $request->title,
+                'content'   => json_encode($contactData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
                 'is_active' => $request->has('is_active'),
             ]);
+
+            // Önbelleği temizle — AppServiceProvider bir sonraki istekte taze veriyi çekecek
+            Cache::forget('contact_data');
 
             return redirect()->route('admin.pages.index')->with('success', 'İletişim bilgileri başarıyla güncellendi.');
         }

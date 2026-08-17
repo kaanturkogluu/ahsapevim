@@ -30,40 +30,40 @@ class AppServiceProvider extends ServiceProvider
 
             try {
                 if (\Illuminate\Support\Facades\Schema::hasTable('pages')) {
-                    $contactPage = \App\Models\Page::where('slug', 'iletisim')->first();
-                    $contactData = [];
-                    if ($contactPage && !empty($contactPage->content)) {
-                        $decoded = json_decode($contactPage->content, true);
-                        if (is_array($decoded)) {
-                            $contactData = $decoded;
+                    // Cache iletisim verisini 10 dakika boyunca sakla (her istekte DB sorgusu yapmaz)
+                    $contactData = \Illuminate\Support\Facades\Cache::remember('contact_data', 600, function () {
+                        $contactPage = \App\Models\Page::where('slug', 'iletisim')->first();
+                        $data = [];
+                        if ($contactPage && !empty($contactPage->content)) {
+                            $decoded = json_decode($contactPage->content, true);
+                            if (is_array($decoded)) {
+                                $data = $decoded;
+                            }
                         }
-                    }
-
-                    $contactData = array_merge([
-                        'phone' => '0850 XXX XX XX',
-                        'whatsapp' => '05XX XXX XX XX',
-                        'working_hours_weekdays' => '09:00 - 18:00',
-                        'working_hours_saturday' => '10:00 - 15:00',
-                        'address' => "Şehzadeler Mevkii, Merkez\nManisa, Türkiye",
-                        'email' => 'info@ahsapevim.com',
-                        'map_url' => '',
-                        'note' => '',
-                    ], array_filter($contactData, function ($val) {
-                        return !is_null($val) && $val !== '';
-                    }));
+                        return array_merge([
+                            'phone'                  => '0850 XXX XX XX',
+                            'whatsapp'               => '05XX XXX XX XX',
+                            'working_hours_weekdays' => '09:00 - 18:00',
+                            'working_hours_saturday' => '10:00 - 15:00',
+                            'address'                => "Şehzadeler Mevkii, Merkez\nManisa, Türkiye",
+                            'email'                  => 'info@ahsapevim.com',
+                            'map_url'                => '',
+                            'note'                   => '',
+                        ], array_filter($data, fn($val) => !is_null($val) && $val !== ''));
+                    });
 
                     $view->with('contactData', $contactData);
                 }
             } catch (\Throwable $e) {
                 $view->with('contactData', [
-                    'phone' => '0850 XXX XX XX',
-                    'whatsapp' => '05XX XXX XX XX',
+                    'phone'                  => '0850 XXX XX XX',
+                    'whatsapp'               => '05XX XXX XX XX',
                     'working_hours_weekdays' => '09:00 - 18:00',
                     'working_hours_saturday' => '10:00 - 15:00',
-                    'address' => "Şehzadeler Mevkii, Merkez\nManisa, Türkiye",
-                    'email' => 'info@ahsapevim.com',
-                    'map_url' => '',
-                    'note' => '',
+                    'address'                => "Şehzadeler Mevkii, Merkez\nManisa, Türkiye",
+                    'email'                  => 'info@ahsapevim.com',
+                    'map_url'                => '',
+                    'note'                   => '',
                 ]);
             }
         });

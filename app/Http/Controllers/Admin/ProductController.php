@@ -27,20 +27,7 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|min:0',
-            'discounted_price' => 'nullable|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
-            'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:8192',
-            'youtube_url' => 'nullable|url|max:255',
-            'three_d_template_id' => 'required|exists:three_d_templates,id',
-            'color' => 'nullable|string',
-            'size' => 'nullable|string',
-        ]);
+        $request->validate($this->productValidationRules());
 
         $imagePath = null;
         if ($request->hasFile('image')) {
@@ -69,24 +56,24 @@ class ProductController extends Controller
         }
 
         $features = [
-            'color' => $request->color,
-            'size' => $request->size,
-            'images' => $galleryImages,
+            'color'       => $request->color,
+            'size'        => $request->size,
+            'images'      => $galleryImages,
             'youtube_url' => $request->youtube_url,
         ];
 
         Product::create([
-            'category_id' => $request->category_id,
-            'name' => $request->name,
-            'slug' => Str::slug($request->name) . '-' . rand(1000, 9999),
-            'price' => $price,
-            'original_price' => $originalPrice,
-            'stock' => $request->stock,
-            'description' => $request->description,
-            'image' => $imagePath,
+            'category_id'       => $request->category_id,
+            'name'              => $request->name,
+            'slug'              => Str::slug($request->name) . '-' . rand(1000, 9999),
+            'price'             => $price,
+            'original_price'    => $originalPrice,
+            'stock'             => $request->stock,
+            'description'       => $request->description,
+            'image'             => $imagePath,
             'three_d_template_id' => $request->three_d_template_id,
-            'features' => $features,
-            'is_active' => $request->has('is_active'),
+            'features'          => $features,
+            'is_active'         => $request->has('is_active'),
         ]);
 
         return redirect()->route('admin.products.index')->with('success', 'Ürün başarıyla eklendi.');
@@ -104,20 +91,7 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|min:0',
-            'discounted_price' => 'nullable|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
-            'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:8192',
-            'youtube_url' => 'nullable|url|max:255',
-            'three_d_template_id' => 'required|exists:three_d_templates,id',
-            'color' => 'nullable|string',
-            'size' => 'nullable|string',
-        ]);
+        $request->validate($this->productValidationRules($id));
 
         $imagePath = $product->image;
         if ($request->hasFile('image')) {
@@ -165,23 +139,23 @@ class ProductController extends Controller
             $originalPrice = null;
         }
 
-        $features['color'] = $request->color;
-        $features['size'] = $request->size;
-        $features['images'] = array_values($existingGallery);
+        $features['color']       = $request->color;
+        $features['size']        = $request->size;
+        $features['images']      = array_values($existingGallery);
         $features['youtube_url'] = $request->youtube_url;
 
         $product->update([
-            'category_id' => $request->category_id,
-            'name' => $request->name,
-            'slug' => Str::slug($request->name) . '-' . $product->id,
-            'price' => $price,
-            'original_price' => $originalPrice,
-            'stock' => $request->stock,
-            'description' => $request->description,
-            'image' => $imagePath,
+            'category_id'       => $request->category_id,
+            'name'              => $request->name,
+            'slug'              => Str::slug($request->name) . '-' . $product->id,
+            'price'             => $price,
+            'original_price'    => $originalPrice,
+            'stock'             => $request->stock,
+            'description'       => $request->description,
+            'image'             => $imagePath,
             'three_d_template_id' => $request->three_d_template_id,
-            'features' => $features,
-            'is_active' => $request->has('is_active'),
+            'features'          => $features,
+            'is_active'         => $request->has('is_active'),
         ]);
 
         return redirect()->route('admin.products.index')->with('success', 'Ürün başarıyla güncellendi.');
@@ -197,4 +171,26 @@ class ProductController extends Controller
 
         return redirect()->route('admin.products.index')->with('success', 'Ürün başarıyla silindi.');
     }
+
+    /**
+     * Ürün store() ve update() için ortak validation kuralları.
+     */
+    private function productValidationRules(?int $ignoreId = null): array
+    {
+        return [
+            'name'               => 'required|string|max:255',
+            'category_id'        => 'required|exists:categories,id',
+            'price'              => 'required|numeric|min:0',
+            'discounted_price'   => 'nullable|numeric|min:0',
+            'stock'              => 'required|integer|min:0',
+            'description'        => 'nullable|string',
+            'image'              => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
+            'gallery.*'          => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:8192',
+            'youtube_url'        => 'nullable|url|max:255',
+            'three_d_template_id'=> 'required|exists:three_d_templates,id',
+            'color'              => 'nullable|string',
+            'size'               => 'nullable|string',
+        ];
+    }
 }
+
