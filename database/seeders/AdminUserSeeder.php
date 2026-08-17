@@ -13,7 +13,7 @@ class AdminUserSeeder extends Seeder
     public function run(): void
     {
         $email = env('ADMIN_EMAIL', 'admin@ahsapevim.com');
-        $password = env('ADMIN_PASSWORD', 'ChangeMe2024!');
+        $password = env('ADMIN_PASSWORD', 'admin1234');
 
         if (!\App\Models\User::where('email', $email)->exists()) {
             \App\Models\User::create([

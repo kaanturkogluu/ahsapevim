@@ -390,16 +390,40 @@ function closeDeleteOrderModal() {
             <button type="button" onclick="closeSendSmsModal()" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
         </div>
 
-        <form action="{{ route('admin.sms.send_manual') }}" method="POST" class="space-y-4" onsubmit="preventSpamSubmit(this)">
+        <form action="{{ route('admin.sms.send_manual') }}" method="POST" class="space-y-4" id="orderSmsForm">
             @csrf
             <div>
                 <label class="block text-[11px] font-extrabold text-gray-500 uppercase mb-1">Alıcı GSM / Telefon Numarası *</label>
-                <input type="text" name="to_phone" id="modalToPhone" required placeholder="05XXXXXXXXX" class="w-full text-xs font-mono border border-gray-300 rounded-xl p-2.5 outline-none focus:border-[#C87A53]">
+                <div class="relative">
+                    <input
+                        type="text"
+                        name="to_phone"
+                        id="modalToPhone"
+                        required
+                        placeholder="0532 123 45 67"
+                        maxlength="19"
+                        autocomplete="tel"
+                        inputmode="tel"
+                        class="w-full text-xs font-mono border border-gray-300 rounded-xl p-2.5 pr-9 outline-none focus:border-[#C87A53] transition"
+                        oninput="smsFormatPhone(this)"
+                        onblur="smsValidatePhone(this)"
+                    >
+                    <span id="smsPhoneIcon" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs hidden"></span>
+                </div>
+                <p id="smsPhoneError" class="text-[10px] text-rose-600 font-bold mt-1 hidden">
+                    <i class="fa-solid fa-circle-exclamation mr-1"></i>
+                    Geçerli bir Türk GSM numarası girin. Örn: 05321234567
+                </p>
+                <p class="text-[10px] text-gray-400 mt-1">Desteklenen formatlar: 0532..., +90532..., 90532...</p>
             </div>
 
             <div>
                 <label class="block text-[11px] font-extrabold text-gray-500 uppercase mb-1">SMS Mesaj Metni *</label>
-                <textarea name="message" id="modalSmsBody" rows="4" maxlength="1000" required placeholder="Müşterinize gitmesini istediğiniz SMS metni..." class="w-full text-xs border border-gray-300 rounded-xl p-2.5 outline-none focus:border-[#C87A53]"></textarea>
+                <textarea name="message" id="modalSmsBody" rows="4" maxlength="918" required placeholder="Müşterinize gitmesini istediğiniz SMS metni..." class="w-full text-xs border border-gray-300 rounded-xl p-2.5 outline-none focus:border-[#C87A53]" oninput="smsUpdateCharCount(this)"></textarea>
+                <div class="text-[10px] text-gray-400 text-right mt-1 font-mono flex items-center justify-end gap-2">
+                    <span id="smsPartsBadge" class="px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded font-bold hidden"></span>
+                    <span><span id="smsCharCounter">0</span> / 918 Karakter</span>
+                </div>
             </div>
 
             <input type="hidden" name="order_id" id="modalSmsOrderId">
@@ -408,7 +432,7 @@ function closeDeleteOrderModal() {
                 <button type="button" onclick="closeSendSmsModal()" class="py-2 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-xl transition">
                     Vazgeç
                 </button>
-                <button type="submit" class="py-2 px-5 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold text-xs rounded-xl transition shadow-sm flex items-center gap-1.5">
+                <button type="submit" id="orderSmsSubmitBtn" class="py-2 px-5 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold text-xs rounded-xl transition shadow-sm flex items-center gap-1.5">
                     <i class="fa-solid fa-paper-plane"></i> Netgsm İle Gönder
                 </button>
             </div>
@@ -417,14 +441,113 @@ function closeDeleteOrderModal() {
 </div>
 
 <script>
-function preventSpamSubmit(form) {
-    const btn = form.querySelector('button[type="submit"]');
-    if (btn && !btn.disabled) {
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Gönderiliyor...';
+// ── Telefon Formatlama & Validasyon ─────────────────────────────────────────
+function smsFormatPhone(el) {
+    let digits = el.value.replace(/\D/g, '');
+    if (digits.startsWith('90') && digits.length > 10) digits = digits.slice(2);
+    if (digits.startsWith('5')) digits = '0' + digits;
+    digits = digits.slice(0, 11);
+
+    let fmt = '';
+    if (digits.length > 0) fmt  = digits.slice(0, 4);
+    if (digits.length > 4) fmt += ' ' + digits.slice(4, 7);
+    if (digits.length > 7) fmt += ' ' + digits.slice(7, 9);
+    if (digits.length > 9) fmt += ' ' + digits.slice(9, 11);
+    el.value = fmt;
+
+    if (digits.length === 11) smsValidatePhone(el);
+    else smsClearPhoneValid();
+}
+
+function smsValidatePhone(el) {
+    const digits    = el.value.replace(/\D/g, '');
+    const icon      = document.getElementById('smsPhoneIcon');
+    const errMsg    = document.getElementById('smsPhoneError');
+    const submitBtn = document.getElementById('orderSmsSubmitBtn');
+    const isValid   = /^05[0-9]{9}$/.test(digits);
+
+    if (isValid) {
+        icon.textContent = '✓';
+        icon.className   = 'absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-emerald-600 font-bold';
+        icon.classList.remove('hidden');
+        errMsg.classList.add('hidden');
+        el.classList.remove('border-rose-400'); el.classList.add('border-emerald-400');
+        if (submitBtn) submitBtn.disabled = false;
+    } else if (digits.length > 0) {
+        icon.textContent = '✗';
+        icon.className   = 'absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-rose-500 font-bold';
+        icon.classList.remove('hidden');
+        errMsg.classList.remove('hidden');
+        el.classList.remove('border-emerald-400'); el.classList.add('border-rose-400');
+        if (submitBtn) submitBtn.disabled = true;
+    } else {
+        smsClearPhoneValid();
     }
 }
 
+function smsClearPhoneValid() {
+    const icon      = document.getElementById('smsPhoneIcon');
+    const errMsg    = document.getElementById('smsPhoneError');
+    const el        = document.getElementById('modalToPhone');
+    const submitBtn = document.getElementById('orderSmsSubmitBtn');
+    if (icon)      icon.classList.add('hidden');
+    if (errMsg)    errMsg.classList.add('hidden');
+    if (el)        el.classList.remove('border-rose-400', 'border-emerald-400');
+    if (submitBtn) submitBtn.disabled = false;
+}
+
+// ── SMS Karakter Sayacı ──────────────────────────────────────────────────────
+function smsUpdateCharCount(el) {
+    const len     = el.value.length;
+    const counter = document.getElementById('smsCharCounter');
+    const parts   = document.getElementById('smsPartsBadge');
+    if (counter) counter.textContent = len;
+    const smsLimit = /[çğışöüÇĞİŞÖÜ]/.test(el.value) ? 153 : 160;
+    const count    = Math.ceil(len / smsLimit) || 1;
+    if (parts) {
+        if (len > smsLimit) { parts.textContent = count + ' SMS'; parts.classList.remove('hidden'); }
+        else { parts.classList.add('hidden'); }
+    }
+}
+
+// ── Modal Kontrolleri ────────────────────────────────────────────────────────
+function openSendSmsModal(phone = '', orderId = '') {
+    const modal   = document.getElementById('sendSmsModal');
+    const phoneEl = document.getElementById('modalToPhone');
+    if (!modal) return;
+
+    if (phone) {
+        phoneEl.value = phone;
+        smsFormatPhone(phoneEl);
+    } else {
+        phoneEl.value = '';
+        smsClearPhoneValid();
+    }
+    document.getElementById('modalSmsOrderId').value = orderId;
+    document.getElementById('modalSmsBody').value = '';
+    smsUpdateCharCount(document.getElementById('modalSmsBody'));
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    setTimeout(() => phoneEl.focus(), 100);
+}
+
+function closeSendSmsModal() {
+    const modal = document.getElementById('sendSmsModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        smsClearPhoneValid();
+    }
+}
+
+// Modal dışına tıklayınca kapat
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('sendSmsModal');
+    if (modal && e.target === modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+});
+
+// ── Mail Modal Kontrolleri ───────────────────────────────────────────────────
 function openSendMailModal(email = '', orderId = '') {
     const modal = document.getElementById('sendMailModal');
     if (modal) {
@@ -437,24 +560,6 @@ function openSendMailModal(email = '', orderId = '') {
 
 function closeSendMailModal() {
     const modal = document.getElementById('sendMailModal');
-    if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }
-}
-
-function openSendSmsModal(phone = '', orderId = '') {
-    const modal = document.getElementById('sendSmsModal');
-    if (modal) {
-        document.getElementById('modalToPhone').value = phone;
-        document.getElementById('modalSmsOrderId').value = orderId;
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-    }
-}
-
-function closeSendSmsModal() {
-    const modal = document.getElementById('sendSmsModal');
     if (modal) {
         modal.classList.add('hidden');
         modal.classList.remove('flex');

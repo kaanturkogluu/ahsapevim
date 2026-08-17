@@ -92,13 +92,18 @@ class MessageLogController extends Controller
 
     public function sendManualSms(Request $request)
     {
+        // Validasyon öncesi telefonu temizle: boşluk, tire, parantez, + vb. kaldır
+        // "0532 123 45 67" → "05321234567"
+        $rawPhone   = preg_replace('/[^0-9+]/', '', $request->input('to_phone', ''));
+        $request->merge(['to_phone' => $rawPhone]);
+
         $request->validate([
-            // Türkiye GSM: 05XXXXXXXXX veya +905XXXXXXXXX veya 905XXXXXXXXX
-            'to_phone' => ['required', 'string', 'max:25', 'regex:/^(\+?90|0)?5[0-9]{9}$/'],
-            'message'  => 'required|string|max:918', // 6 SMS'e kadar (153 karakter × 6)
+            // Türkiye GSM: 05XXXXXXXXX (11 hane), 905XXXXXXXXX (12 hane), +905XXXXXXXXX
+            'to_phone' => ['required', 'string', 'regex:/^(\+?90|0)5[0-9]{9}$/'],
+            'message'  => 'required|string|max:918',
             'order_id' => 'nullable|exists:orders,id',
         ], [
-            'to_phone.regex' => 'Geçerli bir Türk GSM numarası girin. Örn: 05XXXXXXXXX veya +905XXXXXXXXX',
+            'to_phone.regex' => 'Geçerli bir Türk GSM numarası girin. Örn: 05321234567 veya +905321234567',
             'message.max'    => 'Mesaj 918 karakteri aşamaz (6 SMS).',
         ]);
 

@@ -134,7 +134,7 @@ class NetgsmService
                     '51'  => 'IYS marka bilgisi bulunamadı (Kod: 51)',
                     '70'  => 'Geçersiz parametre veya eksik zorunlu alan (Kod: 70)',
                     '80'  => 'Gönderim limiti aşıldı (Kod: 80)',
-                    '85'  => 'Spam engeli: Aynı numaraya 1 dakikada 20'den fazla görev oluşturulamaz (Kod: 85)',
+                    '85'  => 'Spam engeli: Ayni numaraya 1 dakikada 20\'den fazla gorev olusturulamaz (Kod: 85)',
                     default => 'Netgsm Servis Hatası — Kod: ' . $responseCode . ($description ? " ({$description})" : ''),
                 };
             }
