@@ -188,9 +188,22 @@
                                         </div>
                                         <input type="range" name="accessory_offset_y" id="accOffsetY" min="-5" max="10" step="0.1" value="0" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('accOffsetY_val').innerText = this.value; redrawModel();">
                                     </div>
+                                    <div>
+                                        <div class="flex items-center justify-between mb-1">
+                                            <label class="text-[10px] text-gray-600 font-medium">
+                                                Obje Boyutu / Ölçek: <span id="accScale_val" class="font-bold text-amber-700">1.0x</span>
+                                            </label>
+                                            <button type="button" onclick="document.getElementById('accScale').value=1.0; document.getElementById('accScale_val').innerText='1.0x'; redrawModel();" class="text-[10px] text-amber-700 hover:text-amber-900 bg-amber-100 hover:bg-amber-200 px-1.5 py-0.5 rounded flex items-center gap-1 transition" title="Boyutu Sıfırla">
+                                                <i class="fa-solid fa-rotate-left text-[9px]"></i> Sıfırla
+                                            </button>
+                                        </div>
+                                        <input type="range" name="accessory_scale" id="accScale" min="0.3" max="2.5" step="0.05" value="1.0" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('accScale_val').innerText = this.value + 'x'; redrawModel();">
+                                    </div>
+
+
 
                                     <button type="button" onclick="resetAccessoryOffsets();" class="w-full mt-2 text-[11px] font-bold text-amber-800 bg-amber-100/90 hover:bg-amber-200 py-1.5 px-2 rounded-lg border border-amber-200 transition flex items-center justify-center gap-1.5 shadow-sm">
-                                        <i class="fa-solid fa-arrow-rotate-left"></i> Obje Konumunu Sıfırla (X:0, Y:0)
+                                        <i class="fa-solid fa-arrow-rotate-left"></i> Obje Ayarlarını Sıfırla (X:0, Y:0, 1.0x)
                                     </button>
                                 </div>
                             </div>
@@ -210,7 +223,7 @@
                 <span class="w-2.5 h-2.5 rounded-full bg-brand animate-pulse"></span>
                 <span>3D Canlı Tasarım Önizleme</span>
             </div>
-            <div id="studio3DContainer" class="flex-1 w-full bg-[#f9fafb] cursor-grab active:cursor-grabbing"></div>
+            <div id="studio3DContainer" class="flex-1 w-full cursor-grab active:cursor-grabbing" style="background-image: url('/images/template-bg.jpg'); background-position: center center; background-size: cover; background-repeat: no-repeat;"></div>
         </div>
 
     </div>
@@ -297,7 +310,7 @@
                     </div>
 
                     <!-- Mini 3D Preview Canvas -->
-                    <div class="bg-gray-900 rounded-xl overflow-hidden border border-gray-800 relative flex flex-col h-64 shadow-inner">
+                    <div class="rounded-xl overflow-hidden border border-gray-800 relative flex flex-col h-64 shadow-inner" style="background-image: url('/images/template-bg.jpg'); background-position: center center; background-size: cover; background-repeat: no-repeat;">
                         <div class="absolute top-2 left-2 z-10 bg-black/60 backdrop-blur px-2.5 py-1 rounded text-[10px] text-amber-400 font-bold flex items-center gap-1.5">
                             <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Canlı Obje Önizleme
                         </div>
@@ -366,12 +379,16 @@ function toggleAccessoryControls() {
 function resetAccessoryOffsets() {
     const xInput = document.getElementById('accOffsetX');
     const yInput = document.getElementById('accOffsetY');
+    const sInput = document.getElementById('accScale');
     if (xInput) xInput.value = 0;
     if (yInput) yInput.value = 0;
+    if (sInput) sInput.value = 1.0;
     const xVal = document.getElementById('accOffsetX_val');
     const yVal = document.getElementById('accOffsetY_val');
+    const sVal = document.getElementById('accScale_val');
     if (xVal) xVal.innerText = '0';
     if (yVal) yVal.innerText = '0';
+    if (sVal) sVal.innerText = '1.0x';
     redrawModel();
 }
 
@@ -423,7 +440,7 @@ function generateWoodTextures(woodType, rendererInstance) {
 
     colorCtx.fillStyle = baseColor; colorCtx.fillRect(0, 0, size, size);
     bumpCtx.fillStyle = '#808080'; bumpCtx.fillRect(0, 0, size, size);
-    roughCtx.fillStyle = '#656565'; roughCtx.fillRect(0, 0, size, size);
+    roughCtx.fillStyle = '#d8d8d8'; roughCtx.fillRect(0, 0, size, size);
 
     // Primary Wood Fibers & Deep Grooves
     for (let y = -100; y < size + 100; y += 6) {
@@ -500,36 +517,44 @@ function createPieceMaterial(woodTextures, bScale, pieceName) {
         bumpMap: woodTextures.bumpMap,
         bumpScale: bScale,
         roughnessMap: woodTextures.roughnessMap,
-        roughness: 0.65,
-        metalness: 0.02
+        roughness: 0.88,
+        metalness: 0.0
     });
 }
 
 // --- 3D ACCESSORY OBJECT GENERATORS ---
-function createStreetLampGroup(targetHeight, c1, c2, c3) {
+function createStreetLampGroup(targetHeight) {
     const lampGroup = new THREE.Group();
-    const scale = (targetHeight || 14) / 22.0;
-    const metalMat = new THREE.MeshStandardMaterial({ color: c1 || 0x332c25, metalness: 0.85, roughness: 0.35 });
-    const brassAccentMat = new THREE.MeshStandardMaterial({ color: c2 || 0x8a6e3e, metalness: 0.8, roughness: 0.4 });
-    const glassMat = new THREE.MeshStandardMaterial({ color: c3 || 0xffbb44, transparent: true, opacity: 0.75, roughness: 0.15, emissive: c3 || 0xff8800, emissiveIntensity: 0.7 });
-    const bulbMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: c3 || 0xffcc44, emissiveIntensity: 2.5, roughness: 0.1 });
+    const scale = (targetHeight || 14) / 16.0;
 
-    const baseBottom = new THREE.Mesh(new THREE.CylinderGeometry(1.5 * scale, 1.8 * scale, 0.5 * scale, 8), metalMat); baseBottom.position.y = 0.25 * scale; lampGroup.add(baseBottom);
-    const baseMid = new THREE.Mesh(new THREE.CylinderGeometry(1.0 * scale, 1.4 * scale, 0.8 * scale, 8), metalMat); baseMid.position.y = 0.9 * scale; lampGroup.add(baseMid);
-    const baseRing = new THREE.Mesh(new THREE.TorusGeometry(0.95 * scale, 0.12 * scale, 8, 16), brassAccentMat); baseRing.rotation.x = Math.PI / 2; baseRing.position.y = 1.3 * scale; lampGroup.add(baseRing);
-    const stemY = 5.05 * scale;
-    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.35 * scale, 0.60 * scale, 7.5 * scale, 16), metalMat); stem.position.y = stemY; lampGroup.add(stem);
-    const stemRing = new THREE.Mesh(new THREE.TorusGeometry(0.48 * scale, 0.1 * scale, 8, 16), brassAccentMat); stemRing.rotation.x = Math.PI / 2; stemRing.position.y = 6.25 * scale; lampGroup.add(stemRing);
-    const collarY = 9.25 * scale;
-    const collar = new THREE.Mesh(new THREE.CylinderGeometry(0.85 * scale, 0.4 * scale, 0.9 * scale, 6), metalMat); collar.position.y = collarY; lampGroup.add(collar);
-    const glassY = 10.9 * scale;
-    const glassMesh = new THREE.Mesh(new THREE.CylinderGeometry(1.3 * scale, 0.85 * scale, 2.4 * scale, 6), glassMat); glassMesh.position.y = glassY; lampGroup.add(glassMesh);
-    const bulbMesh = new THREE.Mesh(new THREE.SphereGeometry(0.38 * scale, 16, 16), bulbMat); bulbMesh.position.y = glassY; lampGroup.add(bulbMesh);
-    const warmLight = new THREE.PointLight(c3 || 0xffaa33, 2.4, 28 * scale, 1.8); warmLight.position.y = glassY; lampGroup.add(warmLight);
-    const roofY = 12.6 * scale;
-    const roof = new THREE.Mesh(new THREE.CylinderGeometry(0.2 * scale, 1.6 * scale, 1.0 * scale, 6), metalMat); roof.position.y = roofY; lampGroup.add(roof);
-    const finialStem = new THREE.Mesh(new THREE.CylinderGeometry(0.12 * scale, 0.25 * scale, 0.6 * scale, 8), brassAccentMat); finialStem.position.y = 13.4 * scale; lampGroup.add(finialStem);
-    const finialBall = new THREE.Mesh(new THREE.SphereGeometry(0.28 * scale, 12, 12), brassAccentMat); finialBall.position.y = 13.8 * scale; lampGroup.add(finialBall);
+    const metalMat = new THREE.MeshStandardMaterial({ color: 0x222222, metalness: 0.8, roughness: 0.3 });
+    const glassMat = new THREE.MeshStandardMaterial({ color: 0xfff2a3, transparent: true, opacity: 0.7, emissive: 0xffaa00, emissiveIntensity: 0.6 });
+
+    // Base
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(1.2 * scale, 1.8 * scale, 0.8 * scale, 12), metalMat);
+    base.position.y = 0.4 * scale;
+    lampGroup.add(base);
+
+    // Pole
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.3 * scale, 0.5 * scale, 10 * scale, 12), metalMat);
+    pole.position.y = 5.8 * scale;
+    lampGroup.add(pole);
+
+    // Lamp Housing / Head Base
+    const headBase = new THREE.Mesh(new THREE.CylinderGeometry(1.4 * scale, 0.8 * scale, 0.6 * scale, 6), metalMat);
+    headBase.position.y = 11.1 * scale;
+    lampGroup.add(headBase);
+
+    // Glass
+    const glass = new THREE.Mesh(new THREE.CylinderGeometry(1.2 * scale, 0.8 * scale, 2.5 * scale, 6), glassMat);
+    glass.position.y = 12.5 * scale;
+    lampGroup.add(glass);
+
+    // Roof
+    const roof = new THREE.Mesh(new THREE.ConeGeometry(1.6 * scale, 1.2 * scale, 6), metalMat);
+    roof.position.y = 14.3 * scale;
+    lampGroup.add(roof);
+
     return lampGroup;
 }
 
@@ -666,6 +691,80 @@ let customRotatingFrame = null;
 let outerFrameMeshes = [];
 let innerFrameMeshes = [];
 
+function attachInnerFrameDragController(renderer, camera, controls, rotatingFrameGroup) {
+    if (!renderer || !renderer.domElement || !camera || !rotatingFrameGroup) return;
+
+    const canvas = renderer.domElement;
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    let isDraggingInner = false;
+    let previousMouseX = 0;
+    let previousMouseY = 0;
+
+    function getCanvasRelativeMouse(e) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+            x: ((e.clientX - rect.left) / rect.width) * 2 - 1,
+            y: -((e.clientY - rect.top) / rect.height) * 2 + 1
+        };
+    }
+
+    function checkHitInnerFrame(e) {
+        if (!camera || !rotatingFrameGroup) return false;
+        const coords = getCanvasRelativeMouse(e);
+        mouse.x = coords.x;
+        mouse.y = coords.y;
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(rotatingFrameGroup.children, true);
+        return intersects.length > 0;
+    }
+
+    canvas.addEventListener('pointermove', function(e) {
+        if (!isDraggingInner) {
+            if (checkHitInnerFrame(e)) {
+                canvas.style.cursor = 'grab';
+            } else {
+                canvas.style.cursor = 'default';
+            }
+        }
+    });
+
+    canvas.addEventListener('pointerdown', function(e) {
+        if (e.button !== 0 && e.pointerType === 'mouse') return;
+
+        if (checkHitInnerFrame(e)) {
+            isDraggingInner = true;
+            previousMouseX = e.clientX;
+            previousMouseY = e.clientY;
+            if (controls) controls.enabled = false;
+            canvas.style.cursor = 'grabbing';
+            e.stopPropagation();
+        }
+    });
+
+    window.addEventListener('pointermove', function(e) {
+        if (isDraggingInner) {
+            const deltaX = e.clientX - previousMouseX;
+            rotatingFrameGroup.rotation.y += deltaX * 0.012;
+            previousMouseX = e.clientX;
+            previousMouseY = e.clientY;
+        }
+    });
+
+    const releaseInnerDrag = function() {
+        if (isDraggingInner) {
+            isDraggingInner = false;
+            if (controls) controls.enabled = true;
+            canvas.style.cursor = 'default';
+        }
+    };
+
+    window.addEventListener('pointerup', releaseInnerDrag);
+    window.addEventListener('pointercancel', releaseInnerDrag);
+}
+
 const container3D = document.getElementById('studio3DContainer');
 
 init3D();
@@ -676,7 +775,7 @@ const inputs = [
     'partTop', 'partBottom', 'partLeft', 'partRight',
     'innerWidth', 'innerHeight', 'innerDepth', 'innerBorder',
     'posX', 'posY', 'bumpScale', 'woodTypeSelect',
-    'hasAccessory', 'accessoryType', 'accessoryPos', 'accOffsetX', 'accOffsetY'
+    'hasAccessory', 'accessoryType', 'accessoryPos', 'accOffsetX', 'accOffsetY', 'accScale'
 ];
 
 inputs.forEach(id => {
@@ -743,19 +842,28 @@ function onWindowResize() {
     renderer.setSize(w, h);
 }
 
-function buildAccessoryGroup(type, targetH) {
-    if (type === 'street_lamp') return createStreetLampGroup(targetH);
-    if (type === 'wooden_clock') return createWoodenClockGroup(targetH);
-    if (type === 'flower_vase') return createFlowerVaseGroup(targetH);
-    if (type === 'mini_bookshelf') return createMiniBookshelfGroup(targetH);
-    if (type === 'candle_holder') return createCandleHolderGroup(targetH);
-    if (type === 'abstract_sculpture') return createAbstractSculptureGroup(targetH);
+function buildAccessoryGroup(type, targetH, userScale) {
+    const s = userScale || 1.0;
+    const finalH = targetH * s;
+    if (type === 'street_lamp') return createStreetLampGroup(finalH);
+    if (type === 'wooden_clock') return createWoodenClockGroup(finalH);
+    if (type === 'flower_vase') return createFlowerVaseGroup(finalH);
+    if (type === 'mini_bookshelf') return createMiniBookshelfGroup(finalH);
+    if (type === 'candle_holder') return createCandleHolderGroup(finalH);
+    if (type === 'abstract_sculpture') return createAbstractSculptureGroup(finalH);
     
     if (customAccessoriesRegistry[type]) {
         const item = customAccessoriesRegistry[type];
-        const scaledH = targetH * (item.scale || 1.0);
+        const scaledH = finalH * (item.scale || 1.0);
         if (item.isUploadedFile && item.threeObject) {
-            return item.threeObject.clone();
+            const cloned = item.threeObject.clone();
+            const box = new THREE.Box3().setFromObject(cloned);
+            const size = new THREE.Vector3();
+            box.getSize(size);
+            const maxDim = Math.max(size.x, size.y, size.z) || 1;
+            const normScale = (scaledH / maxDim);
+            cloned.scale.set(normScale, normScale, normScale);
+            return cloned;
         }
         if (item.preset === 'candle_holder') return createCandleHolderGroup(scaledH, item.c1, item.c2, item.c3);
         if (item.preset === 'street_lamp') return createStreetLampGroup(scaledH, item.c1, item.c2, item.c3);
@@ -764,7 +872,7 @@ function buildAccessoryGroup(type, targetH) {
         if (item.preset === 'mini_bookshelf') return createMiniBookshelfGroup(scaledH, item.c1);
         if (item.preset === 'abstract_sculpture') return createAbstractSculptureGroup(scaledH, item.c1, item.c2);
     }
-    return createStreetLampGroup(targetH);
+    return createStreetLampGroup(finalH);
 }
 
 function redrawModel() {
@@ -890,8 +998,9 @@ function redrawModel() {
     const accOffsetY = parseFloat(document.getElementById('accOffsetY')?.value || 0);
 
     if (hasAccessory) {
+        const accScale = parseFloat(document.getElementById('accScale')?.value || 1.0);
         const targetH = Math.min(height * 0.65, 18);
-        const accGroup = buildAccessoryGroup(accessoryType, targetH);
+        const accGroup = buildAccessoryGroup(accessoryType, targetH, accScale);
 
         if (accGroup) {
             const bottomBoardY = -height/2 + thickness;
@@ -907,6 +1016,10 @@ function redrawModel() {
             accGroup.position.set(posX, bottomBoardY + accOffsetY, depth * 0.1);
             currentModelGroup.add(accGroup);
         }
+    }
+
+    if (typeof attachInnerFrameDragController === 'function' && customRotatingFrame) {
+        attachInnerFrameDragController(renderer, camera, controls, customRotatingFrame);
     }
 }
 
@@ -992,11 +1105,29 @@ function updateModal3DPreview() {
         modalPreviewGroup.remove(modalPreviewGroup.children[0]);
     }
 
+    const scale = parseFloat(document.getElementById('modalAccScale')?.value || 1.0);
+
+    if (modalUploadedObject) {
+        const cloned = modalUploadedObject.clone();
+        const box = new THREE.Box3().setFromObject(cloned);
+        const size = new THREE.Vector3();
+        box.getSize(size);
+        const maxDim = Math.max(size.x, size.y, size.z) || 1;
+        const normScale = (10 / maxDim) * scale;
+        cloned.scale.set(normScale, normScale, normScale);
+        
+        const center = new THREE.Vector3();
+        box.getCenter(center);
+        cloned.position.set(-center.x * normScale, -center.y * normScale, -center.z * normScale);
+        
+        modalPreviewGroup.add(cloned);
+        return;
+    }
+
     const preset = document.getElementById('modalAccPreset')?.value || 'candle_holder';
     const c1 = document.getElementById('modalAccColor1')?.value;
     const c2 = document.getElementById('modalAccColor2')?.value;
     const c3 = document.getElementById('modalAccColor3')?.value;
-    const scale = parseFloat(document.getElementById('modalAccScale')?.value || 1.0);
 
     let group = null;
     const targetH = 14 * scale;
@@ -1071,7 +1202,8 @@ function handleModalAccFileUpload(e) {
                 const loader = new THREE.GLTFLoader();
                 loader.parse(evt.target.result, '', function(gltf) {
                     modalUploadedObject = gltf.scene;
-                    if (statusText) statusText.innerText = '3D Model Başarıyla Yüklendi! (' + file.name + ')';
+                    if (statusText) statusText.innerText = '✨ 3D Model Başarıyla Yüklendi! (' + file.name + ')';
+                    updateModal3DPreview();
                 });
             } else {
                 if (statusText) statusText.innerText = 'Model dosyası alındı: ' + file.name;

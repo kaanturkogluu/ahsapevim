@@ -334,6 +334,80 @@ let modalScene, modalCamera, modalRenderer, modalControls, modalAnimationId;
 let modalModelGroup = new THREE.Group();
 let modalOuterGroup, modalCustomRotatingFrame, modalCustomPhotoFront, modalCustomPhotoBack;
 
+function attachInnerFrameDragController(renderer, camera, controls, rotatingFrameGroup) {
+    if (!renderer || !renderer.domElement || !camera || !rotatingFrameGroup) return;
+
+    const canvas = renderer.domElement;
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    let isDraggingInner = false;
+    let previousMouseX = 0;
+    let previousMouseY = 0;
+
+    function getCanvasRelativeMouse(e) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+            x: ((e.clientX - rect.left) / rect.width) * 2 - 1,
+            y: -((e.clientY - rect.top) / rect.height) * 2 + 1
+        };
+    }
+
+    function checkHitInnerFrame(e) {
+        if (!camera || !rotatingFrameGroup) return false;
+        const coords = getCanvasRelativeMouse(e);
+        mouse.x = coords.x;
+        mouse.y = coords.y;
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(rotatingFrameGroup.children, true);
+        return intersects.length > 0;
+    }
+
+    canvas.addEventListener('pointermove', function(e) {
+        if (!isDraggingInner) {
+            if (checkHitInnerFrame(e)) {
+                canvas.style.cursor = 'grab';
+            } else {
+                canvas.style.cursor = 'default';
+            }
+        }
+    });
+
+    canvas.addEventListener('pointerdown', function(e) {
+        if (e.button !== 0 && e.pointerType === 'mouse') return;
+
+        if (checkHitInnerFrame(e)) {
+            isDraggingInner = true;
+            previousMouseX = e.clientX;
+            previousMouseY = e.clientY;
+            if (controls) controls.enabled = false;
+            canvas.style.cursor = 'grabbing';
+            e.stopPropagation();
+        }
+    });
+
+    window.addEventListener('pointermove', function(e) {
+        if (isDraggingInner) {
+            const deltaX = e.clientX - previousMouseX;
+            rotatingFrameGroup.rotation.y += deltaX * 0.012;
+            previousMouseX = e.clientX;
+            previousMouseY = e.clientY;
+        }
+    });
+
+    const releaseInnerDrag = function() {
+        if (isDraggingInner) {
+            isDraggingInner = false;
+            if (controls) controls.enabled = true;
+            canvas.style.cursor = 'default';
+        }
+    };
+
+    window.addEventListener('pointerup', releaseInnerDrag);
+    window.addEventListener('pointercancel', releaseInnerDrag);
+}
+
 function initModal3D() {
     const container = document.getElementById('workspaceContainer');
     if (!container) return;
@@ -373,6 +447,9 @@ function initModal3D() {
 
     // Build the frame inside modalModelGroup
     buildModalFrame();
+    if (typeof attachInnerFrameDragController === 'function') {
+        attachInnerFrameDragController(modalRenderer, modalCamera, modalControls, modalCustomRotatingFrame);
+    }
 
     const animateModal = () => {
         modalAnimationId = requestAnimationFrame(animateModal);
@@ -1455,6 +1532,10 @@ function handleEnd() {
                 accGroup.position.set(posX, bottomBoardY + accOffsetY, depth * 0.1);
                 currentModelGroup.add(accGroup);
             }
+        }
+
+        if (typeof attachInnerFrameDragController === 'function') {
+            attachInnerFrameDragController(renderer, camera, controls, customRotatingFrame);
         }
     }
     // Connect image upload handle to load image directly onto 3D model

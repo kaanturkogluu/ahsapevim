@@ -20,6 +20,8 @@ return new class extends Migration
                 $table->float('accessory_offset_y')->default(0)->after('accessory_offset_x');
                 $table->float('accessory_scale')->default(1.0)->after('accessory_offset_y');
             });
+        }
+
         if (!Schema::hasColumn('three_d_templates', 'accessory_color1')) {
             Schema::table('three_d_templates', function (Blueprint $table) {
                 $table->string('accessory_color1')->nullable()->after('accessory_scale');

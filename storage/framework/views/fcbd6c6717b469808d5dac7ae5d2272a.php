@@ -678,6 +678,80 @@ let customRotatingFrame = null;
 let outerFrameMeshes = [];
 let innerFrameMeshes = [];
 
+function attachInnerFrameDragController(renderer, camera, controls, rotatingFrameGroup) {
+    if (!renderer || !renderer.domElement || !camera || !rotatingFrameGroup) return;
+
+    const canvas = renderer.domElement;
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    let isDraggingInner = false;
+    let previousMouseX = 0;
+    let previousMouseY = 0;
+
+    function getCanvasRelativeMouse(e) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+            x: ((e.clientX - rect.left) / rect.width) * 2 - 1,
+            y: -((e.clientY - rect.top) / rect.height) * 2 + 1
+        };
+    }
+
+    function checkHitInnerFrame(e) {
+        if (!camera || !rotatingFrameGroup) return false;
+        const coords = getCanvasRelativeMouse(e);
+        mouse.x = coords.x;
+        mouse.y = coords.y;
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(rotatingFrameGroup.children, true);
+        return intersects.length > 0;
+    }
+
+    canvas.addEventListener('pointermove', function(e) {
+        if (!isDraggingInner) {
+            if (checkHitInnerFrame(e)) {
+                canvas.style.cursor = 'grab';
+            } else {
+                canvas.style.cursor = 'default';
+            }
+        }
+    });
+
+    canvas.addEventListener('pointerdown', function(e) {
+        if (e.button !== 0 && e.pointerType === 'mouse') return;
+
+        if (checkHitInnerFrame(e)) {
+            isDraggingInner = true;
+            previousMouseX = e.clientX;
+            previousMouseY = e.clientY;
+            if (controls) controls.enabled = false;
+            canvas.style.cursor = 'grabbing';
+            e.stopPropagation();
+        }
+    });
+
+    window.addEventListener('pointermove', function(e) {
+        if (isDraggingInner) {
+            const deltaX = e.clientX - previousMouseX;
+            rotatingFrameGroup.rotation.y += deltaX * 0.012;
+            previousMouseX = e.clientX;
+            previousMouseY = e.clientY;
+        }
+    });
+
+    const releaseInnerDrag = function() {
+        if (isDraggingInner) {
+            isDraggingInner = false;
+            if (controls) controls.enabled = true;
+            canvas.style.cursor = 'default';
+        }
+    };
+
+    window.addEventListener('pointerup', releaseInnerDrag);
+    window.addEventListener('pointercancel', releaseInnerDrag);
+}
+
 const container3D = document.getElementById('studio3DContainer');
 
 init3D();
@@ -907,6 +981,10 @@ function redrawModel() {
             accGroup.position.set(posX + accOffsetX, bottomBoardY + accOffsetY, depth * 0.1);
             currentModelGroup.add(accGroup);
         }
+    }
+
+    if (typeof attachInnerFrameDragController === 'function' && customRotatingFrame) {
+        attachInnerFrameDragController(renderer, camera, controls, customRotatingFrame);
     }
 }
 
