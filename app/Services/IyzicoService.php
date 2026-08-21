@@ -159,21 +159,51 @@ class IyzicoService
 
         $request->setBasketItems($basketItems);
 
-        \Illuminate\Support\Facades\Log::info('Iyzico Checkout Request', [
-            'base_url' => config('services.iyzico.base_url'),
-            'order_id' => $order->id,
-            'price' => $totalFormatted,
-            'paid_price' => $totalFormatted,
-            'currency' => Currency::TL,
-            'callback_url' => $callbackUrl,
-            'basket_total' => $calculatedSum,
-            'basket_count' => count($basketItems),
-            'buyer_email' => $order->email,
-            'buyer_phone' => $cleanPhone,
-            'buyer_city' => $order->city,
+        \Illuminate\Support\Facades\Log::info("=== IYZICO INIT CHECKOUT FORM LOG [Order #{$order->id}] ===", [
+            'config' => [
+                'base_url'   => config('services.iyzico.base_url'),
+                'api_key'    => substr(config('services.iyzico.api_key'), 0, 15) . '...',
+                'secret_key' => substr(config('services.iyzico.secret_key'), 0, 10) . '...',
+            ],
+            'request_summary' => [
+                'order_id'       => $order->id,
+                'price'          => $totalFormatted,
+                'paid_price'     => $totalFormatted,
+                'currency'       => Currency::TL,
+                'callback_url'   => $callbackUrl,
+                'basket_total'   => $calculatedSum,
+                'basket_count'   => count($basketItems),
+                'buyer_name'     => $name . ' ' . $surname,
+                'buyer_email'    => $order->email,
+                'buyer_phone'    => $cleanPhone,
+                'buyer_tc'       => $tcNo,
+                'buyer_city'     => $order->city,
+                'buyer_address'  => $addressStr,
+                'buyer_ip'       => request()->ip(),
+            ],
+            'basket_items' => array_map(function($bItem) {
+                return [
+                    'id'       => $bItem->getId(),
+                    'name'     => $bItem->getName(),
+                    'price'    => $bItem->getPrice(),
+                    'category' => $bItem->getCategory1(),
+                    'type'     => $bItem->getItemType(),
+                ];
+            }, $basketItems),
         ]);
 
-        return CheckoutFormInitialize::create($request, $this->options);
+        $res = CheckoutFormInitialize::create($request, $this->options);
+
+        \Illuminate\Support\Facades\Log::info("=== IYZICO INIT CHECKOUT FORM RESPONSE [Order #{$order->id}] ===", [
+            'status'         => $res ? $res->getStatus() : null,
+            'error_code'     => $res ? $res->getErrorCode() : null,
+            'error_message'  => $res ? $res->getErrorMessage() : null,
+            'error_group'    => $res ? $res->getErrorGroup() : null,
+            'token'          => $res ? $res->getToken() : null,
+            'raw_result'     => $res ? $res->getRawResult() : null,
+        ]);
+
+        return $res;
     }
 
     /**
@@ -188,6 +218,24 @@ class IyzicoService
         $request->setLocale(Locale::TR);
         $request->setToken($token);
 
-        return CheckoutForm::retrieve($request, $this->options);
+        $res = CheckoutForm::retrieve($request, $this->options);
+
+        \Illuminate\Support\Facades\Log::info("=== IYZICO RETRIEVE CHECKOUT FORM RESPONSE [Token: {$token}] ===", [
+            'config' => [
+                'base_url' => config('services.iyzico.base_url'),
+            ],
+            'response' => [
+                'status'          => $res ? $res->getStatus() : null,
+                'payment_status'  => $res ? $res->getPaymentStatus() : null,
+                'error_code'      => $res ? $res->getErrorCode() : null,
+                'error_message'   => $res ? $res->getErrorMessage() : null,
+                'payment_id'      => $res ? $res->getPaymentId() : null,
+                'price'           => $res ? $res->getPrice() : null,
+                'paid_price'      => $res ? $res->getPaidPrice() : null,
+                'raw_result'      => $res ? $res->getRawResult() : null,
+            ]
+        ]);
+
+        return $res;
     }
 }
