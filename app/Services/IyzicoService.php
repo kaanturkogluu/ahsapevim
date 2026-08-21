@@ -159,6 +159,20 @@ class IyzicoService
 
         $request->setBasketItems($basketItems);
 
+        \Illuminate\Support\Facades\Log::info('Iyzico Checkout Request', [
+            'base_url' => config('services.iyzico.base_url'),
+            'order_id' => $order->id,
+            'price' => $totalFormatted,
+            'paid_price' => $totalFormatted,
+            'currency' => Currency::TL,
+            'callback_url' => $callbackUrl,
+            'basket_total' => $calculatedSum,
+            'basket_count' => count($basketItems),
+            'buyer_email' => $order->email,
+            'buyer_phone' => $cleanPhone,
+            'buyer_city' => $order->city,
+        ]);
+
         return CheckoutFormInitialize::create($request, $this->options);
     }
 
