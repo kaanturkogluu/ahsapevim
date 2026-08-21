@@ -1,8 +1,6 @@
-@extends('layouts.admin')
+<?php $__env->startSection('header', 'Ürün Yönetimi'); ?>
 
-@section('header', 'Ürün Yönetimi')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-gray-100">
         <div>
@@ -16,13 +14,13 @@
             <button type="button" id="saveOrderBtn" onclick="saveProductOrders()" class="py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-xs transition flex items-center gap-1.5 shadow-xs">
                 <i class="fa-solid fa-floppy-disk"></i> Sıralamayı Kaydet
             </button>
-            <a href="{{ route('seo.sitemap') }}" target="_blank" class="py-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg text-xs transition flex items-center gap-1.5 border border-gray-200">
+            <a href="<?php echo e(route('seo.sitemap')); ?>" target="_blank" class="py-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg text-xs transition flex items-center gap-1.5 border border-gray-200">
                 <i class="fa-solid fa-sitemap text-amber-700"></i> sitemap.xml
             </a>
-            <a href="{{ route('seo.urunler_xml') }}" target="_blank" class="py-2 px-3 bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold rounded-lg text-xs transition flex items-center gap-1.5 border border-amber-200">
+            <a href="<?php echo e(route('seo.urunler_xml')); ?>" target="_blank" class="py-2 px-3 bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold rounded-lg text-xs transition flex items-center gap-1.5 border border-amber-200">
                 <i class="fa-solid fa-file-code text-amber-700"></i> urunler.xml
             </a>
-            <a href="{{ route('admin.products.create') }}" class="py-2 px-4 bg-[#C87A53] hover:bg-[#A65F38] text-white font-bold rounded-lg text-xs transition flex items-center gap-1.5 shadow-sm">
+            <a href="<?php echo e(route('admin.products.create')); ?>" class="py-2 px-4 bg-[#C87A53] hover:bg-[#A65F38] text-white font-bold rounded-lg text-xs transition flex items-center gap-1.5 shadow-sm">
                 <i class="fa-solid fa-plus"></i> Yeni Ürün Ekle
             </a>
         </div>
@@ -47,87 +45,90 @@
                 </tr>
             </thead>
             <tbody id="sortableProductsTable" class="divide-y divide-gray-100 text-sm">
-                @forelse($products as $product)
-                    <tr draggable="true" class="product-row hover:bg-amber-50/30 transition duration-150 cursor-grab active:cursor-grabbing" data-id="{{ $product->id }}">
+                <?php $__empty_1 = true; $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <tr draggable="true" class="product-row hover:bg-amber-50/30 transition duration-150 cursor-grab active:cursor-grabbing" data-id="<?php echo e($product->id); ?>">
                         <td class="py-3.5 text-center" data-label="Sıra">
                             <div class="flex items-center justify-center gap-1">
                                 <i class="fa-solid fa-grip-vertical text-gray-300 hover:text-gray-600 handle cursor-grab text-sm" title="Sürükleyip Bırakın"></i>
                                 <input type="number" 
                                        class="product-sort-input w-14 text-center text-xs font-bold border border-gray-200 rounded-md p-1 focus:border-[#C87A53] focus:ring-0 outline-none bg-white" 
-                                       value="{{ $product->sort_order }}" 
-                                       data-id="{{ $product->id }}" 
+                                       value="<?php echo e($product->sort_order); ?>" 
+                                       data-id="<?php echo e($product->id); ?>" 
                                        min="1"
                                        onchange="highlightSaveBtn()">
                             </div>
                         </td>
                         <td class="py-3.5 text-center" data-label="Görsel">
                             <div class="w-12 h-14 bg-gray-50 rounded-lg border border-gray-150 overflow-hidden flex items-center justify-center p-1">
-                                <img src="{{ $product->image ?: '/cerceve.png' }}" class="max-w-full max-h-full object-contain" alt="product">
+                                <img src="<?php echo e($product->image ?: '/cerceve.png'); ?>" class="max-w-full max-h-full object-contain" alt="product">
                             </div>
                         </td>
                         <td class="py-3.5" data-label="Ürün">
-                            <div class="font-bold text-gray-800">{{ $product->name }}</div>
+                            <div class="font-bold text-gray-800"><?php echo e($product->name); ?></div>
                             <div class="text-[11px] font-mono text-gray-400 flex items-center gap-1 mt-0.5">
-                                <a href="{{ $product->url }}" target="_blank" class="hover:text-brand hover:underline flex items-center gap-0.5">
-                                    /urun/{{ $product->slug ?: $product->id }}
+                                <a href="<?php echo e($product->url); ?>" target="_blank" class="hover:text-brand hover:underline flex items-center gap-0.5">
+                                    /urun/<?php echo e($product->slug ?: $product->id); ?>
+
                                     <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                                 </a>
                             </div>
-                            @if($product->discount_percent > 0)
+                            <?php if($product->discount_percent > 0): ?>
                                 <div class="mt-1">
-                                    <span class="px-2 py-0.5 bg-red-100 text-red-700 font-extrabold text-[10px] rounded-full">%{{ $product->discount_percent }} İNDİRİMLİ</span>
+                                    <span class="px-2 py-0.5 bg-red-100 text-red-700 font-extrabold text-[10px] rounded-full">%<?php echo e($product->discount_percent); ?> İNDİRİMLİ</span>
                                 </div>
-                            @endif
+                            <?php endif; ?>
                         </td>
                         <td class="py-3.5" data-label="Kategori">
-                            <span class="px-2.5 py-1 bg-stone-100 text-stone-700 rounded-md font-semibold text-xs">{{ $product->category->name ?? 'Kategorisiz' }}</span>
+                            <span class="px-2.5 py-1 bg-stone-100 text-stone-700 rounded-md font-semibold text-xs"><?php echo e($product->category->name ?? 'Kategorisiz'); ?></span>
                         </td>
                         <td class="py-3.5" data-label="3D Şablon">
-                            @if($product->threeDTemplate)
+                            <?php if($product->threeDTemplate): ?>
                                 <span class="px-2.5 py-1 bg-amber-50 text-amber-800 rounded-md font-bold text-xs border border-amber-200/50 flex items-center gap-1.5 w-max">
-                                    <i class="fa-solid fa-cube text-amber-600"></i> {{ $product->threeDTemplate->name }}
+                                    <i class="fa-solid fa-cube text-amber-600"></i> <?php echo e($product->threeDTemplate->name); ?>
+
                                 </span>
-                            @else
+                            <?php else: ?>
                                 <span class="text-xs text-gray-400 font-semibold"><i class="fa-solid fa-ban mr-1"></i> Yok (Sadece 2D)</span>
-                            @endif
+                            <?php endif; ?>
                         </td>
                         <td class="py-3.5 text-right font-bold text-gray-900" data-label="Fiyat">
-                            @if($product->discount_percent > 0)
-                                <div class="text-xs text-gray-400 line-through">{{ number_format($product->original_price, 2, ',', '.') }} TL</div>
-                            @endif
-                            <div class="text-[#C87A53]">{{ number_format($product->price, 2, ',', '.') }} TL</div>
+                            <?php if($product->discount_percent > 0): ?>
+                                <div class="text-xs text-gray-400 line-through"><?php echo e(number_format($product->original_price, 2, ',', '.')); ?> TL</div>
+                            <?php endif; ?>
+                            <div class="text-[#C87A53]"><?php echo e(number_format($product->price, 2, ',', '.')); ?> TL</div>
                         </td>
-                        <td class="py-3.5 text-center font-semibold text-gray-600" data-label="Stok">{{ $product->stock }}</td>
+                        <td class="py-3.5 text-center font-semibold text-gray-600" data-label="Stok"><?php echo e($product->stock); ?></td>
                         <td class="py-3.5 text-center" data-label="Durum">
-                            @if($product->is_active)
+                            <?php if($product->is_active): ?>
                                 <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-bold text-[10px]">Aktif</span>
-                            @else
+                            <?php else: ?>
                                 <span class="px-2 py-0.5 bg-gray-150 text-gray-500 rounded-full font-bold text-[10px]">Pasif</span>
-                            @endif
+                            <?php endif; ?>
                         </td>
                         <td class="py-3.5 text-right space-x-2 whitespace-nowrap" data-label="İşlem">
-                            <a href="{{ route('admin.products.edit', $product->id) }}" class="text-blue-600 hover:text-blue-800 font-bold text-xs"><i class="fa-solid fa-edit"></i> Düzenle</a>
-                            <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="inline" onsubmit="return confirm('Bu ürünü silmek istediğinize emin misiniz?')">
-                                @csrf
-                                @method('DELETE')
+                            <a href="<?php echo e(route('admin.products.edit', $product->id)); ?>" class="text-blue-600 hover:text-blue-800 font-bold text-xs"><i class="fa-solid fa-edit"></i> Düzenle</a>
+                            <form action="<?php echo e(route('admin.products.destroy', $product->id)); ?>" method="POST" class="inline" onsubmit="return confirm('Bu ürünü silmek istediğinize emin misiniz?')">
+                                <?php echo csrf_field(); ?>
+                                <?php echo method_field('DELETE'); ?>
                                 <button type="submit" class="text-red-600 hover:text-red-800 font-bold text-xs"><i class="fa-solid fa-trash"></i> Sil</button>
                             </form>
                         </td>
                     </tr>
-                @empty
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
                         <td colspan="9" class="py-12 text-center text-gray-500">Mağazaya henüz ürün eklenmemiş.</td>
                     </tr>
-                @endforelse
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
 
-    @if($products->hasPages())
+    <?php if($products->hasPages()): ?>
         <div class="mt-6">
-            {{ $products->links() }}
+            <?php echo e($products->links()); ?>
+
         </div>
-    @endif
+    <?php endif; ?>
 </div>
 
 <!-- Otomatik Sıralama Modal -->
@@ -142,8 +143,8 @@
             </button>
         </div>
 
-        <form action="{{ route('admin.products.auto_sort') }}" method="POST">
-            @csrf
+        <form action="<?php echo e(route('admin.products.auto_sort')); ?>" method="POST">
+            <?php echo csrf_field(); ?>
             <p class="text-xs text-gray-600 mb-4">
                 Seçeceğiniz kritere göre tüm ürünlerin sıralama numaraları (1, 2, 3...) baştan sona otomatik olarak yeniden atanacaktır.
             </p>
@@ -260,11 +261,11 @@ function sendOrderUpdatePayload(orders) {
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor...';
 
-    fetch("{{ route('admin.products.update_order') }}", {
+    fetch("<?php echo e(route('admin.products.update_order')); ?>", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            "X-CSRF-TOKEN": "<?php echo e(csrf_token()); ?>"
         },
         body: JSON.stringify({ orders: orders })
     })
@@ -343,5 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
 
+
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\ahsapevim\resources\views/admin/products/index.blade.php ENDPATH**/ ?>

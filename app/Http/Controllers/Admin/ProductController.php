@@ -14,7 +14,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with(['category', 'threeDTemplate'])->latest()->paginate(15);
+        $products = Product::with(['category', 'threeDTemplate'])->ordered()->paginate(30)->withQueryString();
         return view('admin.products.index', compact('products'));
     }
 
@@ -66,7 +66,7 @@ class ProductController extends Controller
         $slugCandidate = $request->filled('slug') ? $request->slug : $request->name;
         $slug = Product::generateUniqueSlug($slugCandidate);
 
-        $product = Product::create([
+        $productData = [
             'category_id'       => $request->category_id,
             'name'              => $request->name,
             'slug'              => $slug,
@@ -78,7 +78,13 @@ class ProductController extends Controller
             'three_d_template_id' => $request->three_d_template_id,
             'features'          => $features,
             'is_active'         => $request->has('is_active'),
-        ]);
+        ];
+
+        if ($request->filled('sort_order')) {
+            $productData['sort_order'] = (int) $request->sort_order;
+        }
+
+        $product = Product::create($productData);
 
         // Auto update XML and Sitemap
         app(\App\Http\Controllers\SeoController::class)->sitemap();
@@ -156,7 +162,7 @@ class ProductController extends Controller
         $slugCandidate = $request->filled('slug') ? $request->slug : $request->name;
         $slug = Product::generateUniqueSlug($slugCandidate, $product->id);
 
-        $product->update([
+        $updateData = [
             'category_id'       => $request->category_id,
             'name'              => $request->name,
             'slug'              => $slug,
@@ -168,7 +174,13 @@ class ProductController extends Controller
             'three_d_template_id' => $request->three_d_template_id,
             'features'          => $features,
             'is_active'         => $request->has('is_active'),
-        ]);
+        ];
+
+        if ($request->filled('sort_order')) {
+            $updateData['sort_order'] = (int) $request->sort_order;
+        }
+
+        $product->update($updateData);
 
         // Auto update XML and Sitemap
         app(\App\Http\Controllers\SeoController::class)->sitemap();
@@ -212,7 +224,81 @@ class ProductController extends Controller
             'three_d_template_id'=> 'required|exists:three_d_templates,id',
             'color'              => 'nullable|string',
             'size'               => 'nullable|string',
+            'sort_order'         => 'nullable|integer|min:0',
         ];
+    }
+
+    /**
+     * AJAX ile toplu/sürükle-bırak ürün sıralama güncellemesi.
+     */
+    public function updateOrder(Request $request)
+    {
+        $request->validate([
+            'orders' => 'required|array',
+            'orders.*.id' => 'required|exists:products,id',
+            'orders.*.sort_order' => 'required|integer|min:0',
+        ]);
+
+        foreach ($request->orders as $item) {
+            Product::where('id', $item['id'])->update(['sort_order' => (int) $item['sort_order']]);
+        }
+
+        app(\App\Http\Controllers\SeoController::class)->sitemap();
+        app(\App\Http\Controllers\SeoController::class)->urunlerXml();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ürün sıralaması başarıyla güncellendi.'
+        ]);
+    }
+
+    /**
+     * Otomatik toplu ürün sıralama (Tarih, Fiyat, İsim vb.)
+     */
+    public function autoSort(Request $request)
+    {
+        $request->validate([
+            'sort_by' => 'required|string|in:newest,oldest,name_asc,name_desc,price_asc,price_desc,id_asc',
+        ]);
+
+        $sortBy = $request->sort_by;
+        $query = Product::query();
+
+        switch ($sortBy) {
+            case 'newest':
+                $query->orderBy('created_at', 'desc')->orderBy('id', 'desc');
+                break;
+            case 'oldest':
+                $query->orderBy('created_at', 'asc')->orderBy('id', 'asc');
+                break;
+            case 'name_asc':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('name', 'desc');
+                break;
+            case 'price_asc':
+                $query->orderBy('price', 'asc');
+                break;
+            case 'price_desc':
+                $query->orderBy('price', 'desc');
+                break;
+            case 'id_asc':
+                $query->orderBy('id', 'asc');
+                break;
+        }
+
+        $products = $query->get();
+        $order = 1;
+        foreach ($products as $p) {
+            $p->sort_order = $order++;
+            $p->saveQuietly();
+        }
+
+        app(\App\Http\Controllers\SeoController::class)->sitemap();
+        app(\App\Http\Controllers\SeoController::class)->urunlerXml();
+
+        return redirect()->route('admin.products.index')->with('success', 'Tüm ürünler seçilen kritere göre otomatik sıralandı.');
     }
 }
 

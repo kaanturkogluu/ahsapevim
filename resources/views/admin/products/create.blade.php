@@ -36,7 +36,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-3 gap-3">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Kategori *</label>
                         <select name="category_id" required class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none bg-white">
@@ -49,6 +49,10 @@
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Stok Adedi *</label>
                         <input type="number" name="stock" required value="{{ old('stock', 100) }}" min="0" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Sıralama (Sıra)</label>
+                        <input type="number" name="sort_order" value="{{ old('sort_order') }}" min="1" placeholder="Otomatik" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" title="Boş bırakılırsa en sona otomatik atanır">
                     </div>
                 </div>
 

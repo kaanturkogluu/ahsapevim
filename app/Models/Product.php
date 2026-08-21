@@ -18,11 +18,13 @@ class Product extends Model
         'image',
         'features',
         'is_active',
+        'sort_order',
     ];
 
     protected $casts = [
         'features' => 'array',
         'is_active' => 'boolean',
+        'sort_order' => 'integer',
         'price' => 'decimal:2',
         'original_price' => 'decimal:2',
     ];
@@ -124,7 +126,7 @@ class Product extends Model
     }
 
     /**
-     * Otomatik model dinleyicisi - Slug boşsa ürün başlığından üretilir.
+     * Otomatik model dinleyicisi - Slug boşsa ürün başlığından üretilir, sort_order atanır.
      */
     protected static function booted()
     {
@@ -132,7 +134,18 @@ class Product extends Model
             if (empty($product->slug) && !empty($product->name)) {
                 $product->slug = static::generateUniqueSlug($product->name, $product->id ?? null);
             }
+            if ($product->sort_order === null || $product->sort_order === '') {
+                $product->sort_order = (static::max('sort_order') ?? 0) + 1;
+            }
         });
+    }
+
+    /**
+     * Admin sıralamasına göre listeleme scope'u
+     */
+    public function scopeOrdered($query)
+    {
+        return $query->orderBy('sort_order', 'asc')->orderBy('id', 'desc');
     }
 
     /**

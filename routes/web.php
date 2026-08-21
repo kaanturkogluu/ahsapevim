@@ -74,7 +74,7 @@ Route::get('/', function (Request $request) {
         applyProductSearch($query, $search);
     }
 
-    $products   = $query->latest()->paginate(16)->withQueryString();
+    $products   = $query->ordered()->paginate(16)->withQueryString();
     $categories = Category::withCount('products')->get();
 
     return view('home', compact('products', 'categories'));
@@ -147,7 +147,7 @@ Route::get('/urunler', function () {
         applyProductSearch($query, $search);
     }
 
-    $products   = $query->latest()->paginate(16)->withQueryString();
+    $products   = $query->ordered()->paginate(16)->withQueryString();
     $categories = Category::all();
 
     return view('products.index', compact('products', 'categories'));
@@ -234,6 +234,8 @@ Route::prefix('yonetim')->middleware(['auth', 'admin'])->group(function () {
 
     Route::resource('kategoriler', CategoryController::class)->except(['create', 'show', 'edit'])->names('admin.categories');
 
+    Route::post('urunler/siralama-guncelle', [ProductController::class, 'updateOrder'])->name('admin.products.update_order');
+    Route::post('urunler/otomatik-sirala',    [ProductController::class, 'autoSort'])->name('admin.products.auto_sort');
     Route::post('urunler',          [ProductController::class, 'store'])->middleware('throttle:15,1')->name('admin.products.store');
     Route::put('urunler/{product}', [ProductController::class, 'update'])->middleware('throttle:15,1')->name('admin.products.update');
     Route::resource('urunler', ProductController::class)->parameters(['urunler' => 'product'])->except(['store', 'update'])->names('admin.products');

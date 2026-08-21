@@ -103,7 +103,7 @@ class SeoController extends Controller
         }
 
         // Ürünler
-        $products = Product::where('is_active', true)->latest()->get();
+        $products = Product::where('is_active', true)->ordered()->get();
         foreach ($products as $product) {
             $urls[] = [
                 'loc' => url('/urun/' . ($product->slug ?: $product->id)),
@@ -138,7 +138,7 @@ class SeoController extends Controller
         $siteName = config('app.name', 'Ahşap Evim Manisa');
         $siteUrl  = url('/');
 
-        $products = Product::with('category')->where('is_active', true)->get();
+        $products = Product::with('category')->where('is_active', true)->ordered()->get();
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         $xml .= '<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">' . "\n";
