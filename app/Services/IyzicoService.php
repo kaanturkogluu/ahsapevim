@@ -159,25 +159,26 @@ class IyzicoService
 
         $request->setBasketItems($basketItems);
 
-        \Illuminate\Support\Facades\Log::info("=== IYZICO INIT CHECKOUT FORM LOG [Order #{$order->id}] ===", [
+        \Illuminate\Support\Facades\Log::channel('payment')->info("=== IYZICO FORM INIT REQUEST [Order #{$order->id}] ===", [
             'config' => [
                 'base_url'   => config('services.iyzico.base_url'),
                 'api_key'    => substr(config('services.iyzico.api_key'), 0, 15) . '...',
                 'secret_key' => substr(config('services.iyzico.secret_key'), 0, 10) . '...',
             ],
-            'request_summary' => [
+            'request' => [
                 'order_id'       => $order->id,
                 'price'          => $totalFormatted,
                 'paid_price'     => $totalFormatted,
                 'currency'       => Currency::TL,
                 'callback_url'   => $callbackUrl,
-                'basket_total'   => $calculatedSum,
+                'basket_sum'     => $calculatedSum,
+                'order_total'    => $order->total_amount,
                 'basket_count'   => count($basketItems),
                 'buyer_name'     => $name . ' ' . $surname,
                 'buyer_email'    => $order->email,
                 'buyer_phone'    => $cleanPhone,
                 'buyer_tc'       => $tcNo,
-                'buyer_city'     => $order->city,
+                'buyer_city'     => $order->city ?: 'Manisa',
                 'buyer_address'  => $addressStr,
                 'buyer_ip'       => request()->ip(),
             ],
@@ -194,13 +195,14 @@ class IyzicoService
 
         $res = CheckoutFormInitialize::create($request, $this->options);
 
-        \Illuminate\Support\Facades\Log::info("=== IYZICO INIT CHECKOUT FORM RESPONSE [Order #{$order->id}] ===", [
-            'status'         => $res ? $res->getStatus() : null,
-            'error_code'     => $res ? $res->getErrorCode() : null,
-            'error_message'  => $res ? $res->getErrorMessage() : null,
-            'error_group'    => $res ? $res->getErrorGroup() : null,
-            'token'          => $res ? $res->getToken() : null,
-            'raw_result'     => $res ? $res->getRawResult() : null,
+        $logLevel = ($res && $res->getStatus() === 'success') ? 'info' : 'error';
+        \Illuminate\Support\Facades\Log::channel('payment')->{$logLevel}("=== IYZICO FORM INIT RESPONSE [Order #{$order->id}] ===", [
+            'status'        => $res ? $res->getStatus() : null,
+            'error_code'    => $res ? $res->getErrorCode() : null,
+            'error_message' => $res ? $res->getErrorMessage() : null,
+            'error_group'   => $res ? $res->getErrorGroup() : null,
+            'token'         => $res ? $res->getToken() : null,
+            'raw_result'    => $res ? $res->getRawResult() : null,
         ]);
 
         return $res;
@@ -220,20 +222,21 @@ class IyzicoService
 
         $res = CheckoutForm::retrieve($request, $this->options);
 
-        \Illuminate\Support\Facades\Log::info("=== IYZICO RETRIEVE CHECKOUT FORM RESPONSE [Token: {$token}] ===", [
-            'config' => [
-                'base_url' => config('services.iyzico.base_url'),
-            ],
-            'response' => [
-                'status'          => $res ? $res->getStatus() : null,
-                'payment_status'  => $res ? $res->getPaymentStatus() : null,
-                'error_code'      => $res ? $res->getErrorCode() : null,
-                'error_message'   => $res ? $res->getErrorMessage() : null,
-                'payment_id'      => $res ? $res->getPaymentId() : null,
-                'price'           => $res ? $res->getPrice() : null,
-                'paid_price'      => $res ? $res->getPaidPrice() : null,
-                'raw_result'      => $res ? $res->getRawResult() : null,
-            ]
+        $isPaymentSuccess = $res && $res->getStatus() === 'success' && $res->getPaymentStatus() === 'SUCCESS';
+        $cbLogLevel = $isPaymentSuccess ? 'info' : 'error';
+        \Illuminate\Support\Facades\Log::channel('payment')->{$cbLogLevel}("=== IYZICO CALLBACK RESPONSE [Token: {$token}] ===", [
+            'base_url'        => config('services.iyzico.base_url'),
+            'token'           => $token,
+            'status'          => $res ? $res->getStatus() : null,
+            'payment_status'  => $res ? $res->getPaymentStatus() : null,
+            'error_code'      => $res ? $res->getErrorCode() : null,
+            'error_message'   => $res ? $res->getErrorMessage() : null,
+            'error_group'     => $res ? $res->getErrorGroup() : null,
+            'payment_id'      => $res ? $res->getPaymentId() : null,
+            'conversation_id' => $res ? $res->getConversationId() : null,
+            'price'           => $res ? $res->getPrice() : null,
+            'paid_price'      => $res ? $res->getPaidPrice() : null,
+            'raw_result'      => $res ? $res->getRawResult() : null,
         ]);
 
         return $res;

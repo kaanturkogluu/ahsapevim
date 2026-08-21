@@ -143,6 +143,21 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        // Dedicated channel for all payment / iyzico transactions
+        'payment' => [
+            'driver'  => 'daily',
+            'path'    => storage_path('logs/payment.log'),
+            'level'   => 'debug',
+            'days'    => 60,
+            'formatter' => Monolog\Formatter\LineFormatter::class,
+            'formatter_with' => [
+                'format'                    => "[%datetime%] %level_name%: %message% %context%\n",
+                'dateFormat'                => 'Y-m-d H:i:s',
+                'allowInlineLineBreaks'     => true,
+                'ignoreEmptyContextAndExtra'=> false,
+            ],
+        ],
+
     ],
 
 ];

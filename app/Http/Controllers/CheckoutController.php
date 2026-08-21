@@ -130,6 +130,27 @@ class CheckoutController extends Controller
 
         $paymentMethod = $request->input('payment_method', 'card');
 
+        \Illuminate\Support\Facades\Log::channel('payment')->info("=== SIPARIS OLUSTURULDU [Order #{$order->id}] ===", [
+            'order_id'       => $order->id,
+            'tracking_code'  => $order->tracking_code,
+            'payment_method' => $paymentMethod,
+            'total_amount'   => $totalAmount,
+            'name'           => $order->name,
+            'email'          => $order->email,
+            'phone'          => $order->phone,
+            'city'           => $order->city,
+            'district'       => $order->district,
+            'identity_number'=> $order->identity_number ? '***' . substr($order->identity_number, -4) : null,
+            'user_id'        => $order->user_id,
+            'ip'             => $request->ip(),
+            'cart_items'     => array_map(fn($item) => [
+                'product_id' => $item['product_id'] ?? null,
+                'name'       => $item['name'] ?? null,
+                'price'      => $item['price'] ?? null,
+                'quantity'   => $item['quantity'] ?? null,
+            ], array_values($cart)),
+        ]);
+
         // If customer selected Havale / EFT
         if (in_array($paymentMethod, ['eft', 'cod'])) {
             $order->update([
@@ -162,10 +183,16 @@ class CheckoutController extends Controller
                 \Illuminate\Support\Facades\Log::error('Mail Kuyruğa Gönderim Hatası: ' . $e->getMessage());
             }
 
+            \Illuminate\Support\Facades\Log::channel('payment')->info("=== EFT/HAVALE ODEME [Order #{$order->id}] ===", [
+                'order_id'    => $order->id,
+                'total'       => $order->total_amount,
+                'payment_id'  => 'EFT_' . time(),
+            ]);
+
             return redirect()->route('checkout.result')->with([
-                'status' => 'success',
+                'status'   => 'success',
                 'order_id' => $order->id,
-                'is_eft' => true,
+                'is_eft'   => true,
             ]);
         }
 
@@ -173,11 +200,6 @@ class CheckoutController extends Controller
         try {
             $callbackUrl = route('checkout.callback');
             $iyzicoForm = $this->iyzico->initializeCheckoutForm($order, $cart, $callbackUrl);
-
-            // Log complete raw response from Iyzico
-            if ($iyzicoForm) {
-                \Illuminate\Support\Facades\Log::info("Iyzico Initialize Form Complete Raw Response [Order #{$order->id}]: " . $iyzicoForm->getRawResult());
-            }
 
             if ($iyzicoForm && $iyzicoForm->getStatus() == 'success') {
                 return view('checkout.payment', [
@@ -187,13 +209,19 @@ class CheckoutController extends Controller
             } else {
                 $errorCode  = $iyzicoForm ? $iyzicoForm->getErrorCode() : 'N/A';
                 $errorMsg   = $iyzicoForm ? $iyzicoForm->getErrorMessage() : 'Ödeme kapısına erişilemedi.';
-                $rawResult  = $iyzicoForm ? $iyzicoForm->getRawResult() : 'Yanıt yok';
 
-                \Illuminate\Support\Facades\Log::error("Iyzico Form Error: Code [{$errorCode}] - {$errorMsg} | Order #{$order->id} | Raw Result: {$rawResult}");
+                \Illuminate\Support\Facades\Log::channel('payment')->error("=== IYZICO FORM INIT BASARISIZ [Order #{$order->id}] ===", [
+                    'error_code' => $errorCode,
+                    'error_msg'  => $errorMsg,
+                ]);
 
                 return redirect()->back()->with('error', 'Kredi Kartı ödeme formu yüklenemedi: ' . $errorMsg . ' (Hata Kodu: ' . $errorCode . ')')->withInput();
             }
         } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::channel('payment')->error("=== IYZICO INIT EXCEPTION [Order #{$order->id}] ===", [
+                'exception' => $e->getMessage(),
+                'file'      => $e->getFile() . ':' . $e->getLine(),
+            ]);
             \Illuminate\Support\Facades\Log::error('Iyzico Init Exception: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Ödeme sistemi başlatılırken bir hata oluştu: ' . $e->getMessage())->withInput();
         }
@@ -211,11 +239,6 @@ class CheckoutController extends Controller
 
         try {
             $payment = $this->iyzico->retrieveCheckoutForm($token);
-
-            // Log complete raw response from Iyzico Callback
-            if ($payment) {
-                \Illuminate\Support\Facades\Log::info("Iyzico Callback Form Complete Raw Response [Token: {$token}]: " . $payment->getRawResult());
-            }
 
             // 4-Tier Robust Order Lookup Strategy
             $conversationId = $payment ? $payment->getConversationId() : null;
@@ -276,6 +299,17 @@ class CheckoutController extends Controller
                     'card_family' => $payment->getCardFamily(),
                     'card_last_four' => $payment->getLastFourDigits(),
                     'payment_error_reason' => null,
+                ]);
+
+                \Illuminate\Support\Facades\Log::channel('payment')->info("=== ODEME BASARILI [Order #{$order->id}] ===", [
+                    'order_id'       => $order->id,
+                    'payment_id'     => $payment->getPaymentId(),
+                    'paid_price'     => $paidPrice,
+                    'total_amount'   => $order->total_amount,
+                    'installment'    => $payment->getInstallment(),
+                    'card_family'    => $payment->getCardFamily(),
+                    'card_last4'     => $payment->getLastFourDigits(),
+                    'merchant_payout'=> round($merchantPayout, 2),
                 ]);
 
                 // Decrement stock for each item
@@ -362,6 +396,15 @@ class CheckoutController extends Controller
                     }
                 }
 
+                \Illuminate\Support\Facades\Log::channel('payment')->error("=== ODEME BASARISIZ [Order #{$order->id}] ===", [
+                    'order_id'     => $order->id,
+                    'error_msg'    => $errorMessage,
+                    'raw_status'   => $payment ? $payment->getStatus() : null,
+                    'raw_pay_stat' => $payment ? $payment->getPaymentStatus() : null,
+                    'error_code'   => $payment ? $payment->getErrorCode() : null,
+                    'raw_result'   => $payment ? $payment->getRawResult() : null,
+                ]);
+
                 // Update order status to failed with failure reason
                 $order->update([
                     'status' => 'failed',
@@ -369,15 +412,19 @@ class CheckoutController extends Controller
                 ]);
 
                 return redirect()->route('checkout.result')->with([
-                    'status' => 'error',
-                    'message' => $errorMessage,
+                    'status'   => 'error',
+                    'message'  => $errorMessage,
                     'order_id' => $order->id
                 ]);
             }
         } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::channel('payment')->error('=== CALLBACK EXCEPTION ===', [
+                'exception' => $e->getMessage(),
+                'file'      => $e->getFile() . ':' . $e->getLine(),
+            ]);
             \Illuminate\Support\Facades\Log::error('Ödeme Callback Hatası: ' . $e->getMessage());
             return redirect()->route('checkout.result')->with([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Ödeme doğrulama sırasında bir sistem hatası oluştu: ' . $e->getMessage()
             ]);
         }
