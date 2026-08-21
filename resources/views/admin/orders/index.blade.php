@@ -111,11 +111,9 @@
                             <a href="{{ route('admin.orders.show', $order->id) }}" class="py-1.5 px-3 bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold text-xs rounded-lg transition inline-flex items-center gap-1">
                                 <i class="fa-solid fa-eye"></i> İncele
                             </a>
-                            @if(in_array($order->status, ['pending', 'failed', 'cancelled']))
-                                <button type="button" onclick="openDeleteOrderModal({{ $order->id }}, 'Sipariş #{{ $order->id }} ({{ $order->name }})')" class="py-1.5 px-2.5 bg-rose-50 text-rose-600 hover:bg-rose-100 font-bold text-xs rounded-lg transition inline-flex items-center gap-1">
-                                    <i class="fa-solid fa-trash-can"></i> Sil
-                                </button>
-                            @endif
+                            <button type="button" onclick="openDeleteOrderModal({{ $order->id }}, 'Sipariş #{{ $order->id }} ({{ $order->name }})')" class="py-1.5 px-2.5 bg-rose-50 text-rose-600 hover:bg-rose-100 font-bold text-xs rounded-lg transition inline-flex items-center gap-1" title="Admin şifresi ile siparişi sil">
+                                <i class="fa-solid fa-trash-can"></i> Sil
+                            </button>
                         </td>
                     </tr>
                 @empty
@@ -137,7 +135,7 @@
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200 relative">
         <div class="flex justify-between items-center pb-3 border-b border-gray-100 mb-4">
             <h3 class="text-sm font-extrabold text-rose-700 flex items-center gap-2">
-                <i class="fa-solid fa-trash-can text-lg"></i> İptal/Başarısız Sipariş Kaydını Sil
+                <i class="fa-solid fa-trash-can text-lg"></i> Sipariş Kaydını Sil
             </h3>
             <button type="button" onclick="closeDeleteOrderModal()" class="text-gray-400 hover:text-gray-600 text-lg">&times;</button>
         </div>

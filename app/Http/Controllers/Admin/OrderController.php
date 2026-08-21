@@ -161,12 +161,7 @@ class OrderController extends Controller
     {
         $order = Order::with('items')->findOrFail($id);
 
-        // Security Check 1: Only unpaid / failed / cancelled orders can be deleted
-        if (!in_array($order->status, ['pending', 'failed', 'cancelled'])) {
-            return redirect()->back()->with('error', 'Yalnızca ödemesi alınmayan, başarısız veya iptal edilmiş siparişler silinebilir.');
-        }
-
-        // Security Check 2: Confirm Admin Password
+        // Security Check: Confirm Admin Password
         $request->validate([
             'password' => 'required|string',
         ]);
@@ -199,7 +194,7 @@ class OrderController extends Controller
         $order->items()->delete();
         $order->delete();
 
-        return redirect()->route('admin.orders.index')->with('success', "İptal/Başarısız sipariş (#{$id}) ve ilişkili {$deletedPhotoCount} adet müşteri fotoğrafı sistemden kalıcı olarak silindi.");
+        return redirect()->route('admin.orders.index')->with('success', "Sipariş (#{$id}) ve ilişkili {$deletedPhotoCount} adet müşteri fotoğrafı sistemden kalıcı olarak silindi.");
     }
 
     public function downloadImage(Request $request)

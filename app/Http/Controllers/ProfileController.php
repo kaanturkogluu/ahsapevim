@@ -11,7 +11,21 @@ class ProfileController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $orders = $user->orders()->with('items.product')->latest()->get();
+
+        // Oturum açan kullanıcının e-posta adresiyle eşleşen misafir/eski siparişleri kullanıcıya bağla
+        if (!empty($user->email)) {
+            \App\Models\Order::whereNull('user_id')
+                ->where('email', $user->email)
+                ->update(['user_id' => $user->id]);
+        }
+
+        $orders = \App\Models\Order::where(function ($q) use ($user) {
+            $q->where('user_id', $user->id);
+            if (!empty($user->email)) {
+                $q->orWhere('email', $user->email);
+            }
+        })->with('items.product')->latest()->get();
+
         $favorites = $user->favoriteProducts()->latest()->get();
 
         return view('profile.index', compact('user', 'orders', 'favorites'));

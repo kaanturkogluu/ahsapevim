@@ -11,11 +11,9 @@
             <p class="text-xs text-gray-500 mt-1">Sipariş tarihi: {{ $order->created_at?->format('d.m.Y H:i') ?? '-' }}</p>
         </div>
         <div class="flex items-center gap-3">
-            @if(in_array($order->status, ['pending', 'failed', 'cancelled']))
-                <button type="button" onclick="openDeleteOrderModal({{ $order->id }}, 'Sipariş #{{ $order->id }} ({{ $order->name }})')" class="py-1.5 px-3 bg-rose-50 text-rose-600 hover:bg-rose-100 font-extrabold text-xs rounded-lg transition inline-flex items-center gap-1.5">
-                    <i class="fa-solid fa-trash-can"></i> Siparişi Sil & Görselleri Temizle
-                </button>
-            @endif
+            <button type="button" onclick="openDeleteOrderModal({{ $order->id }}, 'Sipariş #{{ $order->id }} ({{ $order->name }})')" class="py-1.5 px-3 bg-rose-50 text-rose-600 hover:bg-rose-100 font-extrabold text-xs rounded-lg transition inline-flex items-center gap-1.5">
+                <i class="fa-solid fa-trash-can"></i> Siparişi Sil & Görselleri Temizle
+            </button>
             <a href="{{ route('admin.orders.index') }}" class="text-xs font-bold text-gray-500 hover:text-gray-700 transition flex items-center gap-1">
                 <i class="fa-solid fa-arrow-left"></i> Sipariş Listesine Dön
             </a>
@@ -290,7 +288,7 @@
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200 relative">
         <div class="flex justify-between items-center pb-3 border-b border-gray-100 mb-4">
             <h3 class="text-sm font-extrabold text-rose-700 flex items-center gap-2">
-                <i class="fa-solid fa-trash-can text-lg"></i> İptal/Başarısız Sipariş Kaydını Sil
+                <i class="fa-solid fa-trash-can text-lg"></i> Sipariş Kaydını Sil
             </h3>
             <button type="button" onclick="closeDeleteOrderModal()" class="text-gray-400 hover:text-gray-600 text-lg">&times;</button>
         </div>
