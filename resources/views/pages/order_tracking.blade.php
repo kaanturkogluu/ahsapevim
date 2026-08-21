@@ -83,7 +83,7 @@
                                 <span class="px-4 py-2 bg-blue-100 text-blue-700 rounded-xl font-extrabold text-xs inline-flex items-center gap-1.5 shadow-sm">
                                     <i class="fa-solid fa-truck text-sm"></i> Kargoya Verildi
                                 </span>
-                            @elseif($order->status === 'completed')
+                            @elseif(in_array($order->status, ['completed', 'delivered', 'teslim_edildi', 'teslimedildi']))
                                 <span class="px-4 py-2 bg-purple-100 text-purple-700 rounded-xl font-extrabold text-xs inline-flex items-center gap-1.5 shadow-sm">
                                     <i class="fa-solid fa-box-open text-sm"></i> Teslim Edildi
                                 </span>
@@ -103,7 +103,7 @@
                     <div class="pt-6 grid grid-cols-3 gap-2 text-center relative">
                         <!-- Step 1 -->
                         <div class="flex flex-col items-center">
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm mb-2 shadow-sm {{ in_array($order->status, ['paid', 'preparing', 'shipped', 'completed']) ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-500' }}">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm mb-2 shadow-sm {{ in_array($order->status, ['paid', 'preparing', 'shipped', 'completed', 'delivered', 'teslim_edildi', 'teslimedildi']) ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-500' }}">
                                 <i class="fa-solid fa-receipt"></i>
                             </div>
                             <span class="text-xs font-bold text-gray-800">Sipariş Alındı</span>
@@ -111,7 +111,7 @@
 
                         <!-- Step 2 -->
                         <div class="flex flex-col items-center">
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm mb-2 shadow-sm {{ in_array($order->status, ['shipped', 'completed']) ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500' }}">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm mb-2 shadow-sm {{ in_array($order->status, ['shipped', 'completed', 'delivered', 'teslim_edildi', 'teslimedildi']) ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500' }}">
                                 <i class="fa-solid fa-truck-fast"></i>
                             </div>
                             <span class="text-xs font-bold text-gray-800">Kargoda</span>
@@ -119,7 +119,7 @@
 
                         <!-- Step 3 -->
                         <div class="flex flex-col items-center">
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm mb-2 shadow-sm {{ $order->status === 'completed' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-500' }}">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm mb-2 shadow-sm {{ in_array($order->status, ['completed', 'delivered', 'teslim_edildi', 'teslimedildi']) ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-500' }}">
                                 <i class="fa-solid fa-house-chimney"></i>
                             </div>
                             <span class="text-xs font-bold text-gray-800">Teslim Edildi</span>

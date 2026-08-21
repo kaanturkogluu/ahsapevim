@@ -12,20 +12,32 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
 
-        // Oturum açan kullanıcının e-posta adresiyle eşleşen misafir/eski siparişleri kullanıcıya bağla
+        $ordersQuery = \App\Models\Order::where('user_id', $user->id);
+
         if (!empty($user->email)) {
+            $email = mb_strtolower(trim($user->email));
+            $ordersQuery->orWhereRaw('LOWER(TRIM(email)) = ?', [$email]);
+
+            // Oturum açan kullanıcının e-posta adresiyle eşleşen misafir siparişlerini bağla
             \App\Models\Order::whereNull('user_id')
-                ->where('email', $user->email)
+                ->whereRaw('LOWER(TRIM(email)) = ?', [$email])
                 ->update(['user_id' => $user->id]);
         }
 
-        $orders = \App\Models\Order::where(function ($q) use ($user) {
-            $q->where('user_id', $user->id);
-            if (!empty($user->email)) {
-                $q->orWhere('email', $user->email);
-            }
-        })->with('items.product')->latest()->get();
+        if (!empty($user->phone)) {
+            $cleanPhone = preg_replace('/[^0-9]/', '', $user->phone);
+            if (strlen($cleanPhone) >= 10) {
+                $last10 = substr($cleanPhone, -10);
+                $ordersQuery->orWhere('phone', 'like', "%{$last10}%");
 
+                // Oturum açan kullanıcının telefon numarasıyla eşleşen misafir siparişlerini bağla
+                \App\Models\Order::whereNull('user_id')
+                    ->where('phone', 'like', "%{$last10}%")
+                    ->update(['user_id' => $user->id]);
+            }
+        }
+
+        $orders = $ordersQuery->with('items.product')->latest()->get();
         $favorites = $user->favoriteProducts()->latest()->get();
 
         return view('profile.index', compact('user', 'orders', 'favorites'));
