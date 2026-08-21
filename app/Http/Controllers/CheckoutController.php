@@ -174,16 +174,22 @@ class CheckoutController extends Controller
             $callbackUrl = route('checkout.callback');
             $iyzicoForm = $this->iyzico->initializeCheckoutForm($order, $cart, $callbackUrl);
 
+            // Log complete raw response from Iyzico
+            if ($iyzicoForm) {
+                \Illuminate\Support\Facades\Log::info("Iyzico Initialize Form Complete Raw Response [Order #{$order->id}]: " . $iyzicoForm->getRawResult());
+            }
+
             if ($iyzicoForm && $iyzicoForm->getStatus() == 'success') {
                 return view('checkout.payment', [
                     'formContent' => $iyzicoForm->getCheckoutFormContent(),
                     'order' => $order
                 ]);
             } else {
-                $errorCode = $iyzicoForm ? $iyzicoForm->getErrorCode() : 'N/A';
-                $errorMsg  = $iyzicoForm ? $iyzicoForm->getErrorMessage() : 'Ödeme kapısına erişilemedi.';
+                $errorCode  = $iyzicoForm ? $iyzicoForm->getErrorCode() : 'N/A';
+                $errorMsg   = $iyzicoForm ? $iyzicoForm->getErrorMessage() : 'Ödeme kapısına erişilemedi.';
+                $rawResult  = $iyzicoForm ? $iyzicoForm->getRawResult() : 'Yanıt yok';
 
-                \Illuminate\Support\Facades\Log::error("Iyzico Form Error: Code [{$errorCode}] - {$errorMsg} | Order #{$order->id} | Callback: {$callbackUrl}");
+                \Illuminate\Support\Facades\Log::error("Iyzico Form Error: Code [{$errorCode}] - {$errorMsg} | Order #{$order->id} | Raw Result: {$rawResult}");
 
                 return redirect()->back()->with('error', 'Kredi Kartı ödeme formu yüklenemedi: ' . $errorMsg . ' (Hata Kodu: ' . $errorCode . ')')->withInput();
             }
@@ -205,6 +211,11 @@ class CheckoutController extends Controller
 
         try {
             $payment = $this->iyzico->retrieveCheckoutForm($token);
+
+            // Log complete raw response from Iyzico Callback
+            if ($payment) {
+                \Illuminate\Support\Facades\Log::info("Iyzico Callback Form Complete Raw Response [Token: {$token}]: " . $payment->getRawResult());
+            }
 
             // 4-Tier Robust Order Lookup Strategy
             $conversationId = $payment ? $payment->getConversationId() : null;
