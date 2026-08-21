@@ -180,8 +180,12 @@ class CheckoutController extends Controller
                     'order' => $order
                 ]);
             } else {
-                $errorMsg = $iyzicoForm ? $iyzicoForm->getErrorMessage() : 'Ödeme kapısına erişilemedi.';
-                return redirect()->back()->with('error', 'Kredi Kartı ödeme formu yüklenemedi: ' . $errorMsg)->withInput();
+                $errorCode = $iyzicoForm ? $iyzicoForm->getErrorCode() : 'N/A';
+                $errorMsg  = $iyzicoForm ? $iyzicoForm->getErrorMessage() : 'Ödeme kapısına erişilemedi.';
+
+                \Illuminate\Support\Facades\Log::error("Iyzico Form Error: Code [{$errorCode}] - {$errorMsg} | Order #{$order->id} | Callback: {$callbackUrl}");
+
+                return redirect()->back()->with('error', 'Kredi Kartı ödeme formu yüklenemedi: ' . $errorMsg . ' (Hata Kodu: ' . $errorCode . ')')->withInput();
             }
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('Iyzico Init Exception: ' . $e->getMessage());

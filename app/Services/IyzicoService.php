@@ -40,34 +40,47 @@ class IyzicoService
         $request = new CreateCheckoutFormInitializeRequest();
         $request->setLocale(Locale::TR);
         $request->setConversationId((string)$order->id);
-        // Clean phone number format for Iyzico (+90XXXXXXXXXX)
-        $cleanPhone = preg_replace('/[^0-9+]/', '', $order->phone);
-        if (strlen($cleanPhone) == 10 && str_starts_with($cleanPhone, '5')) {
-            $cleanPhone = '+90' . $cleanPhone;
-        } elseif (strlen($cleanPhone) == 11 && str_starts_with($cleanPhone, '05')) {
+
+        // 1. Phone number format (+905XXXXXXXXX - 13 chars)
+        $cleanPhone = preg_replace('/[^0-9]/', '', $order->phone);
+        if (str_starts_with($cleanPhone, '90') && strlen($cleanPhone) == 12) {
+            $cleanPhone = '+' . $cleanPhone;
+        } elseif (str_starts_with($cleanPhone, '0') && strlen($cleanPhone) == 11) {
             $cleanPhone = '+90' . substr($cleanPhone, 1);
+        } elseif (strlen($cleanPhone) == 10 && str_starts_with($cleanPhone, '5')) {
+            $cleanPhone = '+90' . $cleanPhone;
         }
-        if (empty($cleanPhone) || strlen($cleanPhone) < 10) {
+        if (empty($cleanPhone) || strlen($cleanPhone) !== 13) {
             $cleanPhone = '+905555555555';
         }
 
-        // Build Basket Items and calculate total sum
+        // 2. T.C. Identity Number (Strict 11 digits for live iyzico)
+        $tcNo = preg_replace('/[^0-9]/', '', $order->identity_number);
+        if (strlen($tcNo) !== 11) {
+            $tcNo = '11111111111';
+        }
+
+        // 3. Basket Items & Total Amount Sum
         $basketItems = [];
         $calculatedSum = 0;
         foreach ($cartItems as $key => $item) {
             $itemTotal = round($item['price'] * $item['quantity'], 2);
             $calculatedSum += $itemTotal;
 
+            $itemName = trim(strip_tags($item['name'] ?? 'Ahsap Urun'));
+            if (empty($itemName)) $itemName = 'Ahsap Urun';
+            $itemName = mb_substr($itemName, 0, 50);
+
             $basketItem = new BasketItem();
-            $basketItem->setId((string)$item['product_id']);
-            $basketItem->setName(mb_substr($item['name'], 0, 50));
-            $basketItem->setCategory1('Cerceve');
+            $basketItem->setId((string)($item['product_id'] ?? ($key + 1)));
+            $basketItem->setName($itemName);
+            $basketItem->setCategory1('Ahsap Cerceve');
             $basketItem->setItemType(BasketItemType::PHYSICAL);
             $basketItem->setPrice(number_format($itemTotal, 2, '.', ''));
             $basketItems[] = $basketItem;
         }
 
-        // Set total price matching basket sum
+        // Total price match
         $totalFormatted = number_format($calculatedSum > 0 ? $calculatedSum : $order->total_amount, 2, '.', '');
         $request->setPrice($totalFormatted);
         $request->setPaidPrice($totalFormatted);
@@ -76,40 +89,45 @@ class IyzicoService
         $request->setPaymentGroup(PaymentGroup::PRODUCT);
         $request->setCallbackUrl($callbackUrl);
 
-        // Split name/surname (Iyzico requires both)
-        $nameParts = explode(' ', trim($order->name));
+        // 4. Split Name & Surname
+        $cleanFullName = trim(preg_replace('/\s+/', ' ', $order->name));
+        $nameParts = explode(' ', $cleanFullName);
         $surname = array_pop($nameParts);
         $name = implode(' ', $nameParts);
         if (empty($name)) {
-            $name = $surname;
-            $surname = 'Musteri';
+            $name = $surname ?: 'Musteri';
+            $surname = 'Ahsapevim';
         }
 
+        // 5. Buyer Info
         $buyer = new Buyer();
-        $buyer->setId((string)($order->user_id ?: 9999));
-        $buyer->setName($name);
-        $buyer->setSurname($surname);
-        $buyer->setEmail($order->email);
+        $buyer->setId((string)($order->user_id ?: ($order->id ?: 9999)));
+        $buyer->setName(mb_substr($name, 0, 45));
+        $buyer->setSurname(mb_substr($surname, 0, 45));
+        $buyer->setEmail($order->email ?: 'info@ahsapevimmanisa.com');
         $buyer->setGsmNumber($cleanPhone);
-        $buyer->setIdentityNumber($order->identity_number ?: '11111111111');
-        $buyer->setRegistrationAddress($order->address ?: 'Manisa');
+        $buyer->setIdentityNumber($tcNo);
+        $buyer->setRegistrationAddress(mb_substr($order->address ?: 'Manisa Merkez', 0, 200));
         $buyer->setCity($order->city ?: 'Manisa');
         $buyer->setCountry('Turkey');
         $buyer->setIp(request()->ip() ?: '127.0.0.1');
         $request->setBuyer($buyer);
 
+        // 6. Billing & Shipping Address
+        $addressStr = mb_substr($order->address ?: 'Manisa Merkez', 0, 200);
+
         $billingAddress = new Address();
-        $billingAddress->setContactName($order->name);
+        $billingAddress->setContactName(mb_substr($cleanFullName ?: 'Musteri', 0, 50));
         $billingAddress->setCity($order->city ?: 'Manisa');
         $billingAddress->setCountry('Turkey');
-        $billingAddress->setAddress($order->address);
+        $billingAddress->setAddress($addressStr);
         $request->setBillingAddress($billingAddress);
 
         $shippingAddress = new Address();
-        $shippingAddress->setContactName($order->name);
+        $shippingAddress->setContactName(mb_substr($cleanFullName ?: 'Musteri', 0, 50));
         $shippingAddress->setCity($order->city ?: 'Manisa');
         $shippingAddress->setCountry('Turkey');
-        $shippingAddress->setAddress($order->address);
+        $shippingAddress->setAddress($addressStr);
         $request->setShippingAddress($shippingAddress);
 
         $request->setBasketItems($basketItems);
