@@ -60,11 +60,11 @@ class IyzicoService
             $tcNo = '11111111111';
         }
 
-        // 3. Basket Items & Total Amount Sum
+        // 3. Basket Items & Total Amount Sum Matching
         $basketItems = [];
         $calculatedSum = 0;
         foreach ($cartItems as $key => $item) {
-            $itemTotal = round($item['price'] * $item['quantity'], 2);
+            $itemTotal = round((float)$item['price'] * (int)$item['quantity'], 2);
             $calculatedSum += $itemTotal;
 
             $itemName = trim(strip_tags($item['name'] ?? 'Ahsap Urun'));
@@ -80,8 +80,35 @@ class IyzicoService
             $basketItems[] = $basketItem;
         }
 
-        // Total price match
-        $totalFormatted = number_format($calculatedSum > 0 ? $calculatedSum : $order->total_amount, 2, '.', '');
+        $orderTotal = round((float)$order->total_amount, 2);
+        if ($orderTotal <= 0) {
+            $orderTotal = $calculatedSum;
+        }
+
+        // Adjust Basket Items Sum to match $orderTotal down to exact cent
+        $diff = round($orderTotal - $calculatedSum, 2);
+        if (abs($diff) >= 0.01) {
+            if ($diff > 0) {
+                // Add Shipping/Service item for positive difference (e.g. shipping fee)
+                $shippingItem = new BasketItem();
+                $shippingItem->setId('SHIPPING');
+                $shippingItem->setName('Kargo ve Hizmet Bedeli');
+                $shippingItem->setCategory1('Kargo');
+                $shippingItem->setItemType(BasketItemType::PHYSICAL);
+                $shippingItem->setPrice(number_format($diff, 2, '.', ''));
+                $basketItems[] = $shippingItem;
+            } elseif ($diff < 0 && count($basketItems) > 0) {
+                // Adjust last item price for negative difference (e.g. discount)
+                $lastIdx = count($basketItems) - 1;
+                $currentPrice = (float)$basketItems[$lastIdx]->getPrice();
+                $adjustedPrice = round($currentPrice + $diff, 2);
+                if ($adjustedPrice > 0) {
+                    $basketItems[$lastIdx]->setPrice(number_format($adjustedPrice, 2, '.', ''));
+                }
+            }
+        }
+
+        $totalFormatted = number_format($orderTotal, 2, '.', '');
         $request->setPrice($totalFormatted);
         $request->setPaidPrice($totalFormatted);
         $request->setCurrency(Currency::TL);
