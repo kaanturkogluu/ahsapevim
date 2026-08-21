@@ -87,7 +87,7 @@
                             </div>
                         </td>
                         <td class="py-4 text-center text-xs text-gray-500" data-label="Tarih">
-                            {{ $order->created_at->format('d.m.Y H:i') }}
+                            {{ $order->created_at?->format('d.m.Y H:i') ?? '-' }}
                         </td>
                         <td class="py-4 text-right font-black text-[#C87A53]" data-label="Tutar">
                             ₺{{ number_format($order->total_amount, 2, ',', '.') }}

@@ -50,7 +50,7 @@
                             @endif
                         </td>
                         <td class="py-4 text-center text-xs text-gray-500">
-                            {{ $page->updated_at->format('d.m.Y H:i') }}
+                            {{ $page->updated_at?->format('d.m.Y H:i') ?? '-' }}
                         </td>
                         <td class="py-4 text-right space-x-2 whitespace-nowrap">
                             <a href="{{ route('admin.pages.edit', $page->id) }}" class="py-1.5 px-3 bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold text-xs rounded-lg transition inline-flex items-center gap-1">

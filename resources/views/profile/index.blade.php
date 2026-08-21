@@ -18,7 +18,7 @@
                 </h1>
                 <p class="text-xs text-gray-500 mt-1 flex items-center gap-3">
                     <span><i class="fa-solid fa-envelope text-amber-700/60 mr-1"></i>{{ $user->email }}</span>
-                    <span><i class="fa-solid fa-calendar-day text-amber-700/60 mr-1"></i>Üyelik: {{ $user->created_at->format('d.m.Y') }}</span>
+                    <span><i class="fa-solid fa-calendar-day text-amber-700/60 mr-1"></i>Üyelik: {{ $user->created_at?->format('d.m.Y') ?? '-' }}</span>
                 </p>
             </div>
         </div>
@@ -150,7 +150,7 @@
                                 <div class="hidden sm:block border-l border-gray-200 h-8"></div>
                                 <div class="hidden sm:block">
                                     <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Sipariş Tarihi</span>
-                                    <span class="text-xs font-semibold text-gray-700">{{ $order->created_at->format('d.m.Y H:i') }}</span>
+                                    <span class="text-xs font-semibold text-gray-700">{{ $order->created_at?->format('d.m.Y H:i') ?? '-' }}</span>
                                 </div>
                             </div>
 

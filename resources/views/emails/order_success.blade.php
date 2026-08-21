@@ -34,7 +34,7 @@
                                         @if($order->tracking_code)
                                             <p style="margin: 0 0 6px 0; font-size: 13px; color: #888888;">Sipariş Takip Kodu: <strong style="color: #C87A53; font-family: monospace; font-size: 14px;">{{ $order->tracking_code }}</strong></p>
                                         @endif
-                                        <p style="margin: 0 0 6px 0; font-size: 13px; color: #888888;">Sipariş Tarihi: <strong style="color: #2E251E;">{{ $order->created_at->format('d.m.Y H:i') }}</strong></p>
+                                        <p style="margin: 0 0 6px 0; font-size: 13px; color: #888888;">Sipariş Tarihi: <strong style="color: #2E251E;">{{ $order->created_at?->format('d.m.Y H:i') ?? '-' }}</strong></p>
                                         <p style="margin: 0; font-size: 13px; color: #888888;">Teslimat Adresi: <strong style="color: #2E251E;">{{ $order->address }} {{ $order->district ? $order->district . '/' : '' }}{{ $order->city }}</strong></p>
                                     </td>
                                 </tr>

@@ -63,7 +63,7 @@
                         <tr class="hover:bg-gray-50/70 transition">
                             <td class="p-4">
                                 <span class="font-mono font-bold text-gray-900 block">#{{ $log->id }}</span>
-                                <span class="text-[11px] text-gray-400 block mt-0.5">{{ $log->created_at->format('d.m.Y H:i') }}</span>
+                                <span class="text-[11px] text-gray-400 block mt-0.5">{{ $log->created_at?->format('d.m.Y H:i') ?? '-' }}</span>
                                 @if($log->order_id)
                                     <a href="{{ route('admin.orders.show', $log->order_id) }}" class="text-[10px] text-blue-600 hover:underline font-bold font-mono block mt-0.5">
                                         Sipariş #{{ $log->order_id }}

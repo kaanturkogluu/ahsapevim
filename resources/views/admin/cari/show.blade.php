@@ -120,7 +120,7 @@
                         @forelse($transactions as $transaction)
                             <tr class="border-b border-gray-50 hover:bg-gray-50 transition">
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-600">
-                                    {{ $transaction->date->format('d.m.Y H:i') }}
+                                    {{ $transaction->date?->format('d.m.Y H:i') ?? '-' }}
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="text-gray-900 font-medium">{{ $transaction->description }}</div>

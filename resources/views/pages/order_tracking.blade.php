@@ -71,7 +71,7 @@
                         <div>
                             <span class="text-xs text-gray-400 font-bold uppercase tracking-wider block">Sipariş Numarası</span>
                             <h2 class="text-xl font-black text-gray-800">#{{ $order->id }} - {{ $order->tracking_code ?: 'AHS-'.$order->id }}</h2>
-                            <span class="text-xs text-gray-500 mt-1 block">Tarih: {{ $order->created_at->format('d.m.Y H:i') }}</span>
+                            <span class="text-xs text-gray-500 mt-1 block">Tarih: {{ $order->created_at?->format('d.m.Y H:i') ?? '-' }}</span>
                         </div>
 
                         <div>

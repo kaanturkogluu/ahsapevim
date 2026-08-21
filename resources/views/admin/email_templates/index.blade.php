@@ -46,7 +46,7 @@
                             @endif
                         </td>
                         <td class="py-4 text-center text-xs text-gray-500">
-                            {{ $template->updated_at->format('d.m.Y H:i') }}
+                            {{ $template->updated_at?->format('d.m.Y H:i') ?? '-' }}
                         </td>
                         <td class="py-4 text-right space-x-2">
                             <a href="{{ route('admin.email_templates.preview', $template->id) }}" target="_blank" class="py-1.5 px-3 bg-stone-100 text-stone-700 hover:bg-stone-200 font-bold text-xs rounded-lg transition inline-flex items-center gap-1">

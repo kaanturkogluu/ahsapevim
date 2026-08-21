@@ -8,7 +8,7 @@
     <div class="mb-6 pb-4 border-b border-gray-100 flex flex-wrap justify-between items-center gap-4">
         <div>
             <h3 class="text-lg font-bold text-gray-800">Sipariş #{{ $order->id }} Detayı</h3>
-            <p class="text-xs text-gray-500 mt-1">Sipariş tarihi: {{ $order->created_at->format('d.m.Y H:i') }}</p>
+            <p class="text-xs text-gray-500 mt-1">Sipariş tarihi: {{ $order->created_at?->format('d.m.Y H:i') ?? '-' }}</p>
         </div>
         <div class="flex items-center gap-3">
             @if(in_array($order->status, ['pending', 'failed', 'cancelled']))

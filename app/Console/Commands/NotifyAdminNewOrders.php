@@ -70,7 +70,7 @@ class NotifyAdminNewOrders extends Command
             $html .= '<div style="background-color: #FFFBF5; border: 1px solid #F5E8D8; border-radius: 10px; padding: 15px; margin-bottom: 20px;">';
             $html .= "<div style=\"display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #EFEAE0; padding-bottom: 10px; margin-bottom: 10px;\">";
             $html .= "<h3 style=\"margin: 0; color: #C87A53; font-size: 16px;\">Sipariş #" . e($order->id) . " (" . e($order->tracking_code ?: 'AHS-' . $order->id) . ")</h3>";
-            $html .= "<span style=\"font-size: 12px; color: #777;\">" . $order->created_at->format('d.m.Y H:i') . "</span>";
+            $html .= "<span style=\"font-size: 12px; color: #777;\">" . ($order->created_at ? $order->created_at->format('d.m.Y H:i') : '-') . "</span>";
             $html .= "</div>";
 
             // Customer details
