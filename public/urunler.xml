@@ -1,44 +1,1356 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
   <channel>
-    <title>Ahsap Evim Manisa</title>
+    <title>Laravel</title>
     <link>http://127.0.0.1:8000</link>
     <description>Ahşap Evim Ürün Kataloğu ve XML Beslemesi</description>
     <item>
-      <g:id>2</g:id>
-      <title>Dekoratif Ahşap Çerçeve</title>
-      <description>Dekoratif Ahşap Çerçeve - Kaliteli masif ahşap çerçeve</description>
-      <link>http://127.0.0.1:8000/urun/dekoratif-ahsap-cerceve</link>
-      <g:image_link>http://127.0.0.1:8000/cerceve.png</g:image_link>
-      <g:price>320.00 TRY</g:price>
-      <g:availability>in_stock</g:availability>
+      <g:id>1</g:id>
+      <title>Ahşap Dönen Fotoğraf Çerçevesi Işıklı</title>
+      <description>- Doğal ahşap malzemesiyle, evinizin dekorasyonuna sıcak ve otantik bir dokunuş katar; - Işıklı tasarımı sayesinde, fotoğraflarınızı gece veya loş ortamlarda bile net bir şekilde görebilmenizi sağlar; - Dönen mekanizması ile fotoğraflarınızı kolayca değiştirebilir ve farklı anılarınızı sergileyebilirsiniz;</description>
+      <link>http://127.0.0.1:8000/urun/ahsap-donen-fotograf-cercevesi-isikli-4545124522121454555</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1773/prod/QC_ENRICHMENT/20251014/18/78590fe3-0922-3d37-b1eb-286243ed8339/1_org_zoom.jpg</g:image_link>
+      <g:price>0.00 TRY</g:price>
+      <g:availability>out_of_stock</g:availability>
       <g:brand>Ahşap Evim</g:brand>
       <g:condition>new</g:condition>
-      <g:product_type>Masif Çerçeve</g:product_type>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4545124522121454555</g:barcode>
     </item>
     <item>
-      <g:id>1</g:id>
-      <title>360 Dönen Masif Çerçeve</title>
-      <description>360 Dönen Masif Çerçeve - Kaliteli masif ahşap çerçeve</description>
-      <link>http://127.0.0.1:8000/urun/360-donen-masif-cerceve</link>
-      <g:image_link>http://127.0.0.1:8000/cerceve.png</g:image_link>
-      <g:price>450.00 TRY</g:price>
+      <g:id>2</g:id>
+      <title>Kişiye Özel El Yapımı Ahşap Dönen Çerçeve Yeni Sokak Lambalı Doğum günü, Sevgililer Günü</title>
+      <description>Ahşap El Yapımı Dönen Çerçeve Evinize zarafet katacak bu ahşap el yapımı dönen çerçeve ile sevdiklerinizin fotoğraflarını en şık şekilde sergileyin.; Doğal ahşap malzemeden üretilen çerçevemiz, 23x21 cm boyutlarındadır ve her iki tarafına da 10x15 cm boyutunda fotoğraflar yerleştirilebilir.; Öne Çıkan Özellikler: • Dönen Mekanizma: İki farklı fotoğrafı tek hareketle sergileyin.; • Çift Renkli Lamba: Beyaz ve gün ışığı renginde yanabilen lambası ile fotoğraflarınıza vurgu yapın.; • El Yapımı ve Dayanıklı: Doğal ahşap malzemeden el işçiliğiyle üretilmiştir.; • Kolay Kullanım: Fotoğrafları kolayca yerleştirin ve değiştirin.; Minimalist ve şık tasarımıyla her türlü dekorasyona uyum sağlar.; Evinizde, ofisinizde veya sevdiklerinize hediye olarak mükemmel bir seçim.; Anılarınızı en güzel şekilde sergileyin!</description>
+      <link>http://127.0.0.1:8000/urun/kisiye-ozel-el-yapimi-ahsap-donen-cerceve-yeni-sokak-lambali-dogum-gunu-sevgililer-gunu-454512101012121010</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1794/prod/QC_PREP/20251128/13/7ad3918e-c309-3455-bdd2-ea21c5a10560/1_org_zoom.jpg</g:image_link>
+      <g:price>999.00 TRY</g:price>
       <g:availability>in_stock</g:availability>
       <g:brand>Ahşap Evim</g:brand>
       <g:condition>new</g:condition>
-      <g:product_type>Masif Çerçeve</g:product_type>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>454512101012121010</g:barcode>
     </item>
     <item>
       <g:id>3</g:id>
-      <title>Premium Meşe Çerçeve</title>
-      <description>Premium Meşe Çerçeve - Kaliteli masif ahşap çerçeve</description>
-      <link>http://127.0.0.1:8000/urun/premium-mese-cerceve</link>
-      <g:image_link>http://127.0.0.1:8000/cerceve.png</g:image_link>
-      <g:price>600.00 TRY</g:price>
+      <title>Kişiye Özel El Yapımı Ahşap Dönen Çerçeve Yeni Sokak Lambalı Doğum Günü, Sevgililer Günü</title>
+      <description>Ahşap El Yapımı Dönen Çerçeve Evinize zarafet katacak bu ahşap el yapımı dönen çerçeve ile sevdiklerinizin fotoğraflarını en şık şekilde sergileyin.; Doğal ahşap malzemeden üretilen çerçevemiz, 23x21 cm boyutlarındadır ve her iki tarafına da 10x15 cm boyutunda fotoğraflar yerleştirilebilir.; Öne Çıkan Özellikler: • Dönen Mekanizma: İki farklı fotoğrafı tek hareketle sergileyin.; • Çift Renkli Lamba: Beyaz ve gün ışığı renginde yanabilen lambası ile fotoğraflarınıza vurgu yapın.; • El Yapımı ve Dayanıklı: Doğal ahşap malzemeden el işçiliğiyle üretilmiştir.; • Kolay Kullanım: Fotoğrafları kolayca yerleştirin ve değiştirin.; Minimalist ve şık tasarımıyla her türlü dekorasyona uyum sağlar.; Evinizde, ofisinizde veya sevdiklerinize hediye olarak mükemmel bir seçim.; Anılarınızı en güzel şekilde sergileyin!</description>
+      <link>http://127.0.0.1:8000/urun/kisiye-ozel-el-yapimi-ahsap-donen-cerceve-yeni-sokak-lambali-dogum-gunu-sevgililer-gunu-4545545541212124545544545</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1792/prod/QC_PREP/20251127/16/4a592842-ec48-33cf-9046-2091368254ae/1_org_zoom.jpg</g:image_link>
+      <g:price>999.00 TRY</g:price>
       <g:availability>in_stock</g:availability>
       <g:brand>Ahşap Evim</g:brand>
       <g:condition>new</g:condition>
-      <g:product_type>Masif Çerçeve</g:product_type>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4545545541212124545544545</g:barcode>
+    </item>
+    <item>
+      <g:id>4</g:id>
+      <title>Kişiye Özel El Yapımı Ahşap Dönen Çerçeve Yeni Sokak Lambalı Doğum Günü, Sevgililer Günü</title>
+      <description>Ahşap El Yapımı Dönen Çerçeve Evinize zarafet katacak bu ahşap el yapımı dönen çerçeve ile sevdiklerinizin fotoğraflarını en şık şekilde sergileyin.; Doğal ahşap malzemeden üretilen çerçevemiz, 23x21 cm boyutlarındadır ve her iki tarafına da 10x15 cm boyutunda fotoğraflar yerleştirilebilir.; Öne Çıkan Özellikler: • Dönen Mekanizma: İki farklı fotoğrafı tek hareketle sergileyin.; • Çift Renkli Lamba: Beyaz ve gün ışığı renginde yanabilen lambası ile fotoğraflarınıza vurgu yapın.; • El Yapımı ve Dayanıklı: Doğal ahşap malzemeden el işçiliğiyle üretilmiştir.; • Kolay Kullanım: Fotoğrafları kolayca yerleştirin ve değiştirin.; Minimalist ve şık tasarımıyla her türlü dekorasyona uyum sağlar.; Evinizde, ofisinizde veya sevdiklerinize hediye olarak mükemmel bir seçim.; Anılarınızı en güzel şekilde sergileyin!</description>
+      <link>http://127.0.0.1:8000/urun/kisiye-ozel-el-yapimi-ahsap-donen-cerceve-yeni-sokak-lambali-dogum-gunu-sevgililer-gunu-45454545121245</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1776/prod/QC_PREP/20251020/17/5712ffa7-5338-3c51-aedc-264a3865318b/1_org_zoom.jpg</g:image_link>
+      <g:price>999.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45454545121245</g:barcode>
+    </item>
+    <item>
+      <g:id>5</g:id>
+      <title>Kişiye Özel Ahşap Desenli Fotoğraf Çerçevesi YENİ İŞ ARKADAŞ SEVGİLİ ANNE BABA HEDİYE</title>
+      <description>Kişiye Özel Ahşap Desenli Fotoğraf Çerçevesi YENİ İŞ ARKADAŞ SEVGİLİ ANNE BABA HEDİYE - Kaliteli masif ahşap çerçeve</description>
+      <link>http://127.0.0.1:8000/urun/kisiye-ozel-ahsap-desenli-fotograf-cercevesi-yeni-is-arkadas-sevgili-anne-baba-hediye-4545451212121542</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1767/prod/QC_PREP/20251006/23/5fb86445-ca84-3284-a6c1-81b454035f92/1_org_zoom.jpg</g:image_link>
+      <g:price>299.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4545451212121542</g:barcode>
+    </item>
+    <item>
+      <g:id>6</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Işıklı Sırt Sırta Çift Figürlü Doğum Günü, Sevgililer Günü</title>
+      <description>Ahşap El Yapımı Dönen Çerçeve Evinize zarafet katacak bu ahşap el yapımı dönen çerçeve ile sevdiklerinizin fotoğraflarını en şık şekilde sergileyin.; Doğal ahşap malzemeden üretilen çerçevemiz, 23x21 cm boyutlarındadır ve her iki tarafına da 10x15 cm boyutunda fotoğraflar yerleştirilebilir.; Öne Çıkan Özellikler: • Dönen Mekanizma: İki farklı fotoğrafı tek hareketle sergileyin.; • Çift Renkli Lamba: Beyaz ve gün ışığı renginde yanabilen lambası ile fotoğraflarınıza vurgu yapın.; • El Yapımı ve Dayanıklı: Doğal ahşap malzemeden el işçiliğiyle üretilmiştir.; • Kolay Kullanım: Fotoğrafları kolayca yerleştirin ve değiştirin.; Minimalist ve şık tasarımıyla her türlü dekorasyona uyum sağlar.; Evinizde, ofisinizde veya sevdiklerinize hediye olarak mükemmel bir seçim.; Anılarınızı en güzel şekilde sergileyin!</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-isikli-sirt-sirta-cift-figurlu-dogum-gunu-sevgililer-gunu-45451210122245</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1748/prod/QC_PREP/20250906/14/ed98b42c-540e-3e70-a9d6-46107ee4a4ec/1_org_zoom.jpg</g:image_link>
+      <g:price>999.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45451210122245</g:barcode>
+    </item>
+    <item>
+      <g:id>7</g:id>
+      <title>Kişiye Özel El Yapımı Ahşap Dönen Çerçeve Yeni Sokak Lambalı Doğum Günü, Sevgililer Günü</title>
+      <description>Ahşap El Yapımı Dönen Çerçeve Evinize zarafet katacak bu ahşap el yapımı dönen çerçeve ile sevdiklerinizin fotoğraflarını en şık şekilde sergileyin.; Doğal ahşap malzemeden üretilen çerçevemiz, 23x21 cm boyutlarındadır ve her iki tarafına da 10x15 cm boyutunda fotoğraflar yerleştirilebilir.; Öne Çıkan Özellikler: • Dönen Mekanizma: İki farklı fotoğrafı tek hareketle sergileyin.; • Çift Renkli Lamba: Beyaz ve gün ışığı renginde yanabilen lambası ile fotoğraflarınıza vurgu yapın.; • El Yapımı ve Dayanıklı: Doğal ahşap malzemeden el işçiliğiyle üretilmiştir.; • Kolay Kullanım: Fotoğrafları kolayca yerleştirin ve değiştirin.; Minimalist ve şık tasarımıyla her türlü dekorasyona uyum sağlar.; Evinizde, ofisinizde veya sevdiklerinize hediye olarak mükemmel bir seçim.; Anılarınızı en güzel şekilde sergileyin! Geri Bildirim Ver</description>
+      <link>http://127.0.0.1:8000/urun/kisiye-ozel-el-yapimi-ahsap-donen-cerceve-yeni-sokak-lambali-dogum-gunu-sevgililer-gunu-45454545451212</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1749/prod/QC_ENRICHMENT/20250904/13/7628d8d5-2d7e-397c-8576-acf8ceaf17e6/1_org_zoom.jpg</g:image_link>
+      <g:price>999.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45454545451212</g:barcode>
+    </item>
+    <item>
+      <g:id>8</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Sevgili Figürlü Sokak Lambalı GALATASARAY TAKIM TARAFTAR</title>
+      <description>El Yapımı Ahşap Dönen Çerçeve Sevgili Figürlü Sokak Lambalı GALATASARAY TAKIM TARAFTAR - Kaliteli masif ahşap çerçeve</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-sevgili-figurlu-sokak-lambali-galatasaray-takim-taraftar-4545451905451905</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1695/prod/QC_PREP/20250617/19/23ea53fe-133e-39f5-b411-b8dd140bd2d5/1_org_zoom.jpg</g:image_link>
+      <g:price>0.00 TRY</g:price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4545451905451905</g:barcode>
+    </item>
+    <item>
+      <g:id>9</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Sevgili Figürlü Sokak Lambalı FENERBAHÇE TAKIM TARAFTAR HEDİYELİK FB</title>
+      <description>Ahşap El Yapımı Dönen Çerçeve Evinize zarafet katacak bu ahşap el yapımı dönen çerçeve ile sevdiklerinizin fotoğraflarını en şık şekilde sergileyin.; Doğal ahşap malzemeden üretilen çerçevemiz, 23x21 cm boyutlarındadır ve her iki tarafına da 10x15 cm boyutunda fotoğraflar yerleştirilebilir.; Öne Çıkan Özellikler: Dönen Mekanizma: İki farklı fotoğrafı tek hareketle sergileyin.; Çift Renkli Lamba: Beyaz ve gün ışığı renginde yanabilen lambası ile fotoğraflarınıza vurgu yapın.; El Yapımı ve Dayanıklı: Doğal ahşap malzemeden el işçiliğiyle üretilmiştir.; Kolay Kullanım: Fotoğrafları kolayca yerleştirin ve değiştirin.; Minimalist ve şık tasarımıyla her türlü dekorasyona uyum sağlar.; Evinizde, ofisinizde veya sevdiklerinize hediye olarak mükemmel bir seçim.; Anılarınızı en güzel şekilde sergileyin!</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-sevgili-figurlu-sokak-lambali-fenerbahce-takim-taraftar-hediyelik-fb-4519071907454545</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1668/prod/QC/20250428/17/fcabe5fe-433f-39e1-a738-1ef5d24aa311/1_org_zoom.jpg</g:image_link>
+      <g:price>0.00 TRY</g:price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4519071907454545</g:barcode>
+    </item>
+    <item>
+      <g:id>10</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Yeni Sokak Lambalı</title>
+      <description>El yapımı ahşap malzeme kullanılarak üretilmiş, dayanıklı ve uzun ömürlü bir çerçeve sunar; Doğal ahşabın sıcak ve otantik dokusu, mekanınıza şık bir atmosfer katar; Yeni sokak lambası detayı ile modern ve estetik bir görünüm sağlar, dekoratif bir aydınlatma çözümü sunar; Ahşabın doğal dokusu ve renk tonları, her türlü iç mekan tasarımına kolayca uyum sağlar;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-yeni-sokak-lambali-4545451254112510</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1704/prod/QC_ENRICHMENT/20250706/20/349a1f29-ebd1-38c2-a2c5-90c7a020a0db/1_org_zoom.jpg</g:image_link>
+      <g:price>999.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4545451254112510</g:barcode>
+    </item>
+    <item>
+      <g:id>11</g:id>
+      <title>AHŞAP DÖNEN ÇERÇEVE SOKAK LAMBALI 3</title>
+      <description>DIŞ ÇERÇEVE 21x17 FOTOĞRAF BÖLÜMÜ 10x15 ; UZUNLUK 25CM ; SOKAK LAMBASI HEM BEYAZ HEM GÜN IŞIĞI YANMAKTADIR. ; ÇERÇEVENİN YANINDA 2 ADET MİKA GÖNDERİLMEKTEDİR.;</description>
+      <link>http://127.0.0.1:8000/urun/ahsap-donen-cerceve-sokak-lambali-3-45454545121212121212</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1128/product/media/images/prod/SPM/PIM/20240111/14/7416e2b9-94a3-346a-bb81-30ef4c0a733d/1_org_zoom.jpg</g:image_link>
+      <g:price>0.00 TRY</g:price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45454545121212121212</g:barcode>
+    </item>
+    <item>
+      <g:id>12</g:id>
+      <title>AHŞAP DÖNEN ÇERÇEVE SOKAK LAMBALI 3</title>
+      <description>Doğal ahşap malzemesiyle, her mekanınıza sıcak ve otantik bir dokunuş katar; Dayanıklı yapısı sayesinde uzun ömürlü kullanım sunar ve sık değiştirme ihtiyacını ortadan kaldırır; Ahşabın doğal güzelliğini yansıtan tasarımıyla, evinizin veya ofisinizin atmosferini zenginleştirir; Çevre dostu bir seçenek olarak, sürdürülebilir ve geri dönüştürülebilir malzemelerden üretilmiştir; Kolay temizlenebilir yüzeyi ile pratik kullanım sağlar ve bakımını kolaylaştırır;</description>
+      <link>http://127.0.0.1:8000/urun/ahsap-donen-cerceve-sokak-lambali-3-45454545454545121212121212</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1129/product/media/images/prod/SPM/PIM/20240111/14/4151a16b-ec63-3789-ad27-f02bc250cd3d/1_org_zoom.jpg</g:image_link>
+      <g:price>0.00 TRY</g:price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45454545454545121212121212</g:barcode>
+    </item>
+    <item>
+      <g:id>13</g:id>
+      <title>AHŞAP DÖNEN ÇERÇEVE SOKAK LAMBALI 2</title>
+      <description>DIŞ ÇERÇEVE 21x17 FOTOĞRAF BÖLÜMÜ 10x15 ; UZUNLUK 25CM ; Sokak Lambası hem beyaz hem gün ışığı yanmaktadır. ; Ürünümüz 2 adet mika ile gönderilmektedir.;</description>
+      <link>http://127.0.0.1:8000/urun/ahsap-donen-cerceve-sokak-lambali-2-121212104545</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1129/product/media/images/prod/SPM/PIM/20240111/14/eaa25447-fbe2-319b-87a8-3dc3348f64d1/1_org_zoom.jpg</g:image_link>
+      <g:price>0.00 TRY</g:price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>121212104545</g:barcode>
+    </item>
+    <item>
+      <g:id>14</g:id>
+      <title>AHŞAP DÖNEN ÇERÇEVE SOKAK LAMBALI 2</title>
+      <description>Doğal ahşap malzemesiyle, evinizin dekorasyonuna sıcak ve otantik bir dokunuş katar; Dayanıklı yapısı sayesinde uzun ömürlü kullanım sunar ve sık değiştirme ihtiyacını ortadan kaldırır; Ahşabın doğal dokusuyla mekanınıza huzurlu ve samimi bir atmosfer yaratır; Ahşap dönen çerçeve sokak lambası, modern ve klasik tasarımı bir arada sunarak her türlü iç mekan dekorasyonuyla uyum sağlar;</description>
+      <link>http://127.0.0.1:8000/urun/ahsap-donen-cerceve-sokak-lambali-2-1212121045</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1128/product/media/images/prod/SPM/PIM/20240111/14/09945086-e71b-3ea6-bf7e-87ffb83bb760/1_org_zoom.jpg</g:image_link>
+      <g:price>0.00 TRY</g:price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>1212121045</g:barcode>
+    </item>
+    <item>
+      <g:id>15</g:id>
+      <title>Çift Çerçeve Camlı 15x21</title>
+      <description>- Ahşap malzeme kullanımı, dayanıklılığı ve estetik görünümü bir arada sunar; - 15x21 cm boyutlarındaki çift çerçeve cam, fotoğraflarınız için ideal bir çerçeve oluşturur; - Ahşap malzeme sayesinde uzun ömürlü kullanım ve kolay temizlik imkanı sağlar; - Çift çerçeve tasarımı, fotoğraflarınıza derinlik katar ve daha etkileyici bir sunum yapmanızı sağlar;</description>
+      <link>http://127.0.0.1:8000/urun/cift-cerceve-camli-15x21-451210010</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1752/prod/QC_ENRICHMENT/20250912/13/e0fb7628-052f-3556-9c64-b006d10a66ca/1_org_zoom.jpg</g:image_link>
+      <g:price>0.00 TRY</g:price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>451210010</g:barcode>
+    </item>
+    <item>
+      <g:id>16</g:id>
+      <title>Çift Çerçeve Camlı 15x21</title>
+      <description>Çerçevemiz 15x21 Fotoğraf ölçüleri için uygundur; Menteşelidir açılıp kapanabilir; Ön kısmından Parlak cam bulunmaktadır;</description>
+      <link>http://127.0.0.1:8000/urun/cift-cerceve-camli-15x21-451210013</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1752/prod/QC_ENRICHMENT/20250912/13/90ea0e08-882a-342d-8587-26a50b3428fd/1_org_zoom.jpg</g:image_link>
+      <g:price>699.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>451210013</g:barcode>
+    </item>
+    <item>
+      <g:id>17</g:id>
+      <title>Çift Çerçeve Camlı 15x21</title>
+      <description>- Ahşap malzeme kullanımı, dayanıklılığı ve estetik görünümü bir arada sunar; - 15x21 cm boyutlarındaki çift çerçeve cam, fotoğraflarınızın ve diğer sanat eserlerinizin mükemmel bir şekilde sergilenmesini sağlar; - Ahşap yapısı sayesinde uzun ömürlü kullanım ve kolay bakım imkanı sunar; - Çift çerçeve tasarımı, fotoğraflarınızın daha dikkat çekici ve profesyonel bir görünüm kazanmasına yardımcı olur;</description>
+      <link>http://127.0.0.1:8000/urun/cift-cerceve-camli-15x21-451210014</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1752/prod/QC_ENRICHMENT/20250912/13/5d21abcc-a488-38e5-af24-0802ae8e874d/1_org_zoom.jpg</g:image_link>
+      <g:price>699.00 TRY</g:price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>451210014</g:barcode>
+    </item>
+    <item>
+      <g:id>18</g:id>
+      <title>Çift Çerçeve Camlı 15x21</title>
+      <description>Ahşap malzeme kullanımı, dayanıklılığı ve estetik görünümü bir arada sunar; 15x21 cm boyutlarındaki çift çerçeve cam, fotoğraflarınız için ideal bir çerçeve sağlar; Ahşap malzeme sayesinde uzun ömürlü kullanım ve kolay temizlik imkanı sunar; Çift çerçeve tasarımı, fotoğraflarınıza derinlik kazandırarak daha etkileyici bir sunum oluşturur;</description>
+      <link>http://127.0.0.1:8000/urun/cift-cerceve-camli-15x21-451210011</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1752/prod/QC_ENRICHMENT/20250912/13/e9c91df5-0641-372b-9dcf-ae1753100eca/1_org_zoom.jpg</g:image_link>
+      <g:price>699.00 TRY</g:price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>451210011</g:barcode>
+    </item>
+    <item>
+      <g:id>19</g:id>
+      <title>Çift Çerçeve Camlı 15x21</title>
+      <description>Ahşap malzeme kullanımı, dayanıklılığı ve estetik görünümü bir arada sunar; 15x21 cm boyutlarındaki çift çerçeve cam, fotoğraflarınızın ve diğer sanat eserlerinizin mükemmel bir şekilde sergilenmesini sağlar; Ahşap çerçeve, doğal dokusuyla mekanınıza sıcak ve samimi bir atmosfer katar;</description>
+      <link>http://127.0.0.1:8000/urun/cift-cerceve-camli-15x21-451210012</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1752/prod/QC_ENRICHMENT/20250912/13/95e80d1a-c9ae-3625-85ac-063192931bc6/1_org_zoom.jpg</g:image_link>
+      <g:price>699.00 TRY</g:price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>451210012</g:barcode>
+    </item>
+    <item>
+      <g:id>20</g:id>
+      <title>Erkek Öğretmen Figürlü Ahşap Dönen Çerçeve Işıklı</title>
+      <description>- Ahşap malzeme kullanımı, dayanıklılığı ve doğal bir görünüm sunar; - Öğretmen figürü tasarımı, eğitim sevgisini ve mesleki bağlılığı simgeler; - Işıklı yapısı ile gece veya loş ortamlarda bile dikkat çekici bir etki yaratır; - Dönen mekanizması sayesinde, dekoratif bir hareketlilik ve dinamik bir atmosfer sağlar;</description>
+      <link>http://127.0.0.1:8000/urun/erkek-ogretmen-figurlu-ahsap-donen-cerceve-isikli-45123131231</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1704/prod/QC_ENRICHMENT/20250706/20/ebf8f6cc-cdb0-351b-a368-b23649335874/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45123131231</g:barcode>
+    </item>
+    <item>
+      <g:id>21</g:id>
+      <title>Erkek Öğretmen Figürlü Ahşap Dönen Çerçeve Işıklı</title>
+      <description>- Ahşap malzeme kullanımı, dayanıklılığı ve doğal bir görünüm sunar; - Öğretmen figürü tasarımı, eğitim sektörüne özel bir hediye seçeneği olarak öne çıkar; - Işıklı yapısı sayesinde gece veya loş ortamlarda bile dikkat çekici bir etki yaratır; - Dönen mekanizması ile hareketli ve dinamik bir dekoratif obje olarak dikkat çeker;</description>
+      <link>http://127.0.0.1:8000/urun/erkek-ogretmen-figurlu-ahsap-donen-cerceve-isikli-451231231321</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1705/prod/QC_ENRICHMENT/20250706/20/3256f962-dcea-3138-8daa-d005a279147f/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>451231231321</g:barcode>
+    </item>
+    <item>
+      <g:id>22</g:id>
+      <title>Öğretmen Figürlü Ahşap Dönen Çerçeve Işıklı</title>
+      <description>Ahşap malzeme kullanımı, dayanıklılığı ve doğal bir görünüm sunar; Öğretmen figürü tasarımı, eğitim sektörüne özel bir hediye seçeneği olarak öne çıkar; Işıklı yapısı sayesinde gece veya düşük ışık koşullarında bile dikkat çekici bir etki yaratır; Dönen mekanizması ile hareketli ve dinamik bir dekoratif obje olarak dikkat çeker;</description>
+      <link>http://127.0.0.1:8000/urun/ogretmen-figurlu-ahsap-donen-cerceve-isikli-454545412321321</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1704/prod/QC_ENRICHMENT/20250706/20/cc5aa82f-6097-3d4c-825a-9566975c9d62/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>454545412321321</g:barcode>
+    </item>
+    <item>
+      <g:id>23</g:id>
+      <title>Öğretmen Figürlü Ahşap Dönen Çerçeve Işıklı</title>
+      <description>Uzunluk en 23x21 Çerçeve 10x15 Ürünle ilgili destek almak isteyen müşterilerimiz satıcıya sor kısmından ulaşabilirsiniz. ;</description>
+      <link>http://127.0.0.1:8000/urun/ogretmen-figurlu-ahsap-donen-cerceve-isikli-454545451231231</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1704/prod/QC_ENRICHMENT/20250706/20/f468ef63-d139-3486-9d50-fe64f01be438/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>454545451231231</g:barcode>
+    </item>
+    <item>
+      <g:id>24</g:id>
+      <title>ERKEK COCUK DÖNEN ÇERÇEVE SOKAK LAMBALI</title>
+      <description>Bebeklerin ilk adımlarını atarken güvenle kullanabilecekleri, dönen çerçeve sokak lambası tasarımı ile hem eğlenceli hem de eğitici bir oyuncak; Bebeklerin motor becerilerini geliştirmelerine yardımcı olan, hareketli ve renkli tasarımıyla dikkat çeken bir oyuncak; Kolay taşınabilirliği sayesinde, bebeklerin her yerde eğlenceli vakit geçirmelerini sağlayan pratik bir oyuncak; Bebeklerin ilk keşif dönemlerinde duyusal gelişimlerine katkıda bulunan, sesli ve ışıklı özellikleri ile zenginleştirilmiş bir oyuncak;</description>
+      <link>http://127.0.0.1:8000/urun/erkek-cocuk-donen-cerceve-sokak-lambali-45211241215</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1705/prod/QC_ENRICHMENT/20250706/20/6f357bae-c5c5-3137-b3d6-4614c60f452f/1_org_zoom.jpg</g:image_link>
+      <g:price>1050.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Bebek Hediyelik</g:product_type>
+      <g:barcode>45211241215</g:barcode>
+    </item>
+    <item>
+      <g:id>25</g:id>
+      <title>HEDİYELİK KIZ ÇOCUK DÖNEN ÇERÇEVE SOKAK LAMBALI ABAJUR</title>
+      <description>Bebeklerin odalarına neşe katacak, onlara özel tasarlanmış bir hediyelik; Dönen çerçeve mekanizması sayesinde, gece lambası olarak kullanıma uygun ve eğlenceli bir aydınlatma sağlar; Sokak lambası tasarımı ile hem şık hem de nostaljik bir görünüm sunar; Bebeklerin odalarına renk katan ve onlara özel bir hediye seçeneği olarak öne çıkar;</description>
+      <link>http://127.0.0.1:8000/urun/hediyelik-kiz-cocuk-donen-cerceve-sokak-lambali-abajur-451212141</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1764/prod/QC_ENRICHMENT/20250929/23/b7874ca6-7eab-3166-9096-4bcc711f7540/1_org_zoom.jpg</g:image_link>
+      <g:price>1050.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Bebek Hediyelik</g:product_type>
+      <g:barcode>451212141</g:barcode>
+    </item>
+    <item>
+      <g:id>26</g:id>
+      <title>AHŞAP DÖNEN ÇERÇEVE SİYAH SOKAK LAMBALI ABAJUR Doğum Günü, Sevgililer Günü</title>
+      <description>Doğal ahşap malzemesiyle, her türlü iç mekan dekorasyonuna sıcak ve otantik bir dokunuş katar; Siyah sokak lambası detayı ile modern ve şık bir görünüm sunar, mekanınıza sanatsal bir hava katar; Dönen tasarımı sayesinde, ışığı farklı açılardan yansıtarak odanızın atmosferini zenginleştirir; Ahşap yapısı ile dayanıklılık ve uzun ömürlü kullanım vaat eder;</description>
+      <link>http://127.0.0.1:8000/urun/ahsap-donen-cerceve-siyah-sokak-lambali-abajur-dogum-gunu-sevgililer-gunu-12122121121</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1705/prod/QC_ENRICHMENT/20250706/20/f098125a-c962-3e2f-a8cf-f37a0874210f/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>12122121121</g:barcode>
+    </item>
+    <item>
+      <g:id>27</g:id>
+      <title>AHŞAP DÖNEN ÇERÇEVE</title>
+      <description>Tek parça halinde gelen bu ahşap çerçeve, montaj kolaylığı sağlar ve ekstra parçalarla uğraşmanıza gerek kalmaz; Doğal ahşap malzemesiyle hem dayanıklı hem de estetik bir görünüm sunar, mekanınıza sıcak ve otantik bir hava katar;</description>
+      <link>http://127.0.0.1:8000/urun/ahsap-donen-cerceve-1212121210001010</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1807/prod/QC_ENRICHMENT/20260103/16/c92f2e07-46f7-3587-aa9f-1d6adc3075a9/1_org_zoom.jpg</g:image_link>
+      <g:price>499.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>1212121210001010</g:barcode>
+    </item>
+    <item>
+      <g:id>28</g:id>
+      <title>AHŞAP DÖNEN ÇERÇEVE</title>
+      <description>- Doğal ahşap malzemesiyle, her bir parça özenle seçilmiş ve işlenmiş, dayanıklılığı ve estetik görünümü bir arada sunar; - Tek parça halinde gelen bu çerçeve, montaj kolaylığı sağlar ve ekstra parçalarla uğraşmanıza gerek kalmaz; - Ahşabın sıcak ve doğal dokusu, mekanınıza huzurlu bir atmosfer katarken, dekoratif objelerinizle uyum içinde bir bütünlük oluşturur;</description>
+      <link>http://127.0.0.1:8000/urun/ahsap-donen-cerceve-1212121210001012</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1806/prod/QC_ENRICHMENT/20260103/16/8952f2fc-e996-39bb-805d-032de9011470/1_org_zoom.jpg</g:image_link>
+      <g:price>499.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>1212121210001012</g:barcode>
+    </item>
+    <item>
+      <g:id>29</g:id>
+      <title>AHŞAP DÖNEN ÇERÇEVE</title>
+      <description>Tek parça halinde gelen bu ahşap çerçeve, montaj kolaylığı sağlar ve ekstra parçalarla uğraşmanıza gerek kalmaz; Doğal ahşap malzemesiyle hem dayanıklı hem de estetik bir görünüm sunar, mekanınıza sıcak ve otantik bir hava katar;</description>
+      <link>http://127.0.0.1:8000/urun/ahsap-donen-cerceve-1212121210001011</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1806/prod/QC_ENRICHMENT/20260103/16/d9286be5-f606-3cc3-8589-a69f34f5134d/1_org_zoom.jpg</g:image_link>
+      <g:price>499.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>1212121210001011</g:barcode>
+    </item>
+    <item>
+      <g:id>30</g:id>
+      <title>Ahşap Dönen Çerçeve Kırmızı Lambalı Sevgili Figürlü</title>
+      <description>- Ahşap malzeme kullanımı, bu çerçevenin doğal ve sıcak bir görünüm kazanmasını sağlar; - Sevgili figürleriyle süslenmiş tasarımı, romantik ve anlamlı bir hediye seçeneği sunar; - Dönen kırmızı lambası ile gece lambası olarak da kullanılabilir, romantik bir atmosfer yaratır; - Ahşap malzeme sayesinde dayanıklılık ve uzun ömürlü kullanım vaat eder;</description>
+      <link>http://127.0.0.1:8000/urun/ahsap-donen-cerceve-kirmizi-lambali-sevgili-figurlu-101021313122</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1704/prod/QC_ENRICHMENT/20250706/20/5e2b7817-d7bb-304f-97a0-5475fd27f3e7/1_org_zoom.jpg</g:image_link>
+      <g:price>1150.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>101021313122</g:barcode>
+    </item>
+    <item>
+      <g:id>31</g:id>
+      <title>Ahşap Dönen çerçeve erkek çocuk figürlü lambalı</title>
+      <description>Ahşap malzeme kullanımı, dayanıklılığı ve uzun ömürlü kullanımı garanti eder; Çocuk odalarına sıcak ve doğal bir dokunuş katar, dekoratif bir atmosfer yaratır; Ahşap dönen çerçeve tasarımı, hareketli ve dinamik bir görünüm sağlar; Erkek çocuk figürleriyle süslenmiş lamba, çocukların ilgisini çeker ve odalarına neşe katar;</description>
+      <link>http://127.0.0.1:8000/urun/ahsap-donen-cerceve-erkek-cocuk-figurlu-lambali-121213131321</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1704/prod/QC_ENRICHMENT/20250706/20/696305b8-55e6-3e55-a994-a9e05e705722/1_org_zoom.jpg</g:image_link>
+      <g:price>999.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>121213131321</g:barcode>
+    </item>
+    <item>
+      <g:id>32</g:id>
+      <title>Ahşap Dönen Çerçeve Kız çocuğu figürlü lambalı</title>
+      <description>- Ahşap malzeme kullanımı, hem dayanıklılığı hem de doğal bir estetik sunar; - Kız çocuğu figürü, çocuk odalarına neşe ve sıcaklık katar; - Dönen çerçeve tasarımı, odanın atmosferini canlandırarak dekoratif bir dokunuş sağlar; - Ahşap lamba, enerji tasarrufu sağlayan LED teknolojisi ile aydınlatma ihtiyacını karşılar;</description>
+      <link>http://127.0.0.1:8000/urun/ahsap-donen-cerceve-kiz-cocugu-figurlu-lambali-4151514141451425</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1704/prod/QC_ENRICHMENT/20250706/20/5911c289-d601-3886-b8f7-b239ba8bfbbf/1_org_zoom.jpg</g:image_link>
+      <g:price>999.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4151514141451425</g:barcode>
+    </item>
+    <item>
+      <g:id>33</g:id>
+      <title>EL YAPIMI AHŞAP CAMLI ÇERÇEVE</title>
+      <description>- El emeğiyle üretilmiş, doğal ahşap malzemesiyle evinizin dekorasyonuna sıcak ve otantik bir dokunuş katar; - Tek parça halinde gelen bu çerçeve, montajı kolay ve pratik bir kullanım sunar; - Ahşabın doğal güzelliğini yansıtan tasarımıyla, duvarlarınıza estetik bir görünüm kazandırır;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-camli-cerceve-5545455415</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty974/product/media/images/20230726/16/397013272/982551352/1/1_org_zoom.jpg</g:image_link>
+      <g:price>350.00 TRY</g:price>
+      <g:sale_price>300.00 TRY</g:sale_price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>5545455415</g:barcode>
+    </item>
+    <item>
+      <g:id>34</g:id>
+      <title>EL YAPIMI AHŞAP CAMLI ÇERÇEVE</title>
+      <description>El emeğiyle üretilmiş, doğal ahşap malzemesiyle evinizin dekorasyonuna sıcak ve otantik bir dokunuş katar; Tek parça halinde gelen bu çerçeve, montajı kolay ve pratik bir kullanım sunar; Ahşabın doğal güzelliğini yansıtan tasarımıyla, duvarlarınıza estetik bir görünüm kazandırır;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-camli-cerceve-5551232115</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty974/product/media/images/20230726/16/397013256/982551309/1/1_org_zoom.jpg</g:image_link>
+      <g:price>350.00 TRY</g:price>
+      <g:sale_price>300.00 TRY</g:sale_price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>5551232115</g:barcode>
+    </item>
+    <item>
+      <g:id>35</g:id>
+      <title>EL YAPIMI AHŞAP CAMLI ÇERÇEVE</title>
+      <description>El emeğiyle üretilmiş, doğal ahşap malzemesiyle evinizin dekorasyonuna sıcak ve otantik bir dokunuş katar; Tek parça halinde gelen bu çerçeve, montajı kolay ve pratik bir kullanım sunar; Ahşabın doğal güzelliğini yansıtan tasarımıyla, duvarlarınıza estetik bir görünüm kazandırır;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-camli-cerceve-5555121152</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty972/product/media/images/20230726/16/397013262/982551304/1/1_org_zoom.jpg</g:image_link>
+      <g:price>350.00 TRY</g:price>
+      <g:sale_price>300.00 TRY</g:sale_price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>5555121152</g:barcode>
+    </item>
+    <item>
+      <g:id>36</g:id>
+      <title>EL YAPIMI AHŞAP CAMLI ÇERÇEVE</title>
+      <description>- El emeğiyle üretilmiş, doğal ahşap malzemesiyle evinizin dekorasyonuna sıcak ve otantik bir dokunuş katar; - Tek parça halinde gelen bu çerçeve, montajı kolay ve pratik bir kullanım sunar; - Ahşabın doğal güzelliğini yansıtan tasarımıyla, duvarlarınıza estetik bir görünüm kazandırır;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-camli-cerceve-544561512</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty973/product/media/images/20230726/16/397013231/982551270/1/1_org_zoom.jpg</g:image_link>
+      <g:price>350.00 TRY</g:price>
+      <g:sale_price>300.00 TRY</g:sale_price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>544561512</g:barcode>
+    </item>
+    <item>
+      <g:id>37</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Sevgili Çift ve Lambalı Doğum Günü, Sevgililer Günü</title>
+      <description>- El yapımı ahşap malzeme ile üretilmiş, dayanıklı ve uzun ömürlü kullanım sunar; - Sevgili çiftlerin anılarını ölümsüzleştiren, kişisel dokunuşlarla süslenmiş bir çerçeve tasarımı; - Lamba detayı sayesinde hem dekoratif hem de fonksiyonel bir kullanım imkanı sağlar; - Ahşabın doğal dokusu ve sıcaklığı, mekanınıza huzurlu bir atmosfer katar;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-sevgili-cift-ve-lambali-dogum-gunu-sevgililer-gunu-45454512121212</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1774/prod/QC_ENRICHMENT/20251014/18/080ed8da-451e-3227-8cf7-a1db1f33eb08/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45454512121212</g:barcode>
+    </item>
+    <item>
+      <g:id>38</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Sevgili Çift ve Lambalı Doğum Günü, Sevgililer Günü</title>
+      <description>- El yapımı ahşap malzeme ile üretilmiş, dayanıklı ve uzun ömürlü kullanım sunar; - Sevgili çiftlerin anılarını ölümsüzleştiren, kişisel dokunuşlarla süslenmiş bir çerçeve tasarımı; - Lamba detayı ile hem dekoratif hem de fonksiyonel bir kullanım sağlar; gece lambası olarak da tercih edilebilir; - Ahşabın doğal dokusu ve sıcaklığı, mekanınıza huzurlu bir atmosfer katar;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-sevgili-cift-ve-lambali-dogum-gunu-sevgililer-gunu-45454512121213</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1704/prod/QC_ENRICHMENT/20250706/20/bd81ed1c-52f1-3ce4-84bf-7766e50ed1fe/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45454512121213</g:barcode>
+    </item>
+    <item>
+      <g:id>39</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Sevgili Çift ve Lambalı Doğum Günü, Sevgililer Günü</title>
+      <description>Uzunluk en 23x21 Çerçeve 10x15 Ürünle ilgili destek almak isteyen müşterilerimiz satıcıya sor kısmından ulaşabilirsiniz. ;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-sevgili-cift-ve-lambali-dogum-gunu-sevgililer-gunu-45454512121214</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1773/prod/QC_ENRICHMENT/20251014/18/d9a2155d-901c-377d-8d57-11c6d2c3f295/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45454512121214</g:barcode>
+    </item>
+    <item>
+      <g:id>40</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Sevgili Çift ve Lambalı Doğum Günü, Sevgililer Günü</title>
+      <description>El yapımı ahşap malzeme ile üretilmiş, dayanıklı ve uzun ömürlü kullanım sunar; Sevgili çiftlerin anılarını ölümsüzleştiren, kişisel dokunuşlarla süslenmiş bir çerçeve tasarımı; Lamba detayı ile hem estetik hem de fonksiyonel bir aydınlatma sağlar, gece veya karanlık ortamlarda bile sevgilinizin fotoğraflarını net bir şekilde görebilmenize olanak tanır; Ahşap malzemenin doğal dokusu ve sıcaklığı, mekanınıza huzurlu ve samimi bir atmosfer katar;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-sevgili-cift-ve-lambali-dogum-gunu-sevgililer-gunu-45454512121215</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1704/prod/QC_ENRICHMENT/20250706/20/9b5d9edf-2bb8-32aa-aae4-ff07af8e9340/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45454512121215</g:barcode>
+    </item>
+    <item>
+      <g:id>41</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Sevgili Oturan Çift</title>
+      <description>El yapımı ahşap malzeme kullanılarak üretilmiş, dayanıklı ve uzun ömürlü bir çerçeve sunar; Ahşabın doğal dokusu ve sıcaklığı, sevgili çiftinizin fotoğraflarını çerçeveleyerek mekanınıza romantik bir hava katar; Ahşap malzemenin sağladığı estetik görünüm, evinizin dekorasyonuna şık bir dokunuş ekler; Özel günlerde veya anılarınızı ölümsüzleştirmek için ideal bir hediye seçeneği olarak öne çıkar;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-sevgili-oturan-cift-4545121245451212</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1706/prod/QC_ENRICHMENT/20250706/20/c45f7e66-dbf3-3315-9245-2118682e2858/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4545121245451212</g:barcode>
+    </item>
+    <item>
+      <g:id>42</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Sevgili Oturan Çift</title>
+      <description>El yapımı ahşap malzeme kullanılarak üretilmiş, dayanıklı ve uzun ömürlü bir çerçeve sunar; Sevgili oturan çiftlerin anılarını ölümsüzleştirmek için ideal bir hediye seçeneği olarak öne çıkar; Ahşabın doğal dokusu ve sıcaklığı, mekanınıza otantik bir hava katar ve dekoratif bir unsur olarak dikkat çeker; Özel tasarımıyla, sevgiliye olan sevginizi ve takdirinizi görsel bir sanat eseriyle ifade etmenize olanak tanır;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-sevgili-oturan-cift-4545121245451214</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1773/prod/QC_ENRICHMENT/20251014/18/124536c9-434a-3a6d-9a8e-8d967c863624/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4545121245451214</g:barcode>
+    </item>
+    <item>
+      <g:id>43</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Sevgili Oturan Çift Doğum Günü, Sevgililer Günü</title>
+      <description>Uzunluk en 23x21 Çerçeve 10x15 Ürünle ilgili destek almak isteyen müşterilerimiz satıcıya sor kısmından ulaşabilirsiniz. ;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-sevgili-oturan-cift-dogum-gunu-sevgililer-gunu-4545121245451213</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1748/prod/QC_ENRICHMENT/20250905/13/3234c748-4796-367c-9771-234ff8006584/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4545121245451213</g:barcode>
+    </item>
+    <item>
+      <g:id>44</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Sevgili Oturan Çift</title>
+      <description>- El yapımı ahşap malzeme kullanılarak üretilmiş, dayanıklı ve uzun ömürlü bir çerçeve sunar; - Ahşabın doğal dokusu ve sıcaklığı, sevgili çiftinizin fotoğraflarını çerçeveleyerek mekanınıza romantik bir hava katar; - Özel günlerde veya anılarınızı ölümsüzleştirmek için ideal bir hediye seçeneği olarak öne çıkar; - Ahşabın doğal tonları ve dokusu, her türlü dekorasyon stiline kolayca uyum sağlar ve mekanınıza doğal bir estetik katma imkanı sunar;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-sevgili-oturan-cift-4545121245451211</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1750/prod/QC_ENRICHMENT/20250905/13/367f1801-cc84-3f7b-a1e5-b1ffed0a3b38/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4545121245451211</g:barcode>
+    </item>
+    <item>
+      <g:id>45</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Yeni Sokak Lambalı</title>
+      <description>El yapımı ahşap malzeme kullanılarak üretilmiş, dayanıklı ve uzun ömürlü bir çerçeve sunar; Doğal ahşabın sıcak ve otantik dokusu, mekanınıza şık bir atmosfer katar; Yeni sokak lambası detayı ile modern ve estetik bir görünüm sağlar, dekoratif bir aydınlatma çözümü sunar; Ahşabın doğal dokusu ve renk tonları, her türlü iç mekan tasarımına kolayca uyum sağlar;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-yeni-sokak-lambali-45121223560003</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1704/prod/QC_ENRICHMENT/20250706/20/bfd5faff-5618-3e3d-9dab-ad099ae79c16/1_org_zoom.jpg</g:image_link>
+      <g:price>999.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223560003</g:barcode>
+    </item>
+    <item>
+      <g:id>46</g:id>
+      <title>Kişiye Özel El Yapımı Ahşap Dönen Çerçeve Yeni Sokak Lambalı</title>
+      <description>El yapımı ahşap malzeme kullanılarak üretilmiş, dayanıklı ve uzun ömürlü bir çerçeve sunar; Doğal ahşabın sıcak ve otantik dokusu, mekanınıza şık bir atmosfer katar; Yeni sokak lambası detayı ile modern ve estetik bir görünüm sağlar, dekoratif bir aydınlatma unsuru olarak da işlev görür; Ahşabın doğal dokusu ve renk tonları, her türlü iç mekan tasarımına kolayca uyum sağlar;</description>
+      <link>http://127.0.0.1:8000/urun/kisiye-ozel-el-yapimi-ahsap-donen-cerceve-yeni-sokak-lambali-45121223560002</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1706/prod/QC_ENRICHMENT/20250706/20/997f5b29-08b3-3186-a5b8-388617669e8a/1_org_zoom.jpg</g:image_link>
+      <g:price>999.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223560002</g:barcode>
+    </item>
+    <item>
+      <g:id>47</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Yeni Sokak Lambalı</title>
+      <description>- El yapımı ahşap malzeme kullanılarak üretilmiş, dayanıklı ve uzun ömürlü bir çerçeve sunar; - Doğal ahşabın sıcak ve otantik dokusu, mekanınıza şık bir atmosfer katar; - Yeni sokak lambası detayı ile modern ve estetik bir görünüm sağlar, dekoratif bir aydınlatma çözümü sunar; - Ahşabın doğal dokusu ve renk tonları, her türlü iç mekan tasarımına kolayca uyum sağlar;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-yeni-sokak-lambali-45121223560001</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1706/prod/QC_ENRICHMENT/20250706/20/f7c8c3fa-b6d0-3f7c-94de-d10dd4f20b8a/1_org_zoom.jpg</g:image_link>
+      <g:price>999.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223560001</g:barcode>
+    </item>
+    <item>
+      <g:id>48</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Yeni Sokak Lambalı</title>
+      <description>El yapımı ahşap malzeme kullanılarak üretilmiş, dayanıklı ve uzun ömürlü bir çerçeve sunar; Doğal ahşabın sıcak ve otantik dokusu, mekanınıza şık bir atmosfer katar; Yeni sokak lambası detayı ile modern ve estetik bir görünüm sağlar, dekoratif bir aydınlatma çözümü sunar; Ahşabın doğal dokusu ve renk tonları, her türlü iç mekan tasarımına kolayca uyum sağlar;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-yeni-sokak-lambali-45121223560000</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1706/prod/QC_ENRICHMENT/20250706/20/abee19cc-f5cc-33dc-ad10-5fbbce622a5f/1_org_zoom.jpg</g:image_link>
+      <g:price>999.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223560000</g:barcode>
+    </item>
+    <item>
+      <g:id>49</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Işıklı Oturan Sevgili Figürlü</title>
+      <description>El yapımı ahşap malzeme ile üretilmiş, dayanıklı ve uzun ömürlü kullanım sunar; Sevgili figürleriyle süslenmiş, romantik bir atmosfer yaratır ve özel anılarınızı ölümsüzleştirir; Işıklı yapısı sayesinde gece veya loş ortamlarda bile sevgilinizin yüzünü net bir şekilde görebilmenizi sağlar; Ahşap dönen çerçeve tasarımı, modern ve şık bir görünüm sunarken mekanınıza sıcak bir dokunuş katar;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-isikli-oturan-sevgili-figurlu-45121223568906</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1742/prod/QC_ENRICHMENT/20250901/19/b1baa02f-e66b-3dde-a083-87d575bf2ff0/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568906</g:barcode>
+    </item>
+    <item>
+      <g:id>50</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Işıklı Kalpli Sevgili Figürü</title>
+      <description>- El yapımı ahşap malzeme ile üretilmiş, dayanıklı ve uzun ömürlü kullanım sunar; - Sevgili figürü, romantik anılarınızı ve duygularınızı özel bir çerçeve içinde ölümsüzleştirir; - Işıklı tasarımı sayesinde gece veya loş ortamlarda bile sevgilinize olan sevginizi göz alıcı bir şekilde gösterir; - Ahşap dönen çerçeve, mekanınıza sıcak ve doğal bir dokunuş katar;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-isikli-kalpli-sevgili-figuru-45121223568997</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1748/prod/QC_ENRICHMENT/20250905/13/b5a03979-199f-3e2f-9b7a-417afe0d10a4/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568997</g:barcode>
+    </item>
+    <item>
+      <g:id>51</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Işıklı Yaşlı Çift Figürü</title>
+      <description>El yapımı ahşap çerçeve, her bir parçanın özenle işlenmiş olmasıyla dikkat çeker; Yaşlı çift figürü, doğal ahşap malzeme kullanılarak üretilmiş olup, dayanıklılığı ve estetik görünümü ile öne çıkar; Işıklı yapısı sayesinde gece veya loş ortamlarda bile figürleri net bir şekilde görebilirsiniz; Ahşap malzeme seçimi, ürünün uzun ömürlü olmasını sağlarken aynı zamanda sıcak ve doğal bir atmosfer yaratır;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-isikli-yasli-cift-figuru-45121223568981</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1705/prod/QC_ENRICHMENT/20250706/20/44772793-489e-35d0-8267-f125a871919e/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568981</g:barcode>
+    </item>
+    <item>
+      <g:id>52</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Işıklı Yaşlı Çift Figürü</title>
+      <description>El yapımı ahşap malzeme ile üretilmiş, dayanıklı ve uzun ömürlü kullanım sunar; Ahşabın doğal dokusu ve sıcaklığı, mekanınıza otantik bir hava katar; Dönen çerçeve tasarımı, hareketli ve dinamik bir görünüm sağlar; Işıklı yaşlı çift figürü, evinizin veya ofisinizin dekorasyonuna romantik bir dokunuş ekler;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-isikli-yasli-cift-figuru-45121223568982</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1706/prod/QC_ENRICHMENT/20250706/20/49af1239-a5b7-37b6-aac6-db85ea6ec209/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568982</g:barcode>
+    </item>
+    <item>
+      <g:id>53</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Işıklı Yaşlı Çift Figürü</title>
+      <description>El yapımı ahşap çerçeve, her bir parçanın özenle işlenmiş olmasıyla dikkat çeker; Yaşlı çift figürü, doğal ahşap malzeme kullanılarak üretilmiş olup, estetik ve otantik bir görünüm sunar; Işıklı yapısı sayesinde gece veya loş ortamlarda bile figürleri net bir şekilde görebilirsiniz; Ahşap malzeme, dayanıklılığı ve uzun ömürlü kullanımı ile ön plana çıkar;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-isikli-yasli-cift-figuru-45121223568983</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1705/prod/QC_ENRICHMENT/20250706/20/0e471d24-0e49-36b6-bc15-436dfa0f0b91/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568983</g:barcode>
+    </item>
+    <item>
+      <g:id>54</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Işıklı Kalpli Sevgili Figürü</title>
+      <description>El yapımı ahşap malzeme ile üretilmiş, dayanıklı ve uzun ömürlü kullanım sunar; Sevgili figürü, romantik anılarınızı ve duygularınızı ölümsüzleştirmek için ideal bir çerçeve seçeneğidir; Işıklı kalpli tasarımı sayesinde, gece veya loş ortamlarda bile sevginizi göz alıcı bir şekilde vurgular; Ahşap yapısı ile doğal bir dokunuş sunar ve mekanınıza sıcak bir atmosfer katar;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-isikli-kalpli-sevgili-figuru-45121223568998</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1750/prod/QC_ENRICHMENT/20250905/13/4ae5ebab-3da4-3620-ad69-063f8eb8916c/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568998</g:barcode>
+    </item>
+    <item>
+      <g:id>55</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Işıklı Yaşlı Çift Figürü</title>
+      <description>El yapımı ahşap malzeme kullanılarak üretilmiş, dayanıklı ve uzun ömürlü bir çerçeve; Ahşabın doğal dokusu ve sıcaklığı, mekanınıza otantik bir hava katar; Işıklı yapısı sayesinde gece veya loş ortamlarda bile dikkat çekici bir görünüm sağlar; Yaşlı çift figürü, sevdiklerinizin anılarını yaşatmak için ideal bir hediye seçeneği sunar;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-isikli-yasli-cift-figuru-45121223568980</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1706/prod/QC_ENRICHMENT/20250706/20/e7285244-d3c8-3cf7-a910-5c808c0ef424/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568980</g:barcode>
+    </item>
+    <item>
+      <g:id>56</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Işıklı Gelin Damat Figürlü</title>
+      <description>- El yapımı ahşap malzeme kullanılarak üretilmiş, dayanıklı ve uzun ömürlü bir çerçeve; - Dönen mekanizması sayesinde, gelin ve damat figürleri sürekli hareket ederek romantik bir atmosfer yaratır; - Ahşap işçiliğinin zarif dokunuşlarıyla süslenmiş, estetik bir görünüm sunar; - Özel günlerde anılarınızı ölümsüzleştirmek için ideal bir hediye seçeneği;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-isikli-gelin-damat-figurlu-45121223568961</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1741/prod/QC_ENRICHMENT/20250901/19/22ef7e75-561a-30c9-b37d-388432216406/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568961</g:barcode>
+    </item>
+    <item>
+      <g:id>57</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Işıklı Gelin Damat Figürlü Kahverengi</title>
+      <description>El yapımı ahşap malzeme kullanılarak üretilmiş, dayanıklı ve uzun ömürlü bir çerçeve sunar; Ahşabın doğal dokusu ve sıcaklığı, mekanınıza otantik bir hava katar; Dönen tasarımı sayesinde, dekoratif bir hareketlilik ve estetik bir görünüm sağlar; Işıklı yapısı ile gece veya loş ortamlarda bile dikkat çekici bir atmosfer yaratır; Gelin ve damat figürleriyle süslenmiş, özel gününüzü anımsatan romantik bir dokunuş ekler;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-isikli-gelin-damat-figurlu-kahverengi-45121223568963</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1706/prod/QC_ENRICHMENT/20250706/20/0ac38b9b-76ac-38dc-94a2-c6dd0171a0f3/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568963</g:barcode>
+    </item>
+    <item>
+      <g:id>58</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Işıklı Sırt Sırta Çift Figürlü</title>
+      <description>El yapımı ahşap malzeme kullanılarak üretilmiş, dayanıklı ve uzun ömürlü bir çerçeve sunar; Çift figür tasarımı ile kişisel ve anlamlı bir hediye seçeneği olarak öne çıkar; Işıklı yapısı sayesinde gece veya loş ortamlarda bile estetik bir görünüm sağlar; Sırt sırta montajı kolaydır ve duvarınıza asılması pratiktir;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-isikli-sirt-sirta-cift-figurlu-45121223568972</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1750/prod/QC_ENRICHMENT/20250905/13/208833d1-b12c-396e-bbbc-210b05ef5ad5/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568972</g:barcode>
+    </item>
+    <item>
+      <g:id>59</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Işıklı Gelin Damat Figürlü</title>
+      <description>El yapımı ahşap malzeme kullanılarak üretilmiş, dayanıklı ve uzun ömürlü bir çerçeve; Sevgili figürleriyle süslenmiş, romantik bir atmosfer yaratır ve özel anılarınızı ölümsüzleştirir; Işıklı tasarımı sayesinde gece veya loş ortamlarda bile sevgilinizin yüzünü net bir şekilde görebilmenizi sağlar; Ahşap malzemesiyle doğal bir dokunuş sunar ve mekanınıza sıcak bir ambiyans katar;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-isikli-gelin-damat-figurlu-45121223568962</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1750/prod/QC_ENRICHMENT/20250906/15/5b76c5f7-3b87-3f5d-90b3-9fd6d2c07ca8/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568962</g:barcode>
+    </item>
+    <item>
+      <g:id>60</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Işıklı Gelin Damat Figürlü</title>
+      <description>El yapımı ahşap malzeme kullanılarak üretilmiş, dayanıklı ve uzun ömürlü bir çerçeve; Sevgili figürleriyle süslenmiş, romantik bir atmosfer yaratır ve özel anılarınızı ölümsüzleştirir; Işıklı tasarımı sayesinde gece veya loş ortamlarda bile sevgilinizin yüzünü net bir şekilde görebilmenizi sağlar; Ahşap malzemesiyle doğal bir dokunuş sunar ve mekanınıza sıcak bir ambiyans katar;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-isikli-gelin-damat-figurlu-45121223568907</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1750/prod/QC_ENRICHMENT/20250906/15/5b76c5f7-3b87-3f5d-90b3-9fd6d2c07ca8/1_org_zoom.jpg</g:image_link>
+      <g:price>0.00 TRY</g:price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568907</g:barcode>
+    </item>
+    <item>
+      <g:id>61</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Işıklı Sırt Sırta Çift Figürlü</title>
+      <description>Uzunluk en 23x21 Çerçeve 10x15 Ürünle ilgili destek almak isteyen müşterilerimiz satıcıya sor kısmından ulaşabilirsiniz. ;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-isikli-sirt-sirta-cift-figurlu-45121223568971</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1741/prod/QC_ENRICHMENT/20250901/19/85693be7-0d62-3068-9b48-a0ba07997604/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568971</g:barcode>
+    </item>
+    <item>
+      <g:id>62</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Işıklı Sırt Sırta Çift Figürlü</title>
+      <description>El yapımı ahşap malzeme kullanılarak üretilmiş, dayanıklı ve uzun ömürlü bir çerçeve sunar; Çift figür tasarımı ile kişisel ve anlamlı bir hediye seçeneği olarak öne çıkar; Işıklı yapısı sayesinde gece veya loş ortamlarda bile estetik bir görünüm sağlar; Sırt sırta montajı kolaydır ve duvarınıza asılması pratiktir;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-isikli-sirt-sirta-cift-figurlu-45121223568973</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1706/prod/QC_ENRICHMENT/20250706/20/1cb7e74d-04b7-3866-b733-9b877fb1cee2/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568973</g:barcode>
+    </item>
+    <item>
+      <g:id>63</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Işıklı Kalpli Sevgili Figürü</title>
+      <description>El yapımı ahşap malzeme ile üretilmiş, dayanıklı ve uzun ömürlü kullanım sunar; Sevgili figürü, romantik anılarınızı ve duygularınızı özel bir çerçeve içinde ölümsüzleştirir; Işıklı kalpli tasarımı ile gece veya loş ışıklı ortamlarda bile romantik bir atmosfer yaratır; Ahşap malzemesi sayesinde doğal bir dokunuşla mekanınıza sıcaklık ve estetik bir görünüm katar;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-isikli-kalpli-sevgili-figuru-45121223568999</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1704/prod/QC_ENRICHMENT/20250706/20/523289dc-98b6-37f1-b270-d89a5de22325/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568999</g:barcode>
+    </item>
+    <item>
+      <g:id>64</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Işıklı Oturan Sevgili Figürlü</title>
+      <description>El yapımı ahşap malzeme kullanılarak üretilmiş, dayanıklı ve uzun ömürlü bir çerçeve; Sevgili figürleriyle süslenmiş, romantik bir atmosfer yaratır ve özel anılarınızı ölümsüzleştirir; Işıklı tasarımı sayesinde gece veya loş ortamlarda bile sevgilinizin yüzünü net bir şekilde görebilmenizi sağlar; Ahşap malzemesiyle doğal bir dokunuş sunar ve mekanınıza sıcak bir ambiyans katar;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-isikli-oturan-sevgili-figurlu-45121223568908</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1360/product/media/images/prod/QC/20240612/17/662ffd16-44d2-3eae-a61a-382fc177a3d7/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568908</g:barcode>
+    </item>
+    <item>
+      <g:id>65</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Işıklı Gelin Damat Figürlü</title>
+      <description>El yapımı ahşap malzeme kullanılarak üretilmiş, dayanıklı ve uzun ömürlü bir çerçeve; Dönen mekanizması sayesinde, gelin ve damat figürleri sürekli hareket ederek romantik bir atmosfer yaratır; Ahşap işçiliğinin zarif dokunuşlarıyla süslenmiş, estetik bir görünüm sunar; Özel günlerinizde anılarınızı ölümsüzleştirmek için ideal bir hediye seçeneği;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-isikli-gelin-damat-figurlu-45121223568964</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1704/prod/QC_ENRICHMENT/20250706/20/9862a2cf-6042-3e60-b0a0-b3ea8dcc8e4e/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568964</g:barcode>
+    </item>
+    <item>
+      <g:id>66</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Işıklı Sırt Sırta Çift Figürlü</title>
+      <description>El yapımı ahşap malzeme kullanılarak üretilmiş, dayanıklı ve uzun ömürlü bir çerçeve sunar; Çift figür tasarımı ile kişisel ve anlamlı bir hediye seçeneği olarak öne çıkar; Işıklı yapısı sayesinde gece veya loş ortamlarda bile dikkat çekici bir görünüm sağlar; Sırt sırta montajı kolaydır ve duvarınıza asılması pratiktir;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-isikli-sirt-sirta-cift-figurlu-45121223568974</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1748/prod/QC_ENRICHMENT/20250906/14/cc6c289a-8b02-36d2-bfd4-3177c5c5d069/1_org_zoom.jpg</g:image_link>
+      <g:price>799.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568974</g:barcode>
+    </item>
+    <item>
+      <g:id>67</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve</title>
+      <description>Uzunluk 21 cm en 14 cm Fotoğraf çerçevesi 10x15cm Ürün ile ilgili destek almak isteyen müşterilerimiz satıcıya sor kısmından ulaşabilirsiniz. ;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-45121223568933</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty896/product/media/images/20230521/16/354645144/944113751/1/1_org_zoom.jpg</g:image_link>
+      <g:price>215.00 TRY</g:price>
+      <g:sale_price>199.00 TRY</g:sale_price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568933</g:barcode>
+    </item>
+    <item>
+      <g:id>68</g:id>
+      <title>Sokak Lambalı El Yapımı Ahşap Dönen Çerçeve</title>
+      <description>Uzunluk 21 cm en 14 cm Fotoğraf çerçevesi 10x15cm Ürün hem yatay hem dikey olarak kullanılabilir; Ürün ile ilgili destek almak isteyen müşterilerimiz satıcıya sor kısmından ulaşabilirsiniz; ;;</description>
+      <link>http://127.0.0.1:8000/urun/sokak-lambali-el-yapimi-ahsap-donen-cerceve-45121223568949</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1705/prod/QC_ENRICHMENT/20250706/20/895b900b-3f23-3727-9551-5ec7e0927f2f/1_org_zoom.jpg</g:image_link>
+      <g:price>599.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568949</g:barcode>
+    </item>
+    <item>
+      <g:id>69</g:id>
+      <title>Sokak Lambalı El Yapımı Ahşap Dönen Çerçeve</title>
+      <description>El yapımı ahşap malzeme ile üretilmiş, dayanıklı ve uzun ömürlü kullanım sunar; Sokak lambası detayı ile modern ve şık bir görünüm kazandırır, mekanınıza estetik bir dokunuş ekler; Dönen tasarımı sayesinde farklı açılardan farklı aydınlatma deneyimleri yaşatır, dekoratif bir atmosfer yaratır; Ahşap malzemesi ile doğal bir sıcaklık ve samimiyet hissi verir, yaşam alanlarınıza sıcak bir ambiyans katar;</description>
+      <link>http://127.0.0.1:8000/urun/sokak-lambali-el-yapimi-ahsap-donen-cerceve-45121223568948</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1705/prod/QC_ENRICHMENT/20250706/20/616e809a-a9af-3e8b-8b38-fd4166111727/1_org_zoom.jpg</g:image_link>
+      <g:price>599.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568948</g:barcode>
+    </item>
+    <item>
+      <g:id>70</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve Sevgili Figürlü</title>
+      <description>Uzunluk 21 cm en 14 cm Fotoğraf çerçevesi 10x15cm Ürün ile ilgili destek almak isteyen müşterilerimiz satıcıya sor kısmından ulaşabilirsiniz. ;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-sevgili-figurlu-45121223568910</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty895/product/media/images/20230521/5/354192751/943652855/1/1_org_zoom.jpg</g:image_link>
+      <g:price>259.00 TRY</g:price>
+      <g:sale_price>215.00 TRY</g:sale_price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568910</g:barcode>
+    </item>
+    <item>
+      <g:id>71</g:id>
+      <title>Sokak Lambalı El Yapımı Ahşap Dönen Çerçeve</title>
+      <description>Uzunluk 21 cm en 14 cm Fotoğraf çerçevesi 10x15cm Ürün hem yatay hem dikey olarak kullanılabilir; Ürün ile ilgili destek almak isteyen müşterilerimiz satıcıya sor kısmından ulaşabilirsiniz; ;;</description>
+      <link>http://127.0.0.1:8000/urun/sokak-lambali-el-yapimi-ahsap-donen-cerceve-45121223568947</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1705/prod/QC_ENRICHMENT/20250706/20/77046649-53c2-3785-97e1-0def7b58eb11/1_org_zoom.jpg</g:image_link>
+      <g:price>599.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568947</g:barcode>
+    </item>
+    <item>
+      <g:id>72</g:id>
+      <title>Sokak Lambalı El Yapımı Ahşap Dönen Çerçeve Sevgili Figürlü</title>
+      <description>El yapımı ahşap malzeme ile üretilmiş, dayanıklı ve uzun ömürlü kullanım sunar; Sokak lambası detayı ile modern ve şık bir görünüm kazandırır, mekanınıza sıcak bir atmosfer katar; Sevgili figürleriyle romantik bir dokunuş ekler, özel anılarınızı çerçeveleyerek hatırlamanızı sağlar; Dönen yapısı sayesinde farklı açılardan farklı perspektifler sunar, dekoratif bir unsur olarak dikkat çeker;</description>
+      <link>http://127.0.0.1:8000/urun/sokak-lambali-el-yapimi-ahsap-donen-cerceve-sevgili-figurlu-45121245126362</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1706/prod/QC_ENRICHMENT/20250706/20/7e92f491-ac5d-3ac6-9b28-a9f3a3044574/1_org_zoom.jpg</g:image_link>
+      <g:price>599.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121245126362</g:barcode>
+    </item>
+    <item>
+      <g:id>73</g:id>
+      <title>Sokak Lambalı El Yapımı Ahşap Dönen Çerçeve</title>
+      <description>El yapımı ahşap malzeme ile üretilmiş, her biri benzersiz ve özgün bir dokunuşla tasarlanmıştır; Sokak lambası detayı ile modern ve şık bir görünüm sunar, mekanınıza sıcak bir atmosfer katar; Dönen yapısı sayesinde farklı açılardan farklı perspektifler sunarak dekoratif bir etki yaratır; Ahşabın doğal dokusu ve sıcaklığıyla evinizin veya ofisinizin atmosferini zenginleştirir;</description>
+      <link>http://127.0.0.1:8000/urun/sokak-lambali-el-yapimi-ahsap-donen-cerceve-45121223568946</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1706/prod/QC_ENRICHMENT/20250706/20/0303c9b8-671a-3a66-94c0-f1bad4ea3dda/1_org_zoom.jpg</g:image_link>
+      <g:price>599.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568946</g:barcode>
+    </item>
+    <item>
+      <g:id>74</g:id>
+      <title>Sokak Lambalı El Yapımı Ahşap Dönen Çerçeve Sevgili Figürlü</title>
+      <description>Uzunluk 21 cm en 14 cm Fotoğraf çerçevesi 10x15cm Ürün hem yatay hem dikey olarak kullanılabilir; Ürün ile ilgili destek almak isteyen müşterilerimiz satıcıya sor kısmından ulaşabilirsiniz; ;;</description>
+      <link>http://127.0.0.1:8000/urun/sokak-lambali-el-yapimi-ahsap-donen-cerceve-sevgili-figurlu-45121245126363</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1706/prod/QC_ENRICHMENT/20250706/20/faca49c6-72f0-3d61-a644-7f33fc17cef1/1_org_zoom.jpg</g:image_link>
+      <g:price>599.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121245126363</g:barcode>
+    </item>
+    <item>
+      <g:id>75</g:id>
+      <title>Beyaz Ahşap Dönen Fotoğraf Çerçevesi, Sokak Lambası Tasarımı</title>
+      <description>- Doğal ahşap malzemesiyle, evinizin dekorasyonuna sıcak ve otantik bir dokunuş katar; - Dönen tasarımı sayesinde, fotoğraflarınızı farklı açılardan görebilir ve estetik bir sunum oluşturabilirsiniz; - Sokak lambası detayı ile hem fonksiyonel hem de görsel bir şıklık sağlar; gece lambası olarak da kullanılabilir;</description>
+      <link>http://127.0.0.1:8000/urun/beyaz-ahsap-donen-fotograf-cercevesi-sokak-lambasi-tasarimi-45121245121215</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1773/prod/QC_ENRICHMENT/20251014/18/b38e35b4-4993-3dd1-9039-f97504832670/1_org_zoom.jpg</g:image_link>
+      <g:price>999.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121245121215</g:barcode>
+    </item>
+    <item>
+      <g:id>76</g:id>
+      <title>Ahşap Dönen Fotoğraf Çerçevesi Sokak Lambalı</title>
+      <description>Doğal ahşap malzemesiyle üretilmiş, uzun ömürlü ve dayanıklı bir kullanım sunar; Sokak lambası tasarımıyla modern ve şık bir görünüm kazandırır, mekanınıza sıcak bir atmosfer katar; Dönen yapısı sayesinde fotoğraflarınızı farklı açılardan sergileme imkanı sağlar, dekoratif bir dokunuş ekler; Ahşap malzemesi ile hem estetik hem de fonksiyonel bir çerçeve deneyimi sunar, ev veya ofis dekorasyonunuza doğal bir dokunuş ekler;</description>
+      <link>http://127.0.0.1:8000/urun/ahsap-donen-fotograf-cercevesi-sokak-lambali-45121245121214</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1705/prod/QC_ENRICHMENT/20250706/20/babc6cd0-01c9-3ebe-9d2d-ca20dc3d5ee8/1_org_zoom.jpg</g:image_link>
+      <g:price>999.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121245121214</g:barcode>
+    </item>
+    <item>
+      <g:id>77</g:id>
+      <title>Ahşap Dönen Fotoğraf Çerçevesi Sokak Lambalı</title>
+      <description>Doğal ahşap malzemesiyle, evinizin dekorasyonuna sıcak ve otantik bir dokunuş katar; Dönen tasarımı sayesinde, fotoğraflarınızı farklı açılardan görebilir ve estetik bir sunum oluşturabilirsiniz; Sokak lambası detayı ile hem fonksiyonel hem de görsel bir şıklık sağlar; gece lambası olarak da kullanılabilir; Ahşap malzemesi, dayanıklılığı ve uzun ömürlü kullanımı garanti ederken, aynı zamanda çevre dostu bir seçimdir;</description>
+      <link>http://127.0.0.1:8000/urun/ahsap-donen-fotograf-cercevesi-sokak-lambali-451212451213</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1773/prod/QC_ENRICHMENT/20251014/18/2e22fa4a-16b4-3b19-9dc0-531c4fe3fd9b/1_org_zoom.jpg</g:image_link>
+      <g:price>999.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>451212451213</g:barcode>
+    </item>
+    <item>
+      <g:id>78</g:id>
+      <title>Ahşap Dönen Fotoğraf Çerçevesi Sokak Lambalı</title>
+      <description>Doğal ahşap malzemesiyle üretilmiş, dayanıklı ve uzun ömürlü kullanım sunar; Sokak lambası tasarımı, mekanınıza nostaljik bir hava katar ve dekoratif bir dokunuş sağlar; Dönen yapısı sayesinde, fotoğraflarınızı farklı açılardan görebilmenize olanak tanır ve estetik bir görünüm sunar; Ahşap malzemesi ile hem şık hem de sıcak bir atmosfer yaratır, evinizin veya ofisinizin ambiyansını zenginleştirir;</description>
+      <link>http://127.0.0.1:8000/urun/ahsap-donen-fotograf-cercevesi-sokak-lambali-451212451212</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1705/prod/QC_ENRICHMENT/20250706/20/c40467e0-ddaf-3000-a942-d6a002c7cbd7/1_org_zoom.jpg</g:image_link>
+      <g:price>999.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>451212451212</g:barcode>
+    </item>
+    <item>
+      <g:id>79</g:id>
+      <title>El Yapımı Ahşap Dönen Çerçeve</title>
+      <description>Uzunluk en 20x15 Çerçeve 10x15 Ürünle ilgili destek almak isteyen müşterilerimiz satıcıya sor kısmından ulaşabilirsiniz.</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-cerceve-451212235698</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty811/product/media/images/20230404/23/318333867/903539217/4/4_org_zoom.jpg</g:image_link>
+      <g:price>200.00 TRY</g:price>
+      <g:sale_price>199.00 TRY</g:sale_price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>451212235698</g:barcode>
+    </item>
+    <item>
+      <g:id>80</g:id>
+      <title>El Yapımı Ahşap Dönen Fotoğraf Çerçevesi</title>
+      <description>El emeğiyle üretilmiş, her bir parça özenle seçilmiş ahşap malzemeden oluşur; Tek parça halinde gelen bu çerçeve, montajı kolay ve pratiktir; Doğal ahşabın sıcak dokusu ve estetik görünümü, mekanınıza şıklık katar;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-fotograf-cercevesi-1245124512121215</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1704/prod/QC_ENRICHMENT/20250706/20/f902eb3c-63b0-39dc-a565-ec43d6556963/1_org_zoom.jpg</g:image_link>
+      <g:price>499.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>1245124512121215</g:barcode>
+    </item>
+    <item>
+      <g:id>81</g:id>
+      <title>El Yapımı Ahşap Dönen Fotoğraf Çerçevesi</title>
+      <description>El yapımı ahşap dönen fotoğraf çerçevesi, tek parça olarak tasarlanmıştır ve montaj gerektirmez; Doğal ahşap malzemesiyle, her bir çerçeve benzersiz ve otantik bir görünüm sunar; Ahşabın sıcak dokusu ve doğallığı, mekanınıza huzurlu bir atmosfer katar;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-fotograf-cercevesi-1245124512121214</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1706/prod/QC_ENRICHMENT/20250706/20/4e78d5f1-c469-3965-9281-bba78a458631/1_org_zoom.jpg</g:image_link>
+      <g:price>499.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>1245124512121214</g:barcode>
+    </item>
+    <item>
+      <g:id>82</g:id>
+      <title>El Yapımı Ahşap Dönen Fotoğraf Çerçevesi</title>
+      <description>El yapımı ahşap dönen fotoğraf çerçevesi, tek parça olarak tasarlanmıştır ve montaj gerektirmez; Doğal ahşap malzemesiyle, her bir çerçeve benzersiz ve otantik bir görünüm sunar; Ahşabın sıcak dokusu ve doğallığı, mekanınıza huzurlu bir atmosfer katar;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-fotograf-cercevesi-1245124512121213</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1704/prod/QC_ENRICHMENT/20250706/20/5b5ca744-3cdd-3368-8e63-590c79cdb0a1/1_org_zoom.jpg</g:image_link>
+      <g:price>0.00 TRY</g:price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>1245124512121213</g:barcode>
+    </item>
+    <item>
+      <g:id>83</g:id>
+      <title>El Yapımı Ahşap Dönen Fotoğraf Çerçevesi</title>
+      <description>- El emeğiyle üretilmiş, doğal ahşap malzemesiyle dikkat çeken fotoğraf çerçevesi, evinizin dekorasyonuna sıcak ve otantik bir dokunuş katıyor; - Tek parça halinde gelen bu çerçeve, montajı kolay ve pratik bir kullanım sunuyor; böylece fotoğraflarınızı hemen sergilemeye başlayabilirsiniz; - Ahşabın doğal güzelliğini yansıtan bu çerçeve, dayanıklılığı ve uzun ömürlü yapısıyla da ön plana çıkıyor;</description>
+      <link>http://127.0.0.1:8000/urun/el-yapimi-ahsap-donen-fotograf-cercevesi-1245124512121212</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1704/prod/QC_ENRICHMENT/20250706/20/f5ce7488-b7e6-33fe-876d-946855007492/1_org_zoom.jpg</g:image_link>
+      <g:price>499.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>1245124512121212</g:barcode>
+    </item>
+    <item>
+      <g:id>84</g:id>
+      <title>Hamile Kadın Figürlü Çerçeve</title>
+      <description>Tek parça halinde gelen bu çerçeve, kolay montaj avantajı sunar ve ekstra parçalarla uğraşmanıza gerek kalmaz; Doğal ahşap malzemesiyle hem dayanıklı hem de estetik bir görünüm sağlar, evinizin dekorasyonuna sıcak ve otantik bir dokunuş katar;</description>
+      <link>http://127.0.0.1:8000/urun/hamile-kadin-figurlu-cerceve-4512122345789</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty734/product/media/images/20230216/13/282134456/858741909/1/1_org_zoom.jpg</g:image_link>
+      <g:price>199.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4512122345789</g:barcode>
+    </item>
+    <item>
+      <g:id>85</g:id>
+      <title>Hamile Kadın Figürlü Çerçeve</title>
+      <description>Ahşap malzeme kullanımı, hem dayanıklılığı hem de estetik görünümü bir arada sunar; Hamile kadın figürü tasarımı, annelik yolculuğunuzda size eşlik eder ve anılarınızı ölümsüzleştirir; Ahşap çerçeve, doğal dokusuyla mekanınıza sıcak ve samimi bir atmosfer katar;</description>
+      <link>http://127.0.0.1:8000/urun/hamile-kadin-figurlu-cerceve-4512122345788</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty732/product/media/images/20230216/13/282133805/858741203/1/1_org_zoom.jpg</g:image_link>
+      <g:price>199.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4512122345788</g:barcode>
+    </item>
+    <item>
+      <g:id>86</g:id>
+      <title>Hamile Kadın Figürlü Çerçeve</title>
+      <description>Ahşap malzeme kullanımı, hem dayanıklılığı hem de estetik görünümü bir arada sunar; Hamile kadın figürü tasarımı, annelik yolculuğunuzda size eşlik eder ve anılarınızı ölümsüzleştirir; Ahşap çerçeve, doğal dokusuyla mekanınıza sıcak ve samimi bir atmosfer katar;</description>
+      <link>http://127.0.0.1:8000/urun/hamile-kadin-figurlu-cerceve-4512122345787</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty732/product/media/images/20230216/13/282133208/858740307/1/1_org_zoom.jpg</g:image_link>
+      <g:price>199.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4512122345787</g:barcode>
+    </item>
+    <item>
+      <g:id>87</g:id>
+      <title>Ahşap Dönen Fotoğraf Çerçevesi Işıklı</title>
+      <description>Doğal ahşap malzemesiyle, evinizin dekorasyonuna sıcak ve otantik bir dokunuş katar; Işıklı tasarımı sayesinde, fotoğraflarınızı gece veya düşük ışık koşullarında bile net bir şekilde görebilmenizi sağlar; Dönen mekanizması ile fotoğraflarınızı kolayca değiştirebilir ve farklı anılarınızı sergileyebilirsiniz; Ahşap malzemesi, dayanıklılığı ve uzun ömürlü kullanımı garanti ederken, aynı zamanda estetik görünümüyle dikkat çeker;</description>
+      <link>http://127.0.0.1:8000/urun/ahsap-donen-fotograf-cercevesi-isikli-4512122356895</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1706/prod/QC_ENRICHMENT/20250706/20/caecc417-53dc-39f3-b0fc-845f71947365/1_org_zoom.jpg</g:image_link>
+      <g:price>699.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4512122356895</g:barcode>
+    </item>
+    <item>
+      <g:id>88</g:id>
+      <title>Ahşap Deniz Temalı Fotoğraf Çerçevesi</title>
+      <description>Çerçeve Ebatı: 22x17cm 10x15cm yatay fotoğraf kullanımı için uygundur.</description>
+      <link>http://127.0.0.1:8000/urun/ahsap-deniz-temali-fotograf-cercevesi-45121223568989</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty746/product/media/images/20230223/13/287696344/846140264/1/1_org_zoom.jpg</g:image_link>
+      <g:price>120.00 TRY</g:price>
+      <g:sale_price>98.90 TRY</g:sale_price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>45121223568989</g:barcode>
+    </item>
+    <item>
+      <g:id>89</g:id>
+      <title>Sihirli Ayna Çerçeve Usb Ledli</title>
+      <description>20 cm x 25 cm ebatında plastik malzemeden üretilmiştir. ; Ön tarafında kullanılan özel kaplamalı cam ile ayna olarak kullanılabilmekte olup, ışık açılınca cam ayna özelliğinden çıkıp arkası görünür hale gelerek kalp içerisine yerleştireceğiniz fotoğraf ortaya çıkmaktadır. ; Arkasında yer alan ayak ile masaüstü kullanıma uygundur. ; USB kablo ile birlikte gelmekte olup bir bilgisayar yada USB portu olan 5V bir adaptör ile kullanılabilir. ; Pil takılmamaktadır.;</description>
+      <link>http://127.0.0.1:8000/urun/sihirli-ayna-cerceve-usb-ledli-45121223568945</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty679/product/media/images/20230109/12/254952185/670178412/1/1_org_zoom.jpg</g:image_link>
+      <g:price>380.00 TRY</g:price>
+      <g:sale_price>220.00 TRY</g:sale_price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Masa ve Gece Lambası</g:product_type>
+      <g:barcode>45121223568945</g:barcode>
+    </item>
+    <item>
+      <g:id>90</g:id>
+      <title>Ipli Mandallı Fotoğraf Çerçeve Teldeki Kuşlar</title>
+      <description>Paket İçeriğinde 6 adet mandal bulunmaktadır. ; 3 mm MDF kullanılarak üretilen bu çerçeve, dayanıklı yapısı sayesinde uzun yıllar güvenle kullanılabilir. ; Malzeme: 3 mm Mdf Ahşap Ürün Boyutu: 20 x 21 cm soldaki kuş 6x15 cm ortada ki kuş 15x23 cm sağda ki kuş;</description>
+      <link>http://127.0.0.1:8000/urun/ipli-mandalli-fotograf-cerceve-teldeki-kuslar-4512122356897</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty685/product/media/images/20230112/14/257167559/658719845/1/1_org_zoom.jpg</g:image_link>
+      <g:price>100.00 TRY</g:price>
+      <g:sale_price>54.90 TRY</g:sale_price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4512122356897</g:barcode>
+    </item>
+    <item>
+      <g:id>91</g:id>
+      <title>Ipli Mandallı Fotoğraf Çerçeve Oturan Kedi</title>
+      <description>Ahşap malzeme kullanımı, dayanıklılığı ve estetik görünümü bir arada sunar; İpli mandallı tasarımı sayesinde fotoğraflarınızı kolayca yerleştirebilir ve çıkarabilirsiniz; Oturan kedi figürü ile sevimli ve eğlenceli bir dekoratif dokunuş ekler;</description>
+      <link>http://127.0.0.1:8000/urun/ipli-mandalli-fotograf-cerceve-oturan-kedi-4512122356899</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty685/product/media/images/20230112/14/257162148/658397521/1/1_org_zoom.jpg</g:image_link>
+      <g:price>100.00 TRY</g:price>
+      <g:sale_price>54.90 TRY</g:sale_price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4512122356899</g:barcode>
+    </item>
+    <item>
+      <g:id>92</g:id>
+      <title>Ipli Mandallı Fotoğraf Çerçevesi Kedi Pati</title>
+      <description>Paket İçeriğinde 6 adet mandal bulunmaktadır. ; 3 mm MDF kullanılarak üretilen bu çerçeve, dayanıklı yapısı sayesinde uzun yıllar güvenle kullanılabilir. ; Malzeme: 3 mm Mdf Ahşap Ürün Boyutu: 30 x 20 cm Kedi 7x15 cm Balık;</description>
+      <link>http://127.0.0.1:8000/urun/ipli-mandalli-fotograf-cercevesi-kedi-pati-4512122356898</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty685/product/media/images/20230112/14/257166680/658346452/1/1_org_zoom.jpg</g:image_link>
+      <g:price>100.00 TRY</g:price>
+      <g:sale_price>54.90 TRY</g:sale_price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4512122356898</g:barcode>
+    </item>
+    <item>
+      <g:id>93</g:id>
+      <title>Hamile Kadın Figürlü Çerçeve</title>
+      <description>Ahşap malzeme kullanımı, hem dayanıklılığı hem de estetik görünümü ile öne çıkar; Tek parça halinde gelen bu çerçeve, kolay montaj imkanı sunar ve ekstra parçalarla uğraşmanıza gerek kalmaz; Hamile kadın figürü tasarımı, annelik yolculuğunuzda size özel bir hatıra olarak evinizin duvarlarında yerini alır;</description>
+      <link>http://127.0.0.1:8000/urun/hamile-kadin-figurlu-cerceve-4512122345786</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty716/product/media/images/20230204/20/273730606/652827635/1/1_org_zoom.jpg</g:image_link>
+      <g:price>199.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4512122345786</g:barcode>
+    </item>
+    <item>
+      <g:id>94</g:id>
+      <title>Hamile Kadın Figürlü Çerçeve</title>
+      <description>Ahşap malzeme kullanımı, hem dayanıklılığı hem de estetik görünümü bir arada sunar; Hamile kadın figürü tasarımı, annelik yolculuğunda özel bir anı olarak evinizin duvarlarında yer alabilir; Ahşap çerçeve, doğal dokusuyla mekanınıza sıcak ve samimi bir atmosfer katar; Ahşap malzeme sayesinde uzun ömürlü kullanım ve kolay bakım imkanı sağlar;</description>
+      <link>http://127.0.0.1:8000/urun/hamile-kadin-figurlu-cerceve-4512122345785</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty683/product/media/images/20230110/15/255764327/652827257/1/1_org_zoom.jpg</g:image_link>
+      <g:price>199.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4512122345785</g:barcode>
+    </item>
+    <item>
+      <g:id>95</g:id>
+      <title>Ahşap Dönen Fotoğraf Çerçevesi Işıklı</title>
+      <description>- Doğal ahşap malzemesiyle, evinizin dekorasyonuna sıcak ve otantik bir dokunuş katar; - Işıklı tasarımı sayesinde, fotoğraflarınızı gece veya loş ışıkta bile net bir şekilde görebilmenizi sağlar; - Dönen mekanizması ile fotoğraflarınızı kolayca değiştirebilir ve farklı anılarınızı sergileyebilirsiniz;</description>
+      <link>http://127.0.0.1:8000/urun/ahsap-donen-fotograf-cercevesi-isikli-4512122356894</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1705/prod/QC_ENRICHMENT/20250706/20/efc6512e-4d91-37b3-b644-fea93425c289/1_org_zoom.jpg</g:image_link>
+      <g:price>699.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4512122356894</g:barcode>
+    </item>
+    <item>
+      <g:id>96</g:id>
+      <title>Ahşap Dönen Fotoğraf Çerçevesi Işıklı</title>
+      <description>Ahşap malzeme kullanımı, dayanıklılığı ve estetik görünümü bir arada sunar; Tek parça halinde gelen bu çerçeve, montaj kolaylığı sağlar ve ekstra parçalarla uğraşmanıza gerek kalmaz; Işıklı tasarımı sayesinde fotoğraflarınızı daha canlı ve dikkat çekici hale getirir;</description>
+      <link>http://127.0.0.1:8000/urun/ahsap-donen-fotograf-cercevesi-isikli-4512122356893</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1773/prod/QC_ENRICHMENT/20251014/18/a8d2e901-43dd-3570-b27f-7f1835b42f06/1_org_zoom.jpg</g:image_link>
+      <g:price>699.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4512122356893</g:barcode>
+    </item>
+    <item>
+      <g:id>97</g:id>
+      <title>Ahşap Dönen Fotoğraf Çerçevesi Işıklı</title>
+      <description>- Doğal ahşap malzemesiyle, evinizin dekorasyonuna sıcak ve otantik bir dokunuş katar; - Işıklı tasarımı sayesinde, fotoğraflarınızı gece veya düşük ışık koşullarında bile net bir şekilde görebilmenizi sağlar; - Dönen mekanizması ile fotoğraflarınızı kolayca değiştirebilir ve farklı anılarınızı sergileyebilirsiniz; - Ahşap yapısı, dayanıklılığı ve uzun ömürlü kullanım sunar;</description>
+      <link>http://127.0.0.1:8000/urun/ahsap-donen-fotograf-cercevesi-isikli-4512122356892</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1706/prod/QC_ENRICHMENT/20250706/20/4710e8e7-8d4d-327e-9d90-47e0e35e7f5e/1_org_zoom.jpg</g:image_link>
+      <g:price>699.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4512122356892</g:barcode>
+    </item>
+    <item>
+      <g:id>98</g:id>
+      <title>Ahşap Dönen Fotoğraf Çerçevesi Işıklı</title>
+      <description>- Doğal ahşap malzemesiyle, evinizin dekorasyonuna sıcak ve otantik bir dokunuş katar; - Işıklı tasarımı sayesinde, fotoğraflarınızı gece veya loş ortamlarda bile net bir şekilde görebilmenizi sağlar; - Dönen mekanizması ile fotoğraflarınızı kolayca değiştirebilir ve farklı anılarınızı sergileyebilirsiniz;</description>
+      <link>http://127.0.0.1:8000/urun/ahsap-donen-fotograf-cercevesi-isikli-4512122356891</link>
+      <g:image_link>https://cdn.dsmcdn.com/ty1773/prod/QC_ENRICHMENT/20251014/18/78590fe3-0922-3d37-b1eb-286243ed8339/1_org_zoom.jpg</g:image_link>
+      <g:price>0.00 TRY</g:price>
+      <g:availability>out_of_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+      <g:barcode>4512122356891</g:barcode>
+    </item>
+    <item>
+      <g:id>99</g:id>
+      <title>deneme</title>
+      <description>asdasdadad</description>
+      <link>http://127.0.0.1:8000/urun/deneme-1988</link>
+      <g:image_link>http://127.0.0.1:8000/uploads/products/1785612088_3tuHx9RgiE.png</g:image_link>
+      <g:price>300.00 TRY</g:price>
+      <g:sale_price>200.00 TRY</g:sale_price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+    </item>
+    <item>
+      <g:id>100</g:id>
+      <title>dokulu</title>
+      <description>dokulu - Kaliteli masif ahşap çerçeve</description>
+      <link>http://127.0.0.1:8000/urun/dokulu-8929</link>
+      <g:image_link>http://127.0.0.1:8000/uploads/products/1786965703_46a4XDl03Y.png</g:image_link>
+      <g:price>43455.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+    </item>
+    <item>
+      <g:id>101</g:id>
+      <title>lambalı</title>
+      <description>lambalı - Kaliteli masif ahşap çerçeve</description>
+      <link>http://127.0.0.1:8000/urun/lambali-3298</link>
+      <g:image_link>http://127.0.0.1:8000/uploads/products/1786969588_eWrsFayjmt.png</g:image_link>
+      <g:price>34343.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+    </item>
+    <item>
+      <g:id>102</g:id>
+      <title>sadsd</title>
+      <description>dsfsdf</description>
+      <link>http://127.0.0.1:8000/urun/sadsd-2986</link>
+      <g:image_link>http://127.0.0.1:8000/uploads/products/1786988150_LIBAjvAG2Z.jpg</g:image_link>
+      <g:price>44444.00 TRY</g:price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
+    </item>
+    <item>
+      <g:id>103</g:id>
+      <title>dfsdf</title>
+      <description>diproduksiyon.com</description>
+      <link>http://127.0.0.1:8000/urun/dfsdf</link>
+      <g:image_link>http://127.0.0.1:8000/uploads/products/1787601470_1QIaBVDZwt.jpg</g:image_link>
+      <g:price>5000.00 TRY</g:price>
+      <g:sale_price>1700.00 TRY</g:sale_price>
+      <g:availability>in_stock</g:availability>
+      <g:brand>Ahşap Evim</g:brand>
+      <g:condition>new</g:condition>
+      <g:product_type>Çerçeve</g:product_type>
     </item>
   </channel>
 </rss>

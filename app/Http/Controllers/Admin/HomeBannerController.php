@@ -12,7 +12,14 @@ class HomeBannerController extends Controller
 {
     public function index()
     {
-        $banners = HomeBanner::orderBy('order', 'asc')->get();
+        $banners = collect();
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('home_banners')) {
+                $banners = HomeBanner::orderBy('order', 'asc')->get();
+            }
+        } catch (\Throwable $e) {
+            $banners = collect();
+        }
         return view('admin.banners.index', compact('banners'));
     }
 

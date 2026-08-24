@@ -120,21 +120,21 @@
                     <p class="text-[10px] text-gray-500 mt-1">Eklenirse ürün detay galerisinde Instagram Reel rozeti ve pop-up oynatıcı gösterilir.</p>
                 </div>
 
-                <div class="p-4 bg-amber-50/50 border border-amber-200/50 rounded-xl">
-                    <h4 class="text-sm font-bold text-amber-900 mb-3 flex items-center gap-1.5">
+                <!-- 3D Model Entegrasyonu (Arka plana alındı / Pasif) -->
+                <div class="hidden bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                    <h4 class="text-sm font-bold text-gray-800 mb-3 border-b border-gray-100 pb-2 flex items-center gap-2">
                         <i class="fa-solid fa-cube text-brand"></i> 3D Model Entegrasyonu (Şablon)
                     </h4>
                     
                     <div class="mb-3">
                         <label class="block text-xs font-bold text-gray-700 mb-1">Ürün 3D Şablonu</label>
-                        <select name="three_d_template_id" required class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none bg-white">
-                            <option value="">-- Lütfen bir 3D Şablon seçin (Zorunlu) --</option>
+                        <select name="three_d_template_id" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none bg-white">
+                            <option value="">-- Şablon Seçimi Yok (Pasif) --</option>
                             @foreach($templates as $tpl)
                                 <option value="{{ $tpl->id }}" {{ old('three_d_template_id') == $tpl->id ? 'selected' : '' }}>{{ $tpl->name }} ({{ $tpl->wood_type }})</option>
                             @endforeach
                         </select>
                     </div>
-                    <p class="text-[10px] text-gray-500">Bu ürünü anasayfadaki veya ürün detayındaki 3D Stüdyo/Önizleme ile bağdaştırmak için bir 3D çerçeve şablonu atayın.</p>
                 </div>
             </div>
         </div>

@@ -142,8 +142,9 @@
                 <span class="nav-label">Kategoriler</span>
             </a>
 
+            <!-- 3D Şablonlar (Arka plana alındı, ihtiyaç durumunda hidden kaldırılarak aktif edilebilir) -->
             <a href="<?php echo e(url('/yonetim/3d-sablonlar')); ?>"
-               class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#3D332B] transition-colors text-sm font-medium text-gray-300 hover:text-white <?php echo e(request()->is('yonetim/3d-sablonlar*') ? 'active text-white' : ''); ?>">
+               class="hidden nav-item items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#3D332B] transition-colors text-sm font-medium text-gray-300 hover:text-white <?php echo e(request()->is('yonetim/3d-sablonlar*') ? 'active text-white' : ''); ?>">
                 <i class="fa-solid fa-cube w-4 text-center text-cyan-400"></i>
                 <span class="nav-label">3D Şablonlar</span>
             </a>

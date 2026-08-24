@@ -84,12 +84,7 @@
         </a>
     </div>
 
-    <!-- Fixed Vertical Step Indicators -->
-    <div class="fixed right-4 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center gap-3.5 bg-white/95 backdrop-blur-md py-6 px-3 rounded-full shadow-2xl border border-gray-200/80">
-        <button onclick="scrollToStep(1)" id="dot-1" class="step-dot w-4 h-4 rounded-full bg-[#C87A53] scale-125 shadow-sm" title="1. Adım: Masif Ahşap Gövde"></button>
-        <button onclick="scrollToStep(2)" id="dot-2" class="step-dot w-3.5 h-3.5 rounded-full bg-gray-300 hover:bg-gray-400" title="2. Adım: Özel Üretim & Detaylar"></button>
-        <button onclick="scrollToStep(3)" id="dot-3" class="step-dot w-3.5 h-3.5 rounded-full bg-gray-300 hover:bg-gray-400" title="3. Adım: Şık Tasarım & Sipariş"></button>
-    </div>
+
 
     <!-- MAIN SNAP CONTAINER -->
     <div id="scroll-container" class="h-screen w-full overflow-y-auto snap-y snap-mandatory scroll-smooth relative">

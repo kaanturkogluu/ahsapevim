@@ -221,7 +221,7 @@ class ProductController extends Controller
             'gallery.*'          => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:8192',
             'youtube_url'        => 'nullable|url|max:255',
             'instagram_url'      => 'nullable|url|max:255',
-            'three_d_template_id'=> 'required|exists:three_d_templates,id',
+            'three_d_template_id'=> 'nullable|exists:three_d_templates,id',
             'color'              => 'nullable|string',
             'size'               => 'nullable|string',
             'sort_order'         => 'nullable|integer|min:0',

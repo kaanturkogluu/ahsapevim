@@ -77,7 +77,15 @@ Route::get('/', function (Request $request) {
 
     $products   = $query->ordered()->paginate(20)->withQueryString();
     $categories = Category::withCount('products')->get();
-    $homeBanners = \App\Models\HomeBanner::where('is_active', true)->orderBy('order', 'asc')->get();
+    
+    $homeBanners = collect();
+    try {
+        if (\Illuminate\Support\Facades\Schema::hasTable('home_banners')) {
+            $homeBanners = \App\Models\HomeBanner::where('is_active', true)->orderBy('order', 'asc')->get();
+        }
+    } catch (\Throwable $e) {
+        $homeBanners = collect();
+    }
 
     return view('home', compact('products', 'categories', 'homeBanners'));
 });

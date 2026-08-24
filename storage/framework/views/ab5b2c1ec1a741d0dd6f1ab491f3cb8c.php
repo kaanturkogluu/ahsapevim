@@ -1,41 +1,36 @@
-@extends('layouts.admin')
+<?php $__env->startSection('header', 'Yeni Ürün Ekle'); ?>
 
-@section('header', 'Ürünü Düzenle')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm max-w-4xl">
     <div class="mb-6 pb-4 border-b border-gray-100 flex justify-between items-center">
         <div>
             <h3 class="text-lg font-bold text-gray-800">Ürün Bilgileri</h3>
-            <p class="text-xs text-gray-500 mt-1">Düzenlenen ürünün temel, indirim, galeri ve 3D özelliklerini güncelleyin.</p>
+            <p class="text-xs text-gray-500 mt-1">Eklenecek ürünün temel, indirim, galeri ve 3D özelliklerini tanımlayın.</p>
         </div>
-        <a href="{{ route('admin.products.index') }}" class="text-sm font-bold text-gray-500 hover:text-gray-700 transition">
+        <a href="<?php echo e(route('admin.products.index')); ?>" class="text-sm font-bold text-gray-500 hover:text-gray-700 transition">
             <i class="fa-solid fa-arrow-left mr-1"></i> Geri Dön
         </a>
     </div>
 
-    <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data" onsubmit="preventSpamSubmit(this)">
-        @csrf
-        @method('PUT')
+    <form action="<?php echo e(route('admin.products.store')); ?>" method="POST" enctype="multipart/form-data" onsubmit="preventSpamSubmit(this)">
+        <?php echo csrf_field(); ?>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <!-- Left Side: Basic Info & Pricing -->
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Ürün Adı *</label>
-                    <input type="text" name="name" id="productNameInput" required value="{{ old('name', $product->name) }}" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: 360 Dönen Masif Çerçeve" oninput="autoGenerateSlug(this.value)">
+                    <input type="text" name="name" id="productNameInput" required value="<?php echo e(old('name')); ?>" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: 360 Dönen Masif Çerçeve" oninput="autoGenerateSlug(this.value)">
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1 flex items-center justify-between">
                         <span>URL Adresi (SEO Slug) *</span>
-                        <a href="{{ $product->url }}" target="_blank" class="text-[11px] font-bold text-[#C87A53] hover:underline">
-                            Ürünü Sitede Gör <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ml-0.5"></i>
-                        </a>
+                        <span class="text-[11px] font-normal text-gray-400">Otomatik türetilir, isterseniz değiştirebilirsiniz</span>
                     </label>
                     <div class="flex items-center">
                         <span class="bg-gray-100 text-gray-500 text-xs px-3 py-2.5 border border-r-0 border-gray-300 rounded-l-lg font-mono shrink-0">/urun/</span>
-                        <input type="text" name="slug" id="productSlugInput" value="{{ old('slug', $product->slug) }}" class="w-full text-sm border-gray-300 rounded-r-lg p-2.5 border focus:border-brand focus:ring-0 outline-none font-mono text-gray-700" placeholder="360-donen-masif-cerceve" oninput="isSlugManuallyEdited = true">
+                        <input type="text" name="slug" id="productSlugInput" value="<?php echo e(old('slug')); ?>" class="w-full text-sm border-gray-300 rounded-r-lg p-2.5 border focus:border-brand focus:ring-0 outline-none font-mono text-gray-700" placeholder="360-donen-masif-cerceve" oninput="isSlugManuallyEdited = true">
                     </div>
                 </div>
 
@@ -44,45 +39,39 @@
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Kategori *</label>
                         <select name="category_id" required class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none bg-white">
                             <option value="">Seçin...</option>
-                            @foreach($categories as $cat)
-                                <option value="{{ $cat->id }}" {{ old('category_id', $product->category_id) == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                            @endforeach
+                            <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($cat->id); ?>" <?php echo e(old('category_id') == $cat->id ? 'selected' : ''); ?>><?php echo e($cat->name); ?></option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </select>
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Stok Adedi *</label>
-                        <input type="number" name="stock" required value="{{ old('stock', $product->stock) }}" min="0" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none">
+                        <input type="number" name="stock" required value="<?php echo e(old('stock', 100)); ?>" min="0" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Sıralama (Sıra)</label>
-                        <input type="number" name="sort_order" value="{{ old('sort_order', $product->sort_order) }}" min="1" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" title="Ürünün sitedeki sıralama pozisyonu">
+                        <input type="number" name="sort_order" value="<?php echo e(old('sort_order')); ?>" min="1" placeholder="Otomatik" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" title="Boş bırakılırsa en sona otomatik atanır">
                     </div>
                 </div>
-
-                @php
-                    $isDiscounted = old('has_discount', $product->original_price > $product->price);
-                    $normalPriceVal = $isDiscounted ? $product->original_price : $product->price;
-                    $discountedPriceVal = $isDiscounted ? $product->price : '';
-                @endphp
 
                 <!-- Price & Discount Section -->
                 <div class="p-4 bg-red-50/40 border border-red-200/50 rounded-xl space-y-3">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Normal Fiyat (TL) *</label>
-                        <input type="number" id="normalPrice" name="price" required step="0.01" value="{{ old('price', $normalPriceVal) }}" min="0" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: 500.00" oninput="calculateDiscount()">
+                        <input type="number" id="normalPrice" name="price" required step="0.01" value="<?php echo e(old('price')); ?>" min="0" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: 500.00" oninput="calculateDiscount()">
                     </div>
 
                     <div class="flex items-center gap-2 pt-1">
-                        <input type="checkbox" name="has_discount" id="hasDiscount" value="1" {{ $isDiscounted ? 'checked' : '' }} onchange="toggleDiscountBlock()" class="rounded text-red-600 focus:ring-red-500 w-4 h-4 cursor-pointer">
+                        <input type="checkbox" name="has_discount" id="hasDiscount" value="1" <?php echo e(old('has_discount') ? 'checked' : ''); ?> onchange="toggleDiscountBlock()" class="rounded text-red-600 focus:ring-red-500 w-4 h-4 cursor-pointer">
                         <label for="hasDiscount" class="text-sm font-bold text-red-700 cursor-pointer select-none">Bu Üründe İndirim Var</label>
                     </div>
 
-                    <div id="discountBlock" class="{{ $isDiscounted ? '' : 'hidden' }} space-y-2 pt-1 border-t border-red-100">
+                    <div id="discountBlock" class="<?php echo e(old('has_discount') ? '' : 'hidden'); ?> space-y-2 pt-1 border-t border-red-100">
                         <div class="flex items-center justify-between">
                             <label class="block text-sm font-semibold text-gray-700">İndirimli Satış Fiyatı (TL) *</label>
                             <span id="discountBadge" class="hidden text-xs bg-red-600 text-white font-extrabold px-2 py-0.5 rounded-full"></span>
                         </div>
-                        <input type="number" id="discountedPrice" name="discounted_price" step="0.01" value="{{ old('discounted_price', $discountedPriceVal) }}" min="0" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: 350.00" oninput="calculateDiscount()">
+                        <input type="number" id="discountedPrice" name="discounted_price" step="0.01" value="<?php echo e(old('discounted_price')); ?>" min="0" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: 350.00" oninput="calculateDiscount()">
                         <p class="text-[11px] text-gray-500">Müşteriye <strong>Normal Fiyat</strong> çizili olarak, <strong>İndirimli Fiyat</strong> ve indirim oranı rozeti olarak gösterilecektir.</p>
                     </div>
                 </div>
@@ -90,11 +79,11 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Ahşap Rengi/Türü</label>
-                        <input type="text" name="color" value="{{ old('color', $product->features['color'] ?? 'Ceviz') }}" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: Masif Meşe">
+                        <input type="text" name="color" value="<?php echo e(old('color', 'Ceviz')); ?>" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: Masif Meşe">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Ölçü/Boyut</label>
-                        <input type="text" name="size" value="{{ old('size', $product->features['size'] ?? '20x25 cm') }}" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: 15x21 cm">
+                        <input type="text" name="size" value="<?php echo e(old('size', '20x25 cm')); ?>" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: 15x21 cm">
                     </div>
                 </div>
             </div>
@@ -102,44 +91,22 @@
             <!-- Right Side: Media & 3D Settings -->
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Görseli Değiştir (Ana Görsel)</label>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ürün Ana Görseli *</label>
                     <input type="file" name="image" class="w-full text-sm border-gray-300 rounded-lg p-2 border focus:border-brand focus:ring-0 outline-none bg-gray-50">
-                    
-                    @if($product->image)
-                        <div class="mt-2 flex items-center gap-3 bg-gray-50 p-2 rounded-lg border border-gray-150 w-fit">
-                            <img src="{{ $product->image }}" class="h-12 w-10 object-contain" alt="old image">
-                            <span class="text-xs text-gray-500 font-semibold">Mevcut ana görsel saklanıyor.</span>
-                        </div>
-                    @endif
+                    <p class="text-[10px] text-gray-500 mt-1">Önerilen ebat kare veya 3:4 dikey masif çerçeve görselidir.</p>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ek Ürün Görselleri (Galeri Ekle/Yönet)</label>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ek Ürün Görselleri (Galeri)</label>
                     <input type="file" name="gallery[]" multiple accept="image/*" class="w-full text-sm border-gray-300 rounded-lg p-2 border focus:border-brand focus:ring-0 outline-none bg-gray-50">
-                    
-                    @if(isset($product->features['images']) && is_array($product->features['images']) && count($product->features['images']) > 0)
-                        <div class="mt-3 bg-gray-50 p-3 rounded-lg border border-gray-200">
-                            <label class="block text-xs font-bold text-gray-700 mb-2">Mevcut Galeri Görselleri (Silmek istediklerinizi işaretleyin):</label>
-                            <div class="grid grid-cols-4 gap-2">
-                                @foreach($product->features['images'] as $gImg)
-                                    <div class="relative group border border-gray-200 rounded-lg p-1 bg-white flex flex-col items-center">
-                                        <img src="{{ str_starts_with($gImg, 'http') ? $gImg : url($gImg) }}" class="h-16 w-full object-contain rounded" alt="gallery image">
-                                        <label class="mt-1 flex items-center gap-1 text-[11px] text-red-600 font-bold cursor-pointer">
-                                            <input type="checkbox" name="remove_gallery[]" value="{{ $gImg }}" class="rounded text-red-600 focus:ring-red-500">
-                                            Sil
-                                        </label>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
+                    <p class="text-[10px] text-gray-500 mt-1">Birden fazla görsel seçerek ürün detayındaki galeriye ekleyebilirsiniz.</p>
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1">
                         <i class="fa-brands fa-youtube text-red-600 text-base"></i> YouTube Tanıtım Video Linki (Opsiyonel)
                     </label>
-                    <input type="url" name="youtube_url" value="{{ old('youtube_url', $product->features['youtube_url'] ?? '') }}" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: https://www.youtube.com/watch?v=XXXXXX">
+                    <input type="url" name="youtube_url" value="<?php echo e(old('youtube_url')); ?>" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: https://www.youtube.com/watch?v=XXXXXX">
                     <p class="text-[10px] text-gray-500 mt-1">Eklenirse ürün detay galerisine YouTube video butonu eklenir.</p>
                 </div>
 
@@ -147,7 +114,7 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1">
                         <i class="fa-brands fa-instagram text-pink-600 text-base"></i> Instagram Video / Reel Linki (Opsiyonel)
                     </label>
-                    <input type="url" name="instagram_url" value="{{ old('instagram_url', $product->features['instagram_url'] ?? '') }}" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: https://www.instagram.com/reel/CsqVN6MuKfV/">
+                    <input type="url" name="instagram_url" value="<?php echo e(old('instagram_url')); ?>" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: https://www.instagram.com/reel/CsqVN6MuKfV/">
                     <p class="text-[10px] text-gray-500 mt-1">Eklenirse ürün detay galerisinde Instagram Reel rozeti ve pop-up oynatıcı gösterilir.</p>
                 </div>
 
@@ -161,9 +128,9 @@
                         <label class="block text-xs font-bold text-gray-700 mb-1">Ürün 3D Şablonu</label>
                         <select name="three_d_template_id" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none bg-white">
                             <option value="">-- Şablon Seçimi Yok (Pasif) --</option>
-                            @foreach($templates as $tpl)
-                                <option value="{{ $tpl->id }}" {{ old('three_d_template_id', $product->three_d_template_id) == $tpl->id ? 'selected' : '' }}>{{ $tpl->name }} ({{ $tpl->wood_type }})</option>
-                            @endforeach
+                            <?php $__currentLoopData = $templates; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tpl): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($tpl->id); ?>" <?php echo e(old('three_d_template_id') == $tpl->id ? 'selected' : ''); ?>><?php echo e($tpl->name); ?> (<?php echo e($tpl->wood_type); ?>)</option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </select>
                     </div>
                 </div>
@@ -172,15 +139,15 @@
 
         <div class="mb-6">
             <label class="block text-sm font-semibold text-gray-700 mb-1">Ürün Açıklaması</label>
-            <textarea name="description" rows="5" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Ürünün ahşap kalitesi, özellikleri ve el işçiliği hakkında detaylı bilgi yazın.">{{ old('description', $product->description) }}</textarea>
+            <textarea name="description" rows="5" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Ürünün ahşap kalitesi, özellikleri ve el işçiliği hakkında detaylı bilgi yazın."><?php echo e(old('description')); ?></textarea>
         </div>
 
         <div class="flex items-center gap-2 mb-6">
-            <input type="checkbox" name="is_active" id="isActive" value="1" {{ old('is_active', $product->is_active) ? 'checked' : '' }} class="rounded text-[#C87A53] focus:ring-[#C87A53] w-4 h-4">
+            <input type="checkbox" name="is_active" id="isActive" value="1" checked class="rounded text-[#C87A53] focus:ring-[#C87A53] w-4 h-4">
             <label for="isActive" class="text-sm font-semibold text-gray-700 cursor-pointer">Bu ürünü mağazada hemen satışa aç (Aktif)</label>
         </div>
 
-        <button type="submit" class="py-3 px-8 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-lg text-sm transition">Değişiklikleri Kaydet</button>
+        <button type="submit" class="py-3 px-8 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-lg text-sm transition">Ürünü Kaydet</button>
     </form>
 </div>
 
@@ -232,6 +199,7 @@ function calculateDiscount() {
 }
 
 document.addEventListener('DOMContentLoaded', calculateDiscount);
+
 function preventSpamSubmit(form) {
     const btn = form.querySelector('button[type="submit"]');
     if (btn && !btn.disabled) {
@@ -240,4 +208,6 @@ function preventSpamSubmit(form) {
     }
 }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\ahsapevim\resources\views/admin/products/create.blade.php ENDPATH**/ ?>
