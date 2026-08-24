@@ -184,6 +184,12 @@
                 <span class="nav-label">Bilgilendirme Sayfaları</span>
             </a>
 
+            <a href="{{ route('admin.banners.index') }}"
+               class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#3D332B] transition-colors text-sm font-medium text-gray-300 hover:text-white {{ request()->routeIs('admin.banners*') ? 'active text-white' : '' }}">
+                <i class="fa-solid fa-images w-4 text-center text-[#C87A53]"></i>
+                <span class="nav-label">Anasayfa Görselleri</span>
+            </a>
+
             <a href="{{ url('/') }}" target="_blank"
                class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#3D332B] transition-colors text-sm font-medium text-gray-400 hover:text-white">
                 <i class="fa-solid fa-arrow-up-right-from-square w-4 text-center text-gray-500"></i>

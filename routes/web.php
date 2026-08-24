@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\EmailTemplateController;
 use App\Http\Controllers\Admin\ShippingCompanyController;
 use App\Http\Controllers\Admin\MessageLogController;
+use App\Http\Controllers\Admin\HomeBannerController;
 use App\Http\Controllers\SeoController;
 
 // ─── SEO, Sitemap & XML Product Feed ──────────────────────────────────────────
@@ -74,10 +75,11 @@ Route::get('/', function (Request $request) {
         applyProductSearch($query, $search);
     }
 
-    $products   = $query->ordered()->paginate(16)->withQueryString();
+    $products   = $query->ordered()->paginate(20)->withQueryString();
     $categories = Category::withCount('products')->get();
+    $homeBanners = \App\Models\HomeBanner::where('is_active', true)->orderBy('order', 'asc')->get();
 
-    return view('home', compact('products', 'categories'));
+    return view('home', compact('products', 'categories', 'homeBanners'));
 });
 
 // Canlı Arama (AJAX / Autocomplete)
@@ -147,7 +149,7 @@ Route::get('/urunler', function () {
         applyProductSearch($query, $search);
     }
 
-    $products   = $query->ordered()->paginate(16)->withQueryString();
+    $products   = $query->ordered()->paginate(20)->withQueryString();
     $categories = Category::all();
 
     return view('products.index', compact('products', 'categories'));
@@ -245,6 +247,7 @@ Route::prefix('yonetim')->middleware(['auth', 'admin'])->group(function () {
     Route::resource('3d-sablonlar', ThreeDTemplateController::class)->parameters(['3d-sablonlar' => 'template'])->except(['store', 'update'])->names('admin.templates');
 
     Route::resource('sayfalar', PageController::class)->names('admin.pages');
+    Route::resource('anasayfa-gorselleri', HomeBannerController::class)->names('admin.banners');
     Route::get('/siparis-gorsel-indir', [OrderController::class, 'downloadImage'])->name('admin.orders.download_image');
     Route::resource('siparisler', OrderController::class)->only(['index', 'show', 'update', 'destroy'])->names('admin.orders');
     Route::resource('kargo-sirketleri', ShippingCompanyController::class)->except(['create', 'show', 'edit'])->names('admin.shipping_companies');

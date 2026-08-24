@@ -69,7 +69,7 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                     <div class="bg-white p-3 rounded-xl border border-amber-200/60 shadow-sm">
                                         <span class="text-gray-400 font-bold block text-[10px] uppercase">Alıcı Ad Soyad</span>
-                                        <span class="font-extrabold text-gray-900 text-sm">Mete Sapmaz</span>
+                                        <span class="font-extrabold text-gray-900 text-sm">Mete Almaz</span>
                                     </div>
                                     <div class="bg-white p-3 rounded-xl border border-amber-200/60 flex items-center justify-between gap-2 shadow-sm">
                                         <div>
