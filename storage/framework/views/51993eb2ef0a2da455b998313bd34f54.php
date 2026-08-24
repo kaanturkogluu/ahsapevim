@@ -6,15 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AhşapEvim - Masif Ahşap Özel Tasarım Çerçeveler & Dekorasyaon</title>
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ url('/favicon.ico') }}">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ url('/favicon.ico') }}">
-    <link rel="apple-touch-icon" href="{{ url('/ahsaplogo_yataybg.png') }}">
+    <link rel="icon" type="image/x-icon" href="<?php echo e(url('/favicon.ico')); ?>">
+    <link rel="shortcut icon" type="image/x-icon" href="<?php echo e(url('/favicon.ico')); ?>">
+    <link rel="apple-touch-icon" href="<?php echo e(url('/ahsaplogo_yataybg.png')); ?>">
 
-    {{-- Mobil kullanıcıları ürünler sayfasına yönlendir --}}
+    
     <script>
         (function () {
             if (window.innerWidth < 1024) {
-                window.location.replace('{{ url('/urunler') }}');
+                window.location.replace('<?php echo e(url('/urunler')); ?>');
             }
         })();
     </script>
@@ -73,11 +73,11 @@
 
     <!-- Header Logo & Keşfet Button -->
     <div class="fixed top-6 left-6 lg:top-8 lg:left-14 z-50 pointer-events-auto flex items-center gap-4 lg:gap-6">
-        <a href="{{ url('/') }}" class="flex items-center gap-2.5">
-            <img src="{{ url('/ahsaplogo_yataybg.png') }}" alt="AhşapEvim Logo" class="h-12 lg:h-16 w-auto object-contain drop-shadow-sm">
+        <a href="<?php echo e(url('/')); ?>" class="flex items-center gap-2.5">
+            <img src="<?php echo e(url('/ahsaplogo_yataybg.png')); ?>" alt="AhşapEvim Logo" class="h-12 lg:h-16 w-auto object-contain drop-shadow-sm">
         </a>
 
-        <a href="{{ url('/urunler') }}" class="inline-flex items-center gap-3 py-3.5 px-7 bg-gradient-to-r from-[#C87A53] via-[#D87843] to-[#F27A1A] hover:from-[#B56740] hover:to-[#E06912] text-white font-black text-sm lg:text-base rounded-2xl shadow-xl shadow-orange-500/25 hover:shadow-2xl hover:shadow-orange-500/40 border border-white/20 backdrop-blur-md transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 group">
+        <a href="<?php echo e(url('/urunler')); ?>" class="inline-flex items-center gap-3 py-3.5 px-7 bg-gradient-to-r from-[#C87A53] via-[#D87843] to-[#F27A1A] hover:from-[#B56740] hover:to-[#E06912] text-white font-black text-sm lg:text-base rounded-2xl shadow-xl shadow-orange-500/25 hover:shadow-2xl hover:shadow-orange-500/40 border border-white/20 backdrop-blur-md transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 group">
             <i class="fa-solid fa-store text-lg lg:text-xl group-hover:scale-110 transition-transform duration-300"></i>
             <span class="tracking-wide">Ürünleri Keşfet</span>
             <i class="fa-solid fa-arrow-right text-xs lg:text-sm opacity-90 group-hover:translate-x-1 transition-transform duration-300"></i>
@@ -133,7 +133,7 @@
                     </div>
                 </div>
 
-                {{-- Temsili Görsel Uyarısı --}}
+                
                 <div class="mt-4 p-3.5 bg-amber-50 border border-amber-200/90 rounded-2xl max-w-xl text-amber-950 text-xs flex items-start gap-3 shadow-xs">
                     <i class="fa-solid fa-circle-info text-[#C87A53] text-lg shrink-0 mt-0.5"></i>
                     <div class="leading-relaxed">
@@ -189,7 +189,7 @@
                 </p>
 
                 <div class="max-w-xl">
-                    <a href="{{ url('/urunler') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-3 py-4 px-8 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold text-base rounded-2xl shadow-xl shadow-[#C87A53]/25 transition-all duration-300 transform hover:-translate-y-0.5">
+                    <a href="<?php echo e(url('/urunler')); ?>" class="w-full sm:w-auto inline-flex items-center justify-center gap-3 py-4 px-8 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold text-base rounded-2xl shadow-xl shadow-[#C87A53]/25 transition-all duration-300 transform hover:-translate-y-0.5">
                         <i class="fa-solid fa-shopping-bag text-lg"></i>
                         <span>Mağazadaki Tüm Ürünleri Keşfet</span>
                         <i class="fa-solid fa-arrow-right text-sm"></i>
@@ -204,26 +204,26 @@
     <div class="fixed right-0 top-0 w-1/2 h-screen hidden lg:flex items-center justify-center p-8 lg:p-12 z-20 pointer-events-auto">
         <div class="relative w-full h-[85vh] max-h-[750px] bg-white rounded-3xl border border-gray-200/90 shadow-2xl overflow-hidden flex flex-col justify-between p-4 group">
             
-            {{-- Main Showcase Image Display --}}
+            
             <div class="relative flex-1 w-full rounded-2xl overflow-hidden bg-stone-100 flex items-center justify-center">
-                @if(isset($homeBanners) && $homeBanners->count() > 0)
-                    @foreach($homeBanners as $index => $banner)
-                        <img id="banner-img-{{ $index }}" 
-                             src="{{ $banner->image_url }}" 
-                             alt="{{ $banner->title ?: 'AhşapEvim Görsel' }}" 
-                             class="banner-slide absolute inset-0 w-full h-full object-cover transition-all duration-700 opacity-0 scale-105 {{ $index === 0 ? 'opacity-100 scale-100 z-10' : 'z-0' }}">
-                    @endforeach
-                @else
-                    {{-- Fallback default a1-a6 images if table is empty --}}
-                    @for($i = 1; $i <= 6; $i++)
-                        <img id="banner-img-{{ $i-1 }}" 
-                             src="{{ url('/images/a' . $i . '.jpeg') }}" 
-                             alt="AhşapEvim Görsel {{ $i }}" 
-                             class="banner-slide absolute inset-0 w-full h-full object-cover transition-all duration-700 opacity-0 scale-105 {{ $i === 1 ? 'opacity-100 scale-100 z-10' : 'z-0' }}">
-                    @endfor
-                @endif
+                <?php if(isset($homeBanners) && $homeBanners->count() > 0): ?>
+                    <?php $__currentLoopData = $homeBanners; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $banner): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <img id="banner-img-<?php echo e($index); ?>" 
+                             src="<?php echo e($banner->image_url); ?>" 
+                             alt="<?php echo e($banner->title ?: 'AhşapEvim Görsel'); ?>" 
+                             class="banner-slide absolute inset-0 w-full h-full object-cover transition-all duration-700 opacity-0 scale-105 <?php echo e($index === 0 ? 'opacity-100 scale-100 z-10' : 'z-0'); ?>">
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php else: ?>
+                    
+                    <?php for($i = 1; $i <= 6; $i++): ?>
+                        <img id="banner-img-<?php echo e($i-1); ?>" 
+                             src="<?php echo e(url('/images/a' . $i . '.jpeg')); ?>" 
+                             alt="AhşapEvim Görsel <?php echo e($i); ?>" 
+                             class="banner-slide absolute inset-0 w-full h-full object-cover transition-all duration-700 opacity-0 scale-105 <?php echo e($i === 1 ? 'opacity-100 scale-100 z-10' : 'z-0'); ?>">
+                    <?php endfor; ?>
+                <?php endif; ?>
 
-                {{-- Banner Navigation Arrow Buttons --}}
+                
                 <button onclick="prevBanner()" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 bg-black/40 hover:bg-black/70 text-white rounded-full flex items-center justify-center backdrop-blur-xs transition shadow-lg opacity-80 hover:opacity-100">
                     <i class="fa-solid fa-chevron-left text-sm"></i>
                 </button>
@@ -231,25 +231,25 @@
                     <i class="fa-solid fa-chevron-right text-sm"></i>
                 </button>
 
-                {{-- Active Image Label Badge --}}
+                
                 <div class="absolute top-4 left-4 z-20 bg-black/60 backdrop-blur-md text-white px-3.5 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 border border-white/20">
                     <span class="w-2 h-2 rounded-full bg-[#C87A53] animate-pulse"></span>
                     <span id="bannerTitle">Özel Koleksiyon Görselleri</span>
                 </div>
             </div>
 
-            {{-- Bottom Thumbnails Carousel Bar (a1 - a6 Tıklanabilir Kapaklar) --}}
+            
             <div class="pt-3 px-1 flex items-center justify-center gap-2.5 overflow-x-auto scrollbar-none">
-                @php
+                <?php
                     $bannerList = (isset($homeBanners) && $homeBanners->count() > 0) ? $homeBanners : collect(range(1,6))->map(fn($i) => (object)['image_url' => url("/images/a{$i}.jpeg"), 'title' => "Görsel {$i}"]);
-                @endphp
-                @foreach($bannerList as $idx => $b)
-                    <button onclick="showBanner({{ $idx }})" 
-                            id="thumb-btn-{{ $idx }}" 
-                            class="banner-thumb w-14 h-14 md:w-16 md:h-16 rounded-xl border-2 border-transparent overflow-hidden shrink-0 bg-stone-200 transition-all duration-300 opacity-70 hover:opacity-100 {{ $idx === 0 ? 'thumb-active opacity-100' : '' }}">
-                        <img src="{{ is_object($b) && method_exists($b, 'getImageUrlAttribute') ? $b->image_url : ($b->image_url ?? url($b->image ?? '/images/a1.jpeg')) }}" class="w-full h-full object-cover" alt="thumbnail">
+                ?>
+                <?php $__currentLoopData = $bannerList; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $idx => $b): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <button onclick="showBanner(<?php echo e($idx); ?>)" 
+                            id="thumb-btn-<?php echo e($idx); ?>" 
+                            class="banner-thumb w-14 h-14 md:w-16 md:h-16 rounded-xl border-2 border-transparent overflow-hidden shrink-0 bg-stone-200 transition-all duration-300 opacity-70 hover:opacity-100 <?php echo e($idx === 0 ? 'thumb-active opacity-100' : ''); ?>">
+                        <img src="<?php echo e(is_object($b) && method_exists($b, 'getImageUrlAttribute') ? $b->image_url : ($b->image_url ?? url($b->image ?? '/images/a1.jpeg'))); ?>" class="w-full h-full object-cover" alt="thumbnail">
                     </button>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
 
         </div>
@@ -257,7 +257,7 @@
 
     <script>
         let currentBannerIndex = 0;
-        const totalBanners = {{ (isset($homeBanners) && $homeBanners->count() > 0) ? $homeBanners->count() : 6 }};
+        const totalBanners = <?php echo e((isset($homeBanners) && $homeBanners->count() > 0) ? $homeBanners->count() : 6); ?>;
         let autoPlayTimer = null;
 
         function showBanner(index) {
@@ -357,4 +357,4 @@
     </script>
 </body>
 
-</html>
+</html><?php /**PATH C:\xampp\htdocs\ahsapevim\resources\views/home.blade.php ENDPATH**/ ?>

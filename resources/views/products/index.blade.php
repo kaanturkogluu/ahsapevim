@@ -31,7 +31,7 @@
         <div class="w-full">
 
             {{-- Top Bar --}}
-            <div class="flex flex-wrap justify-between items-center mb-5 bg-white px-5 py-3.5 rounded-2xl shadow-sm gap-3">
+            <div class="flex flex-wrap justify-between items-center mb-4 bg-white px-5 py-3.5 rounded-2xl shadow-sm gap-3">
                 <div class="flex items-center gap-2.5 flex-wrap">
                     <span class="text-base font-extrabold text-gray-900">
                         @if(request('q') || request('search'))
@@ -51,6 +51,14 @@
                 </div>
                 <div class="hidden sm:flex items-center gap-1.5 text-xs text-gray-500 font-semibold">
                     <i class="fa-solid fa-clock text-brand"></i> Sipariş anında üretim başlar
+                </div>
+            </div>
+
+            {{-- Temsili Görsel Bilgilendirme Çıtası --}}
+            <div class="mb-5 p-3.5 bg-amber-50/90 border border-amber-200/90 rounded-2xl text-amber-950 text-xs flex items-center gap-3 shadow-2xs">
+                <i class="fa-solid fa-circle-info text-amber-600 text-base shrink-0"></i>
+                <div class="leading-relaxed">
+                    <strong>📌 Önemli Bilgilendirme:</strong> Ürün görsellerindeki fotoğraflar temsilidir. Gönderilecek ahşap çerçevede ürün resmindeki fotoğraf değil, <strong>sipariş verirken yükleyeceğiniz kendi fotoğrafınız</strong> basılarak hazırlanacaktır.
                 </div>
             </div>
 
@@ -89,6 +97,11 @@
                             {{-- El yapımı badge --}}
                             <div class="absolute top-3 left-3 bg-brand/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-full tracking-wide">
                                 El Yapımı
+                            </div>
+
+                            {{-- Görsel Temsilidir Badge --}}
+                            <div class="absolute bottom-2.5 left-3 bg-black/60 backdrop-blur-xs text-white text-[9px] font-bold px-2 py-0.5 rounded-md z-10">
+                                Görsel Temsilidir
                             </div>
 
                             @if($product->discount_percent > 0)
