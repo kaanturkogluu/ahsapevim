@@ -36,18 +36,26 @@ class GoogleMerchantService
         $this->client->setApplicationName('Ahsap Evim Merchant');
         $this->client->setScopes(config('merchant.scopes'));
 
-        $jsonPath = config('merchant.service_account_json');
+        $jsonValue = config('merchant.service_account_json');
 
-        if (empty($jsonPath)) {
+        if (empty($jsonValue)) {
             throw new \RuntimeException(
-                'GOOGLE_SERVICE_ACCOUNT_JSON .env değişkeni ayarlanmamış. ' .
-                'Lütfen Google Cloud Console\'dan Service Account oluşturun ve JSON key yolunu .env\'e ekleyin.'
+                'GOOGLE_SERVICE_ACCOUNT_JSON .env değişkeni ayarlanmamış.'
             );
+        }
+
+        // Eğer tam yol verilmişse direkt kullan, sadece dosya adı ise storage/app/ altında ara
+        if (file_exists($jsonValue)) {
+            $jsonPath = $jsonValue;
+        } else {
+            $jsonPath = storage_path('app/' . ltrim($jsonValue, '/\\'));
         }
 
         if (!file_exists($jsonPath)) {
             throw new \RuntimeException(
-                "Service Account JSON dosyası bulunamadı: {$jsonPath}"
+                "Service Account JSON dosyası bulunamadı: {$jsonPath}\n" .
+                "Dosyayı storage/app/ klasörüne yükleyin ve .env'de dosya adını yazın:\n" .
+                "GOOGLE_SERVICE_ACCOUNT_JSON=google-service-account.json"
             );
         }
 
