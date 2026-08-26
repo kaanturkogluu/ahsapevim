@@ -136,7 +136,8 @@ class SeoController extends Controller
     public function generateUrunlerXml(): string
     {
         $siteName = config('app.name', 'Ahşap Evim Manisa');
-        $siteUrl  = url('/');
+        $siteUrl  = 'https://ahsapevimmanisa.com';
+        $liveDomain = 'https://ahsapevimmanisa.com';
 
         $products = Product::with('category')->where('is_active', true)->ordered()->get();
 
@@ -150,6 +151,11 @@ class SeoController extends Controller
         foreach ($products as $p) {
             $productUrl = url('/urun/' . ($p->slug ?: $p->id));
             $imageUrl   = $p->image ? (str_starts_with($p->image, 'http') ? $p->image : url($p->image)) : url('/cerceve.png');
+            
+            // Google Merchant Center hatalarını önlemek için localhost URL'lerini canlı domaine çevir
+            $productUrl = str_replace(['http://localhost', 'https://localhost'], $liveDomain, $productUrl);
+            $imageUrl = str_replace(['http://localhost', 'https://localhost'], $liveDomain, $imageUrl);
+            
             $categoryName = $p->category ? $p->category->name : 'Ahşap Çerçeve';
             
             $priceFormatted = number_format($p->price, 2, '.', '') . ' TRY';
