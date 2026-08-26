@@ -278,13 +278,5 @@ Route::prefix('yonetim')->middleware(['auth', 'admin'])->group(function () {
     // Gelir Tablosu & İstatistikler
     Route::get('/gelir-tablosu', [RevenueController::class, 'index'])->name('admin.revenue.index');
 
-    // ─── Google Merchant Center ───────────────────────────────────────────────
-    Route::prefix('merchant-center')->name('admin.merchant.')->group(function () {
-        Route::get('/',                    [MerchantController::class, 'index'])         ->name('index');
-        Route::post('/sync-all',           [MerchantController::class, 'syncAll'])       ->name('sync_all');
-        Route::post('/sync/{id}',          [MerchantController::class, 'syncProduct'])   ->name('sync_product');
-        Route::delete('/delete/{id}',      [MerchantController::class, 'deleteFromMerchant'])->name('delete_product');
-        Route::get('/status',              [MerchantController::class, 'status'])        ->name('status');
-        Route::get('/product-status/{id}', [MerchantController::class, 'productStatus'])->name('product_status');
-    });
+
 });

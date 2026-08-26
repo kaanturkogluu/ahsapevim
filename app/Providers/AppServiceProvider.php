@@ -3,8 +3,6 @@
 namespace App\Providers;
 
 use App\Models\Product;
-use App\Observers\ProductObserver;
-use App\Services\GoogleMerchantService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -14,11 +12,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // GoogleMerchantService'i singleton olarak kaydet
-        // (Her istekte yeni Client oluşturulmasın)
-        $this->app->singleton(GoogleMerchantService::class, function () {
-            return new GoogleMerchantService();
-        });
+        //
     }
 
     /**
@@ -26,9 +20,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Ürün observer'ını kaydet (otomatik Merchant Center senkronizasyonu)
-        Product::observe(ProductObserver::class);
-
         \Illuminate\Support\Facades\View::composer('*', function ($view) {
             try {
                 if (\Illuminate\Support\Facades\Schema::hasTable('categories')) {
