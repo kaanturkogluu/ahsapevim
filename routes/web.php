@@ -20,6 +20,8 @@ use App\Http\Controllers\Admin\EmailTemplateController;
 use App\Http\Controllers\Admin\ShippingCompanyController;
 use App\Http\Controllers\Admin\MessageLogController;
 use App\Http\Controllers\Admin\HomeBannerController;
+use App\Http\Controllers\Admin\RevenueController;
+use App\Http\Controllers\Admin\MerchantController;
 use App\Http\Controllers\SeoController;
 
 // ─── SEO, Sitemap & XML Product Feed ──────────────────────────────────────────
@@ -274,5 +276,15 @@ Route::prefix('yonetim')->middleware(['auth', 'admin'])->group(function () {
     Route::post('/manuel-sms-gonder',  [MessageLogController::class, 'sendManualSms'])->name('admin.sms.send_manual');
 
     // Gelir Tablosu & İstatistikler
-    Route::get('/gelir-tablosu', [\App\Http\Controllers\Admin\RevenueController::class, 'index'])->name('admin.revenue.index');
+    Route::get('/gelir-tablosu', [RevenueController::class, 'index'])->name('admin.revenue.index');
+
+    // ─── Google Merchant Center ───────────────────────────────────────────────
+    Route::prefix('merchant-center')->name('admin.merchant.')->group(function () {
+        Route::get('/',                    [MerchantController::class, 'index'])         ->name('index');
+        Route::post('/sync-all',           [MerchantController::class, 'syncAll'])       ->name('sync_all');
+        Route::post('/sync/{id}',          [MerchantController::class, 'syncProduct'])   ->name('sync_product');
+        Route::delete('/delete/{id}',      [MerchantController::class, 'deleteFromMerchant'])->name('delete_product');
+        Route::get('/status',              [MerchantController::class, 'status'])        ->name('status');
+        Route::get('/product-status/{id}', [MerchantController::class, 'productStatus'])->name('product_status');
+    });
 });

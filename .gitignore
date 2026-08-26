@@ -25,3 +25,7 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Google Service Account (güvenlik: git'e commit etme!)
+/storage/app/google-service-account.json
+/storage/app/*-service-account.json
