@@ -149,6 +149,13 @@
                 <span class="nav-label">3D Şablonlar</span>
             </a>
 
+            <a href="{{ route('admin.merchant.index') }}"
+               class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#3D332B] transition-colors text-sm font-medium text-gray-300 hover:text-white {{ request()->is('yonetim/merchant-center*') ? 'active text-white' : '' }}">
+                <i class="fa-brands fa-google w-4 text-center text-blue-400"></i>
+                <span class="nav-label">Merchant Center</span>
+            </a>
+
+
             {{-- Kargo & İletişim --}}
             <p class="nav-label px-2 pt-4 pb-1 text-[9px] font-bold text-[#6B5C52] uppercase tracking-widest">Kargo & İletişim</p>
 

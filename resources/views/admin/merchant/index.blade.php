@@ -1,208 +1,206 @@
 @extends('layouts.admin')
 
-@section('header', 'Google Merchant Center')
+@section('title', 'Google Merchant Center')
 
 @section('content')
 <div class="space-y-6">
 
-    {{-- Başlık ve Durum Kartı --}}
+    {{-- ───── Başlık & Durum ───── --}}
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:#4285F4">
-                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M22.288 11.285l-10.01-10.01a1.83 1.83 0 00-2.588 0L7.576 3.39l3.275 3.275a2.17 2.17 0 012.74 2.767l3.157 3.157a2.17 2.17 0 11-1.302 1.302L12.47 10.91v7.04a2.172 2.172 0 11-1.787-.108V10.82a2.172 2.172 0 01-1.178-2.855L6.265 4.712 1.713 9.264a1.83 1.83 0 000 2.59l10.01 10.008a1.83 1.83 0 002.588 0l7.977-7.977a1.83 1.83 0 000-2.6"/>
-                    </svg>
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-md" style="background:linear-gradient(135deg,#4285F4,#34A853)">
+                    <i class="fa-brands fa-google text-white text-lg"></i>
                 </div>
                 <div>
-                    <h2 class="text-lg font-bold text-gray-800">Google Merchant Center</h2>
-                    <p class="text-xs text-gray-500">Ürünlerinizi Google Shopping'e senkronize edin</p>
+                    <h1 class="text-lg font-bold text-gray-800">Google Merchant Center</h1>
+                    <p class="text-xs text-gray-400 mt-0.5">Ürünlerinizi Google Shopping'e senkronize edin</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-3 flex-wrap">
-                {{-- Bağlantı Durumu --}}
+                {{-- Bağlantı durumu --}}
                 @if($isConnected)
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-50 text-green-700 border border-green-200 rounded-full text-xs font-semibold">
-                        <span class="w-2 h-2 bg-green-500 rounded-full inline-block animate-pulse"></span>
-                        Bağlı{{ $accountName ? ' — '.$accountName : '' }}
+                    <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 border border-green-200 rounded-full text-xs font-semibold">
+                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                        Bağlı{{ $accountName ? ' — ' . $accountName : '' }}
                     </span>
+                    {{-- Tümünü Senkronize Et --}}
+                    <button onclick="openSyncModal('all')"
+                            id="syncAllBtn"
+                            class="inline-flex items-center gap-2 px-4 py-2 bg-[#4285F4] hover:bg-[#3367D6] text-white text-xs font-bold rounded-lg transition shadow-sm">
+                        <i class="fa-solid fa-rotate"></i>
+                        Tümünü Senkronize Et
+                    </button>
                 @else
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-700 border border-red-200 rounded-full text-xs font-semibold">
-                        <span class="w-2 h-2 bg-red-500 rounded-full inline-block"></span>
+                    <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-red-50 text-red-700 border border-red-200 rounded-full text-xs font-semibold">
+                        <span class="w-2 h-2 bg-red-500 rounded-full"></span>
                         Bağlı Değil
                     </span>
                 @endif
-
-                {{-- Tümünü Senkronize Et --}}
-                @if($isConnected)
-                    <form action="{{ route('admin.merchant.sync_all') }}" method="POST" id="syncAllForm">
-                        @csrf
-                        <button type="button" onclick="confirmSyncAll()"
-                                class="inline-flex items-center gap-2 px-4 py-2 bg-[#4285F4] hover:bg-[#3367D6] text-white text-xs font-bold rounded-lg transition shadow-sm">
-                            <i class="fa-solid fa-rotate"></i>
-                            Tümünü Senkronize Et
-                        </button>
-                    </form>
-                @endif
             </div>
         </div>
 
-        {{-- Hata mesajı --}}
+        {{-- Hata / kurulum rehberi --}}
         @if($error && !$isConnected)
-            <div class="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p class="text-sm font-semibold text-red-700 flex items-center gap-2">
-                    <i class="fa-solid fa-triangle-exclamation"></i> Bağlantı Hatası
-                </p>
-                <p class="text-xs text-red-600 mt-1">{{ $error }}</p>
-                <div class="mt-3 p-3 bg-white border border-red-100 rounded text-xs text-gray-600 space-y-1">
-                    <p class="font-semibold text-gray-700">Çözüm adımları:</p>
-                    <ol class="list-decimal list-inside space-y-0.5 ml-2">
-                        <li>Google Cloud Console'da <strong>Content API for Shopping</strong>'i etkinleştirin.</li>
-                        <li><strong>Service Account</strong> oluşturun ve JSON key indirin.</li>
-                        <li>JSON dosyasını sunucuya yükleyin (örn: <code>storage/app/google-service-account.json</code>).</li>
-                        <li><code>.env</code> dosyasına ekleyin: <code>GOOGLE_SERVICE_ACCOUNT_JSON=/tam/yol/service-account.json</code></li>
-                        <li>Merchant Center'da Service Account e-postasını <strong>Standard access</strong> ile yetkili yapın.</li>
-                        <li><code>GOOGLE_MERCHANT_ID</code> değerini .env'e ekleyin.</li>
-                    </ol>
-                </div>
-            </div>
+        <div class="mt-5 p-4 bg-red-50 border border-red-200 rounded-xl">
+            <p class="text-sm font-semibold text-red-700 flex items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation"></i> API Bağlantı Hatası
+            </p>
+            <p class="text-xs text-red-600 mt-1 font-mono bg-white/60 rounded p-2 border border-red-100 mt-2 break-all">{{ $error }}</p>
+            <details class="mt-3">
+                <summary class="text-xs text-red-700 font-semibold cursor-pointer hover:underline">Çözüm adımlarını göster ▸</summary>
+                <ol class="mt-2 list-decimal list-inside text-xs text-red-800 space-y-1 ml-2">
+                    <li>Google Cloud Console → <strong>Content API for Shopping</strong>'i etkinleştirin.</li>
+                    <li>Service Account oluşturun, JSON key indirin.</li>
+                    <li>JSON'u <code class="bg-white/70 px-1 rounded">storage/app/google-service-account.json</code> olarak kaydedin.</li>
+                    <li><code class="bg-white/70 px-1 rounded">.env</code> dosyasına ekleyin: <code class="bg-white/70 px-1 rounded">GOOGLE_MERCHANT_ID=...</code> ve <code class="bg-white/70 px-1 rounded">GOOGLE_SERVICE_ACCOUNT_JSON=...</code></li>
+                    <li>Merchant Center → Ayarlar → Kullanıcılar → Service account e-postasını <strong>Standard</strong> yetkiyle ekleyin.</li>
+                </ol>
+            </details>
+        </div>
         @endif
     </div>
 
-    {{-- Flash Mesajları --}}
-    @if(session('success'))
-        <div class="p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-800 flex items-start gap-2">
-            <i class="fa-solid fa-circle-check text-green-500 mt-0.5 shrink-0"></i>
-            <span>{!! session('success') !!}</span>
+    {{-- ───── Gerçek Zamanlı İşlem Sonucu ───── --}}
+    <div id="resultPanel" class="hidden rounded-xl border p-5 transition-all duration-300">
+        <div class="flex items-start gap-3">
+            <div id="resultIcon" class="text-xl shrink-0 mt-0.5"></div>
+            <div class="flex-1 min-w-0">
+                <p id="resultTitle" class="text-sm font-bold"></p>
+                <p id="resultMessage" class="text-xs mt-1"></p>
+                <div id="resultErrors" class="hidden mt-3 space-y-1"></div>
+                <div id="resultStats" class="hidden mt-3 flex gap-4"></div>
+            </div>
+            <button onclick="document.getElementById('resultPanel').classList.add('hidden')"
+                    class="text-gray-400 hover:text-gray-600 shrink-0">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
-    @endif
-    @if(session('warning'))
-        <div class="p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800 flex items-start gap-2">
-            <i class="fa-solid fa-triangle-exclamation text-amber-500 mt-0.5 shrink-0"></i>
-            <span>{!! session('warning') !!}</span>
-        </div>
-    @endif
-    @if(session('error'))
-        <div class="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800 flex items-start gap-2">
-            <i class="fa-solid fa-circle-xmark text-red-500 mt-0.5 shrink-0"></i>
-            <span>{!! session('error') !!}</span>
-        </div>
-    @endif
+    </div>
 
-    {{-- Ürün Listesi --}}
+    {{-- ───── Ürün Listesi ───── --}}
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
         <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
             <h3 class="text-sm font-bold text-gray-700">
                 Ürünler
                 <span class="ml-1.5 text-xs font-medium text-gray-400">({{ $products->count() }} ürün)</span>
             </h3>
+            @if($isConnected)
             <p class="text-xs text-gray-400">
-                <i class="fa-solid fa-circle-info mr-1"></i>
-                Görsel olmayan ürünler Merchant Center'a gönderilemez.
+                <i class="fa-solid fa-lock text-amber-500 mr-1"></i>
+                İşlemler admin şifresi gerektirir
             </p>
+            @endif
         </div>
 
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead class="bg-gray-50 border-b border-gray-100">
                     <tr>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide w-8">#</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Ürün</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Kategori</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Fiyat</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Stok</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide hidden sm:table-cell">Kategori</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Fiyat</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Durum</th>
                         <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">İşlemler</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-50">
+                <tbody class="divide-y divide-gray-50" id="productTable">
                     @forelse($products as $product)
-                        <tr class="hover:bg-gray-50 transition" id="merchant-row-{{ $product->id }}">
+                        <tr class="hover:bg-gray-50/70 transition" id="row-{{ $product->id }}">
+                            <td class="px-4 py-3 text-xs text-gray-400">{{ $product->id }}</td>
+
                             {{-- Ürün --}}
                             <td class="px-4 py-3">
                                 <div class="flex items-center gap-3">
-                                    @if($product->attributes['image'] ?? null)
+                                    @php $hasImage = !empty($product->attributes['image']); @endphp
+                                    @if($hasImage)
                                         <img src="{{ url($product->attributes['image']) }}"
                                              alt="{{ $product->name }}"
-                                             class="w-10 h-10 object-cover rounded-lg border border-gray-200 shrink-0">
+                                             class="w-9 h-9 object-cover rounded-lg border border-gray-200 shrink-0">
                                     @else
-                                        <div class="w-10 h-10 rounded-lg border border-dashed border-red-300 bg-red-50 flex items-center justify-center shrink-0">
+                                        <div class="w-9 h-9 rounded-lg border-2 border-dashed border-red-200 bg-red-50 flex items-center justify-center shrink-0" title="Görsel eksik">
                                             <i class="fa-solid fa-image-slash text-red-400 text-xs"></i>
                                         </div>
                                     @endif
                                     <div class="min-w-0">
-                                        <p class="font-medium text-gray-800 truncate max-w-[200px]">{{ $product->name }}</p>
-                                        <p class="text-xs text-gray-400">#{{ $product->id }}</p>
+                                        <p class="font-semibold text-gray-800 text-xs truncate max-w-[180px]">{{ $product->name }}</p>
+                                        @if(!$hasImage)
+                                            <span class="text-[10px] text-red-500 font-medium">Görsel eksik — gönderilemez</span>
+                                        @elseif(!$product->is_active)
+                                            <span class="text-[10px] text-gray-400">Pasif ürün</span>
+                                        @else
+                                            <span class="text-[10px] text-gray-400">{{ $product->stock > 0 ? $product->stock.' adet stok' : 'Stok yok' }}</span>
+                                        @endif
                                     </div>
                                 </div>
                             </td>
+
                             {{-- Kategori --}}
-                            <td class="px-4 py-3 text-gray-600 text-xs">
+                            <td class="px-4 py-3 text-xs text-gray-500 hidden sm:table-cell">
                                 {{ $product->category->name ?? '—' }}
                             </td>
+
                             {{-- Fiyat --}}
-                            <td class="px-4 py-3">
-                                <span class="font-semibold text-gray-800">{{ number_format($product->price, 2, ',', '.') }} ₺</span>
+                            <td class="px-4 py-3 hidden md:table-cell">
+                                <span class="text-xs font-bold text-gray-800">{{ number_format($product->price, 2, ',', '.') }} ₺</span>
                                 @if($product->original_price)
-                                    <br><span class="text-xs text-gray-400 line-through">{{ number_format($product->original_price, 2, ',', '.') }} ₺</span>
+                                    <br><span class="text-[10px] text-gray-400 line-through">{{ number_format($product->original_price, 2, ',', '.') }} ₺</span>
                                 @endif
                             </td>
-                            {{-- Stok --}}
-                            <td class="px-4 py-3">
-                                @if($product->stock > 0)
-                                    <span class="text-xs text-green-700 font-medium">{{ $product->stock }} adet</span>
-                                @else
-                                    <span class="text-xs text-red-600 font-medium">Stok yok</span>
-                                @endif
-                            </td>
+
                             {{-- Durum --}}
                             <td class="px-4 py-3">
                                 @if($product->is_active)
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-50 text-green-700 border border-green-200 rounded-full text-xs">
-                                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Aktif
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-50 text-green-700 border border-green-200 rounded-full text-[10px] font-semibold">
+                                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>Aktif
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 text-gray-500 border border-gray-200 rounded-full text-xs">
-                                        <span class="w-1.5 h-1.5 bg-gray-400 rounded-full"></span> Pasif
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 text-gray-500 border border-gray-200 rounded-full text-[10px] font-semibold">
+                                        <span class="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>Pasif
                                     </span>
                                 @endif
-                                @if(!($product->attributes['image'] ?? null))
-                                    <br><span class="text-xs text-red-500 mt-0.5 inline-block">
-                                        <i class="fa-solid fa-triangle-exclamation"></i> Görsel eksik
-                                    </span>
-                                @endif
+
+                                {{-- Row işlem durumu --}}
+                                <div id="status-{{ $product->id }}" class="hidden mt-1">
+                                    <span class="inline-flex items-center gap-1 text-[10px] font-semibold" id="status-text-{{ $product->id }}"></span>
+                                </div>
                             </td>
+
                             {{-- İşlemler --}}
                             <td class="px-4 py-3">
-                                <div class="flex items-center justify-end gap-2">
+                                <div class="flex items-center justify-end gap-1.5">
                                     @if($isConnected)
-                                        {{-- Merchant'a Gönder --}}
-                                        @if($product->attributes['image'] ?? null)
-                                            <button onclick="syncProduct({{ $product->id }}, '{{ addslashes($product->name) }}')"
+                                        @if($hasImage && $product->is_active)
+                                            <button onclick="openSyncModal('single', {{ $product->id }}, '{{ addslashes($product->name) }}')"
+                                                    id="sync-btn-{{ $product->id }}"
                                                     class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg text-xs font-semibold transition"
-                                                    title="Google Merchant Center'a Gönder"
-                                                    id="sync-btn-{{ $product->id }}">
-                                                <i class="fa-brands fa-google text-xs"></i> Gönder
+                                                    title="Merchant Center'a Gönder">
+                                                <i class="fa-brands fa-google text-xs"></i>
+                                                <span>Gönder</span>
                                             </button>
-                                            <button onclick="deleteFromMerchant({{ $product->id }}, '{{ addslashes($product->name) }}')"
-                                                    class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-lg text-xs font-semibold transition"
-                                                    title="Merchant Center'dan Sil"
-                                                    id="delete-btn-{{ $product->id }}">
+                                            <button onclick="openSyncModal('delete', {{ $product->id }}, '{{ addslashes($product->name) }}')"
+                                                    id="del-btn-{{ $product->id }}"
+                                                    class="inline-flex items-center gap-1 px-2 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg text-xs transition"
+                                                    title="Merchant Center'dan Sil">
                                                 <i class="fa-solid fa-trash-can text-xs"></i>
                                             </button>
+                                        @elseif(!$hasImage)
+                                            <span class="text-[10px] text-red-400 italic">Görsel ekle</span>
                                         @else
-                                            <span class="text-xs text-gray-400 italic">Görsel gerekli</span>
+                                            <span class="text-[10px] text-gray-400 italic">Pasif</span>
                                         @endif
                                     @else
-                                        <span class="text-xs text-gray-400 italic">API bağlı değil</span>
+                                        <span class="text-[10px] text-gray-400 italic">API bağlı değil</span>
                                     @endif
                                 </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-12 text-center text-gray-400">
-                                <i class="fa-solid fa-box-open text-3xl mb-2 block"></i>
+                            <td colspan="6" class="py-16 text-center text-gray-400">
+                                <i class="fa-solid fa-box-open text-4xl mb-3 block"></i>
                                 Henüz ürün eklenmemiş.
                             </td>
                         </tr>
@@ -211,119 +209,374 @@
             </table>
         </div>
     </div>
+</div>
 
-    {{-- Kurulum Rehberi --}}
-    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
-        <h4 class="text-sm font-bold text-blue-800 mb-3 flex items-center gap-2">
-            <i class="fa-solid fa-book-open-reader text-blue-600"></i>
-            Service Account Kurulum Rehberi
-        </h4>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-blue-900">
-            <div class="space-y-2">
-                <p class="font-semibold">Google Cloud Console (1 kez yapılır):</p>
-                <ol class="list-decimal list-inside space-y-1 ml-2">
-                    <li><a href="https://console.cloud.google.com" target="_blank" class="underline">console.cloud.google.com</a>'a gidin</li>
-                    <li>Proje seçin veya yeni proje oluşturun</li>
-                    <li><strong>API ve Hizmetler</strong> → <strong>Kitaplık</strong>'a gidin</li>
-                    <li><em>Content API for Shopping</em>'i arayın ve <strong>Etkinleştir</strong>'e tıklayın</li>
-                    <li><strong>Kimlik Bilgileri</strong> → <strong>Kimlik Bilgisi Oluştur</strong> → <strong>Hizmet Hesabı</strong></li>
-                    <li>Hizmet hesabını oluşturun, <strong>JSON anahtar</strong> indirin</li>
-                </ol>
-            </div>
-            <div class="space-y-2">
-                <p class="font-semibold">Merchant Center (1 kez yapılır):</p>
-                <ol class="list-decimal list-inside space-y-1 ml-2">
-                    <li><a href="https://merchants.google.com" target="_blank" class="underline">merchants.google.com</a>'a gidin</li>
-                    <li><strong>Ayarlar</strong> → <strong>Kullanıcılar</strong>'a gidin</li>
-                    <li>Service Account e-postasını (örn: my-svc@project.iam.gserviceaccount.com) ekleyin</li>
-                    <li><strong>Standard access</strong> verin</li>
-                </ol>
-                <p class="font-semibold mt-3">.env'e ekleyin:</p>
-                <div class="bg-white/70 rounded p-2 font-mono text-xs space-y-0.5">
-                    <p>GOOGLE_MERCHANT_ID=<em>buraya_merchant_id</em></p>
-                    <p>GOOGLE_SERVICE_ACCOUNT_JSON=/full/path/service-account.json</p>
-                    <p>MERCHANT_BRAND="Ahsap Evim Manisa"</p>
+{{-- ═══════════════════════════════════════════════════════════════════════ --}}
+{{-- ───── ŞİFRE DOĞRULAMA MODALI ───── --}}
+{{-- ═══════════════════════════════════════════════════════════════════════ --}}
+<div id="syncModal" class="fixed inset-0 z-50 hidden" aria-modal="true" role="dialog">
+    {{-- Overlay --}}
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeSyncModal()"></div>
+
+    {{-- Modal kutusu --}}
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-95 opacity-0" id="syncModalBox">
+
+            {{-- Modal başlık --}}
+            <div class="px-6 pt-6 pb-4 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center" id="modalIcon" style="background:linear-gradient(135deg,#4285F4,#34A853)">
+                        <i class="fa-brands fa-google text-white"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-gray-800" id="modalTitle">Merchant Center Senkronizasyon</h3>
+                        <p class="text-xs text-gray-500" id="modalSubtitle">Bu işlem Google Merchant Center'a veri gönderecek.</p>
+                    </div>
                 </div>
+            </div>
+
+            {{-- İşlem özeti --}}
+            <div class="px-6 py-4 bg-blue-50/50 border-b border-blue-100">
+                <p class="text-xs text-blue-800" id="modalDescription"></p>
+            </div>
+
+            {{-- Şifre alanı --}}
+            <div class="px-6 py-5">
+                <label class="block text-xs font-semibold text-gray-700 mb-2">
+                    <i class="fa-solid fa-lock text-amber-500 mr-1"></i>
+                    Admin Şifresi
+                </label>
+                <div class="relative">
+                    <input type="password"
+                           id="adminPassword"
+                           placeholder="Şifrenizi girin..."
+                           autocomplete="current-password"
+                           onkeydown="if(event.key==='Enter') submitSync()"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent pr-10 transition">
+                    <button type="button" onclick="togglePasswordVisibility()"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                        <i class="fa-solid fa-eye text-sm" id="eyeIcon"></i>
+                    </button>
+                </div>
+
+                {{-- Hata mesajı --}}
+                <div id="modalError" class="hidden mt-2.5 flex items-center gap-1.5 text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                    <i class="fa-solid fa-circle-xmark shrink-0"></i>
+                    <span id="modalErrorText"></span>
+                </div>
+            </div>
+
+            {{-- Butonlar --}}
+            <div class="px-6 pb-6 flex gap-3">
+                <button onclick="closeSyncModal()"
+                        id="cancelBtn"
+                        class="flex-1 px-4 py-2.5 border border-gray-200 text-gray-600 hover:bg-gray-50 rounded-xl text-sm font-semibold transition">
+                    İptal
+                </button>
+                <button onclick="submitSync()"
+                        id="confirmBtn"
+                        class="flex-1 px-4 py-2.5 bg-[#4285F4] hover:bg-[#3367D6] text-white rounded-xl text-sm font-bold transition shadow-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rotate" id="confirmBtnIcon"></i>
+                    <span id="confirmBtnText">Başlat</span>
+                </button>
             </div>
         </div>
     </div>
 </div>
 
+{{-- ═══════════════════════════════════════════════════════════════════════ --}}
+{{-- ───── JAVASCRIPT ───── --}}
+{{-- ═══════════════════════════════════════════════════════════════════════ --}}
 <script>
-function confirmSyncAll() {
-    if (!confirm('Tüm aktif ürünler Google Merchant Center\'a gönderilecek. Bu işlem birkaç dakika sürebilir. Devam etmek istiyor musunuz?')) return;
-    document.getElementById('syncAllForm').submit();
-}
+// ─── Modal durumu ────────────────────────────────────────────────────────────
+let currentAction = null;  // 'all' | 'single' | 'delete'
+let currentProductId = null;
+let currentProductName = null;
+let isSubmitting = false;
 
-function syncProduct(id, name) {
-    const btn = document.getElementById('sync-btn-' + id);
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i> Gönderiliyor...';
+// ─── Modal Aç ───────────────────────────────────────────────────────────────
+function openSyncModal(action, productId = null, productName = null) {
+    currentAction      = action;
+    currentProductId   = productId;
+    currentProductName = productName;
 
-    fetch(`/yonetim/merchant-center/sync/${id}`, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Accept': 'application/json',
-        }
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) {
-            btn.innerHTML = '<i class="fa-solid fa-check text-xs"></i> Gönderildi';
-            btn.className = btn.className.replace('bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200', 'bg-green-50 text-green-700 border-green-200');
-            showToast(data.message, 'success');
-        } else {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fa-brands fa-google text-xs"></i> Gönder';
-            showToast(data.message, 'error');
-        }
-    })
-    .catch(() => {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-brands fa-google text-xs"></i> Gönder';
-        showToast('Bir hata oluştu.', 'error');
-    });
-}
-
-function deleteFromMerchant(id, name) {
-    if (!confirm(`"${name}" ürünü Merchant Center'dan silinecek. Onaylıyor musunuz?`)) return;
-
-    const btn = document.getElementById('delete-btn-' + id);
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i>';
-
-    fetch(`/yonetim/merchant-center/delete/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Accept': 'application/json',
-        }
-    })
-    .then(r => r.json())
-    .then(data => {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-trash-can text-xs"></i>';
-        showToast(data.message, data.success ? 'success' : 'error');
-    })
-    .catch(() => {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-trash-can text-xs"></i>';
-        showToast('Bir hata oluştu.', 'error');
-    });
-}
-
-function showToast(message, type = 'success') {
-    const colors = {
-        success: 'bg-green-600',
-        error: 'bg-red-600',
-        warning: 'bg-amber-500',
+    // Modal içeriğini güncelle
+    const configs = {
+        all: {
+            title: 'Tüm Ürünleri Senkronize Et',
+            subtitle: 'Tüm aktif ürünler Google Merchant Center\'a gönderilecek.',
+            desc: '⚠️ Bu işlem tüm aktif ürünleri Merchant Center\'a yükler. İşlem ürün sayısına göre 1-5 dakika sürebilir.',
+            btnText: 'Senkronize Et',
+            btnClass: 'bg-[#4285F4] hover:bg-[#3367D6]',
+            iconStyle: 'background:linear-gradient(135deg,#4285F4,#34A853)',
+        },
+        single: {
+            title: 'Ürün Gönder',
+            subtitle: `"${productName}" Merchant Center'a gönderilecek.`,
+            desc: `✅ "${productName}" ürünü Google Shopping'de yayınlanacak.`,
+            btnText: 'Gönder',
+            btnClass: 'bg-[#4285F4] hover:bg-[#3367D6]',
+            iconStyle: 'background:linear-gradient(135deg,#4285F4,#34A853)',
+        },
+        delete: {
+            title: 'Merchant Center\'dan Sil',
+            subtitle: `"${productName}" listeden kaldırılacak.`,
+            desc: `🗑️ "${productName}" Google Shopping listesinden kaldırılacak. Ürün siteden silinmez.`,
+            btnText: 'Sil',
+            btnClass: 'bg-red-600 hover:bg-red-700',
+            iconStyle: 'background:linear-gradient(135deg,#ef4444,#dc2626)',
+        },
     };
-    const toast = document.createElement('div');
-    toast.className = `fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl text-white text-sm shadow-xl ${colors[type]} transition-all`;
-    toast.innerHTML = message;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 4000);
+
+    const cfg = configs[action];
+    document.getElementById('modalTitle').textContent      = cfg.title;
+    document.getElementById('modalSubtitle').textContent   = cfg.subtitle;
+    document.getElementById('modalDescription').textContent = cfg.desc;
+    document.getElementById('modalIcon').style.cssText     = cfg.iconStyle;
+    document.getElementById('confirmBtn').className        = `flex-1 px-4 py-2.5 text-white rounded-xl text-sm font-bold transition shadow-sm flex items-center justify-center gap-2 ${cfg.btnClass}`;
+    document.getElementById('confirmBtnText').textContent  = cfg.btnText;
+    document.getElementById('confirmBtnIcon').className    = action === 'delete' ? 'fa-solid fa-trash-can' : 'fa-solid fa-rotate';
+
+    // Temizle
+    document.getElementById('adminPassword').value = '';
+    hideModalError();
+    resetConfirmBtn();
+
+    // Göster
+    const modal = document.getElementById('syncModal');
+    const box   = document.getElementById('syncModalBox');
+    modal.classList.remove('hidden');
+    requestAnimationFrame(() => {
+        box.classList.remove('scale-95', 'opacity-0');
+        box.classList.add('scale-100', 'opacity-100');
+    });
+
+    setTimeout(() => document.getElementById('adminPassword').focus(), 200);
 }
+
+// ─── Modal Kapat ─────────────────────────────────────────────────────────────
+function closeSyncModal() {
+    if (isSubmitting) return;
+    const box = document.getElementById('syncModalBox');
+    box.classList.remove('scale-100', 'opacity-100');
+    box.classList.add('scale-95', 'opacity-0');
+    setTimeout(() => {
+        document.getElementById('syncModal').classList.add('hidden');
+        currentAction = currentProductId = currentProductName = null;
+    }, 200);
+}
+
+// ─── Şifreyi Göster/Gizle ────────────────────────────────────────────────────
+function togglePasswordVisibility() {
+    const input = document.getElementById('adminPassword');
+    const icon  = document.getElementById('eyeIcon');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash text-sm';
+    } else {
+        input.type = 'password';
+        icon.className = 'fa-solid fa-eye text-sm';
+    }
+}
+
+// ─── Sync Gönder ─────────────────────────────────────────────────────────────
+async function submitSync() {
+    if (isSubmitting) return;
+
+    const password = document.getElementById('adminPassword').value.trim();
+    if (!password) {
+        showModalError('Lütfen admin şifrenizi girin.');
+        return;
+    }
+
+    hideModalError();
+    setSubmitting(true);
+
+    let url, method = 'POST';
+    if (currentAction === 'all') {
+        url = '/yonetim/merchant-center/sync-all';
+    } else if (currentAction === 'single') {
+        url = `/yonetim/merchant-center/sync/${currentProductId}`;
+    } else if (currentAction === 'delete') {
+        url    = `/yonetim/merchant-center/delete/${currentProductId}`;
+        method = 'DELETE';
+    }
+
+    try {
+        const resp = await fetch(url, {
+            method,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json',
+                'Accept':       'application/json',
+            },
+            body: JSON.stringify({ password }),
+        });
+
+        const data = await resp.json();
+
+        if (resp.status === 403 || data.error_type === 'password_wrong') {
+            showModalError('Yanlış şifre. Tekrar deneyin.');
+            setSubmitting(false);
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('adminPassword').focus();
+            return;
+        }
+
+        if (resp.status === 422 && data.error_type === 'password_required') {
+            showModalError('Şifre zorunlu.');
+            setSubmitting(false);
+            return;
+        }
+
+        // Başarı ya da işlem hatası — modal kapat, sonuç göster
+        closeSyncModal();
+        setTimeout(() => showResultPanel(data, currentAction), 300);
+
+        // Satır güncelle
+        if ((currentAction === 'single' || currentAction === 'delete') && currentProductId) {
+            updateRowStatus(currentProductId, data.success, currentAction);
+        }
+
+    } catch (err) {
+        showModalError('Bağlantı hatası. İnternet bağlantınızı kontrol edin.');
+        setSubmitting(false);
+    }
+}
+
+// ─── Sonuç Paneli ─────────────────────────────────────────────────────────────
+function showResultPanel(data, action) {
+    const panel = document.getElementById('resultPanel');
+
+    if (data.success) {
+        panel.className = 'rounded-xl border p-5 transition-all duration-300 bg-green-50 border-green-200';
+        document.getElementById('resultIcon').innerHTML  = '<i class="fa-solid fa-circle-check text-green-500 text-2xl"></i>';
+        document.getElementById('resultTitle').className = 'text-sm font-bold text-green-800';
+        document.getElementById('resultTitle').textContent = '✅ İşlem Başarılı';
+        document.getElementById('resultMessage').className = 'text-xs mt-1 text-green-700';
+    } else {
+        panel.className = 'rounded-xl border p-5 transition-all duration-300 bg-red-50 border-red-200';
+        document.getElementById('resultIcon').innerHTML  = '<i class="fa-solid fa-circle-xmark text-red-500 text-2xl"></i>';
+        document.getElementById('resultTitle').className = 'text-sm font-bold text-red-800';
+        document.getElementById('resultTitle').textContent = '❌ İşlem Başarısız';
+        document.getElementById('resultMessage').className = 'text-xs mt-1 text-red-700';
+    }
+
+    document.getElementById('resultMessage').textContent = data.message || '';
+
+    // İstatistikler (tüm sync için)
+    const statsEl = document.getElementById('resultStats');
+    if (action === 'all' && (data.success_count !== undefined || data.failed_count !== undefined)) {
+        statsEl.classList.remove('hidden');
+        statsEl.innerHTML = `
+            <div class="flex items-center gap-1.5 text-xs font-semibold text-green-700 bg-green-100 rounded-lg px-3 py-1.5">
+                <i class="fa-solid fa-check"></i> ${data.success_count ?? 0} başarılı
+            </div>
+            ${(data.failed_count || 0) > 0 ? `
+            <div class="flex items-center gap-1.5 text-xs font-semibold text-red-700 bg-red-100 rounded-lg px-3 py-1.5">
+                <i class="fa-solid fa-xmark"></i> ${data.failed_count} başarısız
+            </div>` : ''}
+        `;
+    } else {
+        statsEl.classList.add('hidden');
+    }
+
+    // Hata detayları
+    const errorsEl = document.getElementById('resultErrors');
+    if (data.errors && data.errors.length > 0) {
+        errorsEl.classList.remove('hidden');
+        errorsEl.innerHTML = `
+            <p class="text-xs font-bold text-red-700 mb-1.5">Hata Detayları:</p>
+            ${data.errors.map(e => `
+                <div class="flex items-start gap-1.5 text-xs text-red-600 bg-red-100/50 rounded px-2.5 py-1.5">
+                    <i class="fa-solid fa-triangle-exclamation shrink-0 mt-0.5 text-red-400"></i>
+                    <span class="break-words">${escapeHtml(e)}</span>
+                </div>
+            `).join('')}
+        `;
+    } else {
+        errorsEl.classList.add('hidden');
+    }
+
+    panel.classList.remove('hidden');
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ─── Satır Durumu Güncelle ────────────────────────────────────────────────────
+function updateRowStatus(productId, success, action) {
+    const statusDiv  = document.getElementById(`status-${productId}`);
+    const statusText = document.getElementById(`status-text-${productId}`);
+    if (!statusDiv || !statusText) return;
+
+    statusDiv.classList.remove('hidden');
+
+    if (success && action === 'single') {
+        statusText.innerHTML = '<i class="fa-solid fa-check text-green-500 mr-1"></i><span class="text-green-600">Merchant\'a gönderildi</span>';
+    } else if (success && action === 'delete') {
+        statusText.innerHTML = '<i class="fa-solid fa-trash text-red-400 mr-1"></i><span class="text-red-500">Merchant\'tan silindi</span>';
+    } else {
+        statusText.innerHTML = '<i class="fa-solid fa-xmark text-red-500 mr-1"></i><span class="text-red-600">Başarısız</span>';
+    }
+}
+
+// ─── Yardımcılar ─────────────────────────────────────────────────────────────
+function showModalError(msg) {
+    const el = document.getElementById('modalError');
+    document.getElementById('modalErrorText').textContent = msg;
+    el.classList.remove('hidden');
+    el.classList.add('flex');
+    document.getElementById('adminPassword').classList.add('border-red-400', 'ring-1', 'ring-red-400');
+}
+
+function hideModalError() {
+    const el = document.getElementById('modalError');
+    el.classList.add('hidden');
+    el.classList.remove('flex');
+    document.getElementById('adminPassword').classList.remove('border-red-400', 'ring-1', 'ring-red-400');
+}
+
+function setSubmitting(state) {
+    isSubmitting = state;
+    const btn    = document.getElementById('confirmBtn');
+    const icon   = document.getElementById('confirmBtnIcon');
+    const text   = document.getElementById('confirmBtnText');
+    const cancel = document.getElementById('cancelBtn');
+    const pwInput = document.getElementById('adminPassword');
+
+    if (state) {
+        btn.disabled    = true;
+        btn.classList.add('opacity-75', 'cursor-not-allowed');
+        icon.className  = 'fa-solid fa-spinner fa-spin';
+        text.textContent = 'İşleniyor...';
+        cancel.disabled = true;
+        pwInput.disabled = true;
+    } else {
+        btn.disabled    = false;
+        btn.classList.remove('opacity-75', 'cursor-not-allowed');
+        cancel.disabled = false;
+        pwInput.disabled = false;
+    }
+}
+
+function resetConfirmBtn() {
+    const btn  = document.getElementById('confirmBtn');
+    btn.disabled = false;
+    btn.classList.remove('opacity-75', 'cursor-not-allowed');
+    document.getElementById('cancelBtn').disabled = false;
+    document.getElementById('adminPassword').disabled = false;
+}
+
+function escapeHtml(text) {
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+// ESC ile kapat
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeSyncModal();
+});
 </script>
 @endsection

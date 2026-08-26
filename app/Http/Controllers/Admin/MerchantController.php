@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\SyncProductToMerchant;
 use App\Models\Product;
 use App\Services\GoogleMerchantService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class MerchantController extends Controller
 {
@@ -47,60 +46,94 @@ class MerchantController extends Controller
 
     /**
      * Tüm aktif ürünleri Merchant Center'a senkronize et.
+     * Şifre doğrulaması zorunlu.
      */
-    public function syncAll(): RedirectResponse
+    public function syncAll(Request $request): JsonResponse
     {
+        $passwordCheck = $this->verifyAdminPassword($request);
+        if ($passwordCheck !== true) {
+            return $passwordCheck;
+        }
+
         try {
             $results = $this->merchantService->syncAllProducts();
 
-            $message = "Senkronizasyon tamamlandı: {$results['success']} başarılı, {$results['failed']} başarısız.";
-
-            if (!empty($results['errors'])) {
-                $errorList = implode('<br>', array_slice($results['errors'], 0, 5));
-                return redirect()->route('admin.merchant.index')
-                    ->with('warning', $message . '<br><small>' . $errorList . '</small>');
-            }
-
-            return redirect()->route('admin.merchant.index')->with('success', $message);
+            return response()->json([
+                'success'       => $results['failed'] === 0,
+                'message'       => "{$results['success']} ürün başarıyla gönderildi" . ($results['failed'] > 0 ? ", {$results['failed']} ürün başarısız." : '.'),
+                'success_count' => $results['success'],
+                'failed_count'  => $results['failed'],
+                'errors'        => array_slice($results['errors'], 0, 10),
+            ]);
         } catch (\Exception $e) {
-            return redirect()->route('admin.merchant.index')
-                ->with('error', 'Hata: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Senkronizasyon hatası: ' . $e->getMessage(),
+                'errors'  => [$e->getMessage()],
+            ], 500);
         }
     }
 
     /**
-     * Tekil ürünü Merchant Center'a gönder (async queue ile).
+     * Tekil ürünü Merchant Center'a gönder.
+     * Şifre doğrulaması zorunlu.
      */
-    public function syncProduct(int $id): JsonResponse
+    public function syncProduct(Request $request, int $id): JsonResponse
     {
+        $passwordCheck = $this->verifyAdminPassword($request);
+        if ($passwordCheck !== true) {
+            return $passwordCheck;
+        }
+
         $product = Product::findOrFail($id);
 
-        if (!$product->image) {
+        if (!($product->attributes['image'] ?? null)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Bu ürünün görseli yok. Merchant Center görsel zorunlu kılar.',
+                'message' => 'Bu ürünün görseli yok. Google Merchant Center görsel zorunlu kılar.',
+                'errors'  => ['Ürün görseli eksik.'],
             ], 422);
         }
 
-        SyncProductToMerchant::dispatch($product, 'insert');
+        if (!$product->is_active) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pasif ürünler Merchant Center\'a gönderilemez.',
+                'errors'  => ['Ürün pasif durumda.'],
+            ], 422);
+        }
+
+        $result = $this->merchantService->insertProduct($product);
 
         return response()->json([
-            'success' => true,
-            'message' => "'{$product->name}' kuyruğa eklendi. Kısa süre içinde senkronize edilecek.",
-        ]);
+            'success' => $result['success'],
+            'message' => $result['success']
+                ? "'{$product->name}' başarıyla Merchant Center'a gönderildi."
+                : "'{$product->name}' gönderilemedi: " . $result['message'],
+            'errors'  => $result['success'] ? [] : [$result['message']],
+        ], $result['success'] ? 200 : 500);
     }
 
     /**
      * Ürünü Merchant Center'dan sil.
+     * Şifre doğrulaması zorunlu.
      */
-    public function deleteFromMerchant(int $id): JsonResponse
+    public function deleteFromMerchant(Request $request, int $id): JsonResponse
     {
+        $passwordCheck = $this->verifyAdminPassword($request);
+        if ($passwordCheck !== true) {
+            return $passwordCheck;
+        }
+
         $product = Product::findOrFail($id);
-        SyncProductToMerchant::dispatch($product, 'delete');
+        $result  = $this->merchantService->deleteProduct($product);
 
         return response()->json([
-            'success' => true,
-            'message' => "'{$product->name}' Merchant Center'dan silinmek üzere kuyruğa eklendi.",
+            'success' => $result['success'],
+            'message' => $result['success']
+                ? "'{$product->name}' Merchant Center'dan silindi."
+                : "Silinemedi: " . $result['message'],
+            'errors'  => $result['success'] ? [] : [$result['message']],
         ]);
     }
 
@@ -144,5 +177,37 @@ class MerchantController extends Controller
                 'message' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Yardımcı — Şifre Doğrulama
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * İstek içindeki 'password' alanını oturumdaki admin şifresiyle karşılaştır.
+     */
+    private function verifyAdminPassword(Request $request): true|JsonResponse
+    {
+        $password = $request->input('password', '');
+
+        if (empty($password)) {
+            return response()->json([
+                'success'    => false,
+                'message'    => 'Güvenlik için admin şifrenizi girmeniz gerekiyor.',
+                'error_type' => 'password_required',
+            ], 422);
+        }
+
+        $admin = auth()->user();
+
+        if (!$admin || !Hash::check($password, $admin->password)) {
+            return response()->json([
+                'success'    => false,
+                'message'    => 'Yanlış şifre. Lütfen admin şifrenizi doğru girin.',
+                'error_type' => 'password_wrong',
+            ], 403);
+        }
+
+        return true;
     }
 }
