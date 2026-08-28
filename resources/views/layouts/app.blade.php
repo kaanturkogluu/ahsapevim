@@ -5,12 +5,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Ahşap Evim Manisa')</title>
-    <!-- Favicon -->
+    <title>@yield('title', 'Ahşap Evim Manisa — Kişiye Özel El Yapımı Masif Ahşap Çerçeveler')</title>
+    <meta name="description" content="@yield('meta_description', 'Manisa\'da masif ahşap el işçiliği ile kişiye özel fotoğraflı dönen ahşap çerçeveler ve hediyelik dekoratif tasarımlar üretiyoruz. Aynı gün kargo imkanıyla hemen sipariş verin.')">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Open Graph / Sosyal Medya -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="@yield('title', 'Ahşap Evim Manisa — Kişiye Özel Masif Ahşap Çerçeveler')">
+    <meta property="og:description" content="@yield('meta_description', 'Manisa\'da masif ahşap el işçiliği ile kişiye özel fotoğraflı dönen ahşap çerçeveler ve hediyelik dekoratif tasarımlar üretiyoruz.')">
+    <meta property="og:image" content="@yield('meta_image', 'https://ahsapevimmanisa.com/ahsaplogo_org.png')">
+
+    <!-- Google Arama & Tarayıcı Faviconları (Google Standart 48x48, 96x96, 192x192) -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/ahsaplogo_yataybg.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/ahsaplogo_yataybg.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+    <!-- Google Arama Logosu için Schema.org Yapılandırılmış Veri -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Ahşap Evim",
+      "url": "https://ahsapevimmanisa.com",
+      "logo": "https://ahsapevimmanisa.com/favicon-192x192.png",
+      "sameAs": [
+        "https://www.instagram.com/ahsapevimmanisa"
+      ]
+    }
+    </script>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>

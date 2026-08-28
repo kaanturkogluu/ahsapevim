@@ -53,16 +53,16 @@ class SeoController extends Controller
      */
     public function generateSitemapXml(): string
     {
-        $baseUrl = config('app.url', url('/'));
+        $liveDomain = 'https://ahsapevimmanisa.com';
 
         $urls = [];
 
         // Ana Sayfa & Genel Sayfalar
-        $urls[] = ['loc' => $baseUrl, 'lastmod' => date('Y-m-d'), 'changefreq' => 'daily', 'priority' => '1.0'];
-        $urls[] = ['loc' => url('/urunler'), 'lastmod' => date('Y-m-d'), 'changefreq' => 'daily', 'priority' => '0.9'];
-        $urls[] = ['loc' => url('/giris'), 'lastmod' => date('Y-m-d'), 'changefreq' => 'monthly', 'priority' => '0.6'];
-        $urls[] = ['loc' => url('/kayit'), 'lastmod' => date('Y-m-d'), 'changefreq' => 'monthly', 'priority' => '0.5'];
-        $urls[] = ['loc' => url('/siparis-takip'), 'lastmod' => date('Y-m-d'), 'changefreq' => 'monthly', 'priority' => '0.5'];
+        $urls[] = ['loc' => $liveDomain, 'lastmod' => date('Y-m-d'), 'changefreq' => 'daily', 'priority' => '1.0'];
+        $urls[] = ['loc' => $liveDomain . '/urunler', 'lastmod' => date('Y-m-d'), 'changefreq' => 'daily', 'priority' => '0.9'];
+        $urls[] = ['loc' => $liveDomain . '/giris', 'lastmod' => date('Y-m-d'), 'changefreq' => 'monthly', 'priority' => '0.6'];
+        $urls[] = ['loc' => $liveDomain . '/kayit', 'lastmod' => date('Y-m-d'), 'changefreq' => 'monthly', 'priority' => '0.5'];
+        $urls[] = ['loc' => $liveDomain . '/siparis-takip', 'lastmod' => date('Y-m-d'), 'changefreq' => 'monthly', 'priority' => '0.5'];
 
         // Kurumsal Sayfalar (Page Model + Sabit Liste)
         $knownSlugs = ['iletisim', 'hakkimizda', 'gizlilik-politikasi', 'mesafeli-satis-sozlesmesi', 'teslimat-ve-iade', 'sikca-sorulanlar'];
@@ -71,7 +71,7 @@ class SeoController extends Controller
         $pages = Page::where('is_active', true)->get();
         foreach ($pages as $page) {
             $urls[] = [
-                'loc' => url('/' . $page->slug),
+                'loc' => $liveDomain . '/' . $page->slug,
                 'lastmod' => $page->updated_at ? $page->updated_at->format('Y-m-d') : date('Y-m-d'),
                 'changefreq' => 'monthly',
                 'priority' => '0.7',
@@ -83,7 +83,7 @@ class SeoController extends Controller
         foreach ($knownSlugs as $ks) {
             if (!in_array($ks, $addedSlugs)) {
                 $urls[] = [
-                    'loc' => url('/' . $ks),
+                    'loc' => $liveDomain . '/' . $ks,
                     'lastmod' => date('Y-m-d'),
                     'changefreq' => 'monthly',
                     'priority' => '0.7',
@@ -95,7 +95,7 @@ class SeoController extends Controller
         $categories = Category::all();
         foreach ($categories as $category) {
             $urls[] = [
-                'loc' => url('/urunler?category=' . $category->slug),
+                'loc' => $liveDomain . '/urunler?category=' . $category->slug,
                 'lastmod' => date('Y-m-d'),
                 'changefreq' => 'weekly',
                 'priority' => '0.8',
@@ -106,7 +106,7 @@ class SeoController extends Controller
         $products = Product::where('is_active', true)->ordered()->get();
         foreach ($products as $product) {
             $urls[] = [
-                'loc' => url('/urun/' . ($product->slug ?: $product->id)),
+                'loc' => $liveDomain . '/urun/' . ($product->slug ?: $product->id),
                 'lastmod' => $product->updated_at ? $product->updated_at->format('Y-m-d') : date('Y-m-d'),
                 'changefreq' => 'weekly',
                 'priority' => '0.8',

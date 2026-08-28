@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
-@section('title', ($product->name ?? 'Ürün Detayı') . ' - AhşapEvim')
+@section('title', ($product->name ?? 'Ürün Detayı') . ' — Ahşap Evim Manisa')
+@section('meta_description', \Illuminate\Support\Str::limit(strip_tags($product->description ?: ($product->name . ' - Kişiye özel el işçiliği masif ahşap çerçeve.')), 155))
+@section('meta_image', $product->image ? (str_starts_with($product->image, 'http') ? $product->image : url($product->image)) : 'https://ahsapevimmanisa.com/ahsaplogo_org.png')
 
 @if($product->threeDTemplate)
     @push('head_scripts')
