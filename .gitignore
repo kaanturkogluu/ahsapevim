@@ -29,3 +29,19 @@ Thumbs.db
 # Google Service Account (güvenlik: git'e commit etme!)
 /storage/app/google-service-account.json
 /storage/app/*-service-account.json
+
+# Yüklenen Kullanıcı/Ürün Medyaları (Sunucudaki fotoğrafların ezilmesini önler)
+/public/uploads/*
+!/public/uploads/.gitkeep
+!/public/uploads/products/
+/public/uploads/products/*
+!/public/uploads/products/.gitkeep
+!/public/uploads/customizations/
+/public/uploads/customizations/*
+!/public/uploads/customizations/.gitkeep
+!/public/uploads/banners/
+/public/uploads/banners/*
+!/public/uploads/banners/.gitkeep
+!/public/uploads/templates/
+/public/uploads/templates/*
+!/public/uploads/templates/.gitkeep
