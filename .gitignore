@@ -45,3 +45,7 @@ Thumbs.db
 !/public/uploads/templates/
 /public/uploads/templates/*
 !/public/uploads/templates/.gitkeep
+
+# Otomatik üretilen dinamik XML dosyaları (Sunucu pull çakışmalarını önler)
+/public/urunler.xml
+/public/sitemap.xml
