@@ -380,9 +380,6 @@
                         <a href="https://instagram.com/ahsapevimmanisa" target="_blank" class="w-8 h-8 rounded-xl bg-white border border-gray-200 hover:border-[#C87A53] hover:bg-[#C87A53] hover:text-white text-gray-600 flex items-center justify-center transition shadow-2xs">
                             <i class="fa-brands fa-instagram text-xs"></i>
                         </a>
-                        <a href="#" class="w-8 h-8 rounded-xl bg-white border border-gray-200 hover:border-[#C87A53] hover:bg-[#C87A53] hover:text-white text-gray-600 flex items-center justify-center transition shadow-2xs">
-                            <i class="fa-brands fa-facebook-f text-xs"></i>
-                        </a>
                         @if(!empty($contactData['whatsapp']))
                         <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $contactData['whatsapp']) }}" target="_blank" title="WhatsApp Destek" class="w-8 h-8 rounded-xl bg-white border border-gray-200 hover:border-emerald-600 hover:bg-emerald-600 hover:text-white text-gray-600 flex items-center justify-center transition shadow-2xs">
                             <i class="fa-brands fa-whatsapp text-xs"></i>
