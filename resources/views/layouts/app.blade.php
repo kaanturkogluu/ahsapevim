@@ -7,9 +7,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Ahşap Evim Manisa')</title>
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ url('/favicon.ico') }}">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ url('/favicon.ico') }}">
-    <link rel="apple-touch-icon" href="{{ url('/ahsaplogo_yataybg.png') }}">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/ahsaplogo_yataybg.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/ahsaplogo_yataybg.png">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>

@@ -16,7 +16,7 @@
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #F7F5F0;
-            background-image: url('{{ url('/light_wood_bg.jpg') }}');
+            background-image: url('<?php echo e(url('/light_wood_bg.jpg')); ?>');
             background-repeat: repeat;
             background-size: 320px 320px;
             color: #2E251E;
@@ -32,37 +32,38 @@
         
         <!-- Logo -->
         <div class="text-center mb-8">
-            <a href="{{ url('/') }}" class="inline-block mb-3">
-                <img src="{{ url('/ahsaplogo_yatay.png') }}" alt="AhşapEvim Logo" class="h-16 w-auto object-contain mx-auto">
+            <a href="<?php echo e(url('/')); ?>" class="inline-block mb-3">
+                <img src="<?php echo e(url('/ahsaplogo_yatay.png')); ?>" alt="AhşapEvim Logo" class="h-16 w-auto object-contain mx-auto">
             </a>
             <h2 class="text-2xl font-bold text-[#2E251E] mt-2">Yönetim Paneli</h2>
             <p class="text-xs text-gray-500 mt-1">Lütfen yönetici bilgilerinizi kullanarak giriş yapın.</p>
         </div>
 
-        @if(session('success'))
+        <?php if(session('success')): ?>
             <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm mb-4">
-                {{ session('success') }}
-            </div>
-        @endif
+                <?php echo e(session('success')); ?>
 
-        @if($errors->any())
+            </div>
+        <?php endif; ?>
+
+        <?php if($errors->any()): ?>
             <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-4">
                 <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
+                    <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <li><?php echo e($error); ?></li>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </ul>
             </div>
-        @endif
+        <?php endif; ?>
 
-        <form action="{{ url('/yonetim/giris') }}" method="POST" class="space-y-5">
-            @csrf
+        <form action="<?php echo e(url('/yonetim/giris')); ?>" method="POST" class="space-y-5">
+            <?php echo csrf_field(); ?>
             
             <div>
                 <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">E-Posta Adresi</label>
                 <div class="relative flex items-center">
                     <span class="absolute left-3 text-gray-400 text-sm"><i class="fa-solid fa-envelope"></i></span>
-                    <input type="email" name="email" required value="{{ old('email') }}" class="w-full text-sm border-gray-300 rounded-lg p-2.5 pl-10 border focus:border-[#C87A53] focus:ring-0 outline-none" placeholder="admin@ahsapevim.com">
+                    <input type="email" name="email" required value="<?php echo e(old('email')); ?>" class="w-full text-sm border-gray-300 rounded-lg p-2.5 pl-10 border focus:border-[#C87A53] focus:ring-0 outline-none" placeholder="admin@ahsapevim.com">
                 </div>
             </div>
 
@@ -90,3 +91,4 @@
 
 </body>
 </html>
+<?php /**PATH C:\xampp\htdocs\ahsapevim\resources\views/admin/auth/login.blade.php ENDPATH**/ ?>

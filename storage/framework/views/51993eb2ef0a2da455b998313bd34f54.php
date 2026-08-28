@@ -6,9 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AhşapEvim - Masif Ahşap Özel Tasarım Çerçeveler & Dekorasyaon</title>
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="<?php echo e(url('/favicon.ico')); ?>">
-    <link rel="shortcut icon" type="image/x-icon" href="<?php echo e(url('/favicon.ico')); ?>">
-    <link rel="apple-touch-icon" href="<?php echo e(url('/ahsaplogo_yataybg.png')); ?>">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/ahsaplogo_yataybg.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/ahsaplogo_yataybg.png">
 
     
     <script>

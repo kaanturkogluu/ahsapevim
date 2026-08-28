@@ -168,6 +168,15 @@ class Product extends Model
         }
         if (!$user) return false;
 
-        return $this->favorites()->where('user_id', $user->id)->exists();
+        if ($this->relationLoaded('favorites')) {
+            return $this->favorites->contains('user_id', $user->id);
+        }
+
+        static $userFavoriteIds = null;
+        if ($userFavoriteIds === null) {
+            $userFavoriteIds = Favorite::where('user_id', $user->id)->pluck('product_id')->flip()->toArray();
+        }
+
+        return isset($userFavoriteIds[$this->id]);
     }
 }

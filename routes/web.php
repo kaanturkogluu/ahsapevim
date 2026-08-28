@@ -65,7 +65,7 @@ Route::get('/', function (Request $request) {
         return redirect('/urunler', 301);
     }
 
-    $query = Product::where('is_active', true);
+    $query = Product::where('is_active', true)->with('category');
 
     if (request('category')) {
         $slug = request('category');
@@ -80,14 +80,13 @@ Route::get('/', function (Request $request) {
     $products   = $query->ordered()->paginate(20)->withQueryString();
     $categories = Category::withCount('products')->get();
     
-    $homeBanners = collect();
-    try {
-        if (\Illuminate\Support\Facades\Schema::hasTable('home_banners')) {
-            $homeBanners = \App\Models\HomeBanner::where('is_active', true)->orderBy('order', 'asc')->get();
+    $homeBanners = \Illuminate\Support\Facades\Cache::remember('home_banners_active', 600, function () {
+        try {
+            return \App\Models\HomeBanner::where('is_active', true)->orderBy('order', 'asc')->get();
+        } catch (\Throwable $e) {
+            return collect();
         }
-    } catch (\Throwable $e) {
-        $homeBanners = collect();
-    }
+    });
 
     return view('home', compact('products', 'categories', 'homeBanners'));
 });
@@ -147,7 +146,7 @@ Route::get('/urun/{id}', function ($id) {
 });
 
 Route::get('/urunler', function () {
-    $query = Product::where('is_active', true);
+    $query = Product::where('is_active', true)->with('category');
 
     if (request('category')) {
         $slug = request('category');
