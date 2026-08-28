@@ -102,6 +102,41 @@ class Product extends Model
         }, $images);
     }
 
+    public function getImagesAttribute()
+    {
+        $list = collect();
+        $rawImage = $this->getRawOriginal('image') ?: ($this->attributes['image'] ?? null);
+        if (!empty($rawImage)) {
+            $list->push((object)['url' => ltrim($rawImage, '/')]);
+        }
+
+        $gallery = $this->features['images'] ?? [];
+        if (is_array($gallery)) {
+            foreach ($gallery as $img) {
+                if (!empty($img)) {
+                    $list->push((object)['url' => ltrim($img, '/')]);
+                }
+            }
+        }
+
+        return $list;
+    }
+
+    public function getSkuAttribute()
+    {
+        return $this->model_code ?: (string)$this->id;
+    }
+
+    public function getBrandNameAttribute()
+    {
+        return $this->features['brand'] ?? 'Ahşap Evim';
+    }
+
+    public function getCategoryNameAttribute()
+    {
+        return $this->category?->name ?? 'Ahşap Çerçeve';
+    }
+
     /**
      * SEO Uyumlu ve Benzersiz URL / Slug Oluşturucu
      */

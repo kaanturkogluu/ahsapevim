@@ -143,7 +143,7 @@ Route::get('/urun/{id}', function ($id) {
     }
 
     return view('products.show', compact('product', 'similarProducts', 'recentlyViewed'));
-});
+})->name('product.show');
 
 Route::get('/urunler', function () {
     $query = Product::where('is_active', true)->with('category');
