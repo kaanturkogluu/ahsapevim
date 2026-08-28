@@ -29,8 +29,8 @@
     <!-- Google Arama Logosu için Schema.org Yapılandırılmış Veri -->
     <script type="application/ld+json">
     {
-      "@context": "https://schema.org",
-      "@type": "Organization",
+      "@@context": "https://schema.org",
+      "@@type": "Organization",
       "name": "Ahşap Evim",
       "url": "https://ahsapevimmanisa.com",
       "logo": "https://ahsapevimmanisa.com/favicon-192x192.png",
@@ -38,7 +38,7 @@
         "https://www.instagram.com/ahsapevimmanisa"
       ],
       "contactPoint": {
-        "@type": "ContactPoint",
+        "@@type": "ContactPoint",
         "contactType": "customer support",
         "areaServed": "TR",
         "availableLanguage": "Turkish"

@@ -974,4 +974,4 @@
     </script>
 </body>
 
-</html><?php /**PATH C:\xampp\htdocs\ahsapevim\resources\views/layouts/app.blade.php ENDPATH**/ ?>
+</html><?php /**PATH C:\xampp\htdocs\ahsapevim\resources\views\layouts\app.blade.php ENDPATH**/ ?>
