@@ -241,9 +241,18 @@
 
                         <!-- Teslimat Adresi Özeti -->
                         <div class="bg-gray-50/70 p-3 px-4 border-t border-gray-100 text-[11px] text-gray-600 flex flex-wrap items-center justify-between gap-2">
-                            <div>
-                                <i class="fa-solid fa-truck text-amber-700 mr-1"></i>
-                                <span class="font-bold text-gray-700">Teslimat Adresi:</span> {{ Str::limit($order->address, 60) }}
+                            <div class="flex flex-wrap items-center gap-3">
+                                <div>
+                                    <i class="fa-solid fa-truck text-amber-700 mr-1"></i>
+                                    <span class="font-bold text-gray-700">Teslimat Adresi:</span> {{ Str::limit($order->address, 60) }}
+                                </div>
+                                @if(!empty($order->cargo_tracking_code))
+                                    <div class="px-2 py-0.5 bg-blue-50 text-blue-800 border border-blue-200 rounded-lg text-[10px] font-bold flex items-center gap-1.5">
+                                        <i class="fa-solid fa-truck-fast text-blue-600"></i>
+                                        <span>{{ $order->shippingCompany?->name ?: 'Kargo' }}:</span>
+                                        <span class="font-mono text-blue-900">{{ $order->cargo_tracking_code }}</span>
+                                    </div>
+                                @endif
                             </div>
                             <div class="flex items-center gap-3">
                                 <span class="text-gray-400 font-mono text-[10px]">Alıcı: {{ $order->name }} ({{ $order->phone }})</span>

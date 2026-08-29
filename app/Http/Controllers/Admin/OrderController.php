@@ -50,12 +50,16 @@ class OrderController extends Controller
             'status' => 'required|string|in:pending,paid,preparing,shipped,completed,cancelled,failed',
             'shipping_company_id' => 'nullable|exists:shipping_companies,id',
             'cargo_tracking_code' => 'nullable|string|max:100',
+            'send_notification' => 'nullable',
         ]);
 
         $newStatus = $request->status;
-        // If cargo tracking code is provided, automatically mark status as completed
-        if ($request->filled('cargo_tracking_code') && $newStatus !== 'cancelled') {
-            $newStatus = 'completed';
+        $hasNewTrackingCode = $request->filled('cargo_tracking_code') && ($oldTrackingCode !== $request->cargo_tracking_code);
+        $hasTrackingCode = $request->filled('cargo_tracking_code');
+
+        // Kargo takip kodu girildiyse ve durum henüz 'paid', 'pending' veya 'preparing' ise otomatik olarak 'shipped' (Kargolandı) yap
+        if ($hasTrackingCode && in_array($newStatus, ['paid', 'pending', 'preparing'])) {
+            $newStatus = 'shipped';
         }
 
         $order->update([
@@ -66,71 +70,67 @@ class OrderController extends Controller
 
         // Refresh order model with relationship
         $order->load('shippingCompany');
-        $shippingCompanyName = $order->shippingCompany ? $order->shippingCompany->name : 'Kargo Şirketi';
+        $shippingCompanyName = $order->shippingCompany ? $order->shippingCompany->name : 'Kargo Firması';
         $cargoCode = $order->cargo_tracking_code ?: 'Belirtilmedi';
 
-        // Check if cargo tracking code was newly added or updated
-        $isNewlyShipped = ($request->filled('cargo_tracking_code') && ($oldTrackingCode !== $order->cargo_tracking_code || $oldStatus !== 'completed'));
+        $shouldNotify = $request->boolean('send_notification', true);
 
-        if ($isNewlyShipped) {
-            // 1. Send SMS via Netgsm and log
-            try {
-                $smsMessage = "Sayın {$order->name}, Kargonuz {$shippingCompanyName} ile {$cargoCode} takip numarası ile kargolanmıştır. Siparişiniz tamamlandı olarak güncellenmiştir. AhşapEvim";
-                app(NetgsmService::class)->sendSms($order->phone, $smsMessage, $order->id, 'automated');
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('Kargo SMS Gönderim Hatası: ' . $e->getMessage());
-            }
-
-            // 2. Queue Email Notification & Log
-            try {
-                $data = [
-                    'user_name' => $order->name,
-                    'order_id' => $order->id,
-                    'tracking_code' => $order->tracking_code ?: 'AHS-' . $order->id,
-                    'shipping_company' => $shippingCompanyName,
-                    'cargo_tracking_code' => $cargoCode,
-                    'total_amount' => number_format($order->total_amount, 2, ',', '.'),
-                    'delivery_address' => $order->address . ' (' . ($order->city ?: 'Manisa') . ')',
-                    'product_details' => $this->formatOrderItemsHtml($order),
-                ];
-
-                \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_shipped', $data));
-                app(\App\Services\MailService::class)->logMailable($order->email, "Siparişiniz Kargolandı (#{$order->id})", "Kargonuz {$shippingCompanyName} ile {$cargoCode} takip numarası ile gönderildi ve siparişiniz tamamlandı.", 'success', null, $order->id);
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('Kargo Mail Gönderim Hatası: ' . $e->getMessage());
-                app(\App\Services\MailService::class)->logMailable($order->email, "Siparişiniz Kargolandı (#{$order->id})", "Kargo bilgilendirme e-postası", 'failed', $e->getMessage(), $order->id);
-            }
-
-            return redirect()->back()->with('success', "Sipariş #{$order->id} kargo bilgisi kaydedildi ve sipariş durumu otomatik olarak 'Tamamlandı' (completed) yapıldı. SMS ve E-Posta bilgilendirmesi gönderildi.");
-        }
-
-        // Generic Status Change Email Notification
-        if ($oldStatus !== $newStatus) {
+        if ($shouldNotify) {
             $data = [
-                'user_name' => $order->name,
-                'order_id' => $order->id,
-                'tracking_code' => $order->tracking_code ?: 'AHS-' . $order->id,
-                'cancellation_reason' => $order->payment_error_reason ?: 'Müşteri talebi / ödeme iptali',
-                'total_amount' => number_format($order->total_amount, 2, ',', '.'),
-                'delivery_address' => $order->address . ' (' . ($order->city ?: 'Manisa') . ')',
-                'product_details' => $this->formatOrderItemsHtml($order),
+                'user_name'           => $order->name,
+                'user_email'          => $order->email,
+                'order_id'            => $order->id,
+                'tracking_code'       => $order->tracking_code ?: 'AHS-' . $order->id,
+                'shipping_company'    => $shippingCompanyName,
+                'cargo_tracking_code' => $cargoCode,
+                'cancellation_reason' => $order->payment_error_reason ?: 'Müşteri talebi / işlem iptali',
+                'total_amount'        => number_format($order->total_amount, 2, ',', '.'),
+                'delivery_address'    => $order->address . ' (' . ($order->city ?: 'Manisa') . ')',
+                'product_details'     => $this->formatOrderItemsHtml($order),
+                'site_name'           => 'AhşapEvim',
             ];
 
-            try {
-                if ($newStatus === 'completed') {
-                    \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_completed', $data));
-                    app(\App\Services\MailService::class)->logMailable($order->email, "Siparişiniz Tamamlandı (#{$order->id})", "Sipariş teslim edildi ve tamamlandı.", 'success', null, $order->id);
-                } elseif (in_array($newStatus, ['cancelled', 'failed'])) {
-                    \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_cancelled', $data));
-                    app(\App\Services\MailService::class)->logMailable($order->email, "Sipariş Durumu İptal / Başarısız (#{$order->id})", "Sipariş iptal olarak işaretlendi.", 'success', null, $order->id);
+            // 1. Kargoya Verildi Durumu (Yeni kargo kodu girildiğinde veya durum 'shipped' olduğunda)
+            $isShippedEvent = ($newStatus === 'shipped' && ($oldStatus !== 'shipped' || $hasNewTrackingCode));
+
+            if ($isShippedEvent) {
+                // SMS Gönderimi (Netgsm)
+                try {
+                    $smsMessage = "Sayın {$order->name}, #{$order->id} numaralı siparişiniz {$shippingCompanyName} firmasına teslim edilmiştir. Kargo Takip No: {$cargoCode}. AhşapEvim";
+                    app(NetgsmService::class)->sendSms($order->phone, $smsMessage, $order->id, 'automated');
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::error('Kargo SMS Gönderim Hatası: ' . $e->getMessage());
                 }
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('Status Change Email Error: ' . $e->getMessage());
-                app(\App\Services\MailService::class)->logMailable($order->email, "Sipariş Durum Bilgilendirmesi (#{$order->id})", "Durum güncelleme e-postası", 'failed', $e->getMessage(), $order->id);
+
+                // E-Posta Bildirimi (DynamicMail order_shipped)
+                try {
+                    \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_shipped', $data));
+                    app(\App\Services\MailService::class)->logMailable($order->email, "Siparişiniz Kargoya Verildi (#{$order->id})", "Kargonuz {$shippingCompanyName} ile {$cargoCode} takip numarasıyla teslim edilmiştir.", 'success', null, $order->id);
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::error('Kargo Mail Gönderim Hatası: ' . $e->getMessage());
+                    app(\App\Services\MailService::class)->logMailable($order->email, "Siparişiniz Kargoya Verildi (#{$order->id})", "Kargo bilgilendirme e-postası", 'failed', $e->getMessage(), $order->id);
+                }
+            } elseif ($oldStatus !== $newStatus) {
+                // 2. Diğer Durum Değişiklikleri Bildirimi
+                try {
+                    if ($newStatus === 'completed') {
+                        \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_completed', $data));
+                        app(\App\Services\MailService::class)->logMailable($order->email, "Siparişiniz Teslim Edildi (#{$order->id})", "Sipariş teslim edildi ve tamamlandı olarak işaretlendi.", 'success', null, $order->id);
+                    } elseif ($newStatus === 'cancelled') {
+                        \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_cancelled', $data));
+                        app(\App\Services\MailService::class)->logMailable($order->email, "Sipariş İptal Edildi (#{$order->id})", "Sipariş iptal olarak işaretlendi.", 'success', null, $order->id);
+                    } elseif ($newStatus === 'failed') {
+                        \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_failed', $data));
+                        app(\App\Services\MailService::class)->logMailable($order->email, "Sipariş Ödeme / İşlem Başarısız (#{$order->id})", "Sipariş başarısız olarak işaretlendi.", 'success', null, $order->id);
+                    }
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::error('Status Change Email Error: ' . $e->getMessage());
+                    app(\App\Services\MailService::class)->logMailable($order->email, "Sipariş Durum Bilgilendirmesi (#{$order->id})", "Durum güncelleme e-postası", 'failed', $e->getMessage(), $order->id);
+                }
             }
         }
 
-        return redirect()->back()->with('success', 'Sipariş durumu #' . $order->id . ' başarıyla güncellendi.');
+        return redirect()->back()->with('success', "Sipariş #{$order->id} durumu ve kargo bilgileri başarıyla güncellendi.");
     }
 
     protected function formatOrderItemsHtml($order)

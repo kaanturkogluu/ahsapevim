@@ -114,12 +114,36 @@ class EmailTemplateSeeder extends Seeder
                 'name' => 'Sipariş Teslim Edildi Bildirimi',
                 'subject' => 'Siparişiniz Teslim Edildi! 🎉 #{order_id}',
                 'content' => '<p>Sayın <strong>{user_name}</strong>,</p>
-<p><strong>#{order_id}</strong> numaralı siparişiniz başarıyla teslim edilmiştir. AhşapEvim masif ürünlerini güzel günlerde kullanmanızı dileriz!</p>
+<p><strong>#{order_id}</strong> numaralı siparişiniz başarıyla teslim edilmiştir. AhşapEvim masif ahşap el işçiliği ürünlerini güzel günlerde kullanmanızı dileriz!</p>
 <p>Deneyiminizi paylaşmak ve yeni ürünlerimizi keşfetmek için sitemizi ziyaret edebilirsiniz.</p>',
                 'shortcodes' => [
                     '{user_name}' => 'Müşterinin Adı Soyadı',
                     '{order_id}' => 'Sipariş Numarası',
                     '{tracking_code}' => 'Sipariş Takip Kodu',
+                    '{site_name}' => 'Site İsmi',
+                ],
+                'is_active' => true,
+            ],
+            [
+                'slug' => 'order_failed',
+                'name' => 'Sipariş Başarısız / Ödeme Hatası Bildirimi',
+                'subject' => 'Sipariş Ödeme / İşlem Bildirimi #{order_id}',
+                'content' => '<p>Sayın <strong>{user_name}</strong>,</p>
+<p><strong>#{order_id}</strong> numaralı siparişinizin ödeme veya işlem adımı tamamlanamamıştır.</p>
+
+<div style="background-color: #FFF7ED; padding: 16px; border-radius: 12px; margin: 16px 0; border: 1px solid #FFEDD5;">
+    <h3 style="margin: 0 0 10px 0; color: #C2410C; font-size: 15px; border-bottom: 1px solid #FED7AA; padding-bottom: 6px;">İşlem Durumu</h3>
+    <p style="margin: 0 0 6px 0;"><strong>Sipariş No:</strong> #{order_id}</p>
+    <p style="margin: 0 0 6px 0;"><strong>Sipariş Takip Kodu:</strong> <span style="font-family: monospace;">{tracking_code}</span></p>
+    <p style="margin: 0;"><strong>Hata / Açıklama:</strong> {cancellation_reason}</p>
+</div>
+
+<p>Farklı bir ödeme kartı veya yöntemi ile siparişinizi yeniden deneyebilir, destek için müşteri hizmetlerimize danışabilirsiniz.</p>',
+                'shortcodes' => [
+                    '{user_name}' => 'Müşterinin Adı Soyadı',
+                    '{order_id}' => 'Sipariş Numarası',
+                    '{tracking_code}' => 'Sipariş Takip Kodu',
+                    '{cancellation_reason}' => 'Hata Nedeni / Açıklaması',
                     '{site_name}' => 'Site İsmi',
                 ],
                 'is_active' => true,

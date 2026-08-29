@@ -69,57 +69,71 @@
         </div>
 
         <!-- Durum ve Kargo Takip Güncelleme Formu -->
-        <div class="bg-orange-50/50 p-4 rounded-xl border border-orange-100">
-            <h4 class="text-xs font-bold text-[#C87A53] uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                <i class="fa-solid fa-truck-fast"></i> Kargo & Durum Bilgisi
-            </h4>
-            <form action="{{ route('admin.orders.update', $order->id) }}" method="POST" class="space-y-3" onsubmit="preventSpamSubmit(this)">
-                @csrf
-                @method('PUT')
-                
-                <div>
-                    <label class="block text-[10px] font-extrabold text-gray-500 uppercase mb-1">Sipariş Durumu</label>
-                    <select name="status" class="w-full text-xs font-bold border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] focus:ring-0 outline-none">
-                        <option value="paid" {{ $order->status === 'paid' ? 'selected' : '' }}>Ödendi / Hazırlanıyor</option>
-                        <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Ödeme Bekliyor</option>
-                        <option value="shipped" {{ $order->status === 'shipped' ? 'selected' : '' }}>Kargolandı</option>
-                        <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Tamamlandı</option>
-                        <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>İptal Edildi</option>
-                        <option value="failed" {{ $order->status === 'failed' ? 'selected' : '' }}>Başarısız</option>
-                    </select>
-                </div>
+        <div class="bg-orange-50/50 p-4 rounded-xl border border-orange-100 flex flex-col justify-between">
+            <div>
+                <h4 class="text-xs font-bold text-[#C87A53] uppercase tracking-wider mb-3 flex items-center justify-between">
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-truck-fast"></i> Kargo & Durum Bilgisi</span>
+                    @if($order->status === 'shipped')
+                        <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] rounded font-bold">Kargolandı</span>
+                    @elseif($order->status === 'completed')
+                        <span class="px-2 py-0.5 bg-purple-100 text-purple-700 text-[10px] rounded font-bold">Tamamlandı</span>
+                    @endif
+                </h4>
 
-                <div>
-                    <label class="block text-[10px] font-extrabold text-gray-500 uppercase mb-1">Kargo Şirketi</label>
-                    <select name="shipping_company_id" class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] outline-none">
-                        <option value="">Kargo Şirketi Seçiniz...</option>
-                        @foreach($shippingCompanies as $company)
-                            <option value="{{ $company->id }}" {{ $order->shipping_company_id == $company->id ? 'selected' : '' }}>{{ $company->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-[10px] font-extrabold text-gray-500 uppercase mb-1">Kargo Takip Numarası</label>
-                    <input type="text" name="cargo_tracking_code" placeholder="Örn: 123456789" value="{{ old('cargo_tracking_code', $order->cargo_tracking_code) }}" class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] outline-none font-mono">
-                </div>
-
-                @if(!empty($order->cargo_tracking_code) || $order->status === 'completed')
-                    <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 font-bold space-y-1">
-                        <div class="flex items-center gap-1.5 text-emerald-700">
-                            <i class="fa-solid fa-circle-check text-sm"></i>
-                            <span>Kargo Bilgisi İletildi</span>
+                @if(!empty($order->cargo_tracking_code))
+                    <div class="mb-3 p-2.5 bg-blue-50/80 border border-blue-200 rounded-lg text-xs text-blue-900 flex items-center justify-between">
+                        <div>
+                            <span class="text-[10px] font-bold text-blue-600 uppercase block">Kayıtlı Kargo Takip</span>
+                            <span class="font-mono font-bold">{{ $order->shippingCompany?->name ?: 'Kargo' }} - {{ $order->cargo_tracking_code }}</span>
                         </div>
-                        <p class="text-[11px] text-emerald-800 font-normal">
-                            Müşteriye e-posta ve SMS bilgilendirmesi gönderilmiştir. Tekrarlanan mail/SMS spamını önlemek amacıyla güncelleme butonu kaldırılmıştır.
-                        </p>
+                        <i class="fa-solid fa-truck-ramp-box text-blue-500 text-base"></i>
                     </div>
-                @else
-                    <button type="submit" class="w-full py-2.5 px-4 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-lg text-xs transition shadow-sm flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-paper-plane"></i> Güncelle & SMS/Mail Gönder
-                    </button>
                 @endif
-            </form>
+
+                <form action="{{ route('admin.orders.update', $order->id) }}" method="POST" class="space-y-3" onsubmit="preventSpamSubmit(this)">
+                    @csrf
+                    @method('PUT')
+                    
+                    <div>
+                        <label class="block text-[10px] font-extrabold text-gray-500 uppercase mb-1">Sipariş Durumu</label>
+                        <select name="status" class="w-full text-xs font-bold border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] focus:ring-0 outline-none bg-white">
+                            <option value="paid" {{ $order->status === 'paid' ? 'selected' : '' }}>Ödendi / Hazırlanıyor</option>
+                            <option value="shipped" {{ $order->status === 'shipped' ? 'selected' : '' }}>Kargolandı (Kargoya Verildi)</option>
+                            <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Tamamlandı (Teslim Edildi)</option>
+                            <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Ödeme Bekliyor</option>
+                            <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>İptal Edildi</option>
+                            <option value="failed" {{ $order->status === 'failed' ? 'selected' : '' }}>Başarısız</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-extrabold text-gray-500 uppercase mb-1">Kargo Firması</label>
+                        <select name="shipping_company_id" class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] outline-none bg-white">
+                            <option value="">Kargo Firması Seçiniz...</option>
+                            @foreach($shippingCompanies as $company)
+                                <option value="{{ $company->id }}" {{ $order->shipping_company_id == $company->id ? 'selected' : '' }}>{{ $company->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-extrabold text-gray-500 uppercase mb-1">Kargo Takip Numarası</label>
+                        <input type="text" name="cargo_tracking_code" placeholder="Örn: 123456789012" value="{{ old('cargo_tracking_code', $order->cargo_tracking_code) }}" class="w-full text-xs border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] outline-none font-mono bg-white">
+                        <span class="text-[10px] text-gray-400 mt-0.5 block">Takip numarası girildiğinde durum otomatik olarak 'Kargolandı' yapılır.</span>
+                    </div>
+
+                    <div class="flex items-center gap-2 pt-1">
+                        <input type="checkbox" name="send_notification" id="send_notification" value="1" checked class="w-3.5 h-3.5 text-[#C87A53] rounded border-gray-300 focus:ring-0">
+                        <label for="send_notification" class="text-[11px] font-bold text-gray-700 cursor-pointer">Müşteriye SMS & E-Posta Bildirimi Gönder</label>
+                    </div>
+
+                    <div class="pt-1">
+                        <button type="submit" class="w-full py-2.5 px-4 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-lg text-xs transition shadow-sm flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-paper-plane"></i> Bilgileri Güncelle & Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 

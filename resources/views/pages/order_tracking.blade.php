@@ -127,6 +127,26 @@
                     </div>
                 </div>
 
+                <!-- Kargo Takip Bilgisi Kutusu -->
+                @if(!empty($order->cargo_tracking_code))
+                    <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center text-lg shrink-0">
+                                <i class="fa-solid fa-truck-fast"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-extrabold text-blue-700 uppercase tracking-wider block">Kargo Teslimat Bilgisi</span>
+                                <h3 class="text-sm font-extrabold text-blue-950">
+                                    {{ $order->shippingCompany?->name ?: 'Anlaşmalı Kargo' }} — Takip No: <span class="font-mono text-[#C87A53]">{{ $order->cargo_tracking_code }}</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1.5 bg-blue-100 text-blue-800 rounded-xl text-xs font-bold">
+                            <i class="fa-solid fa-truck text-blue-600 mr-1"></i> Kargoya Verildi
+                        </span>
+                    </div>
+                @endif
+
                 <!-- Delivery Details & Order Items -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Delivery Info -->
