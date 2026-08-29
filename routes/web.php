@@ -16,12 +16,12 @@ use App\Http\Controllers\Admin\ThreeDTemplateController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Admin\OrderController;
-use App\Http\Controllers\Admin\EmailTemplateController;
 use App\Http\Controllers\Admin\ShippingCompanyController;
 use App\Http\Controllers\Admin\MessageLogController;
 use App\Http\Controllers\Admin\HomeBannerController;
 use App\Http\Controllers\Admin\RevenueController;
 use App\Http\Controllers\Admin\MerchantController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\SeoController;
 
 // ─── SEO, Sitemap & XML Product Feed ──────────────────────────────────────────
@@ -77,7 +77,7 @@ Route::get('/', function (Request $request) {
         applyProductSearch($query, $search);
     }
 
-    $products   = $query->ordered()->paginate(20)->withQueryString();
+    $products   = $query->ordered()->get();
     $categories = Category::withCount('products')->get();
     
     $homeBanners = \Illuminate\Support\Facades\Cache::remember('home_banners_active', 600, function () {
@@ -158,7 +158,7 @@ Route::get('/urunler', function () {
         applyProductSearch($query, $search);
     }
 
-    $products   = $query->ordered()->paginate(20)->withQueryString();
+    $products   = $query->ordered()->get();
     $categories = Category::all();
 
     return view('products.index', compact('products', 'categories'));
@@ -261,13 +261,6 @@ Route::prefix('yonetim')->middleware(['auth', 'admin'])->group(function () {
     Route::resource('siparisler', OrderController::class)->only(['index', 'show', 'update', 'destroy'])->names('admin.orders');
     Route::resource('kargo-sirketleri', ShippingCompanyController::class)->except(['create', 'show', 'edit'])->names('admin.shipping_companies');
 
-    // E-Posta Şablon Yönetimi
-    Route::get('/eposta-sablonlari',              [EmailTemplateController::class, 'index'])->name('admin.email_templates.index');
-    Route::get('/eposta-sablonlari/{id}/edit',    [EmailTemplateController::class, 'edit'])->name('admin.email_templates.edit');
-    Route::put('/eposta-sablonlari/{id}',         [EmailTemplateController::class, 'update'])->name('admin.email_templates.update');
-    Route::get('/eposta-sablonlari/{id}/preview', [EmailTemplateController::class, 'preview'])->name('admin.email_templates.preview');
-    Route::post('/eposta-sablonlari/{id}/test',   [EmailTemplateController::class, 'sendTest'])->name('admin.email_templates.test');
-
     // İletişim & Mesaj Logları
     Route::get('/loglar/mail',         [MessageLogController::class, 'mailLogs'])->name('admin.mail_logs.index');
     Route::get('/loglar/sms',          [MessageLogController::class, 'smsLogs'])->name('admin.sms_logs.index');
@@ -277,5 +270,13 @@ Route::prefix('yonetim')->middleware(['auth', 'admin'])->group(function () {
     // Gelir Tablosu & İstatistikler
     Route::get('/gelir-tablosu', [RevenueController::class, 'index'])->name('admin.revenue.index');
 
+    // Sistem & Bildirim Ayarları
+    Route::get('/ayarlar',            [SettingController::class, 'index'])->name('admin.settings.index');
+    Route::post('/ayarlar',           [SettingController::class, 'update'])->name('admin.settings.update');
+    Route::post('/ayarlar/test-sms',   [SettingController::class, 'testSms'])->name('admin.settings.test_sms');
+    Route::post('/ayarlar/test-email', [SettingController::class, 'testEmail'])->name('admin.settings.test_email');
+
+    // Canlı Bildirim Merkezi API
+    Route::get('/api/son-siparisler', [SettingController::class, 'recentOrdersApi'])->name('admin.orders.recent_api');
 
 });

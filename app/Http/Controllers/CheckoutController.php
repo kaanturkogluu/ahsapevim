@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\IyzicoService;
 use App\Services\NetgsmService;
+use App\Jobs\SendNewOrderNotificationJob;
 
 class CheckoutController extends Controller
 {
@@ -168,19 +169,11 @@ class CheckoutController extends Controller
                 }
             }
 
-            $orderData = [
-                'user_name' => $order->name,
-                'order_id' => $order->id,
-                'tracking_code' => $order->tracking_code ?: 'AHS-' . $order->id,
-                'total_amount' => number_format($order->total_amount, 2, ',', '.'),
-                'delivery_address' => $order->address . ' (' . ($order->city ?: 'Manisa') . ')',
-                'product_details' => $this->formatOrderItemsHtml($order),
-            ];
-
+            // Dispatch queued notification job for admin (email & SMS) and customer
             try {
-                \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_success', $orderData));
+                SendNewOrderNotificationJob::dispatch($order->id);
             } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('Mail Kuyruğa Gönderim Hatası: ' . $e->getMessage());
+                \Illuminate\Support\Facades\Log::error('SendNewOrderNotificationJob EFT dispatch error: ' . $e->getMessage());
             }
 
             \Illuminate\Support\Facades\Log::channel('payment')->info("=== EFT/HAVALE ODEME [Order #{$order->id}] ===", [
@@ -319,37 +312,11 @@ class CheckoutController extends Controller
                     }
                 }
 
-                // Queue Order Confirmation Email to Customer using Dynamic Mail Template
-                $orderData = [
-                    'user_name' => $order->name,
-                    'order_id' => $order->id,
-                    'tracking_code' => $order->tracking_code ?: 'AHS-' . $order->id,
-                    'total_amount' => number_format($order->total_amount, 2, ',', '.'),
-                    'delivery_address' => $order->address . ' (' . ($order->city ?: 'Manisa') . ')',
-                    'product_details' => $this->formatOrderItemsHtml($order),
-                ];
-
+                // Dispatch queued notification job for admin (email & SMS) and customer
                 try {
-                    \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_success', $orderData));
-                    app(\App\Services\MailService::class)->logMailable($order->email, "Siparişiniz Alındı (#{$order->id})", "Sipariş onay e-postası gönderildi.", 'success', null, $order->id);
+                    SendNewOrderNotificationJob::dispatch($order->id);
                 } catch (\Throwable $e) {
-                    \Illuminate\Support\Facades\Log::error('Mail Kuyruğa Gönderim Hatası: ' . $e->getMessage());
-                    app(\App\Services\MailService::class)->logMailable($order->email, "Siparişiniz Alındı (#{$order->id})", "Sipariş onay e-postası", 'failed', $e->getMessage(), $order->id);
-                }
-
-                // Send SMS to customer and shop owner via Netgsm and log
-                try {
-                    $netgsm = app(NetgsmService::class);
-                    $customerMsg = "Degerli musterimiz, #" . $order->id . " nolu siparisiniz basariyla alinmistir. Siparisiniz en kisa surede kargolanacaktır. Bizi tercih ettiginiz icin tesekkur ederiz.";
-                    $netgsm->sendSms($order->phone, $customerMsg, $order->id, 'automated');
-
-                    $adminPhone = config('services.netgsm.admin_phone');
-                    if ($adminPhone) {
-                        $adminMsg = "Yeni siparis alindi! Siparis No: #" . $order->id . ", Tutar: " . number_format($order->total_amount, 2, ',', '.') . " TL. Musteri: " . $order->name;
-                        $netgsm->sendSms($adminPhone, $adminMsg, $order->id, 'automated');
-                    }
-                } catch (\Throwable $e) {
-                    \Illuminate\Support\Facades\Log::error('SMS Gönderim Hatası: ' . $e->getMessage());
+                    \Illuminate\Support\Facades\Log::error('SendNewOrderNotificationJob Iyzico dispatch error: ' . $e->getMessage());
                 }
 
                 // Clear Cart Session ONLY on successful payment

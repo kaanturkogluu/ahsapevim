@@ -20,9 +20,9 @@ class NetgsmService
 
     public function __construct()
     {
-        $this->usercode = config('services.netgsm.usercode');
-        $this->password = config('services.netgsm.password');
-        $this->header   = config('services.netgsm.header');
+        $this->usercode = \App\Models\Setting::get('netgsm_usercode', config('services.netgsm.usercode'));
+        $this->password = \App\Models\Setting::get('netgsm_password', config('services.netgsm.password'));
+        $this->header   = \App\Models\Setting::get('netgsm_header', config('services.netgsm.header'));
     }
 
     /**

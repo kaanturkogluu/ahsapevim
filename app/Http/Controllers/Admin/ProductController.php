@@ -14,7 +14,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with(['category', 'threeDTemplate'])->ordered()->paginate(30)->withQueryString();
+        $products = Product::with(['category', 'threeDTemplate'])->ordered()->get();
         return view('admin.products.index', compact('products'));
     }
 

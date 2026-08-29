@@ -42,7 +42,7 @@
                             Tüm El Yapımı Ürünler
                         @endif
                     </span>
-                    <span class="text-xs bg-brand/10 text-brand font-bold px-2 py-0.5 rounded-full">{{ $products->total() }} ürün</span>
+                    <span class="text-xs bg-brand/10 text-brand font-bold px-2 py-0.5 rounded-full">{{ $products->count() }} ürün</span>
                     @if(request('q') || request('search'))
                         <a href="{{ url('/urunler') }}" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-2.5 py-1 rounded-lg transition inline-flex items-center gap-1">
                             <i class="fa-solid fa-xmark"></i> Aramayı Temizle
@@ -152,11 +152,6 @@
                         </a>
                     </div>
                 @endforelse
-            </div>
-
-            {{-- Pagination --}}
-            <div class="mt-8">
-                {{ $products->links() }}
             </div>
         </div>
     </div>

@@ -163,12 +163,6 @@
                 <span class="nav-label">Kargo Şirketleri</span>
             </a>
 
-            <a href="{{ route('admin.email_templates.index') }}"
-               class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#3D332B] transition-colors text-sm font-medium text-gray-300 hover:text-white {{ request()->routeIs('admin.email_templates*') ? 'active text-white' : '' }}">
-                <i class="fa-solid fa-envelope-open-text w-4 text-center text-yellow-400"></i>
-                <span class="nav-label">E-Posta Şablonları</span>
-            </a>
-
             <a href="{{ route('admin.mail_logs.index') }}"
                class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#3D332B] transition-colors text-sm font-medium text-gray-300 hover:text-white {{ request()->routeIs('admin.mail_logs*') ? 'active text-white' : '' }}">
                 <i class="fa-solid fa-envelope-circle-check w-4 text-center text-amber-400"></i>
@@ -194,6 +188,15 @@
                class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#3D332B] transition-colors text-sm font-medium text-gray-300 hover:text-white {{ request()->routeIs('admin.banners*') ? 'active text-white' : '' }}">
                 <i class="fa-solid fa-images w-4 text-center text-[#C87A53]"></i>
                 <span class="nav-label">Anasayfa Görselleri</span>
+            </a>
+
+            {{-- Sistem & Ayarlar --}}
+            <p class="nav-label px-2 pt-4 pb-1 text-[9px] font-bold text-[#6B5C52] uppercase tracking-widest">Sistem</p>
+
+            <a href="{{ route('admin.settings.index') }}"
+               class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#3D332B] transition-colors text-sm font-medium text-gray-300 hover:text-white {{ request()->routeIs('admin.settings*') ? 'active text-white' : '' }}">
+                <i class="fa-solid fa-gear w-4 text-center text-teal-400"></i>
+                <span class="nav-label">Sistem Ayarları</span>
             </a>
 
             <a href="{{ url('/') }}" target="_blank"
@@ -237,8 +240,48 @@
                 </div>
             </div>
 
-            {{-- Right side: quick actions --}}
-            <div class="flex items-center gap-2">
+            {{-- Right side: quick actions & notification center --}}
+            <div class="flex items-center gap-3">
+                {{-- Live Orders Notification Center --}}
+                <div class="relative" id="orderNotificationDropdownContainer">
+                    <button onclick="toggleOrderNotifications()" id="notificationBellBtn"
+                            class="relative w-9 h-9 rounded-lg bg-gray-100 hover:bg-amber-100/70 text-gray-700 hover:text-[#C87A53] flex items-center justify-center transition-all"
+                            title="Sipariş Bildirimleri">
+                        <i class="fa-solid fa-bell text-sm"></i>
+                        <span id="orderNotificationBadge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-extrabold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-xs">
+                            0
+                        </span>
+                    </button>
+
+                    {{-- Notification Dropdown --}}
+                    <div id="orderNotificationMenu"
+                         class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden transform transition-all duration-200 origin-top-right">
+                        <div class="p-3.5 bg-[#29221C] text-white flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-bell text-amber-400 text-sm"></i>
+                                <span class="font-bold text-xs">Sipariş Bildirimleri</span>
+                            </div>
+                            <span id="notificationDropdownCount" class="text-[10px] bg-[#C87A53] text-white px-2 py-0.5 rounded-full font-bold">0 Sipariş</span>
+                        </div>
+
+                        <div id="orderNotificationsList" class="max-h-80 overflow-y-auto divide-y divide-gray-100 text-xs">
+                            <div class="p-6 text-center text-gray-400">
+                                <i class="fa-solid fa-circle-notch fa-spin text-lg mb-2 block text-[#C87A53]"></i>
+                                Bildirimler kontrol ediliyor...
+                            </div>
+                        </div>
+
+                        <div class="p-2.5 bg-gray-50 border-t border-gray-100 flex items-center justify-between text-xs">
+                            <a href="{{ url('/yonetim/siparisler') }}" class="font-bold text-[#C87A53] hover:underline flex items-center gap-1">
+                                Tüm Siparişler <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </a>
+                            <button type="button" onclick="playNotificationChime()" title="Ses Testi" class="text-gray-400 hover:text-gray-600 text-[11px] flex items-center gap-1">
+                                <i class="fa-solid fa-volume-high text-[#C87A53]"></i> Ses Testi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- Site link shortcut --}}
                 <a href="{{ url('/') }}" target="_blank"
                    class="hidden sm:flex items-center gap-1.5 text-xs text-gray-500 hover:text-[#C87A53] transition px-3 py-1.5 rounded-lg hover:bg-amber-50 border border-transparent hover:border-amber-100">
@@ -363,6 +406,163 @@
         }, 4000);
 
         initSidebar();
+
+        // ── Canlı Sipariş Bildirim Sistemi (Web Audio + AJAX Polling) ───────────
+        let lastKnownOrderId = 0;
+        let isFirstFetch = true;
+
+        // Web Audio API ile melodik uyarı sesi (Harici dosya gerektirmez)
+        function playNotificationChime() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6 (Do majör neşeli çan melodisi)
+                notes.forEach((freq, index) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, ctx.currentTime + (index * 0.1));
+                    
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime + (index * 0.1));
+                    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + (index * 0.1) + 0.35);
+                    
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    
+                    osc.start(ctx.currentTime + (index * 0.1));
+                    osc.stop(ctx.currentTime + (index * 0.1) + 0.4);
+                });
+            } catch (err) {
+                console.warn('Web Audio error:', err);
+            }
+        }
+
+        function showLiveOrderToast(order) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-6 right-6 z-50 max-w-sm bg-white border-2 border-[#C87A53] rounded-2xl shadow-2xl p-4 flex items-start gap-3.5 transform transition-all duration-300 translate-y-10 opacity-0';
+            toast.innerHTML = `
+                <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-md">
+                    <i class="fa-solid fa-bag-shopping text-base animate-bounce"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="text-[11px] font-bold text-[#C87A53] uppercase tracking-wider">🎉 Yeni Sipariş Geldi!</div>
+                    <div class="text-xs font-extrabold text-gray-900 truncate mt-0.5">#\${order.id} — \${order.name}</div>
+                    <div class="text-xs text-gray-600 mt-0.5">Tutar: <strong class="text-emerald-700">\${order.total_amount}</strong></div>
+                    <a href="\${order.url}" class="inline-flex items-center gap-1 text-[11px] font-bold text-[#C87A53] hover:underline mt-2">
+                        Siparişi İncele <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                    </a>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-gray-600 p-1">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+            }, 50);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-4');
+                setTimeout(() => toast.remove(), 400);
+            }, 8000);
+        }
+
+        async function fetchRecentOrders() {
+            try {
+                const response = await fetch('/yonetim/api/son-siparisler?last_order_id=' + lastKnownOrderId, {
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                if (!response.ok) return;
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    const badge = document.getElementById('orderNotificationBadge');
+                    const countLabel = document.getElementById('notificationDropdownCount');
+                    const list = document.getElementById('orderNotificationsList');
+                    
+                    if (data.count > 0) {
+                        badge.innerText = data.count > 99 ? '99+' : data.count;
+                        badge.classList.remove('hidden');
+                        countLabel.innerText = data.count + ' Yeni';
+                    } else {
+                        badge.classList.add('hidden');
+                        countLabel.innerText = '0 Yeni';
+                    }
+
+                    // Eğer yeni bir sipariş geldiyse ses çal ve toast göster
+                    if (!isFirstFetch && data.has_newer && data.orders && data.orders.length > 0) {
+                        playNotificationChime();
+                        showLiveOrderToast(data.orders[0]);
+                    }
+
+                    if (data.latest_id) {
+                        lastKnownOrderId = data.latest_id;
+                    }
+
+                    // Dropdown içeriğini doldur
+                    if (data.orders && data.orders.length > 0) {
+                        list.innerHTML = data.orders.map(order => `
+                            <a href="\${order.url}" class="p-3 hover:bg-amber-50/50 flex items-center justify-between gap-3 transition group block">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <div class="w-8 h-8 rounded-lg \${order.is_new ? 'bg-amber-100 text-[#C87A53]' : 'bg-gray-100 text-gray-500'} flex items-center justify-center shrink-0">
+                                        <i class="fa-solid fa-shopping-bag text-xs"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div class="font-bold text-gray-900 truncate group-hover:text-[#C87A53] text-xs">
+                                            #\${order.id} — \${order.name}
+                                        </div>
+                                        <div class="text-[10px] text-gray-400 mt-0.5 flex items-center gap-1.5">
+                                            <span>\${order.time_ago}</span>
+                                            <span>•</span>
+                                            <span class="font-semibold text-emerald-600">\${order.status}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="font-extrabold text-[#C87A53] text-xs whitespace-nowrap">
+                                    \${order.total_amount}
+                                </div>
+                            </a>
+                        `).join('');
+                    } else {
+                        list.innerHTML = `
+                            <div class="p-6 text-center text-gray-400 text-xs">
+                                <i class="fa-solid fa-inbox text-2xl text-gray-300 mb-2 block"></i>
+                                Henüz bekleyen yeni sipariş bulunmuyor.
+                            </div>
+                        `;
+                    }
+
+                    isFirstFetch = false;
+                }
+            } catch (err) {
+                console.warn('Notification fetch error:', err);
+            }
+        }
+
+        function toggleOrderNotifications() {
+            const menu = document.getElementById('orderNotificationMenu');
+            menu.classList.toggle('hidden');
+            if (!menu.classList.contains('hidden')) {
+                fetchRecentOrders();
+            }
+        }
+
+        // Dropdown dışına tıklandığında kapat
+        document.addEventListener('click', function(e) {
+            const container = document.getElementById('orderNotificationDropdownContainer');
+            const menu = document.getElementById('orderNotificationMenu');
+            if (container && menu && !container.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        // Sayfa yüklendiğinde ve her 30 saniyede bir kontrol et
+        fetchRecentOrders();
+        setInterval(fetchRecentOrders, 30000);
     </script>
 
     @stack('scripts')

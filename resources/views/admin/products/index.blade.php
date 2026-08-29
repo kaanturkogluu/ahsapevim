@@ -122,12 +122,6 @@
             </tbody>
         </table>
     </div>
-
-    @if($products->hasPages())
-        <div class="mt-6">
-            {{ $products->links() }}
-        </div>
-    @endif
 </div>
 
 <!-- Otomatik Sıralama Modal -->
