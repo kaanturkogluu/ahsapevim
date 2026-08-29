@@ -443,22 +443,21 @@
         function showLiveOrderToast(order) {
             const toast = document.createElement('div');
             toast.className = 'fixed bottom-6 right-6 z-50 max-w-sm bg-white border-2 border-[#C87A53] rounded-2xl shadow-2xl p-4 flex items-start gap-3.5 transform transition-all duration-300 translate-y-10 opacity-0';
-            toast.innerHTML = `
-                <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-md">
-                    <i class="fa-solid fa-bag-shopping text-base animate-bounce"></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="text-[11px] font-bold text-[#C87A53] uppercase tracking-wider">🎉 Yeni Sipariş Geldi!</div>
-                    <div class="text-xs font-extrabold text-gray-900 truncate mt-0.5">#\${order.id} — \${order.name}</div>
-                    <div class="text-xs text-gray-600 mt-0.5">Tutar: <strong class="text-emerald-700">\${order.total_amount}</strong></div>
-                    <a href="\${order.url}" class="inline-flex items-center gap-1 text-[11px] font-bold text-[#C87A53] hover:underline mt-2">
-                        Siparişi İncele <i class="fa-solid fa-arrow-right text-[9px]"></i>
-                    </a>
-                </div>
-                <button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-gray-600 p-1">
-                    <i class="fa-solid fa-times"></i>
-                </button>
-            `;
+            toast.innerHTML = 
+                '<div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-md">' +
+                    '<i class="fa-solid fa-bag-shopping text-base animate-bounce"></i>' +
+                '</div>' +
+                '<div class="flex-1 min-w-0">' +
+                    '<div class="text-[11px] font-bold text-[#C87A53] uppercase tracking-wider">🎉 Yeni Sipariş Geldi!</div>' +
+                    '<div class="text-xs font-extrabold text-gray-900 truncate mt-0.5">#' + order.id + ' — ' + order.name + '</div>' +
+                    '<div class="text-xs text-gray-600 mt-0.5">Tutar: <strong class="text-emerald-700">' + order.total_amount + '</strong></div>' +
+                    '<a href="' + order.url + '" class="inline-flex items-center gap-1 text-[11px] font-bold text-[#C87A53] hover:underline mt-2">' +
+                        'Siparişi İncele <i class="fa-solid fa-arrow-right text-[9px]"></i>' +
+                    '</a>' +
+                '</div>' +
+                '<button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-gray-600 p-1">' +
+                    '<i class="fa-solid fa-times"></i>' +
+                '</button>';
             document.body.appendChild(toast);
             
             setTimeout(() => {
@@ -505,35 +504,35 @@
 
                     // Dropdown içeriğini doldur
                     if (data.orders && data.orders.length > 0) {
-                        list.innerHTML = data.orders.map(order => `
-                            <a href="\${order.url}" class="p-3 hover:bg-amber-50/50 flex items-center justify-between gap-3 transition group block">
-                                <div class="flex items-center gap-2.5 min-w-0">
-                                    <div class="w-8 h-8 rounded-lg \${order.is_new ? 'bg-amber-100 text-[#C87A53]' : 'bg-gray-100 text-gray-500'} flex items-center justify-center shrink-0">
-                                        <i class="fa-solid fa-shopping-bag text-xs"></i>
-                                    </div>
-                                    <div class="min-w-0">
-                                        <div class="font-bold text-gray-900 truncate group-hover:text-[#C87A53] text-xs">
-                                            #\${order.id} — \${order.name}
-                                        </div>
-                                        <div class="text-[10px] text-gray-400 mt-0.5 flex items-center gap-1.5">
-                                            <span>\${order.time_ago}</span>
-                                            <span>•</span>
-                                            <span class="font-semibold text-emerald-600">\${order.status}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="font-extrabold text-[#C87A53] text-xs whitespace-nowrap">
-                                    \${order.total_amount}
-                                </div>
-                            </a>
-                        `).join('');
+                        list.innerHTML = data.orders.map(function(order) {
+                            var iconBg = order.is_new ? 'bg-amber-100 text-[#C87A53]' : 'bg-gray-100 text-gray-500';
+                            return '<a href="' + order.url + '" class="p-3 hover:bg-amber-50/50 flex items-center justify-between gap-3 transition group block">' +
+                                '<div class="flex items-center gap-2.5 min-w-0">' +
+                                    '<div class="w-8 h-8 rounded-lg ' + iconBg + ' flex items-center justify-center shrink-0">' +
+                                        '<i class="fa-solid fa-shopping-bag text-xs"></i>' +
+                                    '</div>' +
+                                    '<div class="min-w-0">' +
+                                        '<div class="font-bold text-gray-900 truncate group-hover:text-[#C87A53] text-xs">' +
+                                            '#' + order.id + ' — ' + order.name +
+                                        '</div>' +
+                                        '<div class="text-[10px] text-gray-400 mt-0.5 flex items-center gap-1.5">' +
+                                            '<span>' + order.time_ago + '</span>' +
+                                            '<span>•</span>' +
+                                            '<span class="font-semibold text-emerald-600">' + order.status + '</span>' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>' +
+                                '<div class="font-extrabold text-[#C87A53] text-xs whitespace-nowrap">' +
+                                    order.total_amount +
+                                '</div>' +
+                            '</a>';
+                        }).join('');
                     } else {
-                        list.innerHTML = `
-                            <div class="p-6 text-center text-gray-400 text-xs">
-                                <i class="fa-solid fa-inbox text-2xl text-gray-300 mb-2 block"></i>
-                                Henüz bekleyen yeni sipariş bulunmuyor.
-                            </div>
-                        `;
+                        list.innerHTML = 
+                            '<div class="p-6 text-center text-gray-400 text-xs">' +
+                                '<i class="fa-solid fa-inbox text-2xl text-gray-300 mb-2 block"></i>' +
+                                'Henüz bekleyen yeni sipariş bulunmuyor.' +
+                            '</div>';
                     }
 
                     isFirstFetch = false;

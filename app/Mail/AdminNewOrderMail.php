@@ -62,6 +62,17 @@ class AdminNewOrderMail extends Mailable implements ShouldQueue
             $paymentLabel = 'Banka Havalesi / EFT';
         }
 
+        $statusLabels = [
+            'pending'   => 'Ödeme Bekliyor',
+            'paid'      => 'Ödeme Alındı',
+            'preparing' => 'Hazırlanıyor',
+            'shipped'   => 'Kargoya Verildi',
+            'completed' => 'Tamamlandı',
+            'cancelled' => 'İptal Edildi',
+            'failed'    => 'Başarısız',
+        ];
+        $statusLabel = $statusLabels[$order->status] ?? $order->status;
+
         $itemsRows = '';
         foreach ($order->items as $item) {
             $productName = e($item->product ? $item->product->name : 'Ahşap Ürün');
@@ -170,7 +181,7 @@ NOTE;
                                         <div style="font-size: 11px; font-weight: bold; color: #8C6239; text-transform: uppercase; margin-bottom: 8px; border-bottom: 1px solid #E8E0D2; padding-bottom: 4px;">📦 Sipariş Detayı</div>
                                         <div style="font-size: 12px; color: #444; margin-bottom: 3px;"><strong>Takip Kodu:</strong> <span style="font-family: monospace; color: #C87A53; font-weight: bold;">{$order->tracking_code}</span></div>
                                         <div style="font-size: 12px; color: #444; margin-bottom: 3px;"><strong>Ödeme Yöntemi:</strong> {$paymentLabel}</div>
-                                        <div style="font-size: 12px; color: #444;"><strong>Durum:</strong> <span style="display: inline-block; background-color: #E6F4EA; color: #137333; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px;">{$order->status}</span></div>
+                                        <div style="font-size: 12px; color: #444;"><strong>Durum:</strong> <span style="display: inline-block; background-color: #E6F4EA; color: #137333; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px;">{$statusLabel}</span></div>
                                     </td>
                                 </tr>
                             </table>

@@ -95,16 +95,29 @@ class SettingController extends Controller
         try {
             $lastOrderId = (int)$request->input('last_order_id', 0);
             
+            $statusLabels = [
+                'pending'   => 'Ödeme Bekliyor',
+                'paid'      => 'Ödeme Alındı',
+                'preparing' => 'Hazırlanıyor',
+                'shipped'   => 'Kargoya Verildi',
+                'completed' => 'Tamamlandı',
+                'cancelled' => 'İptal Edildi',
+                'failed'    => 'Başarısız',
+            ];
+
             $recentOrders = Order::latest()
                 ->take(6)
                 ->get()
-                ->map(function ($order) {
+                ->map(function ($order) use ($statusLabels) {
+                    $statusText = $statusLabels[$order->status] ?? $order->status;
+                    $timeAgo = $order->created_at ? $order->created_at->locale('tr')->diffForHumans() : 'Az önce';
+
                     return [
                         'id'            => $order->id,
                         'name'          => $order->name,
                         'total_amount'  => number_format($order->total_amount, 2, ',', '.') . ' ₺',
-                        'status'        => $order->status,
-                        'time_ago'      => $order->created_at ? $order->created_at->diffForHumans() : 'Az önce',
+                        'status'        => $statusText,
+                        'time_ago'      => $timeAgo,
                         'url'           => route('admin.orders.show', $order->id),
                         'is_new'        => $order->created_at ? $order->created_at->greaterThan(now()->subHours(24)) : false,
                     ];
