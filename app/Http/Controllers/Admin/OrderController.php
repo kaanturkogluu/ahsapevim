@@ -50,6 +50,7 @@ class OrderController extends Controller
             'status' => 'required|string|in:pending,paid,preparing,shipped,completed,cancelled,failed',
             'shipping_company_id' => 'nullable|exists:shipping_companies,id',
             'cargo_tracking_code' => 'nullable|string|max:100',
+            'payment_error_reason' => 'nullable|string|max:500',
             'send_notification' => 'nullable',
         ]);
 
@@ -62,14 +63,20 @@ class OrderController extends Controller
             $newStatus = 'shipped';
         }
 
-        $order->update([
+        $orderUpdateData = [
             'status' => $newStatus,
             'shipping_company_id' => $request->shipping_company_id ?: $order->shipping_company_id,
             'cargo_tracking_code' => $request->cargo_tracking_code ?: $order->cargo_tracking_code,
-        ]);
+        ];
+
+        if ($request->filled('payment_error_reason')) {
+            $orderUpdateData['payment_error_reason'] = $request->payment_error_reason;
+        }
+
+        $order->update($orderUpdateData);
 
         // Refresh order model with relationship
-        $order->load('shippingCompany');
+        $order->load(['shippingCompany', 'items.product']);
         $shippingCompanyName = $order->shippingCompany ? $order->shippingCompany->name : 'Kargo Firması';
         $cargoCode = $order->cargo_tracking_code ?: 'Belirtilmedi';
 
@@ -83,7 +90,7 @@ class OrderController extends Controller
                 'tracking_code'       => $order->tracking_code ?: 'AHS-' . $order->id,
                 'shipping_company'    => $shippingCompanyName,
                 'cargo_tracking_code' => $cargoCode,
-                'cancellation_reason' => $order->payment_error_reason ?: 'Müşteri talebi / işlem iptali',
+                'cancellation_reason' => $order->payment_error_reason ?: 'Müşteri talebi / sipariş iptali',
                 'total_amount'        => number_format($order->total_amount, 2, ',', '.'),
                 'delivery_address'    => $order->address . ' (' . ($order->city ?: 'Manisa') . ')',
                 'product_details'     => $this->formatOrderItemsHtml($order),
@@ -114,14 +121,50 @@ class OrderController extends Controller
                 // 2. Diğer Durum Değişiklikleri Bildirimi
                 try {
                     if ($newStatus === 'completed') {
+                        // Tamamlandı E-Posta
                         \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_completed', $data));
                         app(\App\Services\MailService::class)->logMailable($order->email, "Siparişiniz Teslim Edildi (#{$order->id})", "Sipariş teslim edildi ve tamamlandı olarak işaretlendi.", 'success', null, $order->id);
+
+                        // Tamamlandı SMS
+                        try {
+                            $completedSms = "Sayın {$order->name}, #{$order->id} numaralı siparişiniz teslim edilmiştir. AhşapEvim'i tercih ettiğiniz için teşekkür ederiz.";
+                            app(NetgsmService::class)->sendSms($order->phone, $completedSms, $order->id, 'automated');
+                        } catch (\Throwable $smsEx) {
+                            \Illuminate\Support\Facades\Log::error('Teslim SMS Gönderim Hatası: ' . $smsEx->getMessage());
+                        }
                     } elseif ($newStatus === 'cancelled') {
+                        // İptal E-Postası Gönder
                         \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_cancelled', $data));
                         app(\App\Services\MailService::class)->logMailable($order->email, "Sipariş İptal Edildi (#{$order->id})", "Sipariş iptal olarak işaretlendi.", 'success', null, $order->id);
+
+                        // İptal SMS Gönderimi (Netgsm)
+                        try {
+                            $cancelSms = "Sayın {$order->name}, #{$order->id} numaralı siparişiniz iptal edilmiştir. Detaylı bilgi veya sorularınız için bizimle iletişime geçebilirsiniz. AhşapEvim";
+                            app(NetgsmService::class)->sendSms($order->phone, $cancelSms, $order->id, 'automated');
+                        } catch (\Throwable $smsEx) {
+                            \Illuminate\Support\Facades\Log::error('İptal SMS Gönderim Hatası: ' . $smsEx->getMessage());
+                        }
+
+                        // Stokları geri yükle
+                        if (in_array($oldStatus, ['paid', 'preparing', 'pending'])) {
+                            foreach ($order->items as $item) {
+                                if ($item->product) {
+                                    $item->product->increment('stock', $item->quantity);
+                                }
+                            }
+                        }
                     } elseif ($newStatus === 'failed') {
+                        // Başarısız E-Posta
                         \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_failed', $data));
                         app(\App\Services\MailService::class)->logMailable($order->email, "Sipariş Ödeme / İşlem Başarısız (#{$order->id})", "Sipariş başarısız olarak işaretlendi.", 'success', null, $order->id);
+
+                        // Başarısız SMS
+                        try {
+                            $failedSms = "Sayın {$order->name}, #{$order->id} numaralı siparişinizin işlemi tamamlanamamıştır. Detaylı bilgi için bizimle iletişime geçebilirsiniz. AhşapEvim";
+                            app(NetgsmService::class)->sendSms($order->phone, $failedSms, $order->id, 'automated');
+                        } catch (\Throwable $smsEx) {
+                            \Illuminate\Support\Facades\Log::error('Başarısız SMS Gönderim Hatası: ' . $smsEx->getMessage());
+                        }
                     }
                 } catch (\Throwable $e) {
                     \Illuminate\Support\Facades\Log::error('Status Change Email Error: ' . $e->getMessage());

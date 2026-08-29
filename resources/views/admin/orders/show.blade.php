@@ -96,7 +96,7 @@
                     
                     <div>
                         <label class="block text-[10px] font-extrabold text-gray-500 uppercase mb-1">Sipariş Durumu</label>
-                        <select name="status" class="w-full text-xs font-bold border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] focus:ring-0 outline-none bg-white">
+                        <select name="status" id="orderStatusSelect" onchange="toggleCancellationReason(this.value)" class="w-full text-xs font-bold border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] focus:ring-0 outline-none bg-white">
                             <option value="paid" {{ $order->status === 'paid' ? 'selected' : '' }}>Ödendi / Hazırlanıyor</option>
                             <option value="shipped" {{ $order->status === 'shipped' ? 'selected' : '' }}>Kargolandı (Kargoya Verildi)</option>
                             <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Tamamlandı (Teslim Edildi)</option>
@@ -104,6 +104,12 @@
                             <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>İptal Edildi</option>
                             <option value="failed" {{ $order->status === 'failed' ? 'selected' : '' }}>Başarısız</option>
                         </select>
+                    </div>
+
+                    <div id="cancellationReasonDiv" class="{{ in_array($order->status, ['cancelled', 'failed']) ? '' : 'hidden' }}">
+                        <label class="block text-[10px] font-extrabold text-rose-800 uppercase mb-1">İptal / Başarısızlık Açıklaması (Opsiyonel)</label>
+                        <input type="text" name="payment_error_reason" placeholder="Örn: Müşteri talebi ile iptal edildi" value="{{ old('payment_error_reason', $order->payment_error_reason) }}" class="w-full text-xs border-rose-300 rounded-lg p-2 border focus:border-rose-500 outline-none bg-rose-50/50">
+                        <span class="text-[10px] text-gray-400 mt-0.5 block">Bu açıklama müşteriye giden iptal e-postasında yer alır.</span>
                     </div>
 
                     <div>
@@ -589,6 +595,16 @@ function closeSendMailModal() {
     if (modal) {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
+    }
+}
+
+function toggleCancellationReason(status) {
+    const div = document.getElementById('cancellationReasonDiv');
+    if (!div) return;
+    if (status === 'cancelled' || status === 'failed') {
+        div.classList.remove('hidden');
+    } else {
+        div.classList.add('hidden');
     }
 }
 </script>
