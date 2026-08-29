@@ -114,9 +114,6 @@ class Setting extends Model
                 'sms' => [
                     'netgsm_usercode', 'netgsm_password', 'netgsm_header',
                 ],
-                'general' => [
-                    'site_title', 'contact_phone', 'contact_whatsapp', 'contact_email', 'contact_address',
-                ],
             ];
 
             $result = [];

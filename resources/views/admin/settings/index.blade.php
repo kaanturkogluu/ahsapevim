@@ -46,12 +46,6 @@
                 <span>E-Posta & SMTP</span>
             </button>
 
-            <button type="button" onclick="switchTab('tab-general')" id="btn-tab-general"
-                    class="tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition-colors flex items-center gap-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100/50">
-                <i class="fa-solid fa-store text-sm"></i>
-                <span>Genel & İletişim</span>
-            </button>
-
             <button type="button" onclick="switchTab('tab-queue')" id="btn-tab-queue"
                     class="tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition-colors flex items-center gap-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100/50">
                 <i class="fa-solid fa-server text-sm"></i>
@@ -330,62 +324,7 @@
 
             </div>
 
-            {{-- ── TAB 4: GENEL & İLETİŞİM AYARLARI ── --}}
-            <div id="tab-general" class="tab-content hidden space-y-6">
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-                            Site Başlığı / Mağaza Adı
-                        </label>
-                        <input type="text" name="site_title"
-                               value="{{ old('site_title', $settings['general']['site_title'] ?? '') }}"
-                               placeholder="Ahşap Evim Manisa"
-                               class="w-full px-3.5 py-2.5 text-xs border border-gray-300 rounded-xl focus:border-[#C87A53] focus:ring-1 focus:ring-[#C87A53] outline-none transition bg-white">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-                            İletişim E-Posta Adresi
-                        </label>
-                        <input type="email" name="contact_email"
-                               value="{{ old('contact_email', $settings['general']['contact_email'] ?? '') }}"
-                               placeholder="info@ahsapevimmanisa.com"
-                               class="w-full px-3.5 py-2.5 text-xs border border-gray-300 rounded-xl focus:border-[#C87A53] focus:ring-1 focus:ring-[#C87A53] outline-none transition bg-white">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-                            Mağaza Telefon Numarası
-                        </label>
-                        <input type="text" name="contact_phone"
-                               value="{{ old('contact_phone', $settings['general']['contact_phone'] ?? '') }}"
-                               placeholder="0850 307 49 17"
-                               class="w-full px-3.5 py-2.5 text-xs border border-gray-300 rounded-xl focus:border-[#C87A53] focus:ring-1 focus:ring-[#C87A53] outline-none transition bg-white">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-                            WhatsApp Destek / Sipariş Hattı
-                        </label>
-                        <input type="text" name="contact_whatsapp"
-                               value="{{ old('contact_whatsapp', $settings['general']['contact_whatsapp'] ?? '') }}"
-                               placeholder="05XX XXX XX XX"
-                               class="w-full px-3.5 py-2.5 text-xs border border-gray-300 rounded-xl focus:border-[#C87A53] focus:ring-1 focus:ring-[#C87A53] outline-none transition bg-white">
-                    </div>
-
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-                            Atölye & Mağaza Adresi
-                        </label>
-                        <textarea name="contact_address" rows="3"
-                                  class="w-full p-3 text-xs border border-gray-300 rounded-xl focus:border-[#C87A53] focus:ring-1 focus:ring-[#C87A53] outline-none transition bg-white">{{ old('contact_address', $settings['general']['contact_address'] ?? '') }}</textarea>
-                    </div>
-                </div>
-
-            </div>
-
-            {{-- ── TAB 5: KUYRUK (QUEUE) MİMARİSİ ── --}}
+            {{-- ── TAB 4: KUYRUK (QUEUE) MİMARİSİ ── --}}
             <div id="tab-queue" class="tab-content hidden space-y-6">
                 
                 <div class="bg-gradient-to-r from-emerald-50 to-teal-50 p-5 rounded-2xl border border-emerald-200">

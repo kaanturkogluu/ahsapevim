@@ -26,11 +26,6 @@ class SettingController extends Controller
             'admin_phone'            => 'nullable|string|max:30',
             'admin_sms_template'     => 'nullable|string|max:500',
             'admin_email_subject'    => 'nullable|string|max:255',
-            'site_title'             => 'nullable|string|max:255',
-            'contact_phone'          => 'nullable|string|max:30',
-            'contact_whatsapp'       => 'nullable|string|max:30',
-            'contact_email'          => 'nullable|email|max:255',
-            'contact_address'        => 'nullable|string|max:500',
             'netgsm_usercode'        => 'nullable|string|max:100',
             'netgsm_password'        => 'nullable|string|max:100',
             'netgsm_header'          => 'nullable|string|max:50',
@@ -50,13 +45,6 @@ class SettingController extends Controller
         Setting::set('netgsm_usercode', $request->input('netgsm_usercode', ''), 'sms');
         Setting::set('netgsm_password', $request->input('netgsm_password', ''), 'sms');
         Setting::set('netgsm_header', $request->input('netgsm_header', ''), 'sms');
-
-        // Genel & İletişim Bilgileri
-        Setting::set('site_title', $request->input('site_title', ''), 'general');
-        Setting::set('contact_phone', $request->input('contact_phone', ''), 'general');
-        Setting::set('contact_whatsapp', $request->input('contact_whatsapp', ''), 'general');
-        Setting::set('contact_email', $request->input('contact_email', ''), 'general');
-        Setting::set('contact_address', $request->input('contact_address', ''), 'general');
 
         return redirect()->route('admin.settings.index')->with('success', 'Sistem ayarları ve bildirim yapılandırması başarıyla kaydedildi.');
     }
