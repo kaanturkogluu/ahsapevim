@@ -27,6 +27,9 @@ use App\Http\Controllers\SeoController;
 // ─── SEO, Sitemap & XML Product Feed ──────────────────────────────────────────
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('seo.sitemap');
 Route::get('/urunler.xml', [SeoController::class, 'urunlerXml'])->name('seo.urunler_xml');
+Route::get('/facebook-catalog.xml', [SeoController::class, 'facebookCatalogXml'])->name('seo.facebook_catalog_xml');
+Route::get('/facebook-feed.xml', [SeoController::class, 'facebookCatalogXml'])->name('seo.facebook_feed_xml');
+Route::get('/facebook/catalog.xml', [SeoController::class, 'facebookCatalogXml'])->name('seo.facebook_catalog_alt_xml');
 
 // ─── Shared Search Helper ─────────────────────────────────────────────────────
 // Applies partial-word product search filter to an existing Eloquent query.
@@ -271,10 +274,11 @@ Route::prefix('yonetim')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/gelir-tablosu', [RevenueController::class, 'index'])->name('admin.revenue.index');
 
     // Sistem & Bildirim Ayarları
-    Route::get('/ayarlar',            [SettingController::class, 'index'])->name('admin.settings.index');
-    Route::post('/ayarlar',           [SettingController::class, 'update'])->name('admin.settings.update');
-    Route::post('/ayarlar/test-sms',   [SettingController::class, 'testSms'])->name('admin.settings.test_sms');
-    Route::post('/ayarlar/test-email', [SettingController::class, 'testEmail'])->name('admin.settings.test_email');
+    Route::get('/ayarlar',                    [SettingController::class, 'index'])->name('admin.settings.index');
+    Route::post('/ayarlar',                   [SettingController::class, 'update'])->name('admin.settings.update');
+    Route::post('/ayarlar/test-sms',           [SettingController::class, 'testSms'])->name('admin.settings.test_sms');
+    Route::post('/ayarlar/test-email',         [SettingController::class, 'testEmail'])->name('admin.settings.test_email');
+    Route::post('/ayarlar/test-facebook-capi', [SettingController::class, 'testFacebookCapi'])->name('admin.settings.test_facebook_capi');
 
     // Canlı Bildirim Merkezi API
     Route::get('/api/son-siparisler', [SettingController::class, 'recentOrdersApi'])->name('admin.orders.recent_api');

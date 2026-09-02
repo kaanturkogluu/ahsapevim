@@ -35,7 +35,7 @@ class SendNewOrderNotificationJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(NetgsmService $netgsm, MailService $mailService): void
+    public function handle(NetgsmService $netgsm, MailService $mailService, \App\Services\FacebookCapiService $fbCapi): void
     {
         $order = Order::with('items.product')->find($this->orderId);
         if (!$order) {
@@ -44,6 +44,15 @@ class SendNewOrderNotificationJob implements ShouldQueue
         }
 
         Log::info("SendNewOrderNotificationJob: Processing notifications for Order #{$order->id} (Status: {$order->status}).");
+
+        // ── 0. Meta (Facebook) Conversions API (CAPI) Purchase Olayı ────
+        try {
+            if ($fbCapi->isConfigured()) {
+                $fbCapi->sendPurchaseEvent($order);
+            }
+        } catch (\Throwable $e) {
+            Log::error("SendNewOrderNotificationJob: Facebook CAPI error: " . $e->getMessage());
+        }
 
         // ── 1. Ayarları Oku ──────────────────────────────────────────────
         $adminEmail           = Setting::get('admin_email', config('mail.from.address') ?: 'info@ahsapevimmanisa.com');

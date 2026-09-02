@@ -54,4 +54,9 @@ return [
         'redirect'      => env('GOOGLE_REDIRECT_URI', 'http://localhost/ahsapevim/public/auth/google/callback'),
     ],
 
+    'facebook' => [
+        'pixel_id'     => env('FACEBOOK_PIXEL_ID', '1151884751162206'),
+        'access_token' => env('FACEBOOK_ACCESS_TOKEN', 'EAAaur7B13B4BSb1P8ZAdbIdT0uNY26NzpwVVtMsoKv3qvUD9kaVJo6nIT9O1XdGPMnbh1B4xT6lg2KItz4F65nfOmGIKPwkNG3vFHluziYhS7UlobwEQedeQZCW1CM5bEt1xXofLJAoKLqqQ5ucXpvjcMmZA7ZA7yuyXs8SA2BNqWi5ERCQdVJ713XJ7lAZDZD'),
+    ],
+
 ];

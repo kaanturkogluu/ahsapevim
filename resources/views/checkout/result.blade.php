@@ -197,4 +197,21 @@
         </div>
     </div>
 </div>
+
+@if(session('status') === 'success' && isset($resultOrder) && $resultOrder)
+<script>
+// Meta (Facebook) Pixel Purchase Event
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window.fbPixelTrack === 'function') {
+        window.fbPixelTrack('Purchase', {
+            content_type: 'product',
+            content_ids: @json($resultOrder->items->pluck('product_id')->map(fn($id) => (string)$id)->values()->toArray()),
+            value: {{ (float)$resultOrder->total_amount }},
+            currency: 'TRY',
+            order_id: '{{ $resultOrder->id }}'
+        });
+    }
+});
+</script>
+@endif
 @endsection

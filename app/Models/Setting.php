@@ -35,6 +35,10 @@ class Setting extends Model
             'netgsm_password'        => config('services.netgsm.password') ?: '42874.Kaan',
             'netgsm_header'          => config('services.netgsm.header') ?: 'Mete Almaz',
 
+            // Meta & Facebook (Pixel & Conversions API)
+            'facebook_pixel_id'      => config('services.facebook.pixel_id') ?: '1151884751162206',
+            'facebook_access_token'  => config('services.facebook.access_token') ?: 'EAAaur7B13B4BSb1P8ZAdbIdT0uNY26NzpwVVtMsoKv3qvUD9kaVJo6nIT9O1XdGPMnbh1B4xT6lg2KItz4F65nfOmGIKPwkNG3vFHluziYhS7UlobwEQedeQZCW1CM5bEt1xXofLJAoKLqqQ5ucXpvjcMmZA7ZA7yuyXs8SA2BNqWi5ERCQdVJ713XJ7lAZDZD',
+
             // Genel & İletişim Bilgileri
             'site_title'             => config('app.name', 'Ahşap Evim Manisa'),
             'contact_phone'          => '0850 307 49 17',
@@ -113,6 +117,9 @@ class Setting extends Model
                 ],
                 'sms' => [
                     'netgsm_usercode', 'netgsm_password', 'netgsm_header',
+                ],
+                'facebook' => [
+                    'facebook_pixel_id', 'facebook_access_token',
                 ],
             ];
 

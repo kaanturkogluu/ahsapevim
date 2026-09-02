@@ -49,6 +49,25 @@ class SeoController extends Controller
     }
 
     /**
+     * facebook-catalog.xml (Meta & Facebook Commerce Manager XML Feed) Oluştur ve Sun
+     */
+    public function facebookCatalogXml(): Response
+    {
+        $xml = $this->generateFacebookCatalogXml();
+
+        // Static facebook-catalog.xml dosyasına da yaz
+        try {
+            File::put(public_path('facebook-catalog.xml'), $xml);
+        } catch (\Throwable $e) {
+            // Log or ignore file system write permission issue
+        }
+
+        return response($xml, 200, [
+            'Content-Type' => 'application/xml; charset=utf-8'
+        ]);
+    }
+
+    /**
      * Dynamic sitemap.xml Content Generator
      */
     public function generateSitemapXml(): string
@@ -138,5 +157,15 @@ class SeoController extends Controller
         $products = Product::with('category')->where('is_active', true)->ordered()->get();
 
         return view('seo.urunler_xml', compact('products'))->render();
+    }
+
+    /**
+     * Dynamic facebook-catalog.xml (Facebook Commerce Manager XML Feed) Generator
+     */
+    public function generateFacebookCatalogXml(): string
+    {
+        $products = Product::with('category')->where('is_active', true)->ordered()->get();
+
+        return view('seo.facebook_catalog_xml', compact('products'))->render();
     }
 }

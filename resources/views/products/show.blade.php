@@ -1033,6 +1033,17 @@ function submitAddToCartAjax() {
             closeCustomizationModal();
             showToast(data.message || 'Kişiselleştirilmiş ürününüz sepete eklendi!', 'success');
             
+            // Meta (Facebook) Pixel AddToCart Event
+            if (typeof window.fbPixelTrack === 'function') {
+                window.fbPixelTrack('AddToCart', {
+                    content_name: @json($product->name),
+                    content_ids: [@json((string)($product->sku ?? $product->id))],
+                    content_type: 'product',
+                    value: {{ (float)$product->price }},
+                    currency: 'TRY'
+                });
+            }
+
             // Auto open Cart Drawer
             if (typeof openCartDrawer === 'function') {
                 setTimeout(openCartDrawer, 300);
@@ -1789,5 +1800,18 @@ function closeInstagramModal(e) {
     const iframe = document.getElementById('instagramIframe');
     if (iframe) iframe.src = '';
 }
+
+// Meta (Facebook) Pixel ViewContent Event
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window.fbPixelTrack === 'function') {
+        window.fbPixelTrack('ViewContent', {
+            content_name: @json($product->name),
+            content_ids: [@json((string)($product->sku ?? $product->id))],
+            content_type: 'product',
+            value: {{ (float)$product->price }},
+            currency: 'TRY'
+        });
+    }
+});
 </script>
 @endsection

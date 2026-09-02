@@ -524,5 +524,16 @@ function validateCheckoutForm(e) {
 
     return true;
 }
+
+// Meta (Facebook) Pixel InitiateCheckout Event
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window.fbPixelTrack === 'function') {
+        window.fbPixelTrack('InitiateCheckout', {
+            value: {{ (float)$total }},
+            currency: 'TRY',
+            num_items: {{ count($cart) }}
+        });
+    }
+});
 </script>
 @endsection

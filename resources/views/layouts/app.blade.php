@@ -12,6 +12,45 @@
       gtag('config', 'G-HYJZESTVSL');
     </script>
 
+    @php
+        $metaPixelId = \App\Models\Setting::get('facebook_pixel_id', config('services.facebook.pixel_id', '1151884751162206'));
+    @endphp
+    @if(!empty($metaPixelId))
+    <!-- Meta Pixel Code (Facebook) -->
+    <script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '{{ $metaPixelId }}');
+      fbq('track', 'PageView');
+
+      // Global Safe Meta Pixel Trigger
+      window.fbPixelTrack = function(eventName, data) {
+          try {
+              if (typeof fbq === 'function') {
+                  fbq('track', eventName, data || {});
+              }
+          } catch(e) {
+              console.warn('Meta Pixel error:', e);
+          }
+      };
+    </script>
+    <noscript>
+      <img height="1" width="1" style="display:none"
+           src="https://www.facebook.com/tr?id={{ $metaPixelId }}&ev=PageView&noscript=1"/>
+    </noscript>
+    <!-- End Meta Pixel Code -->
+    @else
+    <script>
+      window.fbPixelTrack = function(eventName, data) {};
+    </script>
+    @endif
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">

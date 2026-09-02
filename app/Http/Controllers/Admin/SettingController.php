@@ -29,6 +29,8 @@ class SettingController extends Controller
             'netgsm_usercode'        => 'nullable|string|max:100',
             'netgsm_password'        => 'nullable|string|max:100',
             'netgsm_header'          => 'nullable|string|max:50',
+            'facebook_pixel_id'      => 'nullable|string|max:100',
+            'facebook_access_token'  => 'nullable|string|max:500',
         ]);
 
         // Sipariş & Bildirim Ayarları
@@ -46,7 +48,22 @@ class SettingController extends Controller
         Setting::set('netgsm_password', $request->input('netgsm_password', ''), 'sms');
         Setting::set('netgsm_header', $request->input('netgsm_header', ''), 'sms');
 
-        return redirect()->route('admin.settings.index')->with('success', 'Sistem ayarları ve bildirim yapılandırması başarıyla kaydedildi.');
+        // Meta & Facebook (Pixel & CAPI) Ayarları
+        Setting::set('facebook_pixel_id', $request->input('facebook_pixel_id', ''), 'facebook');
+        Setting::set('facebook_access_token', $request->input('facebook_access_token', ''), 'facebook');
+
+        return redirect()->route('admin.settings.index')->with('success', 'Sistem ayarları, bildirimler ve Meta/Facebook yapılandırması başarıyla kaydedildi.');
+    }
+
+    public function testFacebookCapi(Request $request, \App\Services\FacebookCapiService $fbCapi)
+    {
+        $result = $fbCapi->testConnection();
+
+        if ($result['success']) {
+            return redirect()->back()->with('success', 'Meta (Facebook) Dönüşümler API (CAPI) testi başarılı! Olay Meta Event Manager paneline iletildi.');
+        } else {
+            return redirect()->back()->with('error', 'Meta CAPI Testi Başarısız: ' . ($result['message'] ?? 'Bilinmeyen hata'));
+        }
     }
 
     public function testSms(Request $request, NetgsmService $netgsm)
