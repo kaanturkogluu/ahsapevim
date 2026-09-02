@@ -75,16 +75,103 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 
-    <!-- Google Arama Logosu için Schema.org Yapılandırılmış Veri -->
+    <!-- Google Arama, Sitelinks & Zengin Sonuçlar için Schema.org Yapılandırılmış Verileri (JSON-LD) -->
     <script type="application/ld+json">
     {
       "@@context": "https://schema.org",
-      "@@type": "Organization",
-      "name": "Ahşap Evim",
-      "url": "https://ahsapevimmanisa.com",
-      "logo": "https://ahsapevimmanisa.com/favicon-192x192.png",
-      "sameAs": [
-        "https://www.instagram.com/ahsapevimmanisa"
+      "@@graph": [
+        {
+          "@@type": "WebSite",
+          "@@id": "https://ahsapevimmanisa.com/#website",
+          "url": "https://ahsapevimmanisa.com",
+          "name": "Ahşap Evim Manisa",
+          "description": "Kişiye Özel Masif Ahşap El Yapımı Çerçeveler ve Hediyelik Tasarımlar",
+          "publisher": {
+            "@@id": "https://ahsapevimmanisa.com/#organization"
+          },
+          "potentialAction": {
+            "@@type": "SearchAction",
+            "target": {
+              "@@type": "EntryPoint",
+              "urlTemplate": "https://ahsapevimmanisa.com/urunler?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@@type": "Store",
+          "@@id": "https://ahsapevimmanisa.com/#organization",
+          "name": "Ahşap Evim Manisa",
+          "url": "https://ahsapevimmanisa.com",
+          "logo": "https://ahsapevimmanisa.com/favicon-192x192.png",
+          "image": "https://ahsapevimmanisa.com/ahsaplogo_org.png",
+          "description": "Manisa'da masif ahşap el işçiliği ile kişiye özel fotoğraflı dönen ahşap çerçeveler ve hediyelik dekoratif tasarımlar üretiyoruz.",
+          "telephone": "0850 307 49 17",
+          "email": "info@ahsapevimmanisa.com",
+          "priceRange": "₺₺",
+          "address": {
+            "@@type": "PostalAddress",
+            "streetAddress": "1. Anafartalar Mah. Dr. Sadık Ahmet Cad.",
+            "addressLocality": "Şehzadeler",
+            "addressRegion": "Manisa",
+            "postalCode": "45010",
+            "addressCountry": "TR"
+          },
+          "contactPoint": [
+            {
+              "@@type": "ContactPoint",
+              "telephone": "+90-850-307-4917",
+              "contactType": "customer service",
+              "areaServed": "TR",
+              "availableLanguage": "Turkish"
+            }
+          ],
+          "sameAs": [
+            "https://www.instagram.com/ahsapevimmanisa",
+            "https://facebook.com/ahsapevimmanisa"
+          ]
+        },
+        {
+          "@@type": "ItemList",
+          "name": "Site Bağlantıları (Sitelinks Navigation)",
+          "itemListElement": [
+            {
+              "@@type": "SiteNavigationElement",
+              "position": 1,
+              "name": "Tüm Ahşap Ürünler & Çerçeveler",
+              "description": "Kişiye özel fotoğraflı masif ahşap dönen çerçeve modelleri",
+              "url": "https://ahsapevimmanisa.com/urunler"
+            },
+            {
+              "@@type": "SiteNavigationElement",
+              "position": 2,
+              "name": "İletişim & Atölye Adresi",
+              "description": "Ahşap Evim Manisa atölye adresi, müşteri hizmetleri telefonu ve WhatsApp hattı",
+              "url": "https://ahsapevimmanisa.com/iletisim"
+            },
+            {
+              "@@type": "SiteNavigationElement",
+              "position": 3,
+              "name": "Sipariş Takibi",
+              "description": "Verdiğiniz ahşap çerçeve siparişinizin kargo ve üretim durumunu sorgulayın",
+              "url": "https://ahsapevimmanisa.com/siparis-takip"
+            },
+            {
+              "@@type": "SiteNavigationElement",
+              "position": 4,
+              "name": "Giriş Yap / Üye Ol",
+              "description": "Ahşap Evim müşteri hesabınıza giriş yapın veya yeni üye olun",
+              "url": "https://ahsapevimmanisa.com/giris"
+            },
+            {
+              "@@type": "SiteNavigationElement",
+              "position": 5,
+              "name": "Hakkımızda",
+              "description": "Manisa'daki masif ahşap el işçiliği atölyemiz ve hikayemiz",
+              "url": "https://ahsapevimmanisa.com/hakkimizda"
+            }
+          ]
+        }
       ]
     }
     </script>
