@@ -207,9 +207,6 @@
                         <span class="text-xs font-black bg-black text-white px-2 py-0.5 uppercase tracking-wider">
                             ALICI (TESLİMAT BİLGİLERİ)
                         </span>
-                        @if($ord->identity_number)
-                            <span class="text-[10px] font-mono font-bold text-gray-700">TC: {{ $ord->identity_number }}</span>
-                        @endif
                     </div>
 
                     <div class="space-y-1">
