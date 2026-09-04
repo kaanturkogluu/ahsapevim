@@ -10,7 +10,10 @@
             <h3 class="text-lg font-bold text-gray-800">Sipariş #{{ $order->id }} Detayı</h3>
             <p class="text-xs text-gray-500 mt-1">Sipariş tarihi: {{ $order->created_at?->format('d.m.Y H:i') ?? '-' }}</p>
         </div>
-        <div class="flex items-center gap-3">
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+            <a href="{{ route('admin.orders.print_label', $order->id) }}" target="_blank" class="py-1.5 px-3 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold text-xs rounded-lg transition inline-flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-barcode"></i> Barkodlu Kargo Etiketi Yazdır
+            </a>
             <button type="button" onclick="openDeleteOrderModal({{ $order->id }}, 'Sipariş #{{ $order->id }} ({{ $order->name }})')" class="py-1.5 px-3 bg-rose-50 text-rose-600 hover:bg-rose-100 font-extrabold text-xs rounded-lg transition inline-flex items-center gap-1.5">
                 <i class="fa-solid fa-trash-can"></i> Siparişi Sil & Görselleri Temizle
             </button>
@@ -47,25 +50,38 @@
         </div>
 
         <!-- Teslimat Adresi -->
-        <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                <i class="fa-solid fa-truck text-blue-600"></i> Teslimat Adresi
-            </h4>
-            <div class="text-xs text-gray-700 space-y-1.5">
-                <p class="whitespace-pre-line">{{ $order->address }}</p>
-                <p><strong>Şehir / İlçe:</strong> {{ $order->city ?: 'Manisa' }} / {{ $order->district ?: 'Merkez' }}</p>
+        <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-truck text-blue-600"></i> Teslimat Adresi
+                    </h4>
+                    <a href="{{ route('admin.orders.print_label', $order->id) }}" target="_blank" class="text-[11px] text-[#C87A53] hover:underline font-bold inline-flex items-center gap-1" title="Etiketi yazdır">
+                        <i class="fa-solid fa-print"></i> Etiket
+                    </a>
+                </div>
+                <div class="text-xs text-gray-700 space-y-1.5">
+                    <p class="whitespace-pre-line">{{ $order->address }}</p>
+                    <p><strong>Şehir / İlçe:</strong> {{ $order->city ?: 'Manisa' }} / {{ $order->district ?: 'Merkez' }}</p>
+                </div>
+
+                @if(!empty($order->note))
+                    <div class="mt-3 pt-3 border-t border-gray-200/80">
+                        <span class="block text-[10px] font-extrabold text-[#C87A53] uppercase mb-1">
+                            <i class="fa-solid fa-note-sticky"></i> Müşteri Sipariş Notu:
+                        </span>
+                        <p class="text-xs text-gray-800 italic bg-white p-2 rounded-lg border border-amber-200/70 font-serif">
+                            "{{ $order->note }}"
+                        </p>
+                    </div>
+                @endif
             </div>
 
-            @if(!empty($order->note))
-                <div class="mt-3 pt-3 border-t border-gray-200/80">
-                    <span class="block text-[10px] font-extrabold text-[#C87A53] uppercase mb-1">
-                        <i class="fa-solid fa-note-sticky"></i> Müşteri Sipariş Notu:
-                    </span>
-                    <p class="text-xs text-gray-800 italic bg-white p-2 rounded-lg border border-amber-200/70 font-serif">
-                        "{{ $order->note }}"
-                    </p>
-                </div>
-            @endif
+            <div class="mt-4 pt-3 border-t border-gray-200/80">
+                <a href="{{ route('admin.orders.print_label', $order->id) }}" target="_blank" class="w-full py-1.5 px-3 bg-white hover:bg-gray-100 text-gray-800 font-bold text-xs rounded-lg border border-gray-300 transition flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-barcode text-[#C87A53]"></i> Kargo Etiketi Yazdır
+                </a>
+            </div>
         </div>
 
         <!-- Durum ve Kargo Takip Güncelleme Formu -->

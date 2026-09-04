@@ -40,6 +40,36 @@ class OrderController extends Controller
         return view('admin.orders.show', compact('order', 'shippingCompanies'));
     }
 
+    public function printLabel($id)
+    {
+        $order = Order::with(['items.product', 'shippingCompany'])->findOrFail($id);
+        return view('admin.orders.print_label', compact('order'));
+    }
+
+    public function printBulkLabels(Request $request)
+    {
+        $ids = $request->input('ids');
+        if (is_string($ids)) {
+            $ids = explode(',', $ids);
+        }
+
+        $query = Order::with(['items.product', 'shippingCompany']);
+        if (!empty($ids) && is_array($ids)) {
+            $query->whereIn('id', $ids);
+        } else {
+            // Varsayılan olarak ödenmiş/hazırlanan ve kargolanan son 20 siparişi getir
+            $query->whereIn('status', ['paid', 'preparing', 'shipped'])->latest()->take(20);
+        }
+
+        $orders = $query->get();
+
+        if ($orders->isEmpty()) {
+            return redirect()->route('admin.orders.index')->with('error', 'Yazdırılacak sipariş bulunamadı.');
+        }
+
+        return view('admin.orders.print_label', compact('orders'));
+    }
+
     public function update(Request $request, $id)
     {
         $order = Order::findOrFail($id);

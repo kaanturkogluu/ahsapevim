@@ -261,6 +261,8 @@ Route::prefix('yonetim')->middleware(['auth', 'admin'])->group(function () {
     Route::resource('sayfalar', PageController::class)->names('admin.pages');
     Route::resource('anasayfa-gorselleri', HomeBannerController::class)->names('admin.banners');
     Route::get('/siparis-gorsel-indir', [OrderController::class, 'downloadImage'])->name('admin.orders.download_image');
+    Route::get('/siparisler/toplu-etiket-yazdir', [OrderController::class, 'printBulkLabels'])->name('admin.orders.print_bulk_labels');
+    Route::get('/siparisler/{id}/etiket-yazdir', [OrderController::class, 'printLabel'])->name('admin.orders.print_label');
     Route::resource('siparisler', OrderController::class)->only(['index', 'show', 'update', 'destroy'])->names('admin.orders');
     Route::resource('kargo-sirketleri', ShippingCompanyController::class)->except(['create', 'show', 'edit'])->names('admin.shipping_companies');
 

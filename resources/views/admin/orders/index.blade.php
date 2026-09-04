@@ -11,23 +11,29 @@
         </div>
 
         <!-- Filter & Search Form -->
-        <form action="{{ route('admin.orders.index') }}" method="GET" class="flex flex-wrap items-center gap-3 w-full md:w-auto">
-            <select name="status" onchange="this.form.submit()" class="text-xs border-gray-300 rounded-lg p-2 border focus:border-brand focus:ring-0 outline-none">
-                <option value="">Tüm Durumlar</option>
-                <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Ödendi / Hazırlanıyor</option>
-                <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Ödeme Bekliyor</option>
-                <option value="shipped" {{ request('status') === 'shipped' ? 'selected' : '' }}>Kargolandı</option>
-                <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Tamamlandı</option>
-                <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>İptal Edildi</option>
-            </select>
+        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+            <a href="{{ route('admin.orders.print_bulk_labels') }}" target="_blank" class="bg-gray-800 hover:bg-black text-white px-3 py-2 text-xs rounded-lg font-bold transition inline-flex items-center gap-1.5 shadow-xs" title="Hazırlanan ve kargodaki siparişlerin etiketlerini toplu yazdır">
+                <i class="fa-solid fa-barcode text-amber-400"></i> Toplu Kargo Etiketleri
+            </a>
 
-            <div class="flex items-center">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Sipariş No, Ad veya Telefon..." class="text-xs border-gray-300 rounded-l-lg p-2 border focus:border-brand focus:ring-0 outline-none">
-                <button type="submit" class="bg-[#C87A53] hover:bg-[#A65F38] text-white px-3 py-2 text-xs rounded-r-lg font-bold transition">
-                    <i class="fa-solid fa-search"></i>
-                </button>
-            </div>
-        </form>
+            <form action="{{ route('admin.orders.index') }}" method="GET" class="flex flex-wrap items-center gap-3">
+                <select name="status" onchange="this.form.submit()" class="text-xs border-gray-300 rounded-lg p-2 border focus:border-brand focus:ring-0 outline-none">
+                    <option value="">Tüm Durumlar</option>
+                    <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Ödendi / Hazırlanıyor</option>
+                    <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Ödeme Bekliyor</option>
+                    <option value="shipped" {{ request('status') === 'shipped' ? 'selected' : '' }}>Kargolandı</option>
+                    <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Tamamlandı</option>
+                    <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>İptal Edildi</option>
+                </select>
+
+                <div class="flex items-center">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Sipariş No, Ad veya Telefon..." class="text-xs border-gray-300 rounded-l-lg p-2 border focus:border-brand focus:ring-0 outline-none">
+                    <button type="submit" class="bg-[#C87A53] hover:bg-[#A65F38] text-white px-3 py-2 text-xs rounded-r-lg font-bold transition">
+                        <i class="fa-solid fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
 
@@ -42,7 +48,7 @@
                     <th class="pb-3 text-center">Sipariş Tarihi</th>
                     <th class="pb-3 text-right">Toplam Tutar</th>
                     <th class="pb-3 text-center">Durum</th>
-                    <th class="pb-3 w-24 text-right">İşlemler</th>
+                    <th class="pb-3 w-32 text-right">İşlemler</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 text-sm">
@@ -108,7 +114,10 @@
                             @endif
                         </td>
                         <td class="py-4 text-right space-x-1 whitespace-nowrap" data-label="İşlem">
-                            <a href="{{ route('admin.orders.show', $order->id) }}" class="py-1.5 px-3 bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold text-xs rounded-lg transition inline-flex items-center gap-1">
+                            <a href="{{ route('admin.orders.print_label', $order->id) }}" target="_blank" class="py-1.5 px-2.5 bg-amber-50 text-amber-800 hover:bg-amber-100 font-bold text-xs rounded-lg transition inline-flex items-center gap-1 border border-amber-200" title="Kargo Barkod Etiketi Yazdır">
+                                <i class="fa-solid fa-barcode"></i> Etiket
+                            </a>
+                            <a href="{{ route('admin.orders.show', $order->id) }}" class="py-1.5 px-2.5 bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold text-xs rounded-lg transition inline-flex items-center gap-1">
                                 <i class="fa-solid fa-eye"></i> İncele
                             </a>
                             <button type="button" onclick="openDeleteOrderModal({{ $order->id }}, 'Sipariş #{{ $order->id }} ({{ $order->name }})')" class="py-1.5 px-2.5 bg-rose-50 text-rose-600 hover:bg-rose-100 font-bold text-xs rounded-lg transition inline-flex items-center gap-1" title="Admin şifresi ile siparişi sil">
