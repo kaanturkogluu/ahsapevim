@@ -96,8 +96,33 @@
     @php
         $orderList = isset($orders) ? $orders : (isset($order) ? collect([$order]) : collect());
         $siteTitle = \App\Models\Setting::get('site_title', 'Ahşap Evim Manisa');
-        $senderPhone = \App\Models\Setting::get('contact_phone', '0850 307 49 17');
-        $senderAddress = \App\Models\Setting::get('contact_address', 'Şehzadeler Mevkii, Merkez, Manisa');
+
+        // İletişim sayfasından telefon bilgisini al (Öncelik: İletişim Sayfası Telefonu -> WhatsApp Hattı -> Sistem Ayarı)
+        $senderPhone = null;
+        if (!empty($contactData['phone']) && !str_contains($contactData['phone'], 'XXX')) {
+            $senderPhone = $contactData['phone'];
+        } elseif (!empty($contactData['whatsapp']) && !str_contains($contactData['whatsapp'], 'XXX')) {
+            $senderPhone = $contactData['whatsapp'];
+        } else {
+            try {
+                $contactPage = \App\Models\Page::where('slug', 'iletisim')->first();
+                if ($contactPage && !empty($contactPage->content)) {
+                    $decoded = json_decode($contactPage->content, true);
+                    if (is_array($decoded)) {
+                        $senderPhone = !empty($decoded['phone']) ? $decoded['phone'] : (!empty($decoded['whatsapp']) ? $decoded['whatsapp'] : null);
+                    }
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        if (empty($senderPhone)) {
+            $senderPhone = \App\Models\Setting::get('contact_phone', '0850 307 49 17');
+        }
+
+        // İletişim sayfasından adres bilgisini al
+        $senderAddress = !empty($contactData['address'])
+            ? trim(str_replace(["\r\n", "\r", "\n"], ', ', $contactData['address']))
+            : \App\Models\Setting::get('contact_address', 'Şehzadeler Mevkii, Merkez, Manisa');
     @endphp
 
     <!-- Top Action Toolbar (Hidden in Print) -->
