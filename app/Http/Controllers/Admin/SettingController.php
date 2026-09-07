@@ -52,7 +52,41 @@ class SettingController extends Controller
         Setting::set('facebook_pixel_id', $request->input('facebook_pixel_id', ''), 'facebook');
         Setting::set('facebook_access_token', $request->input('facebook_access_token', ''), 'facebook');
 
-        return redirect()->route('admin.settings.index')->with('success', 'Sistem ayarları, bildirimler ve Meta/Facebook yapılandırması başarıyla kaydedildi.');
+        // Yurtiçi Kargo Ayarları
+        if ($request->has('yurtici_settings_submitted')) {
+            Setting::set('yurtici_active', $request->has('yurtici_active') ? '1' : '0', 'cargo');
+            Setting::set('yurtici_default_payment', $request->input('yurtici_default_payment', 'GO'), 'cargo');
+            Setting::set('yurtici_go_user', $request->input('yurtici_go_user', ''), 'cargo');
+            Setting::set('yurtici_go_pass', $request->input('yurtici_go_pass', ''), 'cargo');
+            Setting::set('yurtici_ao_user', $request->input('yurtici_ao_user', ''), 'cargo');
+            Setting::set('yurtici_ao_pass', $request->input('yurtici_ao_pass', ''), 'cargo');
+            Setting::set('yurtici_branch_code', $request->input('yurtici_branch_code', '3150'), 'cargo');
+            Setting::set('yurtici_branch_name', $request->input('yurtici_branch_name', 'SPİL'), 'cargo');
+            Setting::set('yurtici_customer_code', $request->input('yurtici_customer_code', '178821492'), 'cargo');
+            Setting::set('yurtici_customer_name', $request->input('yurtici_customer_name', 'METE ALMAZ'), 'cargo');
+            Setting::set('yurtici_endpoint', $request->input('yurtici_endpoint', 'https://ws.yurticikargo.com/KOPSWebServices/ShippingOrderDispatcherServices'), 'cargo');
+        }
+
+        return redirect()->route('admin.settings.index')->with('success', 'Sistem ayarları, bildirimler ve Yurtiçi Kargo yapılandırması başarıyla kaydedildi.');
+    }
+
+    public function testYurtici(Request $request, \App\Services\YurticiKargoService $yurticiService)
+    {
+        $result = $yurticiService->testConnection();
+
+        if ($result['success']) {
+            return redirect()->back()->with('success', 'Yurtiçi Kargo Web Servis Bağlantı Testi Başarılı! Hem GÖ (Gönderici Ödemeli) hem AÖ (Alıcı Ödemeli) API hesapları SPİL şubesi üzerinden başarıyla doğrulandı.');
+        } else {
+            $errDetail = '';
+            if (!empty($result['results'])) {
+                foreach ($result['results'] as $acc) {
+                    if (!$acc['success']) {
+                        $errDetail .= " [{$acc['label']}: {$acc['message']}]";
+                    }
+                }
+            }
+            return redirect()->back()->with('error', 'Yurtiçi Kargo API Bağlantı Testi Başarısız: ' . ($result['message'] . $errDetail));
+        }
     }
 
     public function testFacebookCapi(Request $request, \App\Services\FacebookCapiService $fbCapi)

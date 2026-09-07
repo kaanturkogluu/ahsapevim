@@ -57,10 +57,17 @@
                 <i class="fa-brands fa-facebook text-sm text-[#1877F2]"></i>
                 <span>Meta &amp; Facebook (Pixel &amp; XML)</span>
             </button>
+
+            <button type="button" onclick="switchTab('tab-yurtici')" id="btn-tab-yurtici"
+                    class="tab-btn px-4 py-2.5 text-xs font-bold rounded-t-xl transition-colors flex items-center gap-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100/50">
+                <i class="fa-solid fa-truck-fast text-sm text-[#ED1C24]"></i>
+                <span>Yurtiçi Kargo Entegrasyonu</span>
+            </button>
         </div>
 
         <form action="{{ route('admin.settings.update') }}" method="POST" class="p-6">
             @csrf
+            <input type="hidden" name="yurtici_settings_submitted" value="1">
 
             {{-- ── TAB 1: SİPARİŞ & BİLDİRİM AYARLARI ── --}}
             <div id="tab-notifications" class="tab-content space-y-6">
@@ -517,6 +524,200 @@
 
             </div>
 
+            {{-- ── TAB 6: YURTİÇİ KARGO ENTEGRASYONU ── --}}
+            <div id="tab-yurtici" class="tab-content hidden space-y-6">
+
+                {{-- Banner & Canlı Durum --}}
+                <div class="bg-gradient-to-br from-[#FFF5F5] via-white to-red-50/50 p-5 rounded-2xl border border-red-200">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-[#ED1C24] text-white flex items-center justify-center font-black text-base shadow-sm">
+                                YK
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-extrabold text-gray-900 flex items-center gap-2">
+                                    <span>Yurtiçi Kargo — Standart Giden Kargo API Entegrasyonu</span>
+                                </h3>
+                                <p class="text-xs text-gray-500 mt-0.5">
+                                    Çıkış Birimi: <strong>3150 — SPİL ŞUBESİ</strong> | Cari Müşteri: <strong>178821492 — METE ALMAZ</strong>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="sendQuickTestYurtici()" class="py-2 px-4 bg-[#ED1C24] hover:bg-[#C81016] text-white font-extrabold text-xs rounded-xl shadow-sm transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-satellite-dish"></i>
+                                <span>Bağlantıyı Test Et</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- GÖ ve AÖ Hesap Kartları --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    {{-- GÖ (Gönderici Ödemeli) --}}
+                    <div class="bg-emerald-50/40 p-5 rounded-2xl border border-emerald-200">
+                        <div class="flex items-center justify-between mb-3 pb-2 border-b border-emerald-100">
+                            <h4 class="text-xs font-black text-emerald-900 uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-truck-ramp-box text-emerald-600"></i>
+                                <span>GÖ (NORMAL) — Gönderici Ödemeli</span>
+                            </h4>
+                            <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-extrabold rounded-md">Kargo Mağazaya Ait</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-4">
+                            Müşterinin kargo ücreti ödemediği, kargo maliyetini sizin üstlendiğiniz gönderiler için kullanılan API hesabı.
+                        </p>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                                    Web Servis API Kullanıcı Adı (GÖ)
+                                </label>
+                                <input type="text" name="yurtici_go_user"
+                                       value="{{ old('yurtici_go_user', $settings['cargo']['yurtici_go_user'] ?? '3150N178821492G') }}"
+                                       placeholder="3150N178821492G"
+                                       class="w-full px-4 py-2.5 text-xs font-mono border border-gray-300 rounded-xl focus:border-[#ED1C24] outline-none bg-white">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                                    Web Servis API Kullanıcı Şifresi (GÖ)
+                                </label>
+                                <input type="password" name="yurtici_go_pass"
+                                       value="{{ old('yurtici_go_pass', $settings['cargo']['yurtici_go_pass'] ?? 'ziXVB0D16K11vfa5') }}"
+                                       class="w-full px-4 py-2.5 text-xs font-mono border border-gray-300 rounded-xl focus:border-[#ED1C24] outline-none bg-white">
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- AÖ (Alıcı Ödemeli) --}}
+                    <div class="bg-blue-50/40 p-5 rounded-2xl border border-blue-200">
+                        <div class="flex items-center justify-between mb-3 pb-2 border-b border-blue-100">
+                            <h4 class="text-xs font-black text-blue-900 uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-hand-holding-dollar text-blue-600"></i>
+                                <span>AÖ (NORMAL) — Alıcı Ödemeli</span>
+                            </h4>
+                            <span class="px-2 py-0.5 bg-blue-100 text-blue-800 text-[10px] font-extrabold rounded-md">Kargo Alıcıya Ait</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-4">
+                            Kargo ücretinin teslimat sırasında alıcı tarafından ödeneceği gönderiler için kullanılan API hesabı.
+                        </p>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                                    Web Servis API Kullanıcı Adı (AÖ)
+                                </label>
+                                <input type="text" name="yurtici_ao_user"
+                                       value="{{ old('yurtici_ao_user', $settings['cargo']['yurtici_ao_user'] ?? '3150N178821492A') }}"
+                                       placeholder="3150N178821492A"
+                                       class="w-full px-4 py-2.5 text-xs font-mono border border-gray-300 rounded-xl focus:border-[#ED1C24] outline-none bg-white">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                                    Web Servis API Kullanıcı Şifresi (AÖ)
+                                </label>
+                                <input type="password" name="yurtici_ao_pass"
+                                       value="{{ old('yurtici_ao_pass', $settings['cargo']['yurtici_ao_pass'] ?? 'y36kE8e7HH2NE5B6') }}"
+                                       class="w-full px-4 py-2.5 text-xs font-mono border border-gray-300 rounded-xl focus:border-[#ED1C24] outline-none bg-white">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                {{-- Şube ve Müşteri Tanımları --}}
+                <div class="bg-[#FAF9F6] p-5 rounded-2xl border border-[#EFEAE0]">
+                    <h4 class="text-xs font-black text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-building text-[#C87A53]"></i>
+                        <span>Şube ve Müşteri Tanımları</span>
+                    </h4>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                                Çıkış Birim Kodu
+                            </label>
+                            <input type="text" name="yurtici_branch_code"
+                                   value="{{ old('yurtici_branch_code', $settings['cargo']['yurtici_branch_code'] ?? '3150') }}"
+                                   placeholder="3150"
+                                   class="w-full px-4 py-2.5 text-xs font-mono border border-gray-300 rounded-xl outline-none bg-white">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                                Çıkış Birim Adı
+                            </label>
+                            <input type="text" name="yurtici_branch_name"
+                                   value="{{ old('yurtici_branch_name', $settings['cargo']['yurtici_branch_name'] ?? 'SPİL') }}"
+                                   placeholder="SPİL"
+                                   class="w-full px-4 py-2.5 text-xs font-bold border border-gray-300 rounded-xl outline-none bg-white">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                                Müşteri Kodu
+                            </label>
+                            <input type="text" name="yurtici_customer_code"
+                                   value="{{ old('yurtici_customer_code', $settings['cargo']['yurtici_customer_code'] ?? '178821492') }}"
+                                   placeholder="178821492"
+                                   class="w-full px-4 py-2.5 text-xs font-mono border border-gray-300 rounded-xl outline-none bg-white">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                                Müşteri Ünvanı
+                            </label>
+                            <input type="text" name="yurtici_customer_name"
+                                   value="{{ old('yurtici_customer_name', $settings['cargo']['yurtici_customer_name'] ?? 'METE ALMAZ') }}"
+                                   placeholder="METE ALMAZ"
+                                   class="w-full px-4 py-2.5 text-xs font-bold border border-gray-300 rounded-xl outline-none bg-white">
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Varsayılan Tercihler & Endpoint --}}
+                <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200">
+                    <h4 class="text-xs font-black text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-[#C87A53]"></i>
+                        <span>Varsayılan Gönderi Tercihleri ve Servis Adresi</span>
+                    </h4>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                                Varsayılan Ödeme Tipi
+                            </label>
+                            <select name="yurtici_default_payment" class="w-full px-3 py-2.5 text-xs border border-gray-300 rounded-xl outline-none bg-white font-bold">
+                                <option value="GO" {{ ($settings['cargo']['yurtici_default_payment'] ?? 'GO') === 'GO' ? 'selected' : '' }}>GÖ — Gönderici Ödemeli (Tavsiye Edilen)</option>
+                                <option value="AO" {{ ($settings['cargo']['yurtici_default_payment'] ?? 'GO') === 'AO' ? 'selected' : '' }}>AÖ — Alıcı Ödemeli</option>
+                            </select>
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                                SOAP Web Servis Uç Noktası (Endpoint URL)
+                            </label>
+                            <input type="url" name="yurtici_endpoint"
+                                   value="{{ old('yurtici_endpoint', $settings['cargo']['yurtici_endpoint'] ?? 'https://ws.yurticikargo.com/KOPSWebServices/ShippingOrderDispatcherServices') }}"
+                                   class="w-full px-4 py-2.5 text-xs font-mono border border-gray-300 rounded-xl outline-none bg-white">
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-gray-200 flex items-center gap-2">
+                        <input type="checkbox" name="yurtici_active" id="yurtici_active" value="1"
+                               {{ ($settings['cargo']['yurtici_active'] ?? '1') === '1' ? 'checked' : '' }}
+                               class="w-4 h-4 text-[#ED1C24] rounded border-gray-300 focus:ring-0">
+                        <label for="yurtici_active" class="text-xs font-bold text-gray-800 cursor-pointer">
+                            Yurtiçi Kargo API Entegrasyonunu Aktif Tut
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
             {{-- Kaydet Butonu (Sabit Alt Bar) --}}
             <div class="mt-8 pt-5 border-t border-gray-200 flex items-center justify-end gap-3">
                 <button type="submit"
@@ -546,6 +747,10 @@
     @csrf
 </form>
 
+<form id="hiddenYurticiTestForm" action="{{ route('admin.settings.test_yurtici') }}" method="POST" class="hidden">
+    @csrf
+</form>
+
 @push('scripts')
 <script>
 function switchTab(tabId) {
@@ -563,6 +768,10 @@ function switchTab(tabId) {
         targetBtn.classList.add('active', 'border-b-2', 'border-[#C87A53]', 'text-[#C87A53]', 'bg-white', 'shadow-xs');
         targetBtn.classList.remove('text-gray-500');
     }
+}
+
+function sendQuickTestYurtici() {
+    document.getElementById('hiddenYurticiTestForm').submit();
 }
 
 function sendQuickTestSms() {

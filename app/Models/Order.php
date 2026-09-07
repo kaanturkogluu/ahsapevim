@@ -28,6 +28,11 @@ class Order extends Model
         'payment_id',
         'shipping_company_id',
         'cargo_tracking_code',
+        'yurtici_cargo_key',
+        'yurtici_job_id',
+        'yurtici_payment_type',
+        'yurtici_status',
+        'yurtici_response_data',
         'note',
         'admin_notified_at',
     ];

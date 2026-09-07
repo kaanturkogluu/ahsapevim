@@ -263,6 +263,10 @@ Route::prefix('yonetim')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/siparis-gorsel-indir', [OrderController::class, 'downloadImage'])->name('admin.orders.download_image');
     Route::get('/siparisler/toplu-etiket-yazdir', [OrderController::class, 'printBulkLabels'])->name('admin.orders.print_bulk_labels');
     Route::get('/siparisler/{id}/etiket-yazdir', [OrderController::class, 'printLabel'])->name('admin.orders.print_label');
+    Route::get('/siparisler/{id}/yurtici-etiket', [OrderController::class, 'printYurticiLabel'])->name('admin.orders.yurtici_label');
+    Route::post('/siparisler/{id}/yurtici-olustur', [OrderController::class, 'createYurticiShipment'])->name('admin.orders.yurtici_create');
+    Route::post('/siparisler/{id}/yurtici-sorgula', [OrderController::class, 'queryYurticiShipment'])->name('admin.orders.yurtici_query');
+    Route::post('/siparisler/{id}/yurtici-iptal', [OrderController::class, 'cancelYurticiShipment'])->name('admin.orders.yurtici_cancel');
     Route::resource('siparisler', OrderController::class)->only(['index', 'show', 'update', 'destroy'])->names('admin.orders');
     Route::resource('kargo-sirketleri', ShippingCompanyController::class)->except(['create', 'show', 'edit'])->names('admin.shipping_companies');
 
@@ -281,6 +285,7 @@ Route::prefix('yonetim')->middleware(['auth', 'admin'])->group(function () {
     Route::post('/ayarlar/test-sms',           [SettingController::class, 'testSms'])->name('admin.settings.test_sms');
     Route::post('/ayarlar/test-email',         [SettingController::class, 'testEmail'])->name('admin.settings.test_email');
     Route::post('/ayarlar/test-facebook-capi', [SettingController::class, 'testFacebookCapi'])->name('admin.settings.test_facebook_capi');
+    Route::post('/ayarlar/test-yurtici',       [SettingController::class, 'testYurtici'])->name('admin.settings.test_yurtici');
 
     // Canlı Bildirim Merkezi API
     Route::get('/api/son-siparisler', [SettingController::class, 'recentOrdersApi'])->name('admin.orders.recent_api');

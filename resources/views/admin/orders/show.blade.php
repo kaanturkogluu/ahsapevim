@@ -159,6 +159,116 @@
         </div>
     </div>
 
+    <!-- Yurtiçi Kargo Standart Giden Entegrasyon Kartı -->
+    <div class="bg-gradient-to-br from-[#FFF9F9] via-white to-red-50/40 p-5 rounded-2xl border border-red-200/80 mb-6 shadow-xs">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-red-100 mb-4">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-[#ED1C24] text-white flex items-center justify-center font-black text-xs shadow-xs">
+                    YK
+                </div>
+                <div>
+                    <h4 class="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
+                        Yurtiçi Kargo — Standart Giden Kargo Entegrasyonu
+                    </h4>
+                    <p class="text-[11px] text-gray-500">Çıkış Şubesi: <strong>3150 — SPİL</strong> | Müşteri No: <strong>178821492</strong> (METE ALMAZ)</p>
+                </div>
+            </div>
+
+            <div>
+                @if(!empty($order->yurtici_cargo_key))
+                    @if($order->yurtici_status === 'cancelled')
+                        <span class="px-2.5 py-1 bg-rose-100 text-rose-800 text-[11px] font-black rounded-full border border-rose-200">
+                            <i class="fa-solid fa-ban"></i> Kargo İptal Edildi
+                        </span>
+                    @elseif($order->yurtici_status === 'delivered')
+                        <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-[11px] font-black rounded-full border border-emerald-200">
+                            <i class="fa-solid fa-circle-check"></i> Teslim Edildi
+                        </span>
+                    @else
+                        <span class="px-2.5 py-1 bg-blue-100 text-blue-800 text-[11px] font-black rounded-full border border-blue-200 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+                            Yurtiçi Kargo'ya İletildi
+                        </span>
+                    @endif
+                @else
+                    <span class="px-2.5 py-1 bg-gray-100 text-gray-600 text-[11px] font-bold rounded-full border border-gray-200">
+                        Kargo Kaydı Bekleniyor
+                    </span>
+                @endif
+            </div>
+        </div>
+
+        @if(!empty($order->yurtici_cargo_key))
+            <!-- Kargo Oluşturulmuş Durum Detayları -->
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs mb-4">
+                <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-2xs">
+                    <span class="text-[10px] font-extrabold text-gray-400 uppercase block">Kargo Anahtarı (CargoKey)</span>
+                    <span class="font-mono font-black text-gray-900 text-sm mt-0.5 block select-all">{{ $order->yurtici_cargo_key }}</span>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-2xs">
+                    <span class="text-[10px] font-extrabold text-gray-400 uppercase block">Yurtiçi Job ID</span>
+                    <span class="font-mono font-black text-blue-800 text-sm mt-0.5 block">#{{ $order->yurtici_job_id ?: 'Kayıtlı' }}</span>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-2xs">
+                    <span class="text-[10px] font-extrabold text-gray-400 uppercase block">Ödeme Tipi</span>
+                    <span class="font-bold text-xs mt-1 block {{ $order->yurtici_payment_type === 'AO' ? 'text-blue-700' : 'text-emerald-700' }}">
+                        {{ $order->yurtici_payment_type === 'AO' ? 'AÖ (Alıcı Ödemeli)' : 'GÖ (Gönderici Ödemeli)' }}
+                    </span>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-2xs">
+                    <span class="text-[10px] font-extrabold text-gray-400 uppercase block">Takip / İrsaliye No</span>
+                    <span class="font-mono font-black text-gray-800 text-sm mt-0.5 block">{{ $order->cargo_tracking_code ?: $order->yurtici_cargo_key }}</span>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-red-100">
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="queryLiveYurticiStatus({{ $order->id }})" class="py-2 px-3.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-black text-xs rounded-xl border border-blue-200 transition flex items-center gap-1.5 shadow-2xs">
+                        <i class="fa-solid fa-satellite-dish"></i> Canlı Kargo Durumu Sorgula
+                    </button>
+
+                    <a href="{{ route('admin.orders.yurtici_label', $order->id) }}" target="_blank" class="py-2 px-3.5 bg-[#ED1C24] hover:bg-[#C81016] text-white font-black text-xs rounded-xl shadow-xs transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-barcode"></i> Barkodlu Yurtiçi Etiketi Yazdır
+                    </a>
+
+                    <a href="https://www.yurticikargo.com/tr/online-servisler/gonderi-sorgula?code={{ urlencode($order->cargo_tracking_code ?: $order->yurtici_cargo_key) }}" target="_blank" class="py-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-xl transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-up-right-from-square text-[10px]"></i> Yurtiçi Takip Sayfasında Aç
+                    </a>
+                </div>
+
+                @if($order->yurtici_status !== 'cancelled')
+                    <form action="{{ route('admin.orders.yurtici_cancel', $order->id) }}" method="POST" onsubmit="return confirm('Bu gönderiyi Yurtiçi Kargo sisteminden iptal etmek istediğinize emin misiniz?')" class="inline-block">
+                        @csrf
+                        <button type="submit" class="py-2 px-3 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs rounded-xl border border-rose-200 transition flex items-center gap-1">
+                            <i class="fa-solid fa-ban"></i> Kargoyu İptal Et
+                        </button>
+                    </form>
+                @else
+                    <button type="button" onclick="openCreateYurticiModal()" class="py-2 px-3 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs rounded-xl border border-amber-200 transition flex items-center gap-1">
+                        <i class="fa-solid fa-rotate-right"></i> Yeniden Kargo Kaydı Oluştur
+                    </button>
+                @endif
+            </div>
+        @else
+            <!-- Kargo Henüz Oluşturulmamış -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 py-2">
+                <div>
+                    <p class="text-xs text-gray-700 font-medium leading-relaxed">
+                        Bu sipariş için henüz Yurtiçi Kargo web servisine gönderi kaydı iletilmedi. 
+                        Aşağıdaki butona tıklayarak ödeme tipini (GÖ / AÖ) ve paket ağırlığını seçip tek tıkla resmi sevk kaydını oluşturabilirsiniz.
+                    </p>
+                    <div class="flex items-center gap-4 mt-2 text-[11px] text-gray-500 font-mono">
+                        <span><i class="fa-solid fa-location-dot text-[#ED1C24]"></i> Alıcı: {{ $order->city }} / {{ $order->district }}</span>
+                        <span><i class="fa-solid fa-phone text-emerald-600"></i> {{ $order->phone }}</span>
+                    </div>
+                </div>
+                <button type="button" onclick="openCreateYurticiModal()" class="py-2.5 px-5 bg-[#ED1C24] hover:bg-[#C81016] text-white font-black text-xs rounded-xl shadow-sm transition flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-truck-fast text-sm"></i> Yurtiçi Kargo'ya Gönder (Kargo Kodu Al)
+                </button>
+            </div>
+        @endif
+    </div>
+
     <!-- Iyzico Finansal Hakediş & İptal / Başarısızlık Detayları -->
     @if($order->status === 'failed' || $order->status === 'cancelled' || !empty($order->payment_error_reason))
         <div class="bg-rose-50 border border-rose-200 p-4 rounded-xl mb-6 shadow-2xs">
@@ -612,6 +722,235 @@ function closeSendMailModal() {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
     }
+}
+
+<!-- Yurtiçi Kargo Gönderi Oluşturma Modalı -->
+<div id="createYurticiModal" class="fixed inset-0 z-[99999] bg-black/70 backdrop-blur-xs hidden flex-col items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-200 relative">
+        <div class="flex justify-between items-center pb-3 border-b border-gray-100 mb-4">
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-md bg-[#ED1C24] text-white flex items-center justify-center font-black text-xs">
+                    YK
+                </div>
+                <h3 class="text-sm font-extrabold text-gray-800">
+                    Yurtiçi Kargo Sevk Kaydı Oluştur
+                </h3>
+            </div>
+            <button type="button" onclick="closeCreateYurticiModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+        </div>
+
+        <form action="{{ route('admin.orders.yurtici_create', $order->id) }}" method="POST" class="space-y-4" onsubmit="preventSpamSubmit(this)">
+            @csrf
+
+            <!-- Ödeme Tipi Seçimi -->
+            <div>
+                <label class="block text-[11px] font-extrabold text-gray-700 uppercase mb-1.5">Ödeme Tipi *</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="cursor-pointer border-2 border-emerald-300 bg-emerald-50/50 p-3 rounded-xl flex items-start gap-2.5 hover:border-emerald-500 transition">
+                        <input type="radio" name="payment_type" value="GO" checked class="mt-0.5 text-emerald-600 focus:ring-0">
+                        <div>
+                            <span class="block text-xs font-black text-emerald-950">GÖ (Normal)</span>
+                            <span class="text-[10px] text-emerald-800 leading-tight block">Gönderici Ödemeli (Kargo satıcıya ait)</span>
+                        </div>
+                    </label>
+
+                    <label class="cursor-pointer border-2 border-blue-200 bg-blue-50/40 p-3 rounded-xl flex items-start gap-2.5 hover:border-blue-500 transition">
+                        <input type="radio" name="payment_type" value="AO" class="mt-0.5 text-blue-600 focus:ring-0">
+                        <div>
+                            <span class="block text-xs font-black text-blue-950">AÖ (Normal)</span>
+                            <span class="text-[10px] text-blue-800 leading-tight block">Alıcı Ödemeli (Kargo alıcı tarafından ödenir)</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Desi, Kg, Paket Sayısı -->
+            <div class="grid grid-cols-3 gap-3">
+                <div>
+                    <label class="block text-[11px] font-extrabold text-gray-500 uppercase mb-1">Desi</label>
+                    <input type="number" step="0.1" name="desi" value="1.0" min="0.1" required class="w-full text-xs font-mono border border-gray-300 rounded-xl p-2.5 outline-none focus:border-[#ED1C24]">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-extrabold text-gray-500 uppercase mb-1">Kilo (Kg)</label>
+                    <input type="number" step="0.1" name="kg" value="1.0" min="0.1" required class="w-full text-xs font-mono border border-gray-300 rounded-xl p-2.5 outline-none focus:border-[#ED1C24]">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-extrabold text-gray-500 uppercase mb-1">Paket Adedi</label>
+                    <input type="number" name="cargo_count" value="1" min="1" max="20" required class="w-full text-xs font-mono border border-gray-300 rounded-xl p-2.5 outline-none focus:border-[#ED1C24]">
+                </div>
+            </div>
+
+            <!-- Açıklama -->
+            <div>
+                <label class="block text-[11px] font-extrabold text-gray-500 uppercase mb-1">Kargo Sevk Açıklaması</label>
+                <input type="text" name="description" value="AhşapEvim Sipariş #{{ $order->id }}" maxlength="150" class="w-full text-xs border border-gray-300 rounded-xl p-2.5 outline-none focus:border-[#ED1C24]">
+            </div>
+
+            <!-- Checkbox Seçenekleri -->
+            <div class="space-y-2 pt-1 border-t border-gray-100">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="auto_status" value="1" checked class="w-4 h-4 text-[#ED1C24] rounded border-gray-300 focus:ring-0">
+                    <span class="text-xs font-bold text-gray-700">Sipariş durumunu otomatik olarak "Kargolandı" yap</span>
+                </label>
+
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="send_notification" value="1" checked class="w-4 h-4 text-[#ED1C24] rounded border-gray-300 focus:ring-0">
+                    <span class="text-xs font-bold text-gray-700">Müşteriye otomatik Kargo Takip SMS bildirimi gönder</span>
+                </label>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                <button type="button" onclick="closeCreateYurticiModal()" class="py-2 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-xl transition">
+                    Vazgeç
+                </button>
+                <button type="submit" class="py-2.5 px-5 bg-[#ED1C24] hover:bg-[#C81016] text-white font-extrabold text-xs rounded-xl transition shadow-sm flex items-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Yurtiçi Kargo'ya Gönder
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Yurtiçi Kargo Canlı Durum Sorgu Modalı -->
+<div id="queryYurticiModal" class="fixed inset-0 z-[99999] bg-black/70 backdrop-blur-xs hidden flex-col items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-200 relative">
+        <div class="flex justify-between items-center pb-3 border-b border-gray-100 mb-4">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-satellite-dish text-[#ED1C24]"></i>
+                <h3 class="text-sm font-extrabold text-gray-800">
+                    Yurtiçi Kargo Canlı Durum Sorgulama
+                </h3>
+            </div>
+            <button type="button" onclick="closeQueryYurticiModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+        </div>
+
+        <div id="yurticiQueryLoading" class="py-10 text-center text-gray-500">
+            <i class="fa-solid fa-circle-notch fa-spin text-3xl text-[#ED1C24] mb-3"></i>
+            <p class="text-xs font-bold">Yurtiçi Kargo sunucularından güncel veriler alınıyor...</p>
+        </div>
+
+        <div id="yurticiQueryResult" class="hidden space-y-3">
+            <div class="p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-1.5 text-xs text-gray-800">
+                <div class="flex justify-between">
+                    <span class="text-gray-500 font-bold">Kargo Durumu:</span>
+                    <span id="yqEvent" class="font-black text-[#ED1C24]"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500 font-bold">Resmi İrsaliye No:</span>
+                    <span id="yqDoc" class="font-mono font-bold"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500 font-bold">Çıkış Şubesi:</span>
+                    <span id="yqDepUnit" class="font-bold"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500 font-bold">Varış / Dağıtım Şubesi:</span>
+                    <span id="yqArrUnit" class="font-bold"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500 font-bold">Teslimat Tarihi:</span>
+                    <span id="yqDate" class="font-mono font-bold"></span>
+                </div>
+            </div>
+
+            <div class="pt-2 flex justify-between items-center">
+                <a id="yqTrackingLink" href="#" target="_blank" class="text-xs text-blue-600 hover:underline font-bold flex items-center gap-1">
+                    <i class="fa-solid fa-up-right-from-square text-[10px]"></i> Yurtiçi Web Sayfasında İncele
+                </a>
+                <button type="button" onclick="closeQueryYurticiModal()" class="py-2 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-xl transition">
+                    Kapat
+                </button>
+            </div>
+        </div>
+
+        <div id="yurticiQueryError" class="hidden py-6 text-center text-rose-600">
+            <i class="fa-solid fa-triangle-exclamation text-3xl mb-2 text-rose-500"></i>
+            <p id="yurticiQueryErrorMsg" class="text-xs font-bold"></p>
+            <div class="mt-4">
+                <button type="button" onclick="closeQueryYurticiModal()" class="py-1.5 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-lg transition">
+                    Kapat
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ── Yurtiçi Modal ve Canlı Sorgu Kontrolleri ──────────────────────────────
+function openCreateYurticiModal() {
+    const modal = document.getElementById('createYurticiModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+}
+
+function closeCreateYurticiModal() {
+    const modal = document.getElementById('createYurticiModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+}
+
+function openQueryYurticiModal() {
+    const modal = document.getElementById('queryYurticiModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+}
+
+function closeQueryYurticiModal() {
+    const modal = document.getElementById('queryYurticiModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+}
+
+function queryLiveYurticiStatus(orderId) {
+    openQueryYurticiModal();
+    const loading = document.getElementById('yurticiQueryLoading');
+    const resultDiv = document.getElementById('yurticiQueryResult');
+    const errorDiv = document.getElementById('yurticiQueryError');
+    const errorMsg = document.getElementById('yurticiQueryErrorMsg');
+
+    loading.classList.remove('hidden');
+    resultDiv.classList.add('hidden');
+    errorDiv.classList.add('hidden');
+
+    fetch(`/yonetim/siparisler/${orderId}/yurtici-sorgula`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        loading.classList.add('hidden');
+        if (data.success) {
+            document.getElementById('yqEvent').textContent = data.cargoEvent || 'Kayıt Alındı';
+            document.getElementById('yqDoc').textContent = data.docNumber || data.cargoKey || '-';
+            document.getElementById('yqDepUnit').textContent = data.departureUnit || 'SPİL';
+            document.getElementById('yqArrUnit').textContent = data.arrivalUnit || 'Belirlenmedi';
+            document.getElementById('yqDate').textContent = (data.deliveryDate ? data.deliveryDate + ' ' + (data.deliveryTime || '') : 'Yolda / Dağıtımda');
+            const trLink = document.getElementById('yqTrackingLink');
+            if (trLink) {
+                trLink.href = data.trackingUrl || `https://www.yurticikargo.com/tr/online-servisler/gonderi-sorgula?code=${encodeURIComponent(data.docNumber || data.cargoKey)}`;
+            }
+            resultDiv.classList.remove('hidden');
+        } else {
+            errorMsg.textContent = data.message || 'Kargo bilgisi sorgulanamadı.';
+            errorDiv.classList.remove('hidden');
+        }
+    })
+    .catch(err => {
+        loading.classList.add('hidden');
+        errorMsg.textContent = 'Sunucu bağlantı hatası oluştu: ' + err.message;
+        errorDiv.classList.remove('hidden');
+    });
 }
 
 function toggleCancellationReason(status) {

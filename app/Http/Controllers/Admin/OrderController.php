@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\ShippingCompany;
 use App\Services\NetgsmService;
+use App\Services\YurticiKargoService;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -311,5 +312,99 @@ class OrderController extends Controller
             'Expires' => '0',
         ]);
     }
+
+    /**
+     * Yurtiçi Kargo Kaydı Oluştur (createShipment)
+     */
+    public function createYurticiShipment(Request $request, $id, YurticiKargoService $yurticiService)
+    {
+        $order = Order::with('items')->findOrFail($id);
+
+        $request->validate([
+            'payment_type' => 'nullable|string|in:GO,AO',
+            'desi'         => 'nullable|numeric|min:0.1',
+            'kg'           => 'nullable|numeric|min:0.1',
+            'cargo_count'  => 'nullable|integer|min:1|max:50',
+            'description'  => 'nullable|string|max:200',
+        ]);
+
+        $result = $yurticiService->createShipment($order, $request->all());
+
+        if ($result['success']) {
+            $order->refresh();
+
+            // Otomatik kargolandı durumuna güncelleme (isteğe bağlı veya varsayılan)
+            if ($request->boolean('auto_status', true) && in_array($order->status, ['pending', 'paid', 'preparing'])) {
+                $order->update(['status' => 'shipped']);
+            }
+
+            // Müşteriye bildirim gönderimi
+            if ($request->boolean('send_notification', false)) {
+                $shippingCompanyName = 'Yurtiçi Kargo';
+                $cargoCode = $order->cargo_tracking_code ?: $order->yurtici_cargo_key;
+
+                try {
+                    $smsMessage = "Sayın {$order->name}, #{$order->id} numaralı siparişiniz {$shippingCompanyName} firmasına teslim edilmiştir. Kargo Takip No: {$cargoCode}. AhşapEvim";
+                    app(NetgsmService::class)->sendSms($order->phone, $smsMessage, $order->id, 'automated');
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::error('Yurtiçi SMS Hatası: ' . $e->getMessage());
+                }
+            }
+
+            return redirect()->back()->with('success', $result['message']);
+        }
+
+        return redirect()->back()->with('error', $result['message']);
+    }
+
+    /**
+     * Yurtiçi Kargo Canlı Durum Sorgula (queryShipment)
+     */
+    public function queryYurticiShipment(Request $request, $id, YurticiKargoService $yurticiService)
+    {
+        $order = Order::findOrFail($id);
+
+        $result = $yurticiService->queryShipment($order);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json($result);
+        }
+
+        if ($result['success']) {
+            $msg = "Kargo Durumu: " . ($result['cargoEvent'] ?? 'İşlemde') . " | Şube: " . ($result['arrivalUnit'] ?: $result['departureUnit'] ?: 'SPİL');
+            if (!empty($result['docNumber'])) {
+                $msg .= " | Resmi Takip No: " . $result['docNumber'];
+            }
+            return redirect()->back()->with('success', $msg);
+        }
+
+        return redirect()->back()->with('error', $result['message'] ?? 'Kargo bilgisi sorgulanamadı.');
+    }
+
+    /**
+     * Yurtiçi Kargo Gönderisini İptal Et (cancelShipment)
+     */
+    public function cancelYurticiShipment($id, YurticiKargoService $yurticiService)
+    {
+        $order = Order::findOrFail($id);
+
+        $result = $yurticiService->cancelShipment($order);
+
+        if ($result['success']) {
+            return redirect()->back()->with('success', $result['message']);
+        }
+
+        return redirect()->back()->with('error', $result['message']);
+    }
+
+    /**
+     * Yurtiçi Kargo Barkodlu Etiketi Yazdır
+     */
+    public function printYurticiLabel($id)
+    {
+        $order = Order::with(['items.product', 'shippingCompany'])->findOrFail($id);
+        return view('admin.orders.yurtici_label', compact('order'));
+    }
 }
+
 

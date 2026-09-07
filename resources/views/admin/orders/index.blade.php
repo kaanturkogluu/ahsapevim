@@ -112,6 +112,15 @@
                                     İptal / {{ $order->payment_error_reason ?: 'Başarısız' }}
                                 </span>
                             @endif
+
+                            @if($order->yurtici_cargo_key)
+                                <div class="mt-1">
+                                    <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-black bg-red-50 text-red-700 border border-red-200" title="Yurtiçi Kargo: {{ $order->yurtici_cargo_key }}">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#ED1C24]"></span>
+                                        YK ({{ $order->yurtici_payment_type === 'AO' ? 'AÖ' : 'GÖ' }})
+                                    </span>
+                                </div>
+                            @endif
                         </td>
                         <td class="py-4 text-right space-x-1 whitespace-nowrap" data-label="İşlem">
                             <a href="{{ route('admin.orders.print_label', $order->id) }}" target="_blank" class="py-1.5 px-2.5 bg-amber-50 text-amber-800 hover:bg-amber-100 font-bold text-xs rounded-lg transition inline-flex items-center gap-1 border border-amber-200" title="Kargo Barkod Etiketi Yazdır">
