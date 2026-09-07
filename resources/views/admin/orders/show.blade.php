@@ -598,132 +598,6 @@ function closeDeleteOrderModal() {
     </div>
 </div>
 
-<script>
-// ── Telefon Formatlama & Validasyon ─────────────────────────────────────────
-function smsFormatPhone(el) {
-    let digits = el.value.replace(/\D/g, '');
-    if (digits.startsWith('90') && digits.length > 10) digits = digits.slice(2);
-    if (digits.startsWith('5')) digits = '0' + digits;
-    digits = digits.slice(0, 11);
-
-    let fmt = '';
-    if (digits.length > 0) fmt  = digits.slice(0, 4);
-    if (digits.length > 4) fmt += ' ' + digits.slice(4, 7);
-    if (digits.length > 7) fmt += ' ' + digits.slice(7, 9);
-    if (digits.length > 9) fmt += ' ' + digits.slice(9, 11);
-    el.value = fmt;
-
-    if (digits.length === 11) smsValidatePhone(el);
-    else smsClearPhoneValid();
-}
-
-function smsValidatePhone(el) {
-    const digits    = el.value.replace(/\D/g, '');
-    const icon      = document.getElementById('smsPhoneIcon');
-    const errMsg    = document.getElementById('smsPhoneError');
-    const submitBtn = document.getElementById('orderSmsSubmitBtn');
-    const isValid   = /^05[0-9]{9}$/.test(digits);
-
-    if (isValid) {
-        icon.textContent = '✓';
-        icon.className   = 'absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-emerald-600 font-bold';
-        icon.classList.remove('hidden');
-        errMsg.classList.add('hidden');
-        el.classList.remove('border-rose-400'); el.classList.add('border-emerald-400');
-        if (submitBtn) submitBtn.disabled = false;
-    } else if (digits.length > 0) {
-        icon.textContent = '✗';
-        icon.className   = 'absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-rose-500 font-bold';
-        icon.classList.remove('hidden');
-        errMsg.classList.remove('hidden');
-        el.classList.remove('border-emerald-400'); el.classList.add('border-rose-400');
-        if (submitBtn) submitBtn.disabled = true;
-    } else {
-        smsClearPhoneValid();
-    }
-}
-
-function smsClearPhoneValid() {
-    const icon      = document.getElementById('smsPhoneIcon');
-    const errMsg    = document.getElementById('smsPhoneError');
-    const el        = document.getElementById('modalToPhone');
-    const submitBtn = document.getElementById('orderSmsSubmitBtn');
-    if (icon)      icon.classList.add('hidden');
-    if (errMsg)    errMsg.classList.add('hidden');
-    if (el)        el.classList.remove('border-rose-400', 'border-emerald-400');
-    if (submitBtn) submitBtn.disabled = false;
-}
-
-// ── SMS Karakter Sayacı ──────────────────────────────────────────────────────
-function smsUpdateCharCount(el) {
-    const len     = el.value.length;
-    const counter = document.getElementById('smsCharCounter');
-    const parts   = document.getElementById('smsPartsBadge');
-    if (counter) counter.textContent = len;
-    const smsLimit = /[çğışöüÇĞİŞÖÜ]/.test(el.value) ? 153 : 160;
-    const count    = Math.ceil(len / smsLimit) || 1;
-    if (parts) {
-        if (len > smsLimit) { parts.textContent = count + ' SMS'; parts.classList.remove('hidden'); }
-        else { parts.classList.add('hidden'); }
-    }
-}
-
-// ── Modal Kontrolleri ────────────────────────────────────────────────────────
-function openSendSmsModal(phone = '', orderId = '') {
-    const modal   = document.getElementById('sendSmsModal');
-    const phoneEl = document.getElementById('modalToPhone');
-    if (!modal) return;
-
-    if (phone) {
-        phoneEl.value = phone;
-        smsFormatPhone(phoneEl);
-    } else {
-        phoneEl.value = '';
-        smsClearPhoneValid();
-    }
-    document.getElementById('modalSmsOrderId').value = orderId;
-    document.getElementById('modalSmsBody').value = '';
-    smsUpdateCharCount(document.getElementById('modalSmsBody'));
-
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    setTimeout(() => phoneEl.focus(), 100);
-}
-
-function closeSendSmsModal() {
-    const modal = document.getElementById('sendSmsModal');
-    if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-        smsClearPhoneValid();
-    }
-}
-
-// Modal dışına tıklayınca kapat
-document.addEventListener('click', function(e) {
-    const modal = document.getElementById('sendSmsModal');
-    if (modal && e.target === modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
-});
-
-// ── Mail Modal Kontrolleri ───────────────────────────────────────────────────
-function openSendMailModal(email = '', orderId = '') {
-    const modal = document.getElementById('sendMailModal');
-    if (modal) {
-        document.getElementById('modalToEmail').value = email;
-        document.getElementById('modalOrderId').value = orderId;
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-    }
-}
-
-function closeSendMailModal() {
-    const modal = document.getElementById('sendMailModal');
-    if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }
-}
-
 <!-- Yurtiçi Kargo Gönderi Oluşturma Modalı -->
 <div id="createYurticiModal" class="fixed inset-0 z-[99999] bg-black/70 backdrop-blur-xs hidden flex-col items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-200 relative">
@@ -876,6 +750,149 @@ function closeSendMailModal() {
 </div>
 
 <script>
+// ── Telefon Formatlama & Validasyon ─────────────────────────────────────────
+function smsFormatPhone(el) {
+    let digits = el.value.replace(/\D/g, '');
+    if (digits.startsWith('90') && digits.length > 10) digits = digits.slice(2);
+    if (digits.startsWith('5')) digits = '0' + digits;
+    digits = digits.slice(0, 11);
+
+    let fmt = '';
+    if (digits.length > 0) fmt  = digits.slice(0, 4);
+    if (digits.length > 4) fmt += ' ' + digits.slice(4, 7);
+    if (digits.length > 7) fmt += ' ' + digits.slice(7, 9);
+    if (digits.length > 9) fmt += ' ' + digits.slice(9, 11);
+    el.value = fmt;
+
+    if (digits.length === 11) smsValidatePhone(el);
+    else smsClearPhoneValid();
+}
+
+function smsValidatePhone(el) {
+    const digits    = el.value.replace(/\D/g, '');
+    const icon      = document.getElementById('smsPhoneIcon');
+    const errMsg    = document.getElementById('smsPhoneError');
+    const submitBtn = document.getElementById('orderSmsSubmitBtn');
+    const isValid   = /^05[0-9]{9}$/.test(digits);
+
+    if (isValid) {
+        icon.textContent = '✓';
+        icon.className   = 'absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-emerald-600 font-bold';
+        icon.classList.remove('hidden');
+        errMsg.classList.add('hidden');
+        el.classList.remove('border-rose-400'); el.classList.add('border-emerald-400');
+        if (submitBtn) submitBtn.disabled = false;
+    } else if (digits.length > 0) {
+        icon.textContent = '✗';
+        icon.className   = 'absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-rose-500 font-bold';
+        icon.classList.remove('hidden');
+        errMsg.classList.remove('hidden');
+        el.classList.remove('border-emerald-400'); el.classList.add('border-rose-400');
+        if (submitBtn) submitBtn.disabled = true;
+    } else {
+        smsClearPhoneValid();
+    }
+}
+
+function smsClearPhoneValid() {
+    const icon      = document.getElementById('smsPhoneIcon');
+    const errMsg    = document.getElementById('smsPhoneError');
+    const el        = document.getElementById('modalToPhone');
+    const submitBtn = document.getElementById('orderSmsSubmitBtn');
+    if (icon)      icon.classList.add('hidden');
+    if (errMsg)    errMsg.classList.add('hidden');
+    if (el)        el.classList.remove('border-rose-400', 'border-emerald-400');
+    if (submitBtn) submitBtn.disabled = false;
+}
+
+// ── SMS Karakter Sayacı ──────────────────────────────────────────────────────
+function smsUpdateCharCount(el) {
+    const len     = el.value.length;
+    const counter = document.getElementById('smsCharCounter');
+    const parts   = document.getElementById('smsPartsBadge');
+    if (counter) counter.textContent = len;
+    const smsLimit = /[çğışöüÇĞİŞÖÜ]/.test(el.value) ? 153 : 160;
+    const count    = Math.ceil(len / smsLimit) || 1;
+    if (parts) {
+        if (len > smsLimit) { parts.textContent = count + ' SMS'; parts.classList.remove('hidden'); }
+        else { parts.classList.add('hidden'); }
+    }
+}
+
+// ── Modal Kontrolleri ────────────────────────────────────────────────────────
+function openSendSmsModal(phone = '', orderId = '') {
+    const modal   = document.getElementById('sendSmsModal');
+    const phoneEl = document.getElementById('modalToPhone');
+    if (!modal) return;
+
+    if (phone) {
+        phoneEl.value = phone;
+        smsFormatPhone(phoneEl);
+    } else {
+        phoneEl.value = '';
+        smsClearPhoneValid();
+    }
+    document.getElementById('modalSmsOrderId').value = orderId;
+    document.getElementById('modalSmsBody').value = '';
+    smsUpdateCharCount(document.getElementById('modalSmsBody'));
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    setTimeout(() => phoneEl.focus(), 100);
+}
+
+function closeSendSmsModal() {
+    const modal = document.getElementById('sendSmsModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        smsClearPhoneValid();
+    }
+}
+
+// Modal dışına tıklayınca kapat
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('sendSmsModal');
+    if (modal && e.target === modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+});
+
+// ── Mail Modal Kontrolleri ───────────────────────────────────────────────────
+function openSendMailModal(email = '', orderId = '') {
+    const modal = document.getElementById('sendMailModal');
+    if (modal) {
+        document.getElementById('modalToEmail').value = email;
+        document.getElementById('modalOrderId').value = orderId;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+}
+
+function closeSendMailModal() {
+    const modal = document.getElementById('sendMailModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+}
+
+function preventSpamSubmit(form) {
+    const btn = form.querySelector('button[type="submit"]');
+    if (btn && !btn.disabled) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> İşleniyor...';
+    }
+}
+
+function toggleCancellationReason(status) {
+    const div = document.getElementById('cancellationReasonDiv');
+    if (!div) return;
+    if (status === 'cancelled' || status === 'failed') {
+        div.classList.remove('hidden');
+    } else {
+        div.classList.add('hidden');
+    }
+}
+
 // ── Yurtiçi Modal ve Canlı Sorgu Kontrolleri ──────────────────────────────
 function openCreateYurticiModal() {
     const modal = document.getElementById('createYurticiModal');
@@ -951,16 +968,6 @@ function queryLiveYurticiStatus(orderId) {
         errorMsg.textContent = 'Sunucu bağlantı hatası oluştu: ' + err.message;
         errorDiv.classList.remove('hidden');
     });
-}
-
-function toggleCancellationReason(status) {
-    const div = document.getElementById('cancellationReasonDiv');
-    if (!div) return;
-    if (status === 'cancelled' || status === 'failed') {
-        div.classList.remove('hidden');
-    } else {
-        div.classList.add('hidden');
-    }
 }
 </script>
 @endsection
