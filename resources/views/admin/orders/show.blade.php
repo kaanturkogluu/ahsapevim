@@ -216,8 +216,19 @@
                     </span>
                 </div>
                 <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-2xs">
-                    <span class="text-[10px] font-extrabold text-gray-400 uppercase block">Takip / İrsaliye No</span>
-                    <span class="font-mono font-black text-gray-800 text-sm mt-0.5 block">{{ $order->cargo_tracking_code ?: $order->yurtici_cargo_key }}</span>
+                    <span class="text-[10px] font-extrabold text-gray-400 uppercase block">Resmi Takip / İrsaliye No</span>
+                    @php
+                        $hasOfficialDoc = !empty($order->cargo_tracking_code) && $order->cargo_tracking_code !== $order->yurtici_cargo_key && $order->cargo_tracking_code !== $order->tracking_code;
+                    @endphp
+                    @if($hasOfficialDoc)
+                        <span class="font-mono font-black text-emerald-700 text-sm mt-0.5 block select-all">{{ $order->cargo_tracking_code }}</span>
+                        <span class="text-[9px] text-emerald-600 font-bold block">✓ Şubeden Resmi Çıkış Yapıldı</span>
+                    @else
+                        <span class="font-bold text-amber-700 text-xs mt-1 block flex items-center gap-1">
+                            <i class="fa-solid fa-clock-rotate-left text-amber-500"></i> Şube Çıkışı Bekleniyor
+                        </span>
+                        <span class="text-[9px] text-gray-400 block mt-0.5">Şubede barkod okutulunca 12 haneli no atanır</span>
+                    @endif
                 </div>
             </div>
 
@@ -704,30 +715,43 @@ function closeDeleteOrderModal() {
         </div>
 
         <div id="yurticiQueryResult" class="hidden space-y-3">
-            <div class="p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-1.5 text-xs text-gray-800">
-                <div class="flex justify-between">
+            <div class="p-3.5 bg-gray-50 border border-gray-200 rounded-xl space-y-2 text-xs text-gray-800">
+                <div class="flex justify-between items-center">
                     <span class="text-gray-500 font-bold">Kargo Durumu:</span>
-                    <span id="yqEvent" class="font-black text-[#ED1C24]"></span>
+                    <span id="yqEvent" class="font-black px-2.5 py-0.5 rounded-full text-xs"></span>
                 </div>
-                <div class="flex justify-between">
-                    <span class="text-gray-500 font-bold">Resmi İrsaliye No:</span>
-                    <span id="yqDoc" class="font-mono font-bold"></span>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-500 font-bold">Resmi Takip No (docId):</span>
+                    <span id="yqDoc" class="font-mono font-black text-emerald-700 select-all"></span>
                 </div>
-                <div class="flex justify-between">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-500 font-bold">Kargo Anahtarı (cargoKey):</span>
+                    <span id="yqCargoKey" class="font-mono font-bold text-gray-700 select-all"></span>
+                </div>
+                <div class="flex justify-between items-center">
                     <span class="text-gray-500 font-bold">Çıkış Şubesi:</span>
-                    <span id="yqDepUnit" class="font-bold"></span>
+                    <span id="yqDepUnit" class="font-bold text-gray-800"></span>
                 </div>
-                <div class="flex justify-between">
+                <div class="flex justify-between items-center">
                     <span class="text-gray-500 font-bold">Varış / Dağıtım Şubesi:</span>
-                    <span id="yqArrUnit" class="font-bold"></span>
+                    <span id="yqArrUnit" class="font-bold text-gray-800"></span>
                 </div>
-                <div class="flex justify-between">
-                    <span class="text-gray-500 font-bold">Teslimat Tarihi:</span>
-                    <span id="yqDate" class="font-mono font-bold"></span>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-500 font-bold">Teslimat Bilgisi:</span>
+                    <span id="yqDate" class="font-bold text-gray-800"></span>
                 </div>
             </div>
 
-            <div class="pt-2 flex justify-between items-center">
+            <!-- Taşıma Hareket Geçmişi Zaman Çizelgesi -->
+            <div id="yqHistoryContainer" class="hidden">
+                <h5 class="text-[11px] font-extrabold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <i class="fa-solid fa-route text-[#ED1C24]"></i> Taşıma Hareket Geçmişi
+                </h5>
+                <div id="yqHistoryList" class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                </div>
+            </div>
+
+            <div class="pt-2 flex justify-between items-center border-t border-gray-100">
                 <a id="yqTrackingLink" href="#" target="_blank" class="text-xs text-blue-600 hover:underline font-bold flex items-center gap-1">
                     <i class="fa-solid fa-up-right-from-square text-[10px]"></i> Yurtiçi Web Sayfasında İncele
                 </a>
@@ -948,14 +972,56 @@ function queryLiveYurticiStatus(orderId) {
     .then(data => {
         loading.classList.add('hidden');
         if (data.success) {
-            document.getElementById('yqEvent').textContent = data.cargoEvent || 'Kayıt Alındı';
-            document.getElementById('yqDoc').textContent = data.docNumber || data.cargoKey || '-';
+            const evEl = document.getElementById('yqEvent');
+            evEl.textContent = data.statusText || data.cargoEvent || 'Kayıt Alındı';
+
+            // Status Badge Styling
+            evEl.className = 'font-black px-2.5 py-0.5 rounded-full text-xs';
+            if (data.operationStatus === 'DLV' || data.deliveryStatus === '1') {
+                evEl.classList.add('bg-emerald-100', 'text-emerald-800', 'border', 'border-emerald-300');
+            } else if (data.operationStatus === 'CNL' || data.operationStatus === 'ISC') {
+                evEl.classList.add('bg-rose-100', 'text-rose-800', 'border', 'border-rose-300');
+            } else if (data.operationStatus === 'IND') {
+                evEl.classList.add('bg-blue-100', 'text-blue-800', 'border', 'border-blue-300');
+            } else {
+                evEl.classList.add('bg-amber-100', 'text-amber-800', 'border', 'border-amber-300');
+            }
+
+            document.getElementById('yqDoc').textContent = data.docId ? data.docId : (data.docNumber ? data.docNumber : 'Şube Çıkışı Bekleniyor (Henüz Atanmadı)');
+            document.getElementById('yqCargoKey').textContent = data.cargoKey || '-';
             document.getElementById('yqDepUnit').textContent = data.departureUnit || 'SPİL';
             document.getElementById('yqArrUnit').textContent = data.arrivalUnit || 'Belirlenmedi';
-            document.getElementById('yqDate').textContent = (data.deliveryDate ? data.deliveryDate + ' ' + (data.deliveryTime || '') : 'Yolda / Dağıtımda');
+            document.getElementById('yqDate').textContent = (data.deliveryDate ? data.deliveryDate + ' ' + (data.deliveryTime || '') : (data.receiverInfo ? 'Teslim Alan: ' + data.receiverInfo : 'Yolda / Dağıtımda'));
+
+            // Render Movement Timeline
+            const histCont = document.getElementById('yqHistoryContainer');
+            const histList = document.getElementById('yqHistoryList');
+            histList.innerHTML = '';
+
+            if (data.history && data.history.length > 0) {
+                data.history.forEach(item => {
+                    const row = document.createElement('div');
+                    row.className = 'p-2 bg-white rounded-lg border border-gray-200 text-[11px] flex justify-between items-center';
+                    row.innerHTML = `
+                        <div>
+                            <span class="font-extrabold text-gray-900 block">${item.unitName || 'Transfer'}</span>
+                            <span class="text-gray-500 text-[10px]">${item.eventName || 'Hareket'} ${item.reasonName ? '(' + item.reasonName + ')' : ''}</span>
+                        </div>
+                        <div class="text-right text-[10px] font-mono text-gray-600">
+                            ${item.eventDate || ''} ${item.eventTime || ''}
+                        </div>
+                    `;
+                    histList.appendChild(row);
+                });
+                histCont.classList.remove('hidden');
+            } else {
+                histCont.classList.add('hidden');
+            }
+
             const trLink = document.getElementById('yqTrackingLink');
             if (trLink) {
-                trLink.href = data.trackingUrl || `https://www.yurticikargo.com/tr/online-servisler/gonderi-sorgula?code=${encodeURIComponent(data.docNumber || data.cargoKey)}`;
+                const targetCode = data.docId || data.cargoKey;
+                trLink.href = data.trackingUrl || `https://www.yurticikargo.com/tr/online-servisler/gonderi-sorgula?code=${encodeURIComponent(targetCode)}`;
             }
             resultDiv.classList.remove('hidden');
         } else {

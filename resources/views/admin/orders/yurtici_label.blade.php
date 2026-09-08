@@ -67,9 +67,17 @@
 <body class="min-h-screen py-4 md:py-8">
 
     @php
+        $yurticiService = app(\App\Services\YurticiKargoService::class);
         $paymentType = strtoupper($order->yurtici_payment_type ?: 'GO');
         $paymentLabel = ($paymentType === 'AO') ? 'AÖ — ALICI ÖDEMELİ' : 'GÖ — GÖNDERİCİ ÖDEMELİ';
-        $barcodeValue = $order->cargo_tracking_code ?: $order->yurtici_cargo_key ?: ('AHS-' . $order->id);
+        // Primary barcode for branch scanning is cargoKey
+        $barcodeValue = $order->yurtici_cargo_key ?: $order->cargo_tracking_code ?: ('AHS-' . $order->id);
+        $cleanAddress = $yurticiService->formatReceiverAddress($order->address, $order->city ?: 'Manisa', $order->district ?: 'Merkez');
+        $cleanPhone = $yurticiService->cleanPhoneNumber($order->phone);
+        $formattedPhone = strlen($cleanPhone) === 10
+            ? ('0 (' . substr($cleanPhone, 0, 3) . ') ' . substr($cleanPhone, 3, 3) . ' ' . substr($cleanPhone, 6, 2) . ' ' . substr($cleanPhone, 8, 2))
+            : ($order->phone ?: '-');
+
         $respData = json_decode($order->yurtici_response_data ?? '{}', true) ?: [];
         $desi = $respData['desi'] ?? 1.0;
         $kg = $respData['kg'] ?? 1.0;
@@ -80,7 +88,7 @@
     <div class="no-print max-w-xl mx-auto mb-6 px-4">
         <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-2">
-                <span class="w-3 h-3 rounded-full bg-amber-500 animate-pulse"></span>
+                <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span class="text-xs font-bold text-gray-800">Yurtiçi Kargo Barkodlu Sevk Etiketi</span>
             </div>
             <div class="flex items-center gap-2">
@@ -132,12 +140,12 @@
                 <!-- Barcode Section -->
                 <div class="border-2 border-black p-2 rounded text-center mb-3 bg-white">
                     <span class="text-[9px] font-black uppercase text-gray-700 tracking-wider block mb-1">
-                        Kargo Takip / Sevk Numarası
+                        Kargo Takip / Sevk Numarası (Kargo Anahtarı)
                     </span>
                     <svg id="yurticiBarcode" class="w-full max-h-16 mx-auto"></svg>
                     <div class="text-xs font-mono font-black tracking-widest mt-0.5">{{ $barcodeValue }}</div>
                     @if($order->yurtici_job_id)
-                        <span class="text-[9px] font-mono text-gray-500 block mt-0.5">Yurtiçi Job ID: #{{ $order->yurtici_job_id }}</span>
+                        <span class="text-[9px] font-mono text-gray-500 block mt-0.5">Yurtiçi Talep No (Job ID): #{{ $order->yurtici_job_id }}</span>
                     @endif
                 </div>
 
@@ -147,20 +155,20 @@
                         <span class="text-[10px] font-black uppercase tracking-wider text-[#ED1C24] flex items-center gap-1">
                             <i class="fa-solid fa-user"></i> Alıcı (Teslim Edilecek Kişi)
                         </span>
-                        <span class="text-[10px] font-black font-mono">{{ $order->phone }}</span>
+                        <span class="text-[10px] font-black font-mono">{{ $formattedPhone }}</span>
                     </div>
                     <div class="text-xs font-black text-gray-900 mb-1">
                         {{ $order->name }}
                     </div>
                     <div class="text-[11px] text-gray-800 leading-tight mb-2 whitespace-pre-line">
-                        {{ $order->address }}
+                        {{ $cleanAddress }}
                     </div>
                     <div class="flex items-center justify-between pt-1 border-t border-gray-200 text-xs">
                         <span class="font-black uppercase tracking-wide">
                             {{ $order->district ?: 'Merkez' }} / {{ $order->city ?: 'MANİSA' }}
                         </span>
                         @if($order->identity_number)
-                            <span class="text-[10px] font-mono text-gray-600">TC: {{ $order->identity_number }}</span>
+                            <span class="text-[10px] font-mono text-gray-600">TC/VKN: {{ $order->identity_number }}</span>
                         @endif
                     </div>
                 </div>

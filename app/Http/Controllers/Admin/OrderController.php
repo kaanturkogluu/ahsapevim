@@ -371,9 +371,11 @@ class OrderController extends Controller
         }
 
         if ($result['success']) {
-            $msg = "Kargo Durumu: " . ($result['cargoEvent'] ?? 'İşlemde') . " | Şube: " . ($result['arrivalUnit'] ?: $result['departureUnit'] ?: 'SPİL');
-            if (!empty($result['docNumber'])) {
-                $msg .= " | Resmi Takip No: " . $result['docNumber'];
+            $msg = "Kargo Durumu: " . ($result['statusText'] ?? $result['cargoEvent'] ?? 'İşlemde') . " | Şube: " . ($result['arrivalUnit'] ?: $result['departureUnit'] ?: 'SPİL');
+            if (!empty($result['docId'])) {
+                $msg .= " | Resmi Takip No: " . $result['docId'];
+            } elseif (!empty($result['docNumber'])) {
+                $msg .= " | Belge No: " . $result['docNumber'];
             }
             return redirect()->back()->with('success', $msg);
         }
