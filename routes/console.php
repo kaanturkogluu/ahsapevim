@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 use Illuminate\Support\Facades\Schedule;
 
 Schedule::command('orders:notify-admin')->everyTenMinutes();
+Schedule::command('yurtici:sync')->everyFifteenMinutes()->withoutOverlapping();

@@ -511,7 +511,15 @@ class YurticiKargoService
 
         // When official docId is created by YK branch, save as primary cargo_tracking_code
         if (!empty($docId) && $order->cargo_tracking_code !== $docId) {
-            $order->update(['cargo_tracking_code' => $docId]);
+            $order->update([
+                'cargo_tracking_code' => $docId,
+                'yurtici_status'      => ($order->yurtici_status === 'created' ? 'in_transit' : $order->yurtici_status),
+            ]);
+        }
+
+        // If official 12-digit docId is ready and customer hasn't received official SMS yet, send it now!
+        if (!empty($docId) && empty($order->cargo_sms_sent_at)) {
+            $this->sendOfficialTrackingSms($order, $docId);
         }
 
         // Update delivered status
@@ -530,6 +538,60 @@ class YurticiKargoService
         \Illuminate\Support\Facades\Cache::put($cacheKey, $data, 45);
 
         return $data;
+    }
+
+    /**
+     * Send official tracking SMS to customer only when real 12-digit docId is assigned by branch
+     */
+    public function sendOfficialTrackingSms(Order $order, string $docId): bool
+    {
+        if (empty($docId) || !empty($order->cargo_sms_sent_at)) {
+            return false;
+        }
+
+        if (empty($order->phone)) {
+            return false;
+        }
+
+        try {
+            $trackingUrl = "https://www.yurticikargo.com/tr/online-servisler/gonderi-sorgula?code=" . urlencode($docId);
+            $smsMessage = "Sayın {$order->name}, #{$order->id} numaralı siparişiniz Yurtiçi Kargo'ya teslim edilmiştir. Kargo Takip No: {$docId}. Takip: {$trackingUrl} AhşapEvim";
+
+            $sent = app(\App\Services\NetgsmService::class)->sendSms($order->phone, $smsMessage, $order->id, 'cargo_tracking');
+            if ($sent) {
+                $order->update(['cargo_sms_sent_at' => now()]);
+                Log::info("Müşteriye resmi kargo takip SMS'i gönderildi: Sipariş #{$order->id}, Takip No: {$docId}");
+
+                // Resmi takip kodu ile müşteriye bilgilendirme e-postası da gönder
+                if (!empty($order->email)) {
+                    try {
+                        $emailData = [
+                            'user_name'           => $order->name,
+                            'user_email'          => $order->email,
+                            'order_id'            => $order->id,
+                            'tracking_code'       => $order->tracking_code ?: 'AHS-' . $order->id,
+                            'shipping_company'    => 'Yurtiçi Kargo',
+                            'cargo_tracking_code' => $docId,
+                            'cancellation_reason' => $order->payment_error_reason ?: '',
+                            'total_amount'        => number_format($order->total_amount, 2, ',', '.'),
+                            'delivery_address'    => $order->address . ' (' . ($order->city ?: '') . ')',
+                            'product_details'     => '',
+                            'site_name'           => 'AhşapEvim',
+                        ];
+                        \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_shipped', $emailData));
+                        app(\App\Services\MailService::class)->logMailable($order->email, "Siparişiniz Kargoya Verildi (#{$order->id})", "Kargonuz Yurtiçi Kargo ile {$docId} takip numarasıyla sevk edilmiştir.", 'success', null, $order->id);
+                    } catch (\Throwable $mEx) {
+                        Log::error("Kargo takip mail gönderim hatası (Sipariş #{$order->id}): " . $mEx->getMessage());
+                    }
+                }
+
+                return true;
+            }
+        } catch (\Throwable $e) {
+            Log::error("Kargo takip SMS gönderim hatası (Sipariş #{$order->id}): " . $e->getMessage());
+        }
+
+        return false;
     }
 
     /**

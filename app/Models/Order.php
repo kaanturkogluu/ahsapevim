@@ -33,6 +33,7 @@ class Order extends Model
         'yurtici_payment_type',
         'yurtici_status',
         'yurtici_response_data',
+        'cargo_sms_sent_at',
         'note',
         'admin_notified_at',
     ];

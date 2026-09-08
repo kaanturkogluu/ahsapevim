@@ -229,6 +229,17 @@
                         </span>
                         <span class="text-[9px] text-gray-400 block mt-0.5">Şubede barkod okutulunca 12 haneli no atanır</span>
                     @endif
+                    <div class="mt-2 pt-1.5 border-t border-gray-100 text-[10px]">
+                        @if($order->cargo_sms_sent_at)
+                            <span class="text-emerald-700 font-bold flex items-center gap-1">
+                                <i class="fa-solid fa-comment-sms"></i> SMS İletildi: {{ \Carbon\Carbon::parse($order->cargo_sms_sent_at)->format('d.m H:i') }}
+                            </span>
+                        @else
+                            <span class="text-gray-400 font-medium flex items-center gap-1">
+                                <i class="fa-regular fa-comment-dots"></i> Takip no gelince SMS gidecek
+                            </span>
+                        @endif
+                    </div>
                 </div>
             </div>
 
@@ -678,9 +689,12 @@ function closeDeleteOrderModal() {
                     <span class="text-xs font-bold text-gray-700">Sipariş durumunu otomatik olarak "Kargolandı" yap</span>
                 </label>
 
-                <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" name="send_notification" value="1" checked class="w-4 h-4 text-[#ED1C24] rounded border-gray-300 focus:ring-0">
-                    <span class="text-xs font-bold text-gray-700">Müşteriye otomatik Kargo Takip SMS bildirimi gönder</span>
+                <label class="flex items-start gap-2.5 cursor-pointer bg-red-50/50 p-2.5 rounded-xl border border-red-100">
+                    <input type="checkbox" name="send_notification" value="1" checked class="w-4 h-4 mt-0.5 text-[#ED1C24] rounded border-gray-300 focus:ring-0">
+                    <div>
+                        <span class="text-xs font-bold text-gray-800 block">Kargo şubede okutulduğunda 12 haneli resmi takip no ile müşteriye SMS gönder</span>
+                        <span class="text-[11px] text-gray-500 block leading-tight mt-0.5">Erken veya geçersiz SMS gönderilmez. Yurtiçi Kargo paketi teslim alıp resmi takip no ürettiğinde sistem otomatik SMS iletir.</span>
+                    </div>
                 </label>
             </div>
 
