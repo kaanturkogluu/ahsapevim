@@ -32,23 +32,27 @@ class RevenueController extends Controller
 
         $totalOrders = Order::whereIn('status', $this->paidStatuses)->count();
 
-        $totalProductsSold = OrderItem::whereHas('order', function ($q) {
-            $q->whereIn('status', $this->paidStatuses);
-        })->sum('quantity');
+        $totalProductsSold = OrderItem::join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->whereIn('orders.status', $this->paidStatuses)
+            ->sum('order_items.quantity');
 
-        // Son 30 günlük günlük gelir verisi (grafik)
+        // Son 30 günlük günlük gelir verisi (grafik) - Tek sorguda grup olarak çekilir (N+1 engellendi)
+        $startDate = Carbon::now()->subDays(29)->startOfDay();
+        $dailyRevenues = Order::whereIn('status', $this->paidStatuses)
+            ->where('created_at', '>=', $startDate)
+            ->selectRaw('DATE(created_at) as order_date, SUM(total_amount) as total')
+            ->groupBy('order_date')
+            ->pluck('total', 'order_date')
+            ->toArray();
+
         $last30Days   = [];
         $revenueData  = [];
 
         for ($i = 29; $i >= 0; $i--) {
-            $date          = Carbon::now()->subDays($i);
+            $date = Carbon::now()->subDays($i);
+            $dateKey = $date->toDateString();
             $last30Days[]  = $date->format('d M');
-
-            $dayRevenue = Order::whereIn('status', $this->paidStatuses)
-                               ->whereDate('created_at', $date->toDateString())
-                               ->sum('total_amount');
-
-            $revenueData[] = (float) $dayRevenue;
+            $revenueData[] = (float) ($dailyRevenues[$dateKey] ?? 0);
         }
 
         return view('admin.revenue.index', compact(

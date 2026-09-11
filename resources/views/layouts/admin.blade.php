@@ -471,6 +471,7 @@
         }
 
         async function fetchRecentOrders() {
+            if (document.hidden) return; // Sekme arka plandaysa sorgu atıp sunucuyu meşgul etme
             try {
                 const response = await fetch('/yonetim/api/son-siparisler?last_order_id=' + lastKnownOrderId, {
                     headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
@@ -559,9 +560,13 @@
             }
         });
 
-        // Sayfa yüklendiğinde ve her 30 saniyede bir kontrol et
-        fetchRecentOrders();
-        setInterval(fetchRecentOrders, 30000);
+        // Sayfa ilk yüklendiğinde ana istekleri rahatlatmak için 2.5 sn gecikmeli başlat, ardından 60 sn'de bir kontrol et
+        setTimeout(fetchRecentOrders, 2500);
+        setInterval(() => {
+            if (!document.hidden) {
+                fetchRecentOrders();
+            }
+        }, 60000);
     </script>
 
     @stack('scripts')

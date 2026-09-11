@@ -21,6 +21,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         \Illuminate\Support\Facades\View::composer('*', function ($view) {
+            // Admin paneli veya API isteklerinde vitrin verisi yüklenmez (Gereksiz yük ve sorgular engellenir)
+            if (request()->is('yonetim*') || request()->is('api*')) {
+                return;
+            }
+
             // Menü kategorilerini 10 dakika önbellekte tut (her görünümde DB sorgusu yapmaz)
             $navCategories = \Illuminate\Support\Facades\Cache::remember('nav_categories', 600, function () {
                 try {

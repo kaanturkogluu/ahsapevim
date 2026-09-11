@@ -156,39 +156,41 @@ class SettingController extends Controller
                 'failed'    => 'Başarısız',
             ];
 
-            $recentOrders = Order::latest()
-                ->take(6)
-                ->get()
-                ->map(function ($order) use ($statusLabels) {
-                    $statusText = $statusLabels[$order->status] ?? $order->status;
-                    $timeAgo = $order->created_at ? $order->created_at->locale('tr')->diffForHumans() : 'Az önce';
+            $recentOrders = \Illuminate\Support\Facades\Cache::remember('admin_recent_orders_list', 15, function () use ($statusLabels) {
+                return Order::latest()
+                    ->take(6)
+                    ->get()
+                    ->map(function ($order) use ($statusLabels) {
+                        $statusText = $statusLabels[$order->status] ?? $order->status;
+                        $timeAgo = $order->created_at ? $order->created_at->locale('tr')->diffForHumans() : 'Az önce';
 
-                    return [
-                        'id'            => $order->id,
-                        'name'          => $order->name,
-                        'total_amount'  => number_format($order->total_amount, 2, ',', '.') . ' ₺',
-                        'status'        => $statusText,
-                        'time_ago'      => $timeAgo,
-                        'url'           => route('admin.orders.show', $order->id),
-                        'is_new'        => $order->created_at ? $order->created_at->greaterThan(now()->subHours(24)) : false,
-                    ];
-                });
+                        return [
+                            'id'            => $order->id,
+                            'name'          => $order->name,
+                            'total_amount'  => number_format($order->total_amount, 2, ',', '.') . ' ₺',
+                            'status'        => $statusText,
+                            'time_ago'      => $timeAgo,
+                            'url'           => route('admin.orders.show', $order->id),
+                            'is_new'        => $order->created_at ? $order->created_at->greaterThan(now()->subHours(24)) : false,
+                        ];
+                    });
+            });
 
-            $newCount = Order::where('created_at', '>=', now()->subHours(48))
-                ->whereIn('status', ['pending', 'paid', 'preparing'])
-                ->count();
+            $newCount = \Illuminate\Support\Facades\Cache::remember('admin_recent_orders_count', 15, function () {
+                return Order::where('created_at', '>=', now()->subHours(48))
+                    ->whereIn('status', ['pending', 'paid', 'preparing'])
+                    ->count();
+            });
 
-            $hasNewer = false;
-            if ($lastOrderId > 0) {
-                $hasNewer = Order::where('id', '>', $lastOrderId)->exists();
-            }
+            $latestId = $recentOrders->first()['id'] ?? 0;
+            $hasNewer = ($lastOrderId > 0 && $latestId > $lastOrderId);
 
             return response()->json([
                 'status'        => 'success',
                 'orders'        => $recentOrders,
                 'count'         => $newCount,
                 'has_newer'     => $hasNewer,
-                'latest_id'     => $recentOrders->first()['id'] ?? 0,
+                'latest_id'     => $latestId,
             ]);
         } catch (\Throwable $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
