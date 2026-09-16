@@ -132,19 +132,26 @@ class OrderController extends Controller
             $isShippedEvent = ($newStatus === 'shipped' && ($oldStatus !== 'shipped' || $hasNewTrackingCode));
 
             if ($isShippedEvent) {
-                // Yurtiçi Kargo entegrasyonu olan siparişlerde erken veya geçersiz SMS gitmesini engelle
-                $isYurticiPending = (!empty($order->yurtici_cargo_key) && (
-                    empty($cargoCode) ||
-                    $cargoCode === 'Belirtilmedi' ||
-                    str_starts_with($cargoCode, 'AHS-') ||
-                    $cargoCode === $order->yurtici_cargo_key
-                ));
+                // Kargo takip kodunun geçerli bir harici kargo kodu olup olmadığını kontrol et
+                // 'Belirtilmedi', boş veya site içi sipariş takip kodları ('AHS-XXXXXX') ASLA kargo takip kodu olarak müşteriye SMS atılamaz!
+                $hasValidCargoCode = !empty($cargoCode)
+                    && $cargoCode !== 'Belirtilmedi'
+                    && !str_starts_with(strtoupper($cargoCode), 'AHS-')
+                    && $cargoCode !== ($order->tracking_code ?? '')
+                    && $cargoCode !== ($order->yurtici_cargo_key ?? '')
+                    && strlen(trim($cargoCode)) >= 5;
 
-                if (!$isYurticiPending && empty($order->cargo_sms_sent_at)) {
-                    // Gerçek kargo takip no varsa veya Yurtiçi dışı firma ise SMS gönder
+                $isYurticiOrder = (!empty($order->yurtici_cargo_key) || ($order->shippingCompany && str_contains(strtolower($order->shippingCompany->name), 'yurtiçi')));
+
+                if ($hasValidCargoCode && empty($order->cargo_sms_sent_at)) {
+                    // Yalnızca geçerli bir harici kargo takip no varsa SMS gönder
                     try {
-                        $smsMessage = "Sayın {$order->name}, #{$order->id} numaralı siparişiniz {$shippingCompanyName} firmasına teslim edilmiştir. Kargo Takip No: {$cargoCode}. AhşapEvim";
-                        $sent = app(NetgsmService::class)->sendSms($order->phone, $smsMessage, $order->id, 'automated');
+                        $companyLabel = ($order->shippingCompany && $order->shippingCompany->name !== 'Kargo Firması')
+                            ? $order->shippingCompany->name . ' firmasına'
+                            : 'kargoya';
+
+                        $smsMessage = "Sayın {$order->name}, #{$order->id} numaralı siparişiniz {$companyLabel} teslim edilmiştir. Kargo Takip No: {$cargoCode}. AhşapEvim";
+                        $sent = app(NetgsmService::class)->sendSms($order->phone, $smsMessage, $order->id, 'cargo_tracking');
                         if ($sent) {
                             $order->update(['cargo_sms_sent_at' => now()]);
                         }
@@ -152,11 +159,13 @@ class OrderController extends Controller
                         \Illuminate\Support\Facades\Log::error('Kargo SMS Gönderim Hatası: ' . $e->getMessage());
                     }
                 } else {
-                    \Illuminate\Support\Facades\Log::info("Sipariş #{$order->id} için erken SMS gönderilmedi. Paket şube tarafından okutulup 12 haneli resmi docId oluştuğunda otomatik gönderilecek.");
+                    if (!$hasValidCargoCode) {
+                        \Illuminate\Support\Facades\Log::info("Sipariş #{$order->id} için geçerli bir kargo takip numarası henüz oluşmadığından ('Belirtilmedi' veya site takip kodu 'AHS-') müşteriye kargo SMS'i gönderilmedi." . ($isYurticiOrder ? " Yurtiçi şube okutması sonrası resmi 12 haneli kodla otomatik gönderilecek." : ""));
+                    }
                 }
 
-                // E-Posta Bildirimi (DynamicMail order_shipped)
-                if (!$isYurticiPending) {
+                // E-Posta Bildirimi (DynamicMail order_shipped) - Sadece gerçek kargo kodu varsa veya Yurtiçi beklemesi yoksa
+                if ($hasValidCargoCode) {
                     try {
                         \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_shipped', $data));
                         app(\App\Services\MailService::class)->logMailable($order->email, "Siparişiniz Kargoya Verildi (#{$order->id})", "Kargonuz {$shippingCompanyName} ile {$cargoCode} takip numarasıyla teslim edilmiştir.", 'success', null, $order->id);

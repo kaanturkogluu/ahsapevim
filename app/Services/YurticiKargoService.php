@@ -317,7 +317,7 @@ class YurticiKargoService
             // Update order with Yurtiçi details
             $order->update([
                 'shipping_company_id'   => $yurticiCompany->id,
-                'cargo_tracking_code'   => $cargoKey,
+                'cargo_tracking_code'   => null, // Resmi 12 haneli Yurtiçi takip numarası şube okutmasıyla gelene kadar null kalır
                 'yurtici_cargo_key'     => $cargoKey,
                 'yurtici_job_id'        => $jobId ?: null,
                 'yurtici_payment_type'  => $paymentType,
