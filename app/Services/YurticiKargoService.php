@@ -270,7 +270,7 @@ class YurticiKargoService
         $response = $this->sendSoapRequest($soapXml, 'createShipment');
 
         if (!$response['success']) {
-            Log::error("Yurtiçi Kargo createShipment cURL Hatası (Sipariş #{$order->id}): " . $response['error']);
+            Log::error("Yurtiçi createShipment hatası (Sipariş #{$order->id}): " . $response['error']);
             return [
                 'success' => false,
                 'message' => 'Yurtiçi Kargo web servisine bağlanılamadı: ' . $response['error'],
@@ -279,7 +279,7 @@ class YurticiKargoService
 
         $xml = $this->parseXml($response['body']);
         if ($xml === null) {
-            Log::error("Yurtiçi Kargo XML parse hatası (Sipariş #{$order->id}):\n" . $response['body']);
+            Log::error("Yurtiçi createShipment XML parse hatası (Sipariş #{$order->id})");
             return [
                 'success' => false,
                 'message' => 'Yurtiçi Kargo yanıtı çözümlenemedi.',
@@ -293,16 +293,6 @@ class YurticiKargoService
         $errCode = (string) ($xml->xpath('//shippingOrderDetailVO/errCode')[0] ?? '');
         $errMessage = (string) ($xml->xpath('//shippingOrderDetailVO/errMessage')[0] ?? '');
         $retCargoKey = (string) ($xml->xpath('//shippingOrderDetailVO/cargoKey')[0] ?? $cargoKey);
-
-        Log::info("Yurtiçi Kargo createShipment Çözümlenen Alanlar (Sipariş #{$order->id}):", [
-            'outFlag'       => $outFlag,
-            'outResult'     => $outResult,
-            'jobId'         => $jobId,
-            'cargoKey'      => $retCargoKey,
-            'errCode'       => $errCode,
-            'errMessage'    => $errMessage,
-            'raw_response'  => $response['body'],
-        ]);
 
         if ($outFlag === '0' && (empty($errCode) || $errCode === '0')) {
             // Find or create Yurtiçi Kargo shipping company
@@ -323,16 +313,15 @@ class YurticiKargoService
                 'yurtici_payment_type'  => $paymentType,
                 'yurtici_status'        => 'created',
                 'yurtici_response_data' => json_encode([
-                    'created_at'   => now()->toDateTimeString(),
-                    'jobId'        => $jobId,
-                    'cargoKey'     => $cargoKey,
-                    'invoiceKey'   => $invoiceKey,
-                    'paymentType'  => $paymentType,
-                    'desi'         => $desi,
-                    'kg'           => $kg,
-                    'cargoCount'   => $cargoCount,
-                    'branch'       => $this->branchName,
-                    'raw_response' => $response['body'],
+                    'created_at'  => now()->toDateTimeString(),
+                    'jobId'       => $jobId,
+                    'cargoKey'    => $cargoKey,
+                    'invoiceKey'  => $invoiceKey,
+                    'paymentType' => $paymentType,
+                    'desi'        => $desi,
+                    'kg'          => $kg,
+                    'cargoCount'  => $cargoCount,
+                    'branch'      => $this->branchName,
                 ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
             ]);
 
@@ -498,16 +487,6 @@ class YurticiKargoService
             'totalKg'             => (string) ($item->totalKg ?? ''),
             'history'             => $history,
         ];
-
-        Log::info("Yurtiçi Kargo queryShipment Çözümlenen Alanlar (Sipariş #{$order->id}):", [
-            'cargoKey'         => $data['cargoKey'] ?? null,
-            'jobId'            => $data['jobId'] ?? null,
-            'docId'            => $data['docId'] ?? null,
-            'docNumber'        => $data['docNumber'] ?? null,
-            'operationStatus'  => $data['operationStatus'] ?? null,
-            'cargoEvent'       => $data['cargoEvent'] ?? null,
-            'deliveryStatus'   => $data['deliveryStatus'] ?? null,
-        ]);
 
         // When official docId is created by YK branch, save as primary cargo_tracking_code
         if (!empty($docId) && $order->cargo_tracking_code !== $docId) {
@@ -687,16 +666,6 @@ class YurticiKargoService
         $errCode = (string) ($cancelDetail->errCode ?? '');
         $errMessage = (string) ($cancelDetail->errMessage ?? '');
 
-        Log::info("Yurtiçi Kargo cancelShipment Çözümlenen Alanlar (Sipariş #{$order->id}):", [
-            'cargoKey'         => $cargoKey,
-            'outFlag'          => $outFlag,
-            'operationStatus'  => $opStatus,
-            'operationMessage' => $opMessage,
-            'errCode'          => $errCode,
-            'errMessage'       => $errMessage,
-            'raw_response'     => $response['body'],
-        ]);
-
         // Status CNL (3: Kargo Çıkışı Engellendi), ISC (4: Kargo daha önceden iptal edilmiştir), or Err 82520
         $isCancelled = ($outFlag === '0' && ($opStatus === 'CNL' || $opStatus === 'ISC' || empty($errCode) || $errCode === '0'))
             || $opStatus === 'CNL'
@@ -742,11 +711,6 @@ class YurticiKargoService
      */
     protected function sendSoapRequest(string $xmlContent, string $action): array
     {
-        Log::info("================================================================================");
-        Log::info(">>> YURTİÇİ KARGO API SOAP İSTEĞİ: [{$action}]");
-        Log::info("URL: " . $this->endpoint);
-        Log::info("İstek XML Gövdesi:\n" . $xmlContent);
-
         $ch = curl_init($this->endpoint);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlContent);
@@ -766,14 +730,8 @@ class YurticiKargoService
         $curlError = curl_error($ch);
         curl_close($ch);
 
-        Log::info("<<< YURTİÇİ KARGO API SOAP YANITI: [{$action}] (HTTP Kod: {$httpCode})");
-        Log::info("Ham XML Yanıtı:\n" . ($response ?: '(Boş Yanıt Alındı)'));
         if ($curlError) {
-            Log::error("Yurtiçi Kargo [{$action}] cURL Hatası: " . $curlError);
-        }
-        Log::info("================================================================================");
-
-        if ($curlError) {
+            Log::error("Yurtiçi Kargo [{$action}] cURL hatası: {$curlError}");
             return [
                 'success' => false,
                 'error'   => $curlError,
@@ -782,6 +740,7 @@ class YurticiKargoService
         }
 
         if ($httpCode >= 400 && empty($response)) {
+            Log::error("Yurtiçi Kargo [{$action}] HTTP {$httpCode} hatası.");
             return [
                 'success' => false,
                 'error'   => "HTTP {$httpCode} hatası alındı.",
