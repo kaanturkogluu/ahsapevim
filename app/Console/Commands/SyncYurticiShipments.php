@@ -77,13 +77,10 @@ class SyncYurticiShipments extends Command
                 if (!empty($docId)) {
                     $this->info("   Resmi Takip No: {$docId}");
 
-                    // Müşteriye SMS henüz gönderilmediyse gönder
-                    if (empty($order->cargo_sms_sent_at)) {
-                        $sent = $yurticiService->sendOfficialTrackingSms($order, $docId);
-                        if ($sent) {
-                            $smsSentCount++;
-                            $this->info("   ✓ Müşteriye resmi takip no ile SMS bildirimi gönderildi.");
-                        }
+                    // Müşteriye SMS bildirimi kontrolü (queryShipment içinde gönderildiyse sayacı artır)
+                    if (!empty($result['smsSent'])) {
+                        $smsSentCount++;
+                        $this->info("   ✓ Müşteriye resmi takip no ile SMS bildirimi gönderildi.");
                     }
                 }
 

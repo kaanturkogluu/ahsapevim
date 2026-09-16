@@ -518,9 +518,11 @@ class YurticiKargoService
         }
 
         // If official 12-digit docId is ready and customer hasn't received official SMS yet, send it now!
+        $smsSent = false;
         if (!empty($docId) && empty($order->cargo_sms_sent_at)) {
-            $this->sendOfficialTrackingSms($order, $docId);
+            $smsSent = $this->sendOfficialTrackingSms($order, $docId);
         }
+        $data['smsSent'] = $smsSent;
 
         // Update delivered status
         if (($data['deliveryStatus'] === '1' || $opStatus === 'DLV') && $order->yurtici_status !== 'delivered') {
@@ -545,11 +547,44 @@ class YurticiKargoService
      */
     public function sendOfficialTrackingSms(Order $order, string $docId): bool
     {
-        if (empty($docId) || !empty($order->cargo_sms_sent_at)) {
+        $docId = trim($docId);
+        if (empty($docId)) {
+            return false;
+        }
+
+        // Güncel veriyi DB'den tazele
+        $order->refresh();
+
+        // 1. Veritabanı Kontrolü (Order tablosundaki timestamp kontrolü)
+        if (!empty($order->cargo_sms_sent_at)) {
             return false;
         }
 
         if (empty($order->phone)) {
+            return false;
+        }
+
+        // 2. Veritabanı Kontrolü (SmsLog tablosunda bu sipariş için başarılı takip SMS'i var mı?)
+        $alreadySentInLogs = \App\Models\SmsLog::where('order_id', $order->id)
+            ->where('status', 'success')
+            ->where(function ($q) use ($docId) {
+                $q->where('type', 'cargo_tracking')
+                  ->orWhere('message', 'like', "%{$docId}%");
+            })
+            ->exists();
+
+        if ($alreadySentInLogs) {
+            $order->update(['cargo_sms_sent_at' => now()]);
+            $order->cargo_sms_sent_at = now();
+            Log::info("Sipariş #{$order->id} için SMS daha önce gönderilmiş (SmsLog tablosunda başarılı kayıt bulundu), mükerrer spam SMS engellendi.");
+            return true;
+        }
+
+        // 3. Eşzamanlılık Kilidi (Aynı anda birden fazla cron/istek çalıştığında spam gönderimi önleme)
+        $lockKey = "send_cargo_sms_lock_{$order->id}";
+        $lock = \Illuminate\Support\Facades\Cache::lock($lockKey, 30);
+        if (!$lock->get()) {
+            Log::warning("Sipariş #{$order->id} için kargo SMS gönderim işlemi şu an başka bir süreçte çalışıyor, mükerrer istek engellendi.");
             return false;
         }
 
@@ -560,6 +595,7 @@ class YurticiKargoService
             $sent = app(\App\Services\NetgsmService::class)->sendSms($order->phone, $smsMessage, $order->id, 'cargo_tracking');
             if ($sent) {
                 $order->update(['cargo_sms_sent_at' => now()]);
+                $order->cargo_sms_sent_at = now();
                 Log::info("Müşteriye resmi kargo takip SMS'i gönderildi: Sipariş #{$order->id}, Takip No: {$docId}");
 
                 // Resmi takip kodu ile müşteriye bilgilendirme e-postası da gönder
@@ -589,6 +625,8 @@ class YurticiKargoService
             }
         } catch (\Throwable $e) {
             Log::error("Kargo takip SMS gönderim hatası (Sipariş #{$order->id}): " . $e->getMessage());
+        } finally {
+            optional($lock)->release();
         }
 
         return false;

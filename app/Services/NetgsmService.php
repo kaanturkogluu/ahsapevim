@@ -159,15 +159,19 @@ class NetgsmService
 
         } catch (\Exception $e) {
             Log::error('Netgsm SMS Exception: ' . $e->getMessage());
-            SmsLog::create([
-                'order_id'     => $orderId,
-                'to_phone'     => $phone,
-                'message'      => $message,
-                'status'       => 'failed',
-                'error_message'=> 'Sunucu SMS Bağlantı Hatası: ' . $e->getMessage(),
-                'response_code'=> 'EXCEPTION',
-                'type'         => $type,
-            ]);
+            try {
+                SmsLog::create([
+                    'order_id'     => $orderId,
+                    'to_phone'     => $phone,
+                    'message'      => $message,
+                    'status'       => 'failed',
+                    'error_message'=> 'Sunucu SMS Bağlantı Hatası: ' . $e->getMessage(),
+                    'response_code'=> 'EXCEPTION',
+                    'type'         => $type,
+                ]);
+            } catch (\Throwable $logEx) {
+                Log::error('Netgsm SMS Log Exception: ' . $logEx->getMessage());
+            }
             return false;
         }
     }
