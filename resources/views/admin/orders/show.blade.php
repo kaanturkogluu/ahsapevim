@@ -291,7 +291,11 @@
         @endif
     </div>
 
-    <!-- Iyzico Finansal Hakediş & İptal / Başarısızlık Detayları -->
+    @php
+        $isEftOrder = str_starts_with($order->payment_id ?? '', 'EFT');
+    @endphp
+
+    <!-- Finansal Ödeme Detayları / Havale / Iyzico / İptal -->
     @if($order->status === 'failed' || $order->status === 'cancelled' || !empty($order->payment_error_reason))
         <div class="bg-rose-50 border border-rose-200 p-4 rounded-xl mb-6 shadow-2xs">
             <div class="flex items-center gap-2 text-rose-900 font-extrabold text-xs uppercase tracking-wider mb-1.5">
@@ -304,7 +308,68 @@
                 @endif
             </div>
         </div>
+    @elseif($isEftOrder)
+        <!-- Banka Havalesi / EFT Ödeme Detayları -->
+        <div class="bg-gradient-to-br from-amber-50/80 via-white to-amber-50/40 p-5 rounded-2xl border border-amber-200/90 mb-6 shadow-2xs">
+            <h4 class="text-xs font-bold text-amber-950 uppercase tracking-wider mb-3 flex items-center justify-between flex-wrap gap-2">
+                <span class="flex items-center gap-2 text-amber-900 font-black">
+                    <i class="fa-solid fa-building-columns text-amber-600 text-sm"></i> Banka Havalesi / EFT Ödeme Detayları
+                </span>
+                @if($order->status === 'pending')
+                    <span class="px-2.5 py-1 bg-amber-100 text-amber-900 text-[10px] rounded-lg font-bold border border-amber-300 flex items-center gap-1">
+                        <i class="fa-solid fa-clock"></i> Ödeme Bekliyor (Havale Onayı Gerekli)
+                    </span>
+                @else
+                    <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-[10px] rounded-lg font-bold border border-emerald-300 flex items-center gap-1">
+                        <i class="fa-solid fa-circle-check"></i> Ödeme Onaylandı (Hazırlanıyor)
+                    </span>
+                @endif
+            </h4>
+
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+                <div class="bg-white p-3 rounded-xl border border-amber-200/70 shadow-2xs">
+                    <span class="text-[10px] font-extrabold text-gray-400 uppercase block">Ödeme Yöntemi</span>
+                    <span class="text-sm font-black text-amber-900 mt-0.5 block flex items-center gap-1">
+                        <i class="fa-solid fa-money-bill-transfer text-amber-600"></i> Havale / EFT
+                    </span>
+                    <span class="text-[10px] text-gray-400 font-mono">{{ $order->payment_id }}</span>
+                </div>
+
+                <div class="bg-white p-3 rounded-xl border border-amber-200/70 shadow-2xs">
+                    <span class="text-[10px] font-extrabold text-gray-400 uppercase block">Beklenen Tutar</span>
+                    <span class="text-sm font-black text-[#C87A53] mt-0.5 block">₺{{ number_format($order->total_amount, 2, ',', '.') }}</span>
+                </div>
+
+                <div class="bg-white p-3 rounded-xl border border-amber-200/70 shadow-2xs">
+                    <span class="text-[10px] font-extrabold text-gray-400 uppercase block">Havale Açıklama Kodu</span>
+                    <span class="text-xs font-black text-gray-800 font-mono mt-0.5 block bg-amber-50 px-2 py-1 rounded border border-amber-200 truncate">
+                        {{ $order->name }} - #{{ $order->id }}
+                    </span>
+                </div>
+
+                <div class="bg-white p-3 rounded-xl border border-amber-200/70 shadow-2xs">
+                    <span class="text-[10px] font-extrabold text-gray-400 uppercase block">Hedef Hesap (Halkbank)</span>
+                    <span class="text-xs font-bold text-gray-700 mt-0.5 block truncate">Mete Almaz</span>
+                    <span class="text-[10px] font-mono text-amber-700 font-bold block truncate" title="TR67 0001 2009 5620 0009 0180 61">TR67 0001 ... 0180 61</span>
+                </div>
+            </div>
+
+            @if($order->status === 'pending')
+                <div class="mt-4 p-4 bg-amber-100/70 border border-amber-300 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div class="text-xs text-amber-950 space-y-0.5">
+                        <strong class="font-black text-amber-900 flex items-center gap-1.5 text-sm">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Havale Kontrolü ve Onayı Gerekiyor
+                        </strong>
+                        <p class="text-amber-900">Müşteri siparişi Havale/EFT ile vermiştir. Banka hesabınıza <strong>₺{{ number_format($order->total_amount, 2, ',', '.') }}</strong> yatırıldığını kontrol ettikten sonra siparişi tek tıkla onaylayabilirsiniz.</p>
+                    </div>
+                    <button type="button" onclick="document.getElementById('orderStatusSelect').value='paid'; document.getElementById('orderStatusSelect').form.submit();" class="py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl transition shrink-0 shadow-sm flex items-center gap-1.5 whitespace-nowrap">
+                        <i class="fa-solid fa-circle-check text-sm"></i> Havale Geldi - Ödemeyi Onayla & Hazırlanıyor Yap
+                    </button>
+                </div>
+            @endif
+        </div>
     @else
+        <!-- Kredi / Banka Kartı (Iyzico) Finansal Hakediş Detayları -->
         <div class="bg-gradient-to-br from-emerald-50/70 via-white to-gray-50 p-4 rounded-xl border border-emerald-200/80 mb-6 shadow-2xs">
             <h4 class="text-xs font-bold text-emerald-900 uppercase tracking-wider mb-3 flex items-center justify-between">
                 <span class="flex items-center gap-1.5"><i class="fa-solid fa-credit-card text-emerald-600"></i> Iyzico Ödeme & Finansal Hakediş Detayları</span>

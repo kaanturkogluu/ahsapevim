@@ -88,9 +88,15 @@
                                     <i class="fa-solid fa-box-open text-sm"></i> Teslim Edildi
                                 </span>
                             @elseif($order->status === 'pending')
-                                <span class="px-4 py-2 bg-amber-100 text-amber-700 rounded-xl font-extrabold text-xs inline-flex items-center gap-1.5 shadow-sm">
-                                    <i class="fa-solid fa-clock text-sm"></i> İşleme Alındı / Bekliyor
-                                </span>
+                                @if(str_starts_with($order->payment_id ?? '', 'EFT'))
+                                    <span class="px-4 py-2 bg-amber-100 text-amber-900 rounded-xl font-extrabold text-xs inline-flex items-center gap-1.5 shadow-sm border border-amber-300">
+                                        <i class="fa-solid fa-clock text-sm text-amber-600"></i> Havale / EFT Bekleniyor
+                                    </span>
+                                @else
+                                    <span class="px-4 py-2 bg-amber-100 text-amber-700 rounded-xl font-extrabold text-xs inline-flex items-center gap-1.5 shadow-sm">
+                                        <i class="fa-solid fa-clock text-sm"></i> İşleme Alındı / Bekliyor
+                                    </span>
+                                @endif
                             @else
                                 <span class="px-4 py-2 bg-red-100 text-red-700 rounded-xl font-extrabold text-xs inline-flex items-center gap-1.5 shadow-sm">
                                     <i class="fa-solid fa-circle-xmark text-sm"></i> İptal / Başarısız
@@ -126,6 +132,40 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Havale / EFT Bekleme ve IBAN Bilgisi Kutusu -->
+                @if($order->status === 'pending' && str_starts_with($order->payment_id ?? '', 'EFT'))
+                    <div class="bg-amber-50/90 border border-amber-300 rounded-2xl p-5 shadow-xs text-xs space-y-3">
+                        <div class="flex items-center justify-between border-b border-amber-200/80 pb-2">
+                            <div class="flex items-center gap-2 text-[#C87A53] font-black text-sm">
+                                <i class="fa-solid fa-building-columns"></i>
+                                <span>Havale / EFT Ödeme Hatırlatması</span>
+                            </div>
+                            <span class="px-2.5 py-0.5 bg-blue-100 text-blue-800 text-[11px] font-black rounded-md flex items-center gap-1 shadow-sm">
+                                <i class="fa-solid fa-building text-[10px]"></i> Halkbank
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <div class="bg-white p-3 rounded-xl border border-amber-200/60 shadow-sm">
+                                <span class="text-gray-400 font-bold block text-[10px] uppercase">Alıcı Ad Soyad</span>
+                                <span class="font-extrabold text-gray-900 text-sm">Mete Almaz</span>
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-amber-200/60 flex items-center justify-between gap-2 shadow-sm">
+                                <div>
+                                    <span class="text-gray-400 font-bold block text-[10px] uppercase">IBAN Numarası (Halkbank)</span>
+                                    <span class="font-mono font-extrabold text-[#C87A53] text-xs sm:text-sm tracking-wider">TR67 0001 2009 5620 0009 0180 61</span>
+                                </div>
+                                <button type="button" onclick="navigator.clipboard.writeText('TR670001200956200009018061'); showToast('IBAN kopyalandı!', 'info');" class="px-2.5 py-1.5 bg-amber-100 text-amber-900 hover:bg-amber-200 rounded-lg font-bold text-[11px] transition shrink-0 flex items-center gap-1">
+                                    <i class="fa-solid fa-copy"></i> Kopyala
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-white border border-amber-200 rounded-xl text-xs text-stone-800 leading-relaxed font-semibold">
+                            <i class="fa-solid fa-circle-info text-[#C87A53] mr-1"></i>
+                            Banka transferi yaparken açıklama kısmına <strong class="text-[#C87A53] font-mono">{{ $order->name }} - #{{ $order->id }}</strong> yazmayı unutmayınız. Ödemeniz admin tarafından onaylandıktan sonra ürünleriniz hazırlanmaya başlanacaktır.
+                        </div>
+                    </div>
+                @endif
 
                 <!-- Kargo Takip Bilgisi Kutusu -->
                 @if(!empty($order->cargo_tracking_code))

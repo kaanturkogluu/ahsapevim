@@ -174,9 +174,15 @@
                                             <i class="fa-solid fa-box-open text-[10px]"></i> Teslim Edildi
                                         </span>
                                     @elseif($order->status === 'pending')
-                                        <span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full font-extrabold text-xs inline-flex items-center gap-1">
-                                            <i class="fa-solid fa-clock text-[10px]"></i> Ödeme Bekliyor
-                                        </span>
+                                        @if(str_starts_with($order->payment_id ?? '', 'EFT'))
+                                            <span class="px-3 py-1 bg-amber-100 text-amber-900 border border-amber-300 rounded-full font-extrabold text-xs inline-flex items-center gap-1">
+                                                <i class="fa-solid fa-clock text-[10px]"></i> Havale / EFT Bekleniyor
+                                            </span>
+                                        @else
+                                            <span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full font-extrabold text-xs inline-flex items-center gap-1">
+                                                <i class="fa-solid fa-clock text-[10px]"></i> Ödeme Bekliyor
+                                            </span>
+                                        @endif
                                     @else
                                         <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full font-extrabold text-xs inline-flex items-center gap-1">
                                             <i class="fa-solid fa-circle-xmark text-[10px]"></i> İptal / {{ $order->payment_error_reason ?: 'Yetersiz Bakiye' }}
@@ -185,6 +191,19 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Havale / EFT Ödeme Hatırlatma Kutusu -->
+                        @if($order->status === 'pending' && str_starts_with($order->payment_id ?? '', 'EFT'))
+                            <div class="p-3.5 bg-amber-50/90 border-b border-amber-200 text-xs text-amber-950 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div>
+                                    <span class="font-extrabold text-[#C87A53] flex items-center gap-1.5 text-xs uppercase"><i class="fa-solid fa-building-columns"></i> Havale / EFT Ödeme Bilgileri:</span>
+                                    <span class="text-[11px] text-gray-700 block mt-0.5">Halkbank - Mete Almaz (IBAN: <strong class="font-mono text-gray-900">TR67 0001 2009 5620 0009 0180 61</strong>) | Açıklama: <strong class="text-[#C87A53] font-mono">{{ $order->name }} - #{{ $order->id }}</strong></span>
+                                </div>
+                                <button type="button" onclick="navigator.clipboard.writeText('TR670001200956200009018061'); showToast('IBAN Kopyalandı!', 'info');" class="py-1 px-2.5 bg-amber-200 hover:bg-amber-300 text-amber-950 rounded-lg text-[11px] font-extrabold transition shrink-0 flex items-center gap-1 self-start sm:self-auto">
+                                    <i class="fa-solid fa-copy"></i> IBAN Kopyala
+                                </button>
+                            </div>
+                        @endif
 
                         <!-- Sipariş Kalemleri -->
                         <div class="p-4 divide-y divide-gray-100">

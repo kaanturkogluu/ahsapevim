@@ -177,7 +177,24 @@ class OrderController extends Controller
             } elseif ($oldStatus !== $newStatus) {
                 // 2. Diğer Durum Değişiklikleri Bildirimi
                 try {
-                    if ($newStatus === 'completed') {
+                    if ($oldStatus === 'pending' && in_array($newStatus, ['paid', 'preparing'])) {
+                        // Havale/EFT Ödeme Onayı E-Postası (order_paid)
+                        try {
+                            \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_paid', $data));
+                            app(\App\Services\MailService::class)->logMailable($order->email, "Ödemeniz Onaylandı (#{$order->id})", "Havale/EFT ödemesi onaylandı ve sipariş hazırlandığına dair e-posta gönderildi.", 'success', null, $order->id);
+                        } catch (\Throwable $mEx) {
+                            \Illuminate\Support\Facades\Log::error('Payment Approval Email Error: ' . $mEx->getMessage());
+                            app(\App\Services\MailService::class)->logMailable($order->email, "Ödemeniz Onaylandı (#{$order->id})", "Ödeme onay e-postası", 'failed', $mEx->getMessage(), $order->id);
+                        }
+
+                        // Havale/EFT Ödeme Onayı SMS
+                        try {
+                            $paidSms = "Sayın {$order->name}, #{$order->id} numaralı siparişinizin Havale/EFT ödemesi onaylanmış ve siparişiniz hazırlık sırasına alınmıştır. AhşapEvim";
+                            app(NetgsmService::class)->sendSms($order->phone, $paidSms, $order->id, 'automated');
+                        } catch (\Throwable $smsEx) {
+                            \Illuminate\Support\Facades\Log::error('Payment Approval SMS Error: ' . $smsEx->getMessage());
+                        }
+                    } elseif ($newStatus === 'completed') {
                         // Tamamlandı E-Posta
                         \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_completed', $data));
                         app(\App\Services\MailService::class)->logMailable($order->email, "Siparişiniz Teslim Edildi (#{$order->id})", "Sipariş teslim edildi ve tamamlandı olarak işaretlendi.", 'success', null, $order->id);

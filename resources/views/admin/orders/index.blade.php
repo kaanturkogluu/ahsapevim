@@ -55,7 +55,16 @@
                 @forelse($orders as $order)
                     <tr class="hover:bg-gray-50/60 transition">
                         <td class="py-4 text-center font-black text-gray-800" data-label="Sipariş">
-                            #{{ $order->id }}
+                            <div>#{{ $order->id }}</div>
+                            @if(str_starts_with($order->payment_id ?? '', 'EFT'))
+                                <span class="px-1.5 py-0.5 bg-amber-50 text-amber-900 border border-amber-200 rounded text-[9px] font-black inline-flex items-center gap-1 mt-0.5">
+                                    <i class="fa-solid fa-building-columns text-[8px] text-amber-600"></i> Havale/EFT
+                                </span>
+                            @else
+                                <span class="px-1.5 py-0.5 bg-blue-50 text-blue-800 border border-blue-200 rounded text-[9px] font-black inline-flex items-center gap-1 mt-0.5">
+                                    <i class="fa-solid fa-credit-card text-[8px] text-blue-600"></i> Kart
+                                </span>
+                            @endif
                         </td>
                         <td class="py-4" data-label="Müşteri">
                             <div class="font-bold text-gray-800">{{ $order->name }}</div>
@@ -106,7 +115,13 @@
                             @elseif($order->status === 'completed')
                                 <span class="px-2.5 py-1 bg-purple-100 text-purple-700 rounded-full font-bold text-[10px]">Tamamlandı</span>
                             @elseif($order->status === 'pending')
-                                <span class="px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full font-bold text-[10px]">Beklemede</span>
+                                @if(str_starts_with($order->payment_id ?? '', 'EFT'))
+                                    <span class="px-2.5 py-1 bg-amber-100 text-amber-900 rounded-full font-black text-[10px] border border-amber-300 inline-flex items-center gap-1">
+                                        <i class="fa-solid fa-clock text-[9px] text-amber-600"></i> Havale Bekliyor
+                                    </span>
+                                @else
+                                    <span class="px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full font-bold text-[10px]">Beklemede</span>
+                                @endif
                             @else
                                 <span class="px-2.5 py-1 bg-red-100 text-red-700 rounded-full font-bold text-[10px]">
                                     İptal / {{ $order->payment_error_reason ?: 'Başarısız' }}

@@ -463,6 +463,8 @@ function togglePaymentMethodDisplay() {
     const selected = document.querySelector('input[name="payment_method"]:checked')?.value;
     const eftBox = document.getElementById('eftDetailsBox');
     const cards = document.querySelectorAll('.payment-method-card');
+    const btnText = document.getElementById('submitBtnText');
+    const btnIcon = document.querySelector('#submitCheckoutBtn i');
 
     cards.forEach(card => {
         const radio = card.querySelector('input[type="radio"]');
@@ -478,8 +480,12 @@ function togglePaymentMethodDisplay() {
     if (eftBox) {
         if (selected === 'eft') {
             eftBox.classList.remove('hidden');
+            if (btnText) btnText.textContent = 'Havale / EFT Siparişi Oluştur';
+            if (btnIcon) btnIcon.className = 'fa-solid fa-building-columns';
         } else {
             eftBox.classList.add('hidden');
+            if (btnText) btnText.textContent = 'Güvenli Ödemeye Devam Et (Kart ile)';
+            if (btnIcon) btnIcon.className = 'fa-solid fa-lock';
         }
     }
 }

@@ -114,6 +114,50 @@ class DynamicMail extends Mailable implements ShouldQueue
 
 <p style="margin-top: 20px;">Siparişinizin durumunu sitemizdeki <strong>Sipariş Takip</strong> sayfasından anlık olarak takip edebilirsiniz.</p>',
             ],
+            'order_eft_pending' => [
+                'subject' => 'Havale / EFT Sipariş Talebiniz Alındı! #{order_id} - {tracking_code}',
+                'content' => '<p>Sayın <strong>{user_name}</strong>,</p>
+<p><strong>#{order_id}</strong> numaralı Havale / EFT sipariş talebiniz başarıyla oluşturulmuştur. Siparişinizin hazırlanmaya başlayabilmesi için lütfen aşağıdaki banka hesabımıza sipariş tutarını iletiniz:</p>
+
+<div style="background-color: #FFF9F2; padding: 16px; border-radius: 12px; margin: 16px 0; border: 1px solid #F6D6B8;">
+    <h3 style="margin: 0 0 10px 0; color: #C87A53; font-size: 15px; border-bottom: 1px solid #F0C49F; padding-bottom: 6px;">Banka Havale / EFT Bilgileri</h3>
+    <p style="margin: 0 0 6px 0;"><strong>Banka:</strong> Halkbank</p>
+    <p style="margin: 0 0 6px 0;"><strong>Alıcı:</strong> Mete Almaz</p>
+    <p style="margin: 0 0 6px 0;"><strong>IBAN:</strong> <span style="font-family: monospace; font-weight: bold; color: #C87A53;">TR67 0001 2009 5620 0009 0180 61</span></p>
+    <p style="margin: 0 0 6px 0;"><strong>Ödenecek Tutar:</strong> <strong style="color: #C87A53;">₺{total_amount}</strong></p>
+    <p style="margin: 0;"><strong>Açıklama Kısmına Yazılacak:</strong> <span style="background-color: #FFF; padding: 2px 6px; border-radius: 4px; border: 1px solid #E0C0A8; font-weight: bold; color: #9A4922;">{user_name} - #{order_id}</span></p>
+</div>
+
+<div style="background-color: #FAF9F6; padding: 16px; border-radius: 12px; margin: 16px 0; border: 1px solid #EFEAE0;">
+    <h3 style="margin: 0 0 10px 0; color: #29221C; font-size: 15px; border-bottom: 1px solid #E5DFD5; padding-bottom: 6px;">Sipariş Özeti</h3>
+    <p style="margin: 0 0 6px 0;"><strong>Sipariş No:</strong> #{order_id}</p>
+    <p style="margin: 0 0 6px 0;"><strong>Sipariş Takip Kodu:</strong> <span style="color: #C87A53; font-weight: bold; font-family: monospace;">{tracking_code}</span></p>
+    <p style="margin: 0 0 6px 0;"><strong>Teslimat Adresi:</strong> {delivery_address}</p>
+</div>
+
+<h3 style="margin: 20px 0 10px 0; color: #29221C; font-size: 15px;">Sipariş Edilen Ürünler</h3>
+{product_details}
+
+<p style="margin-top: 20px;">Ödemeniz banka hesabımıza ulaşıp onaylandığında tarafınıza bilgilendirme yapılacak ve siparişiniz hızla hazırlanmaya başlanacaktır.</p>',
+            ],
+            'order_paid' => [
+                'subject' => 'Ödemeniz Onaylandı & Siparişiniz Hazırlanıyor! 🎉 #{order_id}',
+                'content' => '<p>Sayın <strong>{user_name}</strong>,</p>
+<p><strong>#{order_id}</strong> numaralı siparişinizin Havale / EFT ödemesi onaylanmış olup, masif ahşap el işçiliği ürünleriniz atölyemizde hazırlık sırasına alınmıştır!</p>
+
+<div style="background-color: #F0FDF4; padding: 16px; border-radius: 12px; margin: 16px 0; border: 1px solid #BBF7D0;">
+    <h3 style="margin: 0 0 10px 0; color: #166534; font-size: 15px; border-bottom: 1px solid #86EFAC; padding-bottom: 6px;">Ödeme Onayı</h3>
+    <p style="margin: 0 0 6px 0;"><strong>Sipariş No:</strong> #{order_id}</p>
+    <p style="margin: 0 0 6px 0;"><strong>Sipariş Takip Kodu:</strong> <span style="font-family: monospace; font-weight: bold; color: #15803D;">{tracking_code}</span></p>
+    <p style="margin: 0 0 6px 0;"><strong>Onaylanan Tutar:</strong> ₺{total_amount}</p>
+    <p style="margin: 0;"><strong>Durum:</strong> <span style="background-color: #DCFCE7; color: #15803D; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 12px;">Ödendi / Hazırlanıyor</span></p>
+</div>
+
+<h3 style="margin: 20px 0 10px 0; color: #29221C; font-size: 15px;">Sipariş Detayları</h3>
+{product_details}
+
+<p style="margin-top: 20px;">Ürünleriniz hazırlandığında ve kargoya teslim edildiğinde kargo takip bilgileriniz SMS ve e-posta ile iletilecektir.</p>',
+            ],
             'order_shipped' => [
                 'subject' => 'Siparişiniz Kargoya Verildi! 🚚 #{order_id}',
                 'content' => '<p>Sayın <strong>{user_name}</strong>,</p>

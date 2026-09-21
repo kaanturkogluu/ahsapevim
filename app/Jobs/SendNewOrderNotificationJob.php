@@ -111,7 +111,9 @@ class SendNewOrderNotificationJob implements ShouldQueue
             }
         }
 
-        // ── 4. Müşteriye Sipariş Onay E-Postası Gönderimi ────────────────
+        $isEft = (str_starts_with($order->payment_id ?? '', 'EFT_') || $order->status === 'pending');
+
+        // ── 4. Müşteriye Sipariş E-Postası Gönderimi ────────────────────
         if ($notifyCustomerEmail && !empty($order->email)) {
             try {
                 $orderData = [
@@ -123,11 +125,14 @@ class SendNewOrderNotificationJob implements ShouldQueue
                     'product_details'  => $this->formatOrderItemsHtml($order),
                 ];
 
-                Mail::to($order->email)->send(new DynamicMail('order_success', $orderData));
+                $templateSlug = $isEft ? 'order_eft_pending' : 'order_success';
+                $logSubject = $isEft ? "Havale/EFT Sipariş Talebi Alındı (#{$order->id})" : "Siparişiniz Alındı (#{$order->id})";
+
+                Mail::to($order->email)->send(new DynamicMail($templateSlug, $orderData));
                 $mailService->logMailable(
                     $order->email,
-                    "Siparişiniz Alındı (#{$order->id})",
-                    "Sipariş onay e-postası müşteriye iletildi.",
+                    $logSubject,
+                    $isEft ? "Havale/EFT ödeme bilgileri müşteriye iletildi." : "Sipariş onay e-postası müşteriye iletildi.",
                     'success',
                     null,
                     $order->id
@@ -136,8 +141,8 @@ class SendNewOrderNotificationJob implements ShouldQueue
                 Log::error("SendNewOrderNotificationJob: Customer email error: " . $e->getMessage());
                 $mailService->logMailable(
                     $order->email,
-                    "Siparişiniz Alındı (#{$order->id})",
-                    "Sipariş onay e-postası",
+                    $isEft ? "Havale/EFT Sipariş Talebi Alındı (#{$order->id})" : "Siparişiniz Alındı (#{$order->id})",
+                    "Sipariş e-postası",
                     'failed',
                     $e->getMessage(),
                     $order->id
@@ -145,10 +150,14 @@ class SendNewOrderNotificationJob implements ShouldQueue
             }
         }
 
-        // ── 5. Müşteriye Sipariş Onay SMS Gönderimi ─────────────────────
+        // ── 5. Müşteriye Sipariş SMS Gönderimi ─────────────────────────
         if ($notifyCustomerSms && !empty($order->phone)) {
             try {
-                $customerMsg = "Degerli musterimiz, #" . $order->id . " nolu siparisiniz basariyla alinmistir. Siparisiniz en kisa surede kargolanacaktir. Bizi tercih ettiginiz icin tesekkur ederiz.";
+                if ($isEft) {
+                    $customerMsg = "Degerli musterimiz, #" . $order->id . " nolu Havale/EFT siparis talebiniz alinmistir. Odemeniz banka hesabimiza ulasip admin tarafindan onaylandiginda siparisiniz hazirlanacaktir. AhsapEvim";
+                } else {
+                    $customerMsg = "Degerli musterimiz, #" . $order->id . " nolu siparisiniz basariyla alinmistir. Odemeniz onaylanmis olup siparisiniz en kisa surede hazirlanip kargolanacaktir. AhsapEvim";
+                }
                 $netgsm->sendSms($order->phone, $customerMsg, $order->id, 'automated');
             } catch (\Throwable $e) {
                 Log::error("SendNewOrderNotificationJob: Customer SMS error: " . $e->getMessage());
