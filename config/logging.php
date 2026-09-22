@@ -151,10 +151,10 @@ return [
             'days'    => 60,
             'formatter' => Monolog\Formatter\LineFormatter::class,
             'formatter_with' => [
-                'format'                    => "[%datetime%] %level_name%: %message% %context%\n",
+                'format'                    => "%message%\n",
                 'dateFormat'                => 'Y-m-d H:i:s',
                 'allowInlineLineBreaks'     => true,
-                'ignoreEmptyContextAndExtra'=> false,
+                'ignoreEmptyContextAndExtra'=> true,
             ],
         ],
 

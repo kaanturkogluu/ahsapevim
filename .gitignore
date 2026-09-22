@@ -30,21 +30,25 @@ Thumbs.db
 /storage/app/google-service-account.json
 /storage/app/*-service-account.json
 
-# Yüklenen Kullanıcı/Ürün Medyaları (Sunucudaki fotoğrafların ezilmesini önler)
+# Arşiv ve Yedek Dosyaları
+*.zip
+*.rar
+*.tar.gz
+*.7z
+/public/*.zip
+
+# Yüklenen Kullanıcı/Ürün Medyaları (Sunucudaki fotoğrafların git'e girmesini önler)
 /public/uploads/*
 !/public/uploads/.gitkeep
-!/public/uploads/products/
-/public/uploads/products/*
-!/public/uploads/products/.gitkeep
-!/public/uploads/customizations/
-/public/uploads/customizations/*
-!/public/uploads/customizations/.gitkeep
-!/public/uploads/banners/
-/public/uploads/banners/*
-!/public/uploads/banners/.gitkeep
-!/public/uploads/templates/
-/public/uploads/templates/*
-!/public/uploads/templates/.gitkeep
+/public/uploads/**/*
+/public/customizations/*
+!/public/customizations/.gitkeep
+/public/banners/*
+!/public/banners/.gitkeep
+/public/templates/*
+!/public/templates/.gitkeep
+/public/products/*
+!/public/products/.gitkeep
 
 # Otomatik üretilen dinamik XML dosyaları (Sunucu pull çakışmalarını önler)
 /public/urunler.xml

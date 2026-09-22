@@ -306,7 +306,7 @@
         <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-5">
 
             <!-- Logo -->
-            <a href="{{ url('/urunler') }}" class="flex items-center gap-2.5 shrink-0">
+            <a href="{{ route('home') }}" class="flex items-center gap-2.5 shrink-0">
                 <img src="{{ url('/ahsaplogo_yataybg.png') }}" alt="AhşapEvim Logo"
                     class="h-12 md:h-16 w-auto object-contain">
             </a>
@@ -481,7 +481,7 @@
                     </div>
                     <div>
                         <h4 class="font-bold text-gray-800 text-xs uppercase tracking-wider">Güvenli Alışveriş</h4>
-                        <p class="text-xs text-gray-500 mt-0.5">iyzico altyapısı & 3D Secure koruması</p>
+                        <p class="text-xs text-gray-500 mt-0.5">256-Bit SSL Koruması & Güvenli Transfer</p>
                     </div>
                 </div>
             </div>
@@ -566,12 +566,13 @@
                         Güvenli Alışveriş Altyapısı
                     </h3>
                     
-                    <!-- Fixed Iyzico Logo & Badge -->
+                    <!-- Security Badge -->
                     <div class="bg-white border border-gray-200/90 rounded-2xl p-3.5 shadow-2xs space-y-2 text-center">
-                        <div class="flex items-center justify-center py-1">
-                            <img src="{{ url('/images/iyzico-logo.svg') }}" alt="iyzico ile Öde" class="h-7 w-auto mx-auto object-contain">
+                        <div class="flex items-center justify-center py-1 gap-2 text-emerald-600 font-bold text-sm">
+                            <i class="fa-solid fa-lock text-base"></i>
+                            <span>256-Bit SSL Sertifikalı Güvenli Alışveriş</span>
                         </div>
-                        <span class="text-[10.5px] text-gray-500 font-medium block">256-Bit SSL Koruması ile 3D Ödeme</span>
+                        <span class="text-[10.5px] text-gray-500 font-medium block">Tüm işlemleriniz yüksek güvenlik standartları ile korunmaktadır.</span>
                     </div>
 
                     <!-- Payment Cards Badges -->

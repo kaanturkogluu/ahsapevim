@@ -3,18 +3,18 @@
 @section('header', 'Yeni Ürün Ekle')
 
 @section('content')
-<div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm max-w-4xl">
+<div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm max-w-4xl relative">
     <div class="mb-6 pb-4 border-b border-gray-100 flex justify-between items-center">
         <div>
             <h3 class="text-lg font-bold text-gray-800">Ürün Bilgileri</h3>
-            <p class="text-xs text-gray-500 mt-1">Eklenecek ürünün temel, indirim, galeri ve 3D özelliklerini tanımlayın.</p>
+            <p class="text-xs text-gray-500 mt-1">Eklenecek ürünün temel, indirim ve galeri özelliklerini tanımlayın.</p>
         </div>
         <a href="{{ route('admin.products.index') }}" class="text-sm font-bold text-gray-500 hover:text-gray-700 transition">
             <i class="fa-solid fa-arrow-left mr-1"></i> Geri Dön
         </a>
     </div>
 
-    <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" onsubmit="preventSpamSubmit(this)">
+    <form id="productForm" action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" onsubmit="return handleProductFormSubmit(event, this)">
         @csrf
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -90,18 +90,28 @@
                 </div>
             </div>
 
-            <!-- Right Side: Media & 3D Settings -->
+            <!-- Right Side: Media (Cloudflare R2) -->
             <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ürün Ana Görseli *</label>
-                    <input type="file" name="image" class="w-full text-sm border-gray-300 rounded-lg p-2 border focus:border-brand focus:ring-0 outline-none bg-gray-50">
-                    <p class="text-[10px] text-gray-500 mt-1">Önerilen ebat kare veya 3:4 dikey masif çerçeve görselidir.</p>
+                <div class="bg-amber-50/40 p-4 rounded-xl border border-amber-200/60">
+                    <label class="block text-sm font-bold text-gray-800 mb-1 flex items-center justify-between">
+                        <span>Ürün Ana Görseli *</span>
+                        <span class="text-[10px] bg-orange-100 text-orange-800 font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
+                            <i class="fa-solid fa-cloud"></i> Cloudflare R2
+                        </span>
+                    </label>
+                    <input type="file" name="image" required accept="image/*" class="w-full text-sm border-gray-300 rounded-lg p-2 border focus:border-brand focus:ring-0 outline-none bg-white">
+                    <p class="text-[10px] text-gray-500 mt-1">Önerilen ebat kare veya 3:4 dikey masif çerçeve görselidir. Yüklenen görsel doğrudan R2 bulut depolamaya aktarılır.</p>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ek Ürün Görselleri (Galeri)</label>
-                    <input type="file" name="gallery[]" multiple accept="image/*" class="w-full text-sm border-gray-300 rounded-lg p-2 border focus:border-brand focus:ring-0 outline-none bg-gray-50">
-                    <p class="text-[10px] text-gray-500 mt-1">Birden fazla görsel seçerek ürün detayındaki galeriye ekleyebilirsiniz.</p>
+                <div class="bg-amber-50/40 p-4 rounded-xl border border-amber-200/60">
+                    <label class="block text-sm font-bold text-gray-800 mb-1 flex items-center justify-between">
+                        <span>Ek Ürün Görselleri (Galeri)</span>
+                        <span class="text-[10px] bg-orange-100 text-orange-800 font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
+                            <i class="fa-solid fa-cloud"></i> Cloudflare R2
+                        </span>
+                    </label>
+                    <input type="file" name="gallery[]" multiple accept="image/*" class="w-full text-sm border-gray-300 rounded-lg p-2 border focus:border-brand focus:ring-0 outline-none bg-white">
+                    <p class="text-[10px] text-gray-500 mt-1">Birden fazla görsel seçebilirsiniz. Tüm fotoğraflar R2 CDN üzerinden hızlıca servis edilir.</p>
                 </div>
 
                 <div>
@@ -119,23 +129,6 @@
                     <input type="url" name="instagram_url" value="{{ old('instagram_url') }}" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none" placeholder="Örn: https://www.instagram.com/reel/CsqVN6MuKfV/">
                     <p class="text-[10px] text-gray-500 mt-1">Eklenirse ürün detay galerisinde Instagram Reel rozeti ve pop-up oynatıcı gösterilir.</p>
                 </div>
-
-                <!-- 3D Model Entegrasyonu (Arka plana alındı / Pasif) -->
-                <div class="hidden bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-                    <h4 class="text-sm font-bold text-gray-800 mb-3 border-b border-gray-100 pb-2 flex items-center gap-2">
-                        <i class="fa-solid fa-cube text-brand"></i> 3D Model Entegrasyonu (Şablon)
-                    </h4>
-                    
-                    <div class="mb-3">
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Ürün 3D Şablonu</label>
-                        <select name="three_d_template_id" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none bg-white">
-                            <option value="">-- Şablon Seçimi Yok (Pasif) --</option>
-                            @foreach($templates as $tpl)
-                                <option value="{{ $tpl->id }}" {{ old('three_d_template_id') == $tpl->id ? 'selected' : '' }}>{{ $tpl->name }} ({{ $tpl->wood_type }})</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -145,11 +138,14 @@
         </div>
 
         <div class="flex items-center gap-2 mb-6">
-            <input type="checkbox" name="is_active" id="isActive" value="1" checked class="rounded text-[#C87A53] focus:ring-[#C87A53] w-4 h-4">
-            <label for="isActive" class="text-sm font-semibold text-gray-700 cursor-pointer">Bu ürünü mağazada hemen satışa aç (Aktif)</label>
+            <input type="checkbox" name="is_active" id="isActive" value="1" checked class="rounded text-[#C87A53] focus:ring-[#C87A53] w-4 h-4 cursor-pointer">
+            <label for="isActive" class="text-sm font-semibold text-gray-700 cursor-pointer select-none">Bu ürünü mağazada hemen satışa aç (Aktif)</label>
         </div>
 
-        <button type="submit" class="py-3 px-8 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-lg text-sm transition">Ürünü Kaydet</button>
+        <button type="submit" id="saveProductBtn" class="py-3 px-8 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-lg text-sm transition shadow-sm flex items-center gap-2 cursor-pointer">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span id="saveBtnText">Ürünü ve Görselleri Kaydet</span>
+        </button>
     </form>
 </div>
 
@@ -171,43 +167,75 @@ function autoGenerateSlug(title) {
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-');
         
-    document.getElementById('productSlugInput').value = slug;
+    const slugInput = document.getElementById('productSlugInput');
+    if (slugInput) slugInput.value = slug;
 }
 
 function toggleDiscountBlock() {
-    const hasDiscount = document.getElementById('hasDiscount').checked;
+    const hasDiscount = document.getElementById('hasDiscount')?.checked;
     const block = document.getElementById('discountBlock');
-    if (hasDiscount) {
-        block.classList.remove('hidden');
-    } else {
-        block.classList.add('hidden');
+    if (block) {
+        if (hasDiscount) {
+            block.classList.remove('hidden');
+        } else {
+            block.classList.add('hidden');
+        }
     }
     calculateDiscount();
 }
 
 function calculateDiscount() {
-    const hasDiscount = document.getElementById('hasDiscount').checked;
-    const normalPrice = parseFloat(document.getElementById('normalPrice').value) || 0;
-    const discountedPrice = parseFloat(document.getElementById('discountedPrice').value) || 0;
+    const hasDiscount = document.getElementById('hasDiscount')?.checked;
+    const normalPrice = parseFloat(document.getElementById('normalPrice')?.value) || 0;
+    const discountedPrice = parseFloat(document.getElementById('discountedPrice')?.value) || 0;
     const badge = document.getElementById('discountBadge');
 
     if (hasDiscount && normalPrice > 0 && discountedPrice > 0 && discountedPrice < normalPrice) {
         const percent = Math.round((1 - (discountedPrice / normalPrice)) * 100);
-        badge.innerText = '%' + percent + ' İNDİRİM';
-        badge.classList.remove('hidden');
+        if (badge) {
+            badge.innerText = '%' + percent + ' İNDİRİM';
+            badge.classList.remove('hidden');
+        }
     } else {
-        badge.classList.add('hidden');
+        if (badge) badge.classList.add('hidden');
     }
 }
 
 document.addEventListener('DOMContentLoaded', calculateDiscount);
 
-function preventSpamSubmit(form) {
-    const btn = form.querySelector('button[type="submit"]');
-    if (btn && !btn.disabled) {
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Kaydediliyor...';
+let isFormSubmitting = false;
+function handleProductFormSubmit(e, form) {
+    if (form.checkValidity && !form.checkValidity()) {
+        return true; // Let browser show native validation tooltip
     }
+
+    if (isFormSubmitting) {
+        e.preventDefault();
+        return false;
+    }
+
+    isFormSubmitting = true;
+
+    // Show Global Admin Preloader
+    if (window.showAdminPreloader) {
+        window.showAdminPreloader(
+            'Görseller R2\'ye Yükleniyor...',
+            'Ürün ana görseli ve galeri fotoğrafları Cloudflare R2 Bulut Depolamaya aktarılıyor, lütfen bekleyiniz...'
+        );
+    }
+
+    // Button state update
+    const btn = document.getElementById('saveProductBtn');
+    const btnText = document.getElementById('saveBtnText');
+    if (btn) {
+        btn.style.pointerEvents = 'none';
+        btn.style.opacity = '0.7';
+    }
+    if (btnText) {
+        btnText.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> R2\'ye Yükleniyor...';
+    }
+
+    return true;
 }
 </script>
 @endsection

@@ -46,7 +46,7 @@
 
                         <a href="{{ $product->url }}" class="block p-4">
                             <div class="aspect-square w-full rounded-xl bg-stone-100 overflow-hidden mb-3 relative flex items-center justify-center p-2">
-                                <img src="{{ $product->image ?: '/cerceve.png' }}" alt="{{ $product->name }}" class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition duration-300">
+                                <img src="{{ $product->image ?: '/cerceve.png' }}" alt="{{ $product->name }}" class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition duration-300" loading="lazy" decoding="async">
                             </div>
 
                             <span class="text-[10px] font-bold text-amber-700 uppercase tracking-wider block mb-1">

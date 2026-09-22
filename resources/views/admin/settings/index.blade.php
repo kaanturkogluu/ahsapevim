@@ -346,7 +346,7 @@
                         <span>Asenkron Kuyruk (Queue) Sistemi Aktif</span>
                     </h3>
                     <p class="text-xs text-emerald-800 leading-relaxed">
-                        Sipariş bildirimi e-postaları ve SMS'ler <strong>SendNewOrderNotificationJob</strong> kuyruk sınıfı üzerinden arkaplanda asenkron olarak işlenir. Bu sayede müşterilerinizin ödeme tamamlama ekranı (Iyzico ve Havale) hiçbir gecikme yaşamadan anında sonuçlanır.
+                        Sipariş bildirimi e-postaları ve SMS'ler <strong>SendNewOrderNotificationJob</strong> kuyruk sınıfı üzerinden arkaplanda asenkron olarak işlenir. Bu sayede müşterilerinizin sipariş tamamlama ekranı hiçbir gecikme yaşamadan anında sonuçlanır.
                     </p>
                 </div>
 

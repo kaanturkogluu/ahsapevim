@@ -83,13 +83,19 @@
         /* Table responsive improvements */
         .admin-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
-        /* Card stack layout for very small screens */
+        /* Responsive stack */
         @media (max-width: 640px) {
             .responsive-stack thead { display: none; }
             .responsive-stack tr { display: block; border: 1px solid #e5e7eb; border-radius: 0.75rem; margin-bottom: 0.75rem; padding: 0.75rem; background: white; }
             .responsive-stack td { display: flex; justify-content: space-between; align-items: flex-start; padding: 0.35rem 0; border: none; font-size: 0.8rem; }
             .responsive-stack td::before { content: attr(data-label); font-weight: 700; color: #6b7280; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; margin-right: 0.5rem; flex-shrink: 0; }
         }
+
+        /* Preloader Keyframes */
+        @keyframes adminSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes adminBounce { 0%, 100% { transform: translateY(-15%); animation-timing-function: cubic-bezier(0.8,0,1,1); } 50% { transform: translateY(0); animation-timing-function: cubic-bezier(0,0,0.2,1); } }
+        @keyframes adminPulse { 50% { opacity: .5; } }
+        @keyframes adminPing { 75%, 100% { transform: scale(1.8); opacity: 0; } }
     </style>
 </head>
 <body class="bg-gray-100 flex h-screen overflow-hidden" id="adminBody">
@@ -143,14 +149,6 @@
                 <i class="fa-solid fa-list w-4 text-center text-purple-400"></i>
                 <span class="nav-label">Kategoriler</span>
             </a>
-
-            <!-- 3D Şablonlar (Arka plana alındı, ihtiyaç durumunda hidden kaldırılarak aktif edilebilir) -->
-            <a href="{{ url('/yonetim/3d-sablonlar') }}"
-               class="hidden nav-item items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#3D332B] transition-colors text-sm font-medium text-gray-300 hover:text-white {{ request()->is('yonetim/3d-sablonlar*') ? 'active text-white' : '' }}">
-                <i class="fa-solid fa-cube w-4 text-center text-cyan-400"></i>
-                <span class="nav-label">3D Şablonlar</span>
-            </a>
-
 
 
 
@@ -567,7 +565,49 @@
                 fetchRecentOrders();
             }
         }, 60000);
+
+        // ── Global R2 / Admin Preloader Helper ─────────────────────────────
+        window.showAdminPreloader = function(title, subtitle) {
+            const preloader = document.getElementById('adminGlobalPreloader');
+            if (!preloader) return;
+            if (title) {
+                const titleEl = document.getElementById('adminPreloaderTitle');
+                if (titleEl) titleEl.innerText = title;
+            }
+            if (subtitle) {
+                const subtitleEl = document.getElementById('adminPreloaderSubtitle');
+                if (subtitleEl) subtitleEl.innerText = subtitle;
+            }
+            preloader.style.setProperty('display', 'flex', 'important');
+        };
+
+        window.hideAdminPreloader = function() {
+            const preloader = document.getElementById('adminGlobalPreloader');
+            if (preloader) preloader.style.display = 'none';
+        };
     </script>
+
+    {{-- ── Global R2 / Action Preloader Overlay (Root Level) ── --}}
+    <div id="adminGlobalPreloader"
+         style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 999999999; background: rgba(15, 12, 10, 0.88); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 1.5rem; text-align: center; color: white;">
+        <div style="background: #1D1713; border: 1.5px solid rgba(200, 122, 83, 0.6); padding: 2.5rem 2rem; border-radius: 1.5rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8); max-width: 28rem; width: 100%; position: relative; display: flex; flex-direction: column; align-items: center;">
+            <div style="position: relative; width: 5.5rem; height: 5.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center;">
+                <div style="position: absolute; inset: 0; border-radius: 9999px; border: 4px solid rgba(200, 122, 83, 0.25); animation: adminPing 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+                <div style="width: 4.5rem; height: 4.5rem; border-radius: 9999px; border: 4px solid #C87A53; border-top-color: transparent; animation: adminSpin 0.9s linear infinite;"></div>
+                <i class="fa-solid fa-cloud-arrow-up" style="color: #C87A53; font-size: 1.75rem; position: absolute; animation: adminBounce 1.2s infinite;"></i>
+            </div>
+            <h3 id="adminPreloaderTitle" style="font-size: 1.25rem; font-weight: 900; color: #ffffff; margin-bottom: 0.5rem; letter-spacing: -0.01em;">Görseller R2'ye Aktarılıyor...</h3>
+            <p id="adminPreloaderSubtitle" style="font-size: 0.825rem; color: #d1d5db; line-height: 1.5; margin-bottom: 1.25rem;">
+                Görseller Cloudflare R2 Bulut Depolama sunucularına aktarılıyor ve veriler kaydediliyor.
+            </p>
+            <div style="width: 100%; background: rgba(0, 0, 0, 0.5); border-radius: 9999px; height: 0.5rem; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <div style="background: linear-gradient(90deg, #f59e0b, #C87A53, #ea580c); height: 100%; width: 100%; animation: adminPulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;"></div>
+            </div>
+            <span style="font-size: 0.72rem; color: #fbbf24; font-weight: 600; margin-top: 1rem; display: block;">
+                <i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Lütfen işlem tamamlanana kadar sayfayı kapatmayınız...
+            </span>
+        </div>
+    </div>
 
     @stack('scripts')
 </body>

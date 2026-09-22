@@ -8,7 +8,6 @@ class Product extends Model
 {
     protected $fillable = [
         'category_id',
-        'three_d_template_id',
         'name',
         'slug',
         'price',
@@ -32,11 +31,6 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
-    }
-
-    public function threeDTemplate()
-    {
-        return $this->belongsTo(ThreeDTemplate::class, 'three_d_template_id');
     }
 
     public function getDiscountPercentAttribute()

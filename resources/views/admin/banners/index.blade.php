@@ -12,9 +12,9 @@
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-4 border-b border-gray-100">
             <div>
                 <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                    <i class="fa-solid fa-images text-[#C87A53]"></i> Anasayfa Görsel & Banner Galerisi
+                    <i class="fa-solid fa-images text-[#C87A53]"></i> Anasayfa Görsel & Vitrin Galerisi
                 </h3>
-                <p class="text-xs text-gray-500 mt-1">Anasayfadaki ürün sergileme ve vitrin alanında görünecek resimleri buradan ekleyebilir, sırasını değiştirebilir veya silip yenisini yükleyebilirsiniz.</p>
+                <p class="text-xs text-gray-500 mt-1">Anasayfadaki ürün sergileme ve vitrin alanında görünecek resimleri Cloudflare R2 bulut altyapısı ile yönetin.</p>
             </div>
             <button type="button" onclick="document.getElementById('addBannerSection').classList.toggle('hidden')" class="py-2.5 px-5 bg-[#C87A53] hover:bg-[#A65F38] text-white font-bold rounded-lg text-xs transition flex items-center gap-2 shadow-xs">
                 <i class="fa-solid fa-plus text-xs"></i> Yeni Görsel Ekle
@@ -23,15 +23,20 @@
 
         {{-- Yeni Görsel Yükleme Formu --}}
         <div id="addBannerSection" class="hidden bg-amber-50/60 p-5 rounded-xl border border-amber-200/80 mb-6">
-            <h4 class="text-sm font-bold text-amber-900 mb-3 flex items-center gap-2">
-                <i class="fa-solid fa-cloud-arrow-up"></i> Yeni Görsel Yükle
-            </h4>
-            <form action="{{ route('admin.banners.store') }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="flex items-center justify-between mb-3">
+                <h4 class="text-sm font-bold text-amber-900 flex items-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Yeni Vitrin Görseli Yükle
+                </h4>
+                <span class="text-[10px] bg-orange-100 text-orange-800 font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
+                    <i class="fa-solid fa-cloud"></i> Cloudflare R2
+                </span>
+            </div>
+            <form action="{{ route('admin.banners.store') }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-3 gap-4" onsubmit="showR2BannerOverlay('Görsel R2 Bulut Depolamaya Yükleniyor...')">
                 @csrf
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1">Görsel Seç *</label>
                     <input type="file" name="image" required accept="image/*" class="w-full text-xs bg-white border border-gray-300 rounded-lg p-2 focus:border-[#C87A53] outline-none">
-                    <span class="text-[10px] text-gray-400 mt-1 block">JPG, PNG, WEBP formatı (Maks. 10MB)</span>
+                    <span class="text-[10px] text-gray-400 mt-1 block">JPG, PNG, WEBP formatı (Doğrudan R2 CDN'e aktarılır)</span>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1">Görsel Adı / Etiket</label>
@@ -43,7 +48,7 @@
                         <input type="number" name="order" min="1" placeholder="Otomatik verilir" class="w-full text-xs bg-white border border-gray-300 rounded-lg p-2.5 focus:border-[#C87A53] outline-none">
                     </div>
                     <button type="submit" class="py-2.5 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition shadow-xs flex items-center gap-1.5 shrink-0">
-                        <i class="fa-solid fa-check"></i> Kaydet & Yükle
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Yükle & Kaydet
                     </button>
                 </div>
             </form>
@@ -71,7 +76,7 @@
                     </div>
 
                     <!-- Card Body / Edit Form -->
-                    <form action="{{ route('admin.banners.update', $banner->id) }}" method="POST" enctype="multipart/form-data" class="p-4 space-y-3 bg-white flex-grow flex flex-col justify-between">
+                    <form action="{{ route('admin.banners.update', $banner->id) }}" method="POST" enctype="multipart/form-data" class="p-4 space-y-3 bg-white flex-grow flex flex-col justify-between" onsubmit="showR2BannerOverlay('Görsel ve Değişiklikler Güncelleniyor...')">
                         @csrf
                         @method('PUT')
 
@@ -95,8 +100,11 @@
                             </div>
 
                             <div>
-                                <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">Görseli Değiştir (İsteğe Bağlı)</label>
-                                <input type="file" name="image" accept="image/*" class="w-full text-[11px] text-gray-500 border border-gray-200 rounded-lg p-1.5">
+                                <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1 flex items-center justify-between">
+                                    <span>Görseli Değiştir (İsteğe Bağlı)</span>
+                                    <span class="text-[9px] text-orange-700 font-bold">R2 Cloud</span>
+                                </label>
+                                <input type="file" name="image" accept="image/*" class="w-full text-[11px] text-gray-500 border border-gray-200 rounded-lg p-1.5 bg-gray-50">
                             </div>
                         </div>
 
@@ -128,8 +136,23 @@
 </form>
 
 <script>
+function showR2BannerOverlay(title) {
+    if (window.showAdminPreloader) {
+        window.showAdminPreloader(
+            title || 'Görsel R2\'ye Yükleniyor...',
+            'Görseller Cloudflare R2 Bulut Depolama sunucularına aktarılıyor, lütfen bekleyiniz...'
+        );
+    }
+}
+
 function confirmDeleteBanner(id, title) {
     if (confirm(`"${title}" görselini silmek istediğinize emin misiniz?`)) {
+        if (window.showAdminPreloader) {
+            window.showAdminPreloader(
+                'Görsel R2\'den Siliniyor...',
+                'Seçilen görsel Cloudflare R2 sunucularından ve veritabanından siliniyor, lütfen bekleyiniz...'
+            );
+        }
         const form = document.getElementById('deleteBannerForm');
         form.action = `/yonetim/anasayfa-gorselleri/${id}`;
         form.submit();

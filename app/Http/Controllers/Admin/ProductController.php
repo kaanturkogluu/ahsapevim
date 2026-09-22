@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Category;
-use App\Models\ThreeDTemplate;
+use App\Services\R2StorageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
@@ -14,15 +14,14 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with(['category', 'threeDTemplate'])->ordered()->get();
+        $products = Product::with('category')->ordered()->get();
         return view('admin.products.index', compact('products'));
     }
 
     public function create()
     {
         $categories = Category::all();
-        $templates = ThreeDTemplate::all();
-        return view('admin.products.create', compact('categories', 'templates'));
+        return view('admin.products.create', compact('categories'));
     }
 
     public function store(Request $request)
@@ -31,18 +30,14 @@ class ProductController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imageName = time() . '_' . Str::random(10) . '.' . $request->image->extension();
-            $request->image->move(public_path('uploads/products'), $imageName);
-            $imagePath = '/uploads/products/' . $imageName;
+            $imagePath = R2StorageService::upload($request->file('image'), 'products', 'product');
         }
 
         // Gallery Images Upload
         $galleryImages = [];
         if ($request->hasFile('gallery')) {
             foreach ($request->file('gallery') as $file) {
-                $galName = time() . '_' . Str::random(10) . '.' . $file->extension();
-                $file->move(public_path('uploads/products'), $galName);
-                $galleryImages[] = '/uploads/products/' . $galName;
+                $galleryImages[] = R2StorageService::upload($file, 'products', 'gal');
             }
         }
 
@@ -75,7 +70,6 @@ class ProductController extends Controller
             'stock'             => $request->stock,
             'description'       => $request->description,
             'image'             => $imagePath,
-            'three_d_template_id' => $request->three_d_template_id,
             'features'          => $features,
             'is_active'         => $request->has('is_active'),
         ];
@@ -97,8 +91,7 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
         $categories = Category::all();
-        $templates = ThreeDTemplate::all();
-        return view('admin.products.edit', compact('product', 'categories', 'templates'));
+        return view('admin.products.edit', compact('product', 'categories'));
     }
 
     public function update(Request $request, $id)
@@ -109,13 +102,10 @@ class ProductController extends Controller
 
         $imagePath = $product->image;
         if ($request->hasFile('image')) {
-            // Delete old image
-            if ($product->image && File::exists(public_path($product->image))) {
-                File::delete(public_path($product->image));
+            if ($product->image) {
+                R2StorageService::delete($product->image);
             }
-            $imageName = time() . '_' . Str::random(10) . '.' . $request->image->extension();
-            $request->image->move(public_path('uploads/products'), $imageName);
-            $imagePath = '/uploads/products/' . $imageName;
+            $imagePath = R2StorageService::upload($request->file('image'), 'products', 'product');
         }
 
         // Gallery Images Handling
@@ -127,9 +117,7 @@ class ProductController extends Controller
             foreach ($request->remove_gallery as $removedImg) {
                 if (($key = array_search($removedImg, $existingGallery)) !== false) {
                     unset($existingGallery[$key]);
-                    if (File::exists(public_path($removedImg))) {
-                        File::delete(public_path($removedImg));
-                    }
+                    R2StorageService::delete($removedImg);
                 }
             }
             $existingGallery = array_values($existingGallery);
@@ -138,9 +126,7 @@ class ProductController extends Controller
         // Append new gallery images
         if ($request->hasFile('gallery')) {
             foreach ($request->file('gallery') as $file) {
-                $galName = time() . '_' . Str::random(10) . '.' . $file->extension();
-                $file->move(public_path('uploads/products'), $galName);
-                $existingGallery[] = '/uploads/products/' . $galName;
+                $existingGallery[] = R2StorageService::upload($file, 'products', 'gal');
             }
         }
 
@@ -171,7 +157,6 @@ class ProductController extends Controller
             'stock'             => $request->stock,
             'description'       => $request->description,
             'image'             => $imagePath,
-            'three_d_template_id' => $request->three_d_template_id,
             'features'          => $features,
             'is_active'         => $request->has('is_active'),
         ];
@@ -192,8 +177,14 @@ class ProductController extends Controller
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
-        if ($product->image && File::exists(public_path($product->image))) {
-            File::delete(public_path($product->image));
+        if ($product->image) {
+            R2StorageService::delete($product->image);
+        }
+        $gallery = $product->features['images'] ?? [];
+        if (is_array($gallery)) {
+            foreach ($gallery as $gImg) {
+                R2StorageService::delete($gImg);
+            }
         }
         $product->delete();
 
@@ -221,7 +212,6 @@ class ProductController extends Controller
             'gallery.*'          => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:8192',
             'youtube_url'        => 'nullable|url|max:255',
             'instagram_url'      => 'nullable|url|max:255',
-            'three_d_template_id'=> 'nullable|exists:three_d_templates,id',
             'color'              => 'nullable|string',
             'size'               => 'nullable|string',
             'sort_order'         => 'nullable|integer|min:0',

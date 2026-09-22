@@ -57,10 +57,9 @@ class AdminNewOrderMail extends Mailable implements ShouldQueue
         $totalFormatted = number_format($order->total_amount, 2, ',', '.') . ' ₺';
         $orderDate = $order->created_at ? $order->created_at->format('d.m.Y H:i') : now()->format('d.m.Y H:i');
         
-        $paymentLabel = 'Kredi / Banka Kartı (Iyzico)';
-        if (str_starts_with($order->payment_id ?? '', 'EFT_') || $order->status === 'pending') {
-            $paymentLabel = 'Banka Havalesi / EFT';
-        }
+        $paymentLabel = str_starts_with($order->payment_id ?? '', 'EFT') 
+            ? 'Banka Havalesi / EFT' 
+            : 'Kredi / Banka Kartı';
 
         $statusLabels = [
             'pending'   => 'Ödeme Bekliyor',

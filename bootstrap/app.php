@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'odeme/callback',
             'odeme/callback/*',
             '*/odeme/callback',
+            'odeme/kredikarti/callback',
         ]);
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,

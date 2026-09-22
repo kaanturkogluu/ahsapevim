@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Services\R2StorageService;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
@@ -60,45 +61,22 @@ class CartController extends Controller
             }
         }
 
-        File::ensureDirectoryExists(public_path('uploads/customizations'));
-
-        // Handle Front Image
+        // Handle Front Image (R2)
         $frontImagePath = null;
         if ($hasFront) {
-            $frontName = 'front_' . time() . '_' . Str::random(8) . '.' . $request->file('custom_image_front')->extension();
-            $request->file('custom_image_front')->move(public_path('uploads/customizations'), $frontName);
-            $frontImagePath = '/uploads/customizations/' . $frontName;
+            $frontImagePath = R2StorageService::upload($request->file('custom_image_front'), 'customizations', 'front');
         }
 
-        // Handle Back Image
+        // Handle Back Image (R2)
         $backImagePath = null;
         if ($hasBack) {
-            $backName = 'back_' . time() . '_' . Str::random(8) . '.' . $request->file('custom_image_back')->extension();
-            $request->file('custom_image_back')->move(public_path('uploads/customizations'), $backName);
-            $backImagePath = '/uploads/customizations/' . $backName;
+            $backImagePath = R2StorageService::upload($request->file('custom_image_back'), 'customizations', 'back');
         }
 
-        // Fallback Single Custom Image
+        // Fallback Single Custom Image (R2)
         $singleImagePath = null;
         if ($hasSingle) {
-            $singleName = 'custom_' . time() . '_' . Str::random(8) . '.' . $request->file('custom_image')->extension();
-            $request->file('custom_image')->move(public_path('uploads/customizations'), $singleName);
-            $singleImagePath = '/uploads/customizations/' . $singleName;
-        }
-
-        // Handle 3D Snapshot
-        $customPreviewPath = null;
-        if ($hasPreview) {
-            $base64Data = $request->custom_preview_base64;
-            if (preg_match('/^data:image\/(\w+);base64,/', $base64Data, $type)) {
-                $data = substr($base64Data, strpos($base64Data, ',') + 1);
-                $data = base64_decode($data);
-                if ($data !== false) {
-                    $previewName = '3d_preview_' . time() . '_' . Str::random(8) . '.png';
-                    file_put_contents(public_path('uploads/customizations/' . $previewName), $data);
-                    $customPreviewPath = '/uploads/customizations/' . $previewName;
-                }
-            }
+            $singleImagePath = R2StorageService::upload($request->file('custom_image'), 'customizations', 'custom');
         }
 
         $isGift = $request->boolean('is_gift');
@@ -106,12 +84,11 @@ class CartController extends Controller
 
         $cart = session()->get('cart', []);
 
-        $uniqueSeed = ($frontImagePath ?: '') . ($backImagePath ?: '') . ($singleImagePath ?: '') . ($customPreviewPath ?: '') . ($giftNote ?: '');
+        $uniqueSeed = ($frontImagePath ?: '') . ($backImagePath ?: '') . ($singleImagePath ?: '') . ($giftNote ?: '');
         $cartKey = $product->id . ($uniqueSeed ? '_' . md5($uniqueSeed) : '');
 
-        $displayImage = $customPreviewPath 
-            ? url($customPreviewPath) 
-            : ($frontImagePath ? url($frontImagePath) : ($singleImagePath ? url($singleImagePath) : $product->image));
+        $displayImage = $frontImagePath 
+            ?: ($singleImagePath ?: $product->image);
 
         if (isset($cart[$cartKey])) {
             $cart[$cartKey]['quantity']++;
@@ -122,10 +99,10 @@ class CartController extends Controller
                 'price' => $product->price,
                 'quantity' => 1,
                 'image' => $displayImage,
-                'custom_image_front' => $frontImagePath ? url($frontImagePath) : ($singleImagePath ? url($singleImagePath) : null),
-                'custom_image_back' => $backImagePath ? url($backImagePath) : null,
-                'custom_image' => $frontImagePath ? url($frontImagePath) : ($singleImagePath ? url($singleImagePath) : null),
-                'custom_preview' => $customPreviewPath ? url($customPreviewPath) : null,
+                'custom_image_front' => $frontImagePath ?: ($singleImagePath ?: null),
+                'custom_image_back' => $backImagePath ?: null,
+                'custom_image' => $frontImagePath ?: ($singleImagePath ?: null),
+                'custom_preview' => null,
                 'is_gift' => $isGift,
                 'gift_note' => $giftNote,
             ];

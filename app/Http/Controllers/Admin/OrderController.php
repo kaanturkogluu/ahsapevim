@@ -178,18 +178,21 @@ class OrderController extends Controller
                 // 2. Diğer Durum Değişiklikleri Bildirimi
                 try {
                     if ($oldStatus === 'pending' && in_array($newStatus, ['paid', 'preparing'])) {
-                        // Havale/EFT Ödeme Onayı E-Postası (order_paid)
+                        $isEft = str_starts_with($order->payment_id ?? '', 'EFT');
+                        // Ödeme Onayı E-Postası (order_paid)
                         try {
                             \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_paid', $data));
-                            app(\App\Services\MailService::class)->logMailable($order->email, "Ödemeniz Onaylandı (#{$order->id})", "Havale/EFT ödemesi onaylandı ve sipariş hazırlandığına dair e-posta gönderildi.", 'success', null, $order->id);
+                            app(\App\Services\MailService::class)->logMailable($order->email, "Ödemeniz Onaylandı (#{$order->id})", ($isEft ? "Havale/EFT" : "Kart") . " ödemesi onaylandı ve sipariş hazırlandığına dair e-posta gönderildi.", 'success', null, $order->id);
                         } catch (\Throwable $mEx) {
                             \Illuminate\Support\Facades\Log::error('Payment Approval Email Error: ' . $mEx->getMessage());
                             app(\App\Services\MailService::class)->logMailable($order->email, "Ödemeniz Onaylandı (#{$order->id})", "Ödeme onay e-postası", 'failed', $mEx->getMessage(), $order->id);
                         }
 
-                        // Havale/EFT Ödeme Onayı SMS
+                        // Ödeme Onayı SMS
                         try {
-                            $paidSms = "Sayın {$order->name}, #{$order->id} numaralı siparişinizin Havale/EFT ödemesi onaylanmış ve siparişiniz hazırlık sırasına alınmıştır. AhşapEvim";
+                            $paidSms = $isEft 
+                                ? "Sayın {$order->name}, #{$order->id} numaralı siparişinizin Havale/EFT ödemesi onaylanmış ve siparişiniz hazırlık sırasına alınmıştır. AhşapEvim"
+                                : "Sayın {$order->name}, #{$order->id} numaralı siparişinizin ödemesi onaylanmış ve siparişiniz hazırlık sırasına alınmıştır. AhşapEvim";
                             app(NetgsmService::class)->sendSms($order->phone, $paidSms, $order->id, 'automated');
                         } catch (\Throwable $smsEx) {
                             \Illuminate\Support\Facades\Log::error('Payment Approval SMS Error: ' . $smsEx->getMessage());
@@ -321,6 +324,50 @@ class OrderController extends Controller
             abort(404, 'Görsel yolu bulunamadı.');
         }
 
+        $customName = $request->query('filename');
+
+        // Check if path is Cloudflare R2 / S3 storage URL
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            $parsedPath = parse_url($path, PHP_URL_PATH);
+            $r2Key = ltrim($parsedPath ?: '', '/');
+
+            if (\Illuminate\Support\Facades\Storage::disk('r2')->exists($r2Key)) {
+                $fileContent = \Illuminate\Support\Facades\Storage::disk('r2')->get($r2Key);
+                $mimeType = \Illuminate\Support\Facades\Storage::disk('r2')->mimeType($r2Key) ?: 'image/jpeg';
+                $extension = strtolower(pathinfo($r2Key, PATHINFO_EXTENSION)) ?: 'jpg';
+                
+                $downloadFileName = $customName 
+                    ? (preg_replace('/[^a-zA-Z0-9_\-]/', '_', $customName) . '.' . $extension)
+                    : basename($r2Key);
+
+                return response($fileContent, 200, [
+                    'Content-Type' => $mimeType,
+                    'Content-Disposition' => 'attachment; filename="' . $downloadFileName . '"',
+                    'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                    'Pragma' => 'no-cache',
+                    'Expires' => '0',
+                ]);
+            }
+
+            // If not found directly by key, try downloading via HTTP stream
+            try {
+                $response = \Illuminate\Support\Facades\Http::timeout(15)->get($path);
+                if ($response->successful()) {
+                    $extension = strtolower(pathinfo(parse_url($path, PHP_URL_PATH), PATHINFO_EXTENSION)) ?: 'jpg';
+                    $downloadFileName = $customName 
+                        ? (preg_replace('/[^a-zA-Z0-9_\-]/', '_', $customName) . '.' . $extension)
+                        : basename(parse_url($path, PHP_URL_PATH));
+
+                    return response($response->body(), 200, [
+                        'Content-Type' => $response->header('Content-Type') ?: 'image/jpeg',
+                        'Content-Disposition' => 'attachment; filename="' . $downloadFileName . '"',
+                    ]);
+                }
+            } catch (\Throwable $e) {
+                // fallback to local check
+            }
+        }
+
         $relativePath = parse_url($path, PHP_URL_PATH);
         if (!$relativePath) {
             $relativePath = $path;
@@ -339,7 +386,6 @@ class OrderController extends Controller
         }
 
         $extension = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
-        $customName = $request->query('filename');
 
         if ($customName) {
             $cleanName = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $customName);

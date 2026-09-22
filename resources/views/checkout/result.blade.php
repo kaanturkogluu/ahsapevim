@@ -10,7 +10,7 @@
                 @php
                     $resultOrder = \App\Models\Order::with('items.product')->find(session('order_id'));
                     $trackingCode = $resultOrder ? ($resultOrder->tracking_code ?: 'AHS-'.$resultOrder->id) : null;
-                    $isEft = session('is_eft') || ($resultOrder && (str_starts_with($resultOrder->payment_id ?? '', 'EFT') || $resultOrder->status === 'pending'));
+                    $isEft = session('is_eft') || ($resultOrder && str_starts_with($resultOrder->payment_id ?? '', 'EFT'));
                 @endphp
 
                 <!-- Success / Pending State Header -->
@@ -195,9 +195,9 @@
                 </p>
 
                 @php
-                    $bankMsg = session('message', 'Banka tarafından ödeme onayı verilmedi (Yetersiz Bakiye / Kart Onayı Alınamadı).');
-                    if (!str_starts_with($bankMsg, 'Banka Yanıtı')) {
-                        $bankMsg = 'Banka Yanıtı : ' . $bankMsg;
+                    $bankMsg = session('error_message') ?: session('message', 'Banka tarafından ödeme onayı verilmedi (Yetersiz Bakiye / Kart Onayı Alınamadı).');
+                    if (!str_starts_with($bankMsg, 'Banka Yanıtı') && !str_starts_with($bankMsg, 'Banka ')) {
+                        $bankMsg = 'Banka Yanıtı: ' . $bankMsg;
                     }
                 @endphp
                 <div class="bg-rose-50/80 border border-rose-200 rounded-2xl p-4 mb-8 text-left max-w-lg mx-auto text-xs text-rose-950 space-y-1">
@@ -207,6 +207,7 @@
                         <span>{{ $bankMsg }}</span>
                     </p>
                 </div>
+
 
                 <div class="flex flex-col sm:flex-row gap-3 justify-center">
                     <a href="{{ url('/urunler') }}" onclick="event.preventDefault(); window.location.href='{{ url('/urunler?open_cart=1') }}';" class="bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-3.5 px-6 rounded-xl transition text-xs border border-stone-200 flex items-center justify-center gap-2">

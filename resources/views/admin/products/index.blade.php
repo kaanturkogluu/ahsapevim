@@ -39,7 +39,6 @@
                     <th class="pb-3 w-16 text-center">Görsel</th>
                     <th class="pb-3">Ürün Adı</th>
                     <th class="pb-3">Kategori</th>
-                    <th class="pb-3">3D Model Şablonu</th>
                     <th class="pb-3 text-right">Fiyat</th>
                     <th class="pb-3 text-center w-20">Stok</th>
                     <th class="pb-3 text-center w-20">Durum</th>
@@ -81,15 +80,6 @@
                         </td>
                         <td class="py-3.5" data-label="Kategori">
                             <span class="px-2.5 py-1 bg-stone-100 text-stone-700 rounded-md font-semibold text-xs">{{ $product->category->name ?? 'Kategorisiz' }}</span>
-                        </td>
-                        <td class="py-3.5" data-label="3D Şablon">
-                            @if($product->threeDTemplate)
-                                <span class="px-2.5 py-1 bg-amber-50 text-amber-800 rounded-md font-bold text-xs border border-amber-200/50 flex items-center gap-1.5 w-max">
-                                    <i class="fa-solid fa-cube text-amber-600"></i> {{ $product->threeDTemplate->name }}
-                                </span>
-                            @else
-                                <span class="text-xs text-gray-400 font-semibold"><i class="fa-solid fa-ban mr-1"></i> Yok (Sadece 2D)</span>
-                            @endif
                         </td>
                         <td class="py-3.5 text-right font-bold text-gray-900" data-label="Fiyat">
                             @if($product->discount_percent > 0)

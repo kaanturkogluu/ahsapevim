@@ -45,10 +45,10 @@
 
                             <div>
                                 <label for="identity_number" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    T.C. Kimlik No *
-                                    <span class="text-[11px] font-medium text-amber-700 block mt-0.5">(Bu bilgiler fatura kesimi için kullanılacaktır)</span>
+                                    T.C. Kimlik No
+                                    <span class="text-[11px] font-medium text-gray-400 block mt-0.5">(Opsiyonel — fatura kesimi için)</span>
                                 </label>
-                                <input type="text" id="identity_number" name="identity_number" maxlength="11" placeholder="11 haneli T.C. Kimlik No" value="{{ old('identity_number') }}" required oninput="this.value = this.value.replace(/[^0-9]/g, '');" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C87A53] focus:border-[#C87A53] transition font-mono">
+                                <input type="text" id="identity_number" name="identity_number" maxlength="11" placeholder="11 haneli T.C. Kimlik No (opsiyonel)" value="{{ old('identity_number') }}" oninput="this.value = this.value.replace(/[^0-9]/g, '');" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C87A53] focus:border-[#C87A53] transition font-mono">
                                 @error('identity_number') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
                         </div>
@@ -86,68 +86,128 @@
                         </div>
 
                         <!-- Ödeme Yöntemi Seçimi -->
-                        <div class="mb-8 border-t border-gray-100 pt-6">
-                            <label class="block text-sm font-bold text-gray-800 mb-3">Ödeme Yöntemi Seçiniz *</label>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                                <!-- Option 1: Credit / Debit Card -->
-                                <label class="payment-method-card relative border-2 border-[#C87A53] bg-orange-50/40 p-4 rounded-xl cursor-pointer flex items-center gap-3 transition hover:shadow-sm">
-                                    <input type="radio" name="payment_method" value="card" checked onchange="togglePaymentMethodDisplay()" class="text-[#C87A53] focus:ring-[#C87A53] w-4 h-4">
+                        <div class="mb-6 border-t border-gray-100 pt-6">
+                            <label class="block text-sm font-bold text-gray-800 mb-3">Ödeme Yöntemi</label>
+                            <input type="hidden" name="payment_method" id="paymentMethodInput" value="eft">
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <!-- EFT Seçeneği -->
+                                <label id="eftMethodLabel" class="payment-method-tab active-method cursor-pointer flex items-center gap-3 p-4 rounded-2xl border-2 border-[#C87A53] bg-amber-50/60 transition-all" onclick="selectPaymentMethod('eft')">
+                                    <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+                                        <i class="fa-solid fa-building-columns text-[#C87A53] text-lg"></i>
+                                    </div>
                                     <div>
-                                        <span class="block text-sm font-extrabold text-gray-800 flex items-center gap-1.5">
-                                            <i class="fa-solid fa-credit-card text-[#C87A53]"></i> Kredi / Banka Kartı
-                                        </span>
-                                        <span class="block text-[11px] text-gray-500 mt-0.5">Iyzico 256-Bit SSL Güvenli Ödeme</span>
+                                        <div class="font-bold text-gray-800 text-sm">Havale / EFT</div>
+                                        <div class="text-xs text-gray-500">Banka transferi</div>
                                     </div>
                                 </label>
 
-                                <!-- Option 2: Havale / EFT -->
-                                <label class="payment-method-card relative border border-gray-200 hover:border-gray-300 p-4 rounded-xl cursor-pointer flex items-center gap-3 transition">
-                                    <input type="radio" name="payment_method" value="eft" onchange="togglePaymentMethodDisplay()" class="text-[#C87A53] focus:ring-[#C87A53] w-4 h-4">
+                                <!-- Kredi Kartı Seçeneği -->
+                                <label id="ccMethodLabel" class="payment-method-tab cursor-pointer flex items-center gap-3 p-4 rounded-2xl border-2 border-gray-200 bg-white transition-all hover:border-gray-300" onclick="selectPaymentMethod('credit_card')">
+                                    <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
+                                        <i class="fa-solid fa-credit-card text-gray-500 text-lg"></i>
+                                    </div>
                                     <div>
-                                        <span class="block text-sm font-extrabold text-gray-800 flex items-center gap-1.5">
-                                            <i class="fa-solid fa-building-columns text-emerald-600"></i> Havale / EFT ile Ödeme
-                                        </span>
-                                        <span class="block text-[11px] text-gray-500 mt-0.5">Banka Hesabına Doğrudan Transfer</span>
+                                        <div class="font-bold text-gray-800 text-sm">Kredi Kartı</div>
+                                        <div class="text-xs text-gray-500">Anında 3D Secure</div>
                                     </div>
                                 </label>
                             </div>
+                        </div>
 
-                            <!-- EFT Account Details Box -->
-                            <div id="eftDetailsBox" class="p-4 bg-amber-50/90 border border-amber-200/90 rounded-2xl hidden space-y-3">
-                                <div class="flex items-center justify-between border-b border-amber-200/60 pb-2">
-                                    <div class="flex items-center gap-2 text-[#C87A53] font-extrabold text-sm">
-                                        <i class="fa-solid fa-building-columns"></i>
-                                        <span>Havale / EFT Hesap Bilgileri</span>
+                        <!-- EFT Detay Kutusu -->
+                        <div id="eftDetailsBox" class="mb-8 p-5 bg-amber-50/90 border border-amber-200/90 rounded-2xl space-y-3">
+                            <div class="flex items-center justify-between border-b border-amber-200/60 pb-2">
+                                <div class="flex items-center gap-2 text-[#C87A53] font-extrabold text-sm">
+                                    <i class="fa-solid fa-building-columns"></i>
+                                    <span>Havale / EFT ile Banka Transferi</span>
+                                </div>
+                                <span class="px-2.5 py-0.5 bg-blue-100 text-blue-800 text-[11px] font-black rounded-md flex items-center gap-1 shadow-sm">
+                                    <i class="fa-solid fa-building text-[10px]"></i> Halkbank
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                <div class="bg-white p-3 rounded-xl border border-amber-100 shadow-sm">
+                                    <span class="text-gray-500 font-bold block text-[10px] uppercase">Alıcı Ad Soyad</span>
+                                    <span class="font-extrabold text-gray-900 text-sm">Mete Almaz</span>
+                                </div>
+                                <div class="bg-white p-3 rounded-xl border border-amber-100 flex items-center justify-between gap-2 shadow-sm">
+                                    <div>
+                                        <span class="text-gray-500 font-bold block text-[10px] uppercase">IBAN Numarası (Halkbank)</span>
+                                        <span class="font-mono font-extrabold text-[#C87A53] text-xs sm:text-sm tracking-wider">TR67 0001 2009 5620 0009 0180 61</span>
                                     </div>
-                                    <span class="px-2.5 py-0.5 bg-blue-100 text-blue-800 text-[11px] font-black rounded-md flex items-center gap-1 shadow-sm">
-                                        <i class="fa-solid fa-building text-[10px]"></i> Halkbank
+                                    <button type="button" onclick="navigator.clipboard.writeText('TR670001200956200009018061'); showToast('IBAN kopyalandı!', 'info');" class="px-2.5 py-1.5 bg-amber-100 text-amber-900 hover:bg-amber-200 rounded-lg font-bold text-[11px] transition shrink-0 flex items-center gap-1">
+                                        <i class="fa-solid fa-copy"></i> Kopyala
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-white border border-amber-200 rounded-xl text-xs text-amber-900 leading-relaxed font-medium">
+                                <i class="fa-solid fa-circle-info text-[#C87A53] mr-1"></i>
+                                <strong>Önemli Yönerge:</strong> EFT/Havale ödemelerinde açıklama kısmına <strong>Müşteri Adı - Soyadı ve Sipariş Numarasını</strong> yazarak ücreti göndermeniz gerekmektedir.
+                            </div>
+                        </div>
+
+                        <!-- Kredi Kartı (İyzico) Bilgilendirme Kutusu -->
+                        <div id="creditCardBox" class="mb-8 hidden">
+                            <div class="bg-gradient-to-br from-amber-50/90 to-orange-50/60 border border-amber-200/90 rounded-2xl p-5 md:p-6 space-y-4">
+                                <div class="flex items-center justify-between border-b border-amber-200/60 pb-3">
+                                    <div class="flex items-center gap-2.5 text-[#C87A53] font-black text-sm">
+                                        <i class="fa-solid fa-credit-card text-base"></i>
+                                        <span>Kredi / Banka Kartı (İyzico Güvenli Ödeme)</span>
+                                    </div>
+                                    <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[11px] font-black rounded-md flex items-center gap-1 shadow-sm">
+                                        <i class="fa-solid fa-shield-halved text-[10px]"></i> 3D Secure
                                     </span>
                                 </div>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                                    <div class="bg-white p-3 rounded-xl border border-amber-100 shadow-sm">
-                                        <span class="text-gray-500 font-bold block text-[10px] uppercase">Alıcı Ad Soyad</span>
-                                        <span class="font-extrabold text-gray-900 text-sm">Mete Almaz</span>
-                                    </div>
-                                    <div class="bg-white p-3 rounded-xl border border-amber-100 flex items-center justify-between gap-2 shadow-sm">
-                                        <div>
-                                            <span class="text-gray-500 font-bold block text-[10px] uppercase">IBAN Numarası (Halkbank)</span>
-                                            <span class="font-mono font-extrabold text-[#C87A53] text-xs sm:text-sm tracking-wider">TR67 0001 2009 5620 0009 0180 61</span>
+
+                                <p class="text-xs text-stone-700 leading-relaxed font-medium">
+                                    <strong>"Güvenli Ödemeye Geç"</strong> butonuna tıkladığınızda İyzico güvenli ödeme formuna yönlendirileceksiniz. Kart bilgilerinizi girerek tek çekim veya anlaşmalı tüm banka kartlarıyla taksit seçeneklerinden güvenle yararlanabilirsiniz.
+                                </p>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs pt-1">
+                                    <div class="bg-white p-3 rounded-xl border border-amber-100 shadow-sm flex items-center gap-2.5">
+                                        <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                                            <i class="fa-solid fa-lock text-sm"></i>
                                         </div>
-                                        <button type="button" onclick="navigator.clipboard.writeText('TR670001200956200009018061'); showToast('IBAN kopyalandı!', 'info');" class="px-2.5 py-1.5 bg-amber-100 text-amber-900 hover:bg-amber-200 rounded-lg font-bold text-[11px] transition shrink-0 flex items-center gap-1">
-                                            <i class="fa-solid fa-copy"></i> Kopyala
-                                        </button>
+                                        <div>
+                                            <div class="font-bold text-gray-800 text-[11px]">256-Bit SSL</div>
+                                            <div class="text-[10px] text-gray-500">Uçtan uca şifreleme</div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-xl border border-amber-100 shadow-sm flex items-center gap-2.5">
+                                        <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                                            <i class="fa-solid fa-shield text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-bold text-gray-800 text-[11px]">Kartınız Saklanmaz</div>
+                                            <div class="text-[10px] text-gray-500">İyzico güvencesi</div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-xl border border-amber-100 shadow-sm flex items-center gap-2.5">
+                                        <div class="w-8 h-8 rounded-lg bg-amber-100 text-[#C87A53] flex items-center justify-center shrink-0">
+                                            <i class="fa-solid fa-layer-group text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-bold text-gray-800 text-[11px]">Taksit İmkânı</div>
+                                            <div class="text-[10px] text-gray-500">Tüm banka kartları</div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="p-3 bg-white border border-amber-200 rounded-xl text-xs text-amber-900 leading-relaxed font-medium">
-                                    <i class="fa-solid fa-circle-info text-[#C87A53] mr-1"></i>
-                                    <strong>Önemli Yönerge:</strong> EFT/Havale ödemelerinde açıklama kısmına <strong>Müşteri Adı - Soyadı ve Sipariş Numarasını</strong> yazarak ücreti göndermeniz gerekmektedir. Sipariş oluşturulduktan sonra takip numaranız ekranınızda görüntülenecektir.
+
+                                <div class="flex items-center justify-between pt-2 border-t border-amber-200/50">
+                                    <div class="flex items-center gap-3">
+                                        <img src="https://raw.githubusercontent.com/muhammederdem/credit-card-form/master/src/assets/images/visa.png" class="h-4 opacity-75" alt="Visa">
+                                        <img src="https://raw.githubusercontent.com/muhammederdem/credit-card-form/master/src/assets/images/mastercard.png" class="h-4 opacity-75" alt="Mastercard">
+                                        <span class="text-[11px] font-extrabold text-stone-600">TROY</span>
+                                    </div>
+                                    <span class="text-[10px] font-bold text-stone-400">Bonus • World • Maximum • Axess • Paraf</span>
                                 </div>
                             </div>
                         </div>
 
                         <button id="submitCheckoutBtn" type="submit" class="w-full md:w-auto bg-[#C87A53] hover:bg-[#A65F38] text-white font-bold py-3.5 px-8 rounded-xl transition shadow-md flex items-center justify-center gap-2 text-base">
-                            <i class="fa-solid fa-lock"></i>
-                            <span id="submitBtnText">Güvenli Ödemeye Devam Et</span>
+                            <i class="fa-solid fa-building-columns" id="submitBtnIcon"></i>
+                            <span id="submitBtnText">Siparişi Onayla (Havale / EFT)</span>
                         </button>
                     </form>
                 </div>
@@ -258,6 +318,12 @@
     background-color: #C87A53 !important;
     color: #ffffff !important;
 }
+
+/* Ödeme yöntemi sekmeleri */
+.payment-method-tab { user-select: none; }
+.active-method { border-color: #C87A53 !important; background-color: #fff8f5 !important; }
+.active-method .fa-credit-card, .active-method .fa-building-columns { color: #C87A53 !important; }
+.active-method .w-10 { background-color: #fdede6 !important; }
 </style>
 
 <script>
@@ -498,12 +564,12 @@ function validateCheckoutForm(e) {
         return false;
     }
 
+    // TC Kimlik: opsiyonel — dolu ise doğrula
     const tcInput = document.getElementById('identity_number');
     const tcVal = tcInput ? tcInput.value.trim() : '';
-
-    if (!isValidTcNo(tcVal)) {
+    if (tcVal.length > 0 && !isValidTcNo(tcVal)) {
         e.preventDefault();
-        showToast('Lütfen geçerli 11 haneli bir T.C. Kimlik Numarası giriniz.', 'error');
+        showToast('T.C. Kimlik Numarası geçersiz. Lütfen kontrol edin veya boş bırakın.', 'error');
         if (tcInput) tcInput.focus();
         return false;
     }
@@ -521,11 +587,16 @@ function validateCheckoutForm(e) {
     isSubmittingCheckout = true;
     const btn = document.getElementById('submitCheckoutBtn');
     const btnText = document.getElementById('submitBtnText');
+    const paymentMethod = document.getElementById('paymentMethodInput')?.value;
 
     if (btn && btnText) {
         btn.disabled = true;
         btn.classList.add('opacity-75', 'cursor-not-allowed');
-        btnText.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Sipariş İşleniyor...`;
+        if (paymentMethod === 'credit_card') {
+            btnText.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> İyzico Ödeme Formuna Yönlendiriliyorsunuz...`;
+        } else {
+            btnText.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Sipariş İşleniyor...`;
+        }
     }
 
     return true;
@@ -541,5 +612,42 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// ─── Ödeme Yöntemi Geçişi ────────────────────────────────────────────────────
+function selectPaymentMethod(method) {
+    document.getElementById('paymentMethodInput').value = method;
+
+    const eftBox    = document.getElementById('eftDetailsBox');
+    const ccBox     = document.getElementById('creditCardBox');
+    const eftTab    = document.getElementById('eftMethodLabel');
+    const ccTab     = document.getElementById('ccMethodLabel');
+    const btnIcon   = document.getElementById('submitBtnIcon');
+    const btnText   = document.getElementById('submitBtnText');
+
+    if (method === 'credit_card') {
+        eftBox.classList.add('hidden');
+        ccBox.classList.remove('hidden');
+        eftTab.classList.remove('active-method');
+        eftTab.style.borderColor = '#e5e7eb';
+        eftTab.style.backgroundColor = '';
+        ccTab.classList.add('active-method');
+        ccTab.style.borderColor = '#C87A53';
+        ccTab.style.backgroundColor = '#fff8f5';
+        btnIcon.className = 'fa-solid fa-lock';
+        btnText.textContent = 'Güvenli Kart ile Ödemeye Geç';
+    } else {
+        eftBox.classList.remove('hidden');
+        ccBox.classList.add('hidden');
+        ccTab.classList.remove('active-method');
+        ccTab.style.borderColor = '#e5e7eb';
+        ccTab.style.backgroundColor = '';
+        eftTab.classList.add('active-method');
+        eftTab.style.borderColor = '#C87A53';
+        eftTab.style.backgroundColor = '#fff8f5';
+        btnIcon.className = 'fa-solid fa-building-columns';
+        btnText.textContent = 'Siparişi Onayla (Havale / EFT)';
+    }
+}
 </script>
 @endsection
+

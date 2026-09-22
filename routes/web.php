@@ -12,7 +12,6 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\ThreeDTemplateController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Admin\OrderController;
@@ -62,12 +61,6 @@ Route::post('/siparis-takip', [OrderTrackingController::class, 'track'])->name('
 
 // ─── Frontend Routes ──────────────────────────────────────────────────────────
 Route::get('/', function (Request $request) {
-    // Mobil cihazları sunucu tarafında yönlendir (886 satır sayfa yüklenmeden)
-    $ua = $request->userAgent() ?? '';
-    if (preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', $ua)) {
-        return redirect('/urunler', 301);
-    }
-
     $query = Product::where('is_active', true)->with('category');
 
     if (request('category')) {
@@ -92,7 +85,7 @@ Route::get('/', function (Request $request) {
     });
 
     return view('home', compact('products', 'categories', 'homeBanners'));
-});
+})->name('home');
 
 // Canlı Arama (AJAX / Autocomplete)
 Route::get('/canli-arama', function (Request $request) {
@@ -117,8 +110,23 @@ Route::get('/canli-arama', function (Request $request) {
     return response()->json(['status' => 'success', 'products' => $data, 'count' => count($data)]);
 })->name('search.live');
 
-Route::get('/urun/{id}', function ($id) {
-    $product = Product::with('category')->where('id', $id)->orWhere('slug', $id)->firstOrFail();
+Route::get('/urun/{slug}', function ($slug) {
+    $slug = urldecode(trim($slug));
+    
+    $product = Product::with('category')
+        ->where('slug', $slug)
+        ->orWhere('id', is_numeric($slug) ? (int)$slug : -1)
+        ->first();
+
+    if (!$product) {
+        // Tolerans: sonundaki -1, -2 gibi numaralar uyuşmazsa ana slug'ı dene
+        $baseSlug = preg_replace('/-\d+$/', '', $slug);
+        $product = Product::with('category')->where('slug', $baseSlug)->first();
+    }
+
+    if (!$product) {
+        abort(404, 'Aradığınız ürün bulunamadı.');
+    }
 
     $similarProducts = Product::where('category_id', $product->category_id)
         ->where('id', '!=', $product->id)
@@ -165,7 +173,7 @@ Route::get('/urunler', function () {
     $categories = Category::all();
 
     return view('products.index', compact('products', 'categories'));
-});
+})->name('products.index');
 
 // ─── User Auth Routes ─────────────────────────────────────────────────────────
 Route::get('/giris',  [AuthController::class, 'showLoginForm'])->name('login');
@@ -200,8 +208,14 @@ Route::post('/sepet/sil',      [CartController::class, 'remove'])->name('cart.re
 // ─── Checkout ─────────────────────────────────────────────────────────────────
 Route::get('/odeme',                             [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/odeme',                            [CheckoutController::class, 'process'])->name('checkout.process');
-Route::match(['get', 'post'], '/odeme/callback', [CheckoutController::class, 'callback'])->name('checkout.callback');
 Route::get('/odeme/sonuc',                       [CheckoutController::class, 'result'])->name('checkout.result');
+Route::get('/odeme/taksit-bilgisi',              [CheckoutController::class, 'installmentInfo'])->name('checkout.installment_info');
+
+// Iyzico 3D Secure callback — CSRF muaf (Iyzico dışarıdan POST eder)
+Route::post('/odeme/kredikarti/callback', [CheckoutController::class, 'callback3DS'])
+    ->name('checkout.iyzico.callback')
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+
 
 // ─── Dynamic Informational Pages ─────────────────────────────────────────────
 Route::get('/{slug}', function ($slug) {
@@ -254,9 +268,6 @@ Route::prefix('yonetim')->middleware(['auth', 'admin'])->group(function () {
     Route::put('urunler/{product}', [ProductController::class, 'update'])->middleware('throttle:15,1')->name('admin.products.update');
     Route::resource('urunler', ProductController::class)->parameters(['urunler' => 'product'])->except(['store', 'update'])->names('admin.products');
 
-    Route::post('3d-sablonlar',           [ThreeDTemplateController::class, 'store'])->middleware('throttle:15,1')->name('admin.templates.store');
-    Route::put('3d-sablonlar/{template}', [ThreeDTemplateController::class, 'update'])->middleware('throttle:15,1')->name('admin.templates.update');
-    Route::resource('3d-sablonlar', ThreeDTemplateController::class)->parameters(['3d-sablonlar' => 'template'])->except(['store', 'update'])->names('admin.templates');
 
     Route::resource('sayfalar', PageController::class)->names('admin.pages');
     Route::resource('anasayfa-gorselleri', HomeBannerController::class)->names('admin.banners');

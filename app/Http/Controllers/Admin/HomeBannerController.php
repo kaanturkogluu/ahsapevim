@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\HomeBanner;
+use App\Services\R2StorageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
@@ -33,10 +34,7 @@ class HomeBannerController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            File::ensureDirectoryExists(public_path('uploads/banners'));
-            $imageName = 'banner_' . time() . '_' . Str::random(8) . '.' . $request->image->extension();
-            $request->image->move(public_path('uploads/banners'), $imageName);
-            $imagePath = '/uploads/banners/' . $imageName;
+            $imagePath = R2StorageService::upload($request->file('image'), 'banners', 'banner');
         }
 
         $maxOrder = HomeBanner::max('order') ?? 0;
@@ -63,13 +61,10 @@ class HomeBannerController extends Controller
 
         $imagePath = $banner->image;
         if ($request->hasFile('image')) {
-            if ($banner->image && !str_contains($banner->image, '/images/a') && File::exists(public_path($banner->image))) {
-                File::delete(public_path($banner->image));
+            if ($banner->image && !str_contains($banner->image, '/images/a')) {
+                R2StorageService::delete($banner->image);
             }
-            File::ensureDirectoryExists(public_path('uploads/banners'));
-            $imageName = 'banner_' . time() . '_' . Str::random(8) . '.' . $request->image->extension();
-            $request->image->move(public_path('uploads/banners'), $imageName);
-            $imagePath = '/uploads/banners/' . $imageName;
+            $imagePath = R2StorageService::upload($request->file('image'), 'banners', 'banner');
         }
 
         $banner->update([
@@ -87,8 +82,8 @@ class HomeBannerController extends Controller
         $banner = HomeBanner::findOrFail($id);
 
         // Varsayılan a1-a6 görselleri haricindeki yüklenen dosyaları sil
-        if ($banner->image && !str_contains($banner->image, '/images/a') && File::exists(public_path($banner->image))) {
-            File::delete(public_path($banner->image));
+        if ($banner->image && !str_contains($banner->image, '/images/a')) {
+            R2StorageService::delete($banner->image);
         }
 
         $banner->delete();

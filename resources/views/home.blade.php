@@ -252,6 +252,9 @@
                         <img id="banner-img-{{ $index }}" 
                              src="{{ $banner->image_url }}" 
                              alt="{{ $banner->title ?: 'AhşapEvim Görsel' }}" 
+                             loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
+                             decoding="async"
+                             @if($index === 0) fetchpriority="high" @endif
                              class="banner-slide absolute inset-0 w-full h-full object-cover transition-all duration-700 opacity-0 scale-105 {{ $index === 0 ? 'opacity-100 scale-100 z-10' : 'z-0' }}">
                     @endforeach
                 @else
@@ -260,6 +263,9 @@
                         <img id="banner-img-{{ $i-1 }}" 
                              src="{{ url('/images/a' . $i . '.jpeg') }}" 
                              alt="AhşapEvim Görsel {{ $i }}" 
+                             loading="{{ $i === 1 ? 'eager' : 'lazy' }}"
+                             decoding="async"
+                             @if($i === 1) fetchpriority="high" @endif
                              class="banner-slide absolute inset-0 w-full h-full object-cover transition-all duration-700 opacity-0 scale-105 {{ $i === 1 ? 'opacity-100 scale-100 z-10' : 'z-0' }}">
                     @endfor
                 @endif
@@ -288,7 +294,7 @@
                     <button onclick="showBanner({{ $idx }})" 
                             id="thumb-btn-{{ $idx }}" 
                             class="banner-thumb w-14 h-14 md:w-16 md:h-16 rounded-xl border-2 border-transparent overflow-hidden shrink-0 bg-stone-200 transition-all duration-300 opacity-70 hover:opacity-100 {{ $idx === 0 ? 'thumb-active opacity-100' : '' }}">
-                        <img src="{{ is_object($b) && method_exists($b, 'getImageUrlAttribute') ? $b->image_url : ($b->image_url ?? url($b->image ?? '/images/a1.jpeg')) }}" class="w-full h-full object-cover" alt="thumbnail">
+                        <img src="{{ is_object($b) && method_exists($b, 'getImageUrlAttribute') ? $b->image_url : ($b->image_url ?? url($b->image ?? '/images/a1.jpeg')) }}" class="w-full h-full object-cover" alt="thumbnail" loading="lazy" decoding="async">
                     </button>
                 @endforeach
             </div>

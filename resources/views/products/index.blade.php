@@ -84,7 +84,10 @@
                             <img src="{{ $allImages[0] }}" alt="{{ $product->name }}"
                                  class="card-preview-img absolute inset-0 w-full h-full object-contain p-3 transition-all duration-300 group-hover:scale-105"
                                  data-images="{{ json_encode($allImages) }}"
-                                 data-default="{{ $allImages[0] }}">
+                                 data-default="{{ $allImages[0] }}"
+                                 loading="{{ $loop->index < 4 ? 'eager' : 'lazy' }}"
+                                 decoding="async"
+                                 @if($loop->index < 2) fetchpriority="high" @endif>
                             
                             @if(count($allImages) > 1)
                                 <div class="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">

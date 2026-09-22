@@ -20,6 +20,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        date_default_timezone_set('Europe/Istanbul');
+        $host = request()->getHost();
+        $isLocalHost = in_array($host, ['localhost', '127.0.0.1', '::1']) || str_ends_with($host, '.local') || str_ends_with($host, '.test') || app()->environment('local', 'debug');
+
+        if (!$isLocalHost && (app()->environment('production') || request()->isSecure() || str_contains(request()->header('x-forwarded-proto') ?? '', 'https'))) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         \Illuminate\Support\Facades\View::composer('*', function ($view) {
             // Admin paneli veya API isteklerinde vitrin verisi yüklenmez (Gereksiz yük ve sorgular engellenir)
             if (request()->is('yonetim*') || request()->is('api*')) {

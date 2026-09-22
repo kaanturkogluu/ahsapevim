@@ -111,7 +111,7 @@ class SendNewOrderNotificationJob implements ShouldQueue
             }
         }
 
-        $isEft = (str_starts_with($order->payment_id ?? '', 'EFT_') || $order->status === 'pending');
+        $isEft = str_starts_with($order->payment_id ?? '', 'EFT');
 
         // ── 4. Müşteriye Sipariş E-Postası Gönderimi ────────────────────
         if ($notifyCustomerEmail && !empty($order->email)) {

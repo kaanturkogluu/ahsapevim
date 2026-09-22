@@ -3,18 +3,18 @@
 @section('header', 'Ürünü Düzenle')
 
 @section('content')
-<div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm max-w-4xl">
+<div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm max-w-4xl relative">
     <div class="mb-6 pb-4 border-b border-gray-100 flex justify-between items-center">
         <div>
             <h3 class="text-lg font-bold text-gray-800">Ürün Bilgileri</h3>
-            <p class="text-xs text-gray-500 mt-1">Düzenlenen ürünün temel, indirim, galeri ve 3D özelliklerini güncelleyin.</p>
+            <p class="text-xs text-gray-500 mt-1">Düzenlenen ürünün temel, indirim, galeri ve Cloudflare R2 görsellerini güncelleyin.</p>
         </div>
         <a href="{{ route('admin.products.index') }}" class="text-sm font-bold text-gray-500 hover:text-gray-700 transition">
             <i class="fa-solid fa-arrow-left mr-1"></i> Geri Dön
         </a>
     </div>
 
-    <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data" onsubmit="preventSpamSubmit(this)">
+    <form id="productForm" action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data" onsubmit="return handleProductFormSubmit(event, this)">
         @csrf
         @method('PUT')
         
@@ -99,32 +99,45 @@
                 </div>
             </div>
 
-            <!-- Right Side: Media & 3D Settings -->
+            <!-- Right Side: Media (Cloudflare R2) -->
             <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Görseli Değiştir (Ana Görsel)</label>
-                    <input type="file" name="image" class="w-full text-sm border-gray-300 rounded-lg p-2 border focus:border-brand focus:ring-0 outline-none bg-gray-50">
+                <div class="bg-amber-50/40 p-4 rounded-xl border border-amber-200/60">
+                    <label class="block text-sm font-bold text-gray-800 mb-1 flex items-center justify-between">
+                        <span>Görseli Değiştir (Ana Görsel)</span>
+                        <span class="text-[10px] bg-orange-100 text-orange-800 font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
+                            <i class="fa-solid fa-cloud"></i> Cloudflare R2
+                        </span>
+                    </label>
+                    <input type="file" name="image" accept="image/*" class="w-full text-sm border-gray-300 rounded-lg p-2 border focus:border-brand focus:ring-0 outline-none bg-white">
                     
                     @if($product->image)
-                        <div class="mt-2 flex items-center gap-3 bg-gray-50 p-2 rounded-lg border border-gray-150 w-fit">
-                            <img src="{{ $product->image }}" class="h-12 w-10 object-contain" alt="old image">
-                            <span class="text-xs text-gray-500 font-semibold">Mevcut ana görsel saklanıyor.</span>
+                        <div class="mt-3 flex items-center gap-3 bg-white p-2.5 rounded-lg border border-amber-200 w-full">
+                            <img src="{{ $product->image }}" class="h-14 w-12 object-contain rounded border border-gray-200" alt="old image">
+                            <div class="flex-1 min-w-0">
+                                <span class="text-xs text-gray-700 font-bold block">Mevcut Ana Görsel</span>
+                                <span class="text-[10px] text-gray-500 truncate block font-mono">{{ $product->image }}</span>
+                            </div>
                         </div>
                     @endif
                 </div>
 
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ek Ürün Görselleri (Galeri Ekle/Yönet)</label>
-                    <input type="file" name="gallery[]" multiple accept="image/*" class="w-full text-sm border-gray-300 rounded-lg p-2 border focus:border-brand focus:ring-0 outline-none bg-gray-50">
+                <div class="bg-amber-50/40 p-4 rounded-xl border border-amber-200/60">
+                    <label class="block text-sm font-bold text-gray-800 mb-1 flex items-center justify-between">
+                        <span>Ek Ürün Görselleri Ekle (Galeri)</span>
+                        <span class="text-[10px] bg-orange-100 text-orange-800 font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
+                            <i class="fa-solid fa-cloud"></i> Cloudflare R2
+                        </span>
+                    </label>
+                    <input type="file" name="gallery[]" multiple accept="image/*" class="w-full text-sm border-gray-300 rounded-lg p-2 border focus:border-brand focus:ring-0 outline-none bg-white">
                     
                     @if(isset($product->features['images']) && is_array($product->features['images']) && count($product->features['images']) > 0)
-                        <div class="mt-3 bg-gray-50 p-3 rounded-lg border border-gray-200">
+                        <div class="mt-3 bg-white p-3 rounded-lg border border-amber-200">
                             <label class="block text-xs font-bold text-gray-700 mb-2">Mevcut Galeri Görselleri (Silmek istediklerinizi işaretleyin):</label>
                             <div class="grid grid-cols-4 gap-2">
                                 @foreach($product->features['images'] as $gImg)
-                                    <div class="relative group border border-gray-200 rounded-lg p-1 bg-white flex flex-col items-center">
-                                        <img src="{{ str_starts_with($gImg, 'http') ? $gImg : url($gImg) }}" class="h-16 w-full object-contain rounded" alt="gallery image">
-                                        <label class="mt-1 flex items-center gap-1 text-[11px] text-red-600 font-bold cursor-pointer">
+                                    <div class="relative group border border-gray-200 rounded-lg p-1.5 bg-gray-50 flex flex-col items-center">
+                                        <img src="{{ str_starts_with($gImg, 'http') ? $gImg : url($gImg) }}" class="h-16 w-full object-contain rounded bg-white" alt="gallery image">
+                                        <label class="mt-1.5 flex items-center gap-1 text-[11px] text-red-600 font-bold cursor-pointer hover:text-red-800">
                                             <input type="checkbox" name="remove_gallery[]" value="{{ $gImg }}" class="rounded text-red-600 focus:ring-red-500">
                                             Sil
                                         </label>
@@ -151,22 +164,6 @@
                     <p class="text-[10px] text-gray-500 mt-1">Eklenirse ürün detay galerisinde Instagram Reel rozeti ve pop-up oynatıcı gösterilir.</p>
                 </div>
 
-                <!-- 3D Model Entegrasyonu (Arka plana alındı / Pasif) -->
-                <div class="hidden bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-                    <h4 class="text-sm font-bold text-gray-800 mb-3 border-b border-gray-100 pb-2 flex items-center gap-2">
-                        <i class="fa-solid fa-cube text-brand"></i> 3D Model Entegrasyonu (Şablon)
-                    </h4>
-                    
-                    <div class="mb-3">
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Ürün 3D Şablonu</label>
-                        <select name="three_d_template_id" class="w-full text-sm border-gray-300 rounded-lg p-2.5 border focus:border-brand focus:ring-0 outline-none bg-white">
-                            <option value="">-- Şablon Seçimi Yok (Pasif) --</option>
-                            @foreach($templates as $tpl)
-                                <option value="{{ $tpl->id }}" {{ old('three_d_template_id', $product->three_d_template_id) == $tpl->id ? 'selected' : '' }}>{{ $tpl->name }} ({{ $tpl->wood_type }})</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -176,11 +173,14 @@
         </div>
 
         <div class="flex items-center gap-2 mb-6">
-            <input type="checkbox" name="is_active" id="isActive" value="1" {{ old('is_active', $product->is_active) ? 'checked' : '' }} class="rounded text-[#C87A53] focus:ring-[#C87A53] w-4 h-4">
-            <label for="isActive" class="text-sm font-semibold text-gray-700 cursor-pointer">Bu ürünü mağazada hemen satışa aç (Aktif)</label>
+            <input type="checkbox" name="is_active" id="isActive" value="1" {{ old('is_active', $product->is_active) ? 'checked' : '' }} class="rounded text-[#C87A53] focus:ring-[#C87A53] w-4 h-4 cursor-pointer">
+            <label for="isActive" class="text-sm font-semibold text-gray-700 cursor-pointer select-none">Bu ürünü mağazada hemen satışa aç (Aktif)</label>
         </div>
 
-        <button type="submit" class="py-3 px-8 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-lg text-sm transition">Değişiklikleri Kaydet</button>
+        <button type="submit" id="saveProductBtn" class="py-3 px-8 bg-[#C87A53] hover:bg-[#A65F38] text-white font-extrabold rounded-lg text-sm transition shadow-sm flex items-center gap-2 cursor-pointer">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span id="saveBtnText">Değişiklikleri ve Görselleri Kaydet</span>
+        </button>
     </form>
 </div>
 
@@ -202,42 +202,75 @@ function autoGenerateSlug(title) {
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-');
         
-    document.getElementById('productSlugInput').value = slug;
+    const slugInput = document.getElementById('productSlugInput');
+    if (slugInput) slugInput.value = slug;
 }
 
 function toggleDiscountBlock() {
-    const hasDiscount = document.getElementById('hasDiscount').checked;
+    const hasDiscount = document.getElementById('hasDiscount')?.checked;
     const block = document.getElementById('discountBlock');
-    if (hasDiscount) {
-        block.classList.remove('hidden');
-    } else {
-        block.classList.add('hidden');
+    if (block) {
+        if (hasDiscount) {
+            block.classList.remove('hidden');
+        } else {
+            block.classList.add('hidden');
+        }
     }
     calculateDiscount();
 }
 
 function calculateDiscount() {
-    const hasDiscount = document.getElementById('hasDiscount').checked;
-    const normalPrice = parseFloat(document.getElementById('normalPrice').value) || 0;
-    const discountedPrice = parseFloat(document.getElementById('discountedPrice').value) || 0;
+    const hasDiscount = document.getElementById('hasDiscount')?.checked;
+    const normalPrice = parseFloat(document.getElementById('normalPrice')?.value) || 0;
+    const discountedPrice = parseFloat(document.getElementById('discountedPrice')?.value) || 0;
     const badge = document.getElementById('discountBadge');
 
     if (hasDiscount && normalPrice > 0 && discountedPrice > 0 && discountedPrice < normalPrice) {
         const percent = Math.round((1 - (discountedPrice / normalPrice)) * 100);
-        badge.innerText = '%' + percent + ' İNDİRİM';
-        badge.classList.remove('hidden');
+        if (badge) {
+            badge.innerText = '%' + percent + ' İNDİRİM';
+            badge.classList.remove('hidden');
+        }
     } else {
-        badge.classList.add('hidden');
+        if (badge) badge.classList.add('hidden');
     }
 }
 
 document.addEventListener('DOMContentLoaded', calculateDiscount);
-function preventSpamSubmit(form) {
-    const btn = form.querySelector('button[type="submit"]');
-    if (btn && !btn.disabled) {
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Kaydediliyor...';
+
+let isFormSubmitting = false;
+function handleProductFormSubmit(e, form) {
+    if (form.checkValidity && !form.checkValidity()) {
+        return true; // Let browser native validation show
     }
+
+    if (isFormSubmitting) {
+        e.preventDefault();
+        return false;
+    }
+
+    isFormSubmitting = true;
+
+    // Show Global Admin Preloader
+    if (window.showAdminPreloader) {
+        window.showAdminPreloader(
+            'Görseller R2\'ye Aktarılıyor...',
+            'Ürün bilgileri kaydediliyor ve yeni yüklenen fotoğraflar Cloudflare R2 Bulut Depolamaya aktarılıyor, lütfen bekleyiniz...'
+        );
+    }
+
+    // Button state update
+    const btn = document.getElementById('saveProductBtn');
+    const btnText = document.getElementById('saveBtnText');
+    if (btn) {
+        btn.style.pointerEvents = 'none';
+        btn.style.opacity = '0.7';
+    }
+    if (btnText) {
+        btnText.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> R2\'ye Aktarılıyor...';
+    }
+
+    return true;
 }
 </script>
 @endsection

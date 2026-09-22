@@ -295,7 +295,7 @@
         $isEftOrder = str_starts_with($order->payment_id ?? '', 'EFT');
     @endphp
 
-    <!-- Finansal Ödeme Detayları / Havale / Iyzico / İptal -->
+    <!-- Finansal Ödeme Detayları / Havale / İptal -->
     @if($order->status === 'failed' || $order->status === 'cancelled' || !empty($order->payment_error_reason))
         <div class="bg-rose-50 border border-rose-200 p-4 rounded-xl mb-6 shadow-2xs">
             <div class="flex items-center gap-2 text-rose-900 font-extrabold text-xs uppercase tracking-wider mb-1.5">
@@ -369,11 +369,11 @@
             @endif
         </div>
     @else
-        <!-- Kredi / Banka Kartı (Iyzico) Finansal Hakediş Detayları -->
+        <!-- Ödeme & Referans Detayları -->
         <div class="bg-gradient-to-br from-emerald-50/70 via-white to-gray-50 p-4 rounded-xl border border-emerald-200/80 mb-6 shadow-2xs">
             <h4 class="text-xs font-bold text-emerald-900 uppercase tracking-wider mb-3 flex items-center justify-between">
-                <span class="flex items-center gap-1.5"><i class="fa-solid fa-credit-card text-emerald-600"></i> Iyzico Ödeme & Finansal Hakediş Detayları</span>
-                <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] rounded font-mono font-bold">Iyzico 256-Bit SSL</span>
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-credit-card text-emerald-600"></i> Ödeme & Sipariş Tutarı Detayları</span>
+                <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] rounded font-mono font-bold">Ödeme Kaydı</span>
             </h4>
             <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
                 <div class="bg-white p-3 rounded-lg border border-gray-200/70 shadow-2xs">
