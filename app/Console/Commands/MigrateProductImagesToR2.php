@@ -76,7 +76,7 @@ class MigrateProductImagesToR2 extends Command
 
             // 1. Ana Görsel WebP Sıkıştırma ve Taşıma
             if (!empty($rawImage)) {
-                $isWebPOnR2 = (str_contains($rawImage, $r2Url) || str_contains($rawImage, 'r2.dev')) && str_ends_with(strtolower($rawImage), '.webp');
+                $isWebPOnR2 = (str_contains($rawImage, $r2Url) || str_contains($rawImage, 'r2.dev') || str_contains($rawImage, 'ahsapevimmanisa.com')) && str_ends_with(strtolower($rawImage), '.webp');
                 
                 if (!$isWebPOnR2 || $this->option('force')) {
                     // Orijinal yerel JPG dosyasını xml haritasından veya doğrudan bul
@@ -89,9 +89,9 @@ class MigrateProductImagesToR2 extends Command
                     } else {
                         $errors++;
                     }
-                } elseif (str_contains($rawImage, 'r2.dev') && !str_starts_with($rawImage, $r2Url)) {
-                    // Zaten R2 üzerinde WebP olarak mevcut, sadece yeni custom domaine güncelle
-                    $product->image = preg_replace('#^https://[^/]+\.r2\.dev#', $r2Url, $rawImage);
+                } elseif (!str_starts_with($rawImage, $r2Url)) {
+                    // Zaten R2 üzerinde WebP olarak mevcut, sadece yeni URL adresine güncelle
+                    $product->image = preg_replace('#^https://[^/]+#', $r2Url, $rawImage);
                     $updated = true;
                     $migratedMain++;
                 } else {
@@ -110,7 +110,7 @@ class MigrateProductImagesToR2 extends Command
                 foreach ($galleryImages as $idx => $gImg) {
                     if (empty($gImg)) continue;
 
-                    $isWebPOnR2 = (str_contains($gImg, $r2Url) || str_contains($gImg, 'r2.dev')) && str_ends_with(strtolower($gImg), '.webp');
+                    $isWebPOnR2 = (str_contains($gImg, $r2Url) || str_contains($gImg, 'r2.dev') || str_contains($gImg, 'ahsapevimmanisa.com')) && str_ends_with(strtolower($gImg), '.webp');
                     if (!$isWebPOnR2 || $this->option('force')) {
                         $preferredOriginal = $this->xmlProductMap[$product->id]['gallery'][$idx] ?? null;
                         $newUrl = $this->processAndUploadToR2($gImg, 'products', 'gal', $quality, $maxDim, $preferredOriginal);
@@ -122,8 +122,8 @@ class MigrateProductImagesToR2 extends Command
                             $newGallery[] = $gImg;
                             $errors++;
                         }
-                    } elseif (str_contains($gImg, 'r2.dev') && !str_starts_with($gImg, $r2Url)) {
-                        $newGallery[] = preg_replace('#^https://[^/]+\.r2\.dev#', $r2Url, $gImg);
+                    } elseif (!str_starts_with($gImg, $r2Url)) {
+                        $newGallery[] = preg_replace('#^https://[^/]+#', $r2Url, $gImg);
                         $galleryChanged = true;
                         $migratedGallery++;
                     } else {
@@ -158,7 +158,7 @@ class MigrateProductImagesToR2 extends Command
             foreach ($banners as $banner) {
                 $rawBannerImg = $banner->image;
                 if (!empty($rawBannerImg)) {
-                    $isWebPOnR2 = (str_contains($rawBannerImg, $r2Url) || str_contains($rawBannerImg, 'r2.dev')) && str_ends_with(strtolower($rawBannerImg), '.webp');
+                    $isWebPOnR2 = (str_contains($rawBannerImg, $r2Url) || str_contains($rawBannerImg, 'r2.dev') || str_contains($rawBannerImg, 'ahsapevimmanisa.com')) && str_ends_with(strtolower($rawBannerImg), '.webp');
                     if (!$isWebPOnR2 || $this->option('force')) {
                         $newUrl = $this->processAndUploadToR2($rawBannerImg, 'banners', 'banner', $quality, $maxDim);
                         if ($newUrl) {
@@ -166,8 +166,8 @@ class MigrateProductImagesToR2 extends Command
                             $banner->saveQuietly();
                             $migratedBanners++;
                         }
-                    } elseif (str_contains($rawBannerImg, 'r2.dev') && !str_starts_with($rawBannerImg, $r2Url)) {
-                        $banner->image = preg_replace('#^https://[^/]+\.r2\.dev#', $r2Url, $rawBannerImg);
+                    } elseif (!str_starts_with($rawBannerImg, $r2Url)) {
+                        $banner->image = preg_replace('#^https://[^/]+#', $r2Url, $rawBannerImg);
                         $banner->saveQuietly();
                         $migratedBanners++;
                     }
