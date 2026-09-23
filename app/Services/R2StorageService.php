@@ -10,18 +10,100 @@ use Illuminate\Support\Facades\Log;
 class R2StorageService
 {
     /**
-     * Upload an uploaded file instance to Cloudflare R2 after compressing to WebP.
-     * Returns the full public URL of the uploaded file.
+     * Upload an uploaded file instance to Cloudflare R2 in its 100% original binary format,
+     * WITHOUT any compression, resizing, format conversion, or quality degradation.
+     * Preserves original dimensions, resolution, color space, and metadata for high-res physical print.
+     *
+     * @param UploadedFile $file
+     * @param string $folder (e.g. 'customizations')
+     * @param string|null $customPrefix
+     * @return string Public URL of the uploaded file
+     */
+    public static function uploadRaw(UploadedFile $file, string $folder = 'customizations', ?string $customPrefix = null): string
+    {
+        $rawBinary = file_get_contents($file->getRealPath());
+        $origExt = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
+        $mimeType = $file->getMimeType() ?: ('image/' . ($origExt === 'jpg' ? 'jpeg' : $origExt));
+
+        $prefix = $customPrefix ? ($customPrefix . '_') : '';
+        $filename = $prefix . time() . '_' . Str::random(12) . '.' . $origExt;
+        $path = trim($folder, '/') . '/' . $filename;
+
+        try {
+            Storage::disk('r2')->put($path, $rawBinary, [
+                'visibility'   => 'public',
+                'mimetype'     => $mimeType,
+                'CacheControl' => 'public, max-age=31536000, immutable',
+            ]);
+            return Storage::disk('r2')->url($path);
+        } catch (\Throwable $e) {
+            Log::error('Cloudflare R2 uploadRaw Failed, falling back to local: ' . $e->getMessage());
+
+            $localDest = public_path('uploads/' . trim($folder, '/'));
+            if (!file_exists($localDest)) {
+                mkdir($localDest, 0755, true);
+            }
+            file_put_contents($localDest . '/' . $filename, $rawBinary);
+            return url('/uploads/' . trim($folder, '/') . '/' . $filename);
+        }
+    }
+
+    /**
+     * Upload raw binary content without any compression or resizing.
+     *
+     * @param string $contents
+     * @param string $folder
+     * @param string $extension
+     * @param string|null $customPrefix
+     * @param string|null $mimeType
+     * @return string
+     */
+    public static function uploadContentRaw(string $contents, string $folder = 'customizations', string $extension = 'jpg', ?string $customPrefix = null, ?string $mimeType = null): string
+    {
+        $prefix = $customPrefix ? ($customPrefix . '_') : '';
+        $cleanExt = strtolower($extension ?: 'jpg');
+        $filename = $prefix . time() . '_' . Str::random(12) . '.' . $cleanExt;
+        $path = trim($folder, '/') . '/' . $filename;
+        $mime = $mimeType ?: ('image/' . ($cleanExt === 'jpg' ? 'jpeg' : $cleanExt));
+
+        try {
+            Storage::disk('r2')->put($path, $contents, [
+                'visibility'   => 'public',
+                'mimetype'     => $mime,
+                'CacheControl' => 'public, max-age=31536000, immutable',
+            ]);
+            return Storage::disk('r2')->url($path);
+        } catch (\Throwable $e) {
+            Log::error('Cloudflare R2 uploadContentRaw Failed: ' . $e->getMessage());
+
+            $localDest = public_path('uploads/' . trim($folder, '/'));
+            if (!file_exists($localDest)) {
+                mkdir($localDest, 0755, true);
+            }
+            file_put_contents($localDest . '/' . $filename, $contents);
+            return url('/uploads/' . trim($folder, '/') . '/' . $filename);
+        }
+    }
+
+    /**
+     * Upload an uploaded file instance to Cloudflare R2.
+     * Note: If folder is 'customizations', compression/resizing is automatically bypassed
+     * to preserve 100% full original quality and dimensions for physical print.
      *
      * @param UploadedFile $file
      * @param string $folder (e.g. 'products', 'customizations', 'banners')
      * @param string|null $customPrefix
-     * @param int $quality (1-100, default 82)
+     * @param int|null $quality (1-100, default 82)
      * @param int|null $maxDimension (e.g. 1200, or null to keep original size)
      * @return string
      */
-    public static function upload(UploadedFile $file, string $folder = 'uploads', ?string $customPrefix = null, int $quality = 82, ?int $maxDimension = 1200): string
+    public static function upload(UploadedFile $file, string $folder = 'uploads', ?string $customPrefix = null, ?int $quality = 82, ?int $maxDimension = 1200): string
     {
+        // Müşteri sipariş fotoğrafları ('customizations') baskı kalitesi için ASLA sıkıştırılmaz veya küçültülmez!
+        if (trim($folder, '/') === 'customizations' || $quality === null) {
+            return self::uploadRaw($file, $folder, $customPrefix);
+        }
+
         $rawBinary = file_get_contents($file->getRealPath());
         $compressed = self::convertToWebP($rawBinary, $file->getClientOriginalExtension(), $quality, $maxDimension);
 
@@ -50,6 +132,7 @@ class R2StorageService
 
     /**
      * Upload raw contents (e.g. generated images or base64) to R2 after WebP compression.
+     * If folder is 'customizations', compression is bypassed.
      *
      * @param string $contents
      * @param string $folder
@@ -61,6 +144,10 @@ class R2StorageService
      */
     public static function uploadContent(string $contents, string $folder = 'uploads', string $extension = 'jpg', ?string $customPrefix = null, int $quality = 82, ?int $maxDimension = 1200): string
     {
+        if (trim($folder, '/') === 'customizations') {
+            return self::uploadContentRaw($contents, $folder, $extension, $customPrefix);
+        }
+
         $compressed = self::convertToWebP($contents, $extension, $quality, $maxDimension);
 
         $prefix = $customPrefix ? ($customPrefix . '_') : '';

@@ -308,14 +308,18 @@ class OrderController extends Controller
             $possibleKeys = ['front_image', 'back_image', 'custom_image', 'custom_preview'];
             foreach ($possibleKeys as $key) {
                 if (!empty($features[$key])) {
+                    // Delete from Cloudflare R2
+                    \App\Services\R2StorageService::delete($features[$key]);
+
+                    // Also check and delete local fallback if exists
                     $relPath = parse_url($features[$key], PHP_URL_PATH);
                     if ($relPath) {
                         $fullPath = public_path(ltrim($relPath, '/'));
                         if (\Illuminate\Support\Facades\File::exists($fullPath) && is_file($fullPath)) {
                             \Illuminate\Support\Facades\File::delete($fullPath);
-                            $deletedPhotoCount++;
                         }
                     }
+                    $deletedPhotoCount++;
                 }
             }
         }

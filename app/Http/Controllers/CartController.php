@@ -14,9 +14,9 @@ class CartController extends Controller
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'custom_image_front' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:25600',
-            'custom_image_back' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:25600',
-            'custom_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:25600',
+            'custom_image_front' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:35840',
+            'custom_image_back' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:35840',
+            'custom_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:35840',
         ]);
 
         $product = Product::findOrFail($request->product_id);
@@ -61,22 +61,22 @@ class CartController extends Controller
             }
         }
 
-        // Handle Front Image (R2)
+        // Handle Front Image (R2 - Orijinal kalite ve boyut %100 korunarak tam dosya yüklenir)
         $frontImagePath = null;
         if ($hasFront) {
-            $frontImagePath = R2StorageService::upload($request->file('custom_image_front'), 'customizations', 'front');
+            $frontImagePath = R2StorageService::uploadRaw($request->file('custom_image_front'), 'customizations', 'front');
         }
 
-        // Handle Back Image (R2)
+        // Handle Back Image (R2 - Orijinal kalite ve boyut %100 korunarak tam dosya yüklenir)
         $backImagePath = null;
         if ($hasBack) {
-            $backImagePath = R2StorageService::upload($request->file('custom_image_back'), 'customizations', 'back');
+            $backImagePath = R2StorageService::uploadRaw($request->file('custom_image_back'), 'customizations', 'back');
         }
 
-        // Fallback Single Custom Image (R2)
+        // Fallback Single Custom Image (R2 - Orijinal kalite ve boyut %100 korunarak tam dosya yüklenir)
         $singleImagePath = null;
         if ($hasSingle) {
-            $singleImagePath = R2StorageService::upload($request->file('custom_image'), 'customizations', 'custom');
+            $singleImagePath = R2StorageService::uploadRaw($request->file('custom_image'), 'customizations', 'custom');
         }
 
         $isGift = $request->boolean('is_gift');
