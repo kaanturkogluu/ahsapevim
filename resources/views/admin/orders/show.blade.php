@@ -93,6 +93,14 @@
                         <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] rounded font-bold">Kargolandı</span>
                     @elseif($order->status === 'completed')
                         <span class="px-2 py-0.5 bg-purple-100 text-purple-700 text-[10px] rounded font-bold">Tamamlandı</span>
+                    @elseif($order->status === 'paid' || $order->status === 'preparing')
+                        <span class="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] rounded font-bold">Ödendi / Hazırlanıyor</span>
+                    @elseif($order->status === 'pending')
+                        <span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-[10px] rounded font-bold">Ödeme Bekliyor</span>
+                    @elseif($order->status === 'cancelled')
+                        <span class="px-2 py-0.5 bg-rose-100 text-rose-700 text-[10px] rounded font-bold">İptal Edildi</span>
+                    @elseif($order->status === 'failed')
+                        <span class="px-2 py-0.5 bg-rose-100 text-rose-700 text-[10px] rounded font-bold">Başarısız</span>
                     @endif
                 </h4>
 
@@ -114,6 +122,7 @@
                         <label class="block text-[10px] font-extrabold text-gray-500 uppercase mb-1">Sipariş Durumu</label>
                         <select name="status" id="orderStatusSelect" onchange="toggleCancellationReason(this.value)" class="w-full text-xs font-bold border-gray-300 rounded-lg p-2 border focus:border-[#C87A53] focus:ring-0 outline-none bg-white">
                             <option value="paid" {{ $order->status === 'paid' ? 'selected' : '' }}>Ödendi / Hazırlanıyor</option>
+                            <option value="preparing" {{ $order->status === 'preparing' ? 'selected' : '' }}>Hazırlanıyor</option>
                             <option value="shipped" {{ $order->status === 'shipped' ? 'selected' : '' }}>Kargolandı (Kargoya Verildi)</option>
                             <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Tamamlandı (Teslim Edildi)</option>
                             <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Ödeme Bekliyor</option>

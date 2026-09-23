@@ -56,6 +56,7 @@ class DynamicMail extends Mailable implements ShouldQueue
             'shipping_company'    => 'Kargo Şirketi',
             'cargo_tracking_code' => 'Belirtilmedi',
             'cancellation_reason' => 'Müşteri talebi / sistem işlemi',
+            'payment_method_title'=> 'Havale / EFT ödemesi',
             'total_amount'        => '0,00',
             'delivery_address'    => '',
             'product_details'     => '',
@@ -143,7 +144,7 @@ class DynamicMail extends Mailable implements ShouldQueue
             'order_paid' => [
                 'subject' => 'Ödemeniz Onaylandı & Siparişiniz Hazırlanıyor! 🎉 #{order_id}',
                 'content' => '<p>Sayın <strong>{user_name}</strong>,</p>
-<p><strong>#{order_id}</strong> numaralı siparişinizin Havale / EFT ödemesi onaylanmış olup, masif ahşap el işçiliği ürünleriniz atölyemizde hazırlık sırasına alınmıştır!</p>
+<p><strong>#{order_id}</strong> numaralı siparişinizin {payment_method_title} onaylanmış olup, masif ahşap el işçiliği ürünleriniz atölyemizde hazırlık sırasına alınmıştır!</p>
 
 <div style="background-color: #F0FDF4; padding: 16px; border-radius: 12px; margin: 16px 0; border: 1px solid #BBF7D0;">
     <h3 style="margin: 0 0 10px 0; color: #166534; font-size: 15px; border-bottom: 1px solid #86EFAC; padding-bottom: 6px;">Ödeme Onayı</h3>

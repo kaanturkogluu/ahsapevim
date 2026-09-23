@@ -16,7 +16,11 @@ class OrderController extends Controller
         $query = Order::with(['items', 'shippingCompany'])->latest();
 
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            if ($request->status === 'paid') {
+                $query->whereIn('status', ['paid', 'preparing']);
+            } else {
+                $query->where('status', $request->status);
+            }
         }
 
         if ($request->filled('search')) {
@@ -179,23 +183,29 @@ class OrderController extends Controller
                 try {
                     if ($oldStatus === 'pending' && in_array($newStatus, ['paid', 'preparing'])) {
                         $isEft = str_starts_with($order->payment_id ?? '', 'EFT');
+                        $data['payment_method_title'] = $isEft ? 'Havale / EFT ödemesi' : 'ödemesi';
+
                         // Ödeme Onayı E-Postası (order_paid)
-                        try {
-                            \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_paid', $data));
-                            app(\App\Services\MailService::class)->logMailable($order->email, "Ödemeniz Onaylandı (#{$order->id})", ($isEft ? "Havale/EFT" : "Kart") . " ödemesi onaylandı ve sipariş hazırlandığına dair e-posta gönderildi.", 'success', null, $order->id);
-                        } catch (\Throwable $mEx) {
-                            \Illuminate\Support\Facades\Log::error('Payment Approval Email Error: ' . $mEx->getMessage());
-                            app(\App\Services\MailService::class)->logMailable($order->email, "Ödemeniz Onaylandı (#{$order->id})", "Ödeme onay e-postası", 'failed', $mEx->getMessage(), $order->id);
+                        if (!empty($order->email)) {
+                            try {
+                                \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_paid', $data));
+                                app(\App\Services\MailService::class)->logMailable($order->email, "Ödemeniz Onaylandı (#{$order->id})", ($isEft ? "Havale/EFT" : "Kart") . " ödemesi onaylandı ve sipariş hazırlandığına dair e-posta gönderildi.", 'success', null, $order->id);
+                            } catch (\Throwable $mEx) {
+                                \Illuminate\Support\Facades\Log::error('Payment Approval Email Error: ' . $mEx->getMessage());
+                                app(\App\Services\MailService::class)->logMailable($order->email, "Ödemeniz Onaylandı (#{$order->id})", "Ödeme onay e-postası", 'failed', $mEx->getMessage(), $order->id);
+                            }
                         }
 
                         // Ödeme Onayı SMS
-                        try {
-                            $paidSms = $isEft 
-                                ? "Sayın {$order->name}, #{$order->id} numaralı siparişinizin Havale/EFT ödemesi onaylanmış ve siparişiniz hazırlık sırasına alınmıştır. AhşapEvim"
-                                : "Sayın {$order->name}, #{$order->id} numaralı siparişinizin ödemesi onaylanmış ve siparişiniz hazırlık sırasına alınmıştır. AhşapEvim";
-                            app(NetgsmService::class)->sendSms($order->phone, $paidSms, $order->id, 'automated');
-                        } catch (\Throwable $smsEx) {
-                            \Illuminate\Support\Facades\Log::error('Payment Approval SMS Error: ' . $smsEx->getMessage());
+                        if (!empty($order->phone)) {
+                            try {
+                                $paidSms = $isEft 
+                                    ? "Sayın {$order->name}, #{$order->id} numaralı siparişinizin Havale/EFT ödemesi onaylanmış ve siparişiniz hazırlık sırasına alınmıştır. AhşapEvim"
+                                    : "Sayın {$order->name}, #{$order->id} numaralı siparişinizin ödemesi onaylanmış ve siparişiniz hazırlık sırasına alınmıştır. AhşapEvim";
+                                app(NetgsmService::class)->sendSms($order->phone, $paidSms, $order->id, 'automated');
+                            } catch (\Throwable $smsEx) {
+                                \Illuminate\Support\Facades\Log::error('Payment Approval SMS Error: ' . $smsEx->getMessage());
+                            }
                         }
                     } elseif ($newStatus === 'completed') {
                         // Tamamlandı E-Posta

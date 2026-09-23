@@ -113,54 +113,58 @@ class SendNewOrderNotificationJob implements ShouldQueue
 
         $isEft = str_starts_with($order->payment_id ?? '', 'EFT');
 
-        // ── 4. Müşteriye Sipariş E-Postası Gönderimi ────────────────────
-        if ($notifyCustomerEmail && !empty($order->email)) {
-            try {
-                $orderData = [
-                    'user_name'        => $order->name,
-                    'order_id'         => $order->id,
-                    'tracking_code'    => $order->tracking_code ?: 'AHS-' . $order->id,
-                    'total_amount'     => number_format($order->total_amount, 2, ',', '.'),
-                    'delivery_address' => $order->address . ' (' . ($order->city ?: 'Manisa') . ')',
-                    'product_details'  => $this->formatOrderItemsHtml($order),
-                ];
+        // ── 4 & 5. Müşteriye Sipariş Bildirimleri (E-Posta & SMS) ───────
+        // EFT / Havale siparişlerinde müşteri bildirimi bu aşamada (sipariş ilk verildiğinde) GÖNDERİLMEZ.
+        // Yalnızca yönetici siparişi admin panelinden onaylayıp durumu 'paid' (Ödendi) veya 'preparing' (Hazırlanıyor) yaptığında gönderilir.
+        // Yöneticiye giden bildirimler (yukarıdaki Bölüm 2 ve 3) ise yöneticiyi haberdar etmek için her zaman iletilir.
+        if ($isEft) {
+            Log::info("SendNewOrderNotificationJob: Sipariş #{$order->id} Havale/EFT tipinde olduğu için müşteri e-posta ve SMS bildirimi yönetici onayına kadar ertelendi.");
+        } else {
+            // ── 4. Müşteriye Sipariş E-Postası Gönderimi (Kredi Kartı vb.) ───
+            if ($notifyCustomerEmail && !empty($order->email)) {
+                try {
+                    $orderData = [
+                        'user_name'        => $order->name,
+                        'order_id'         => $order->id,
+                        'tracking_code'    => $order->tracking_code ?: 'AHS-' . $order->id,
+                        'total_amount'     => number_format($order->total_amount, 2, ',', '.'),
+                        'delivery_address' => $order->address . ' (' . ($order->city ?: 'Manisa') . ')',
+                        'product_details'  => $this->formatOrderItemsHtml($order),
+                    ];
 
-                $templateSlug = $isEft ? 'order_eft_pending' : 'order_success';
-                $logSubject = $isEft ? "Havale/EFT Sipariş Talebi Alındı (#{$order->id})" : "Siparişiniz Alındı (#{$order->id})";
+                    $templateSlug = 'order_success';
+                    $logSubject = "Siparişiniz Alındı (#{$order->id})";
 
-                Mail::to($order->email)->send(new DynamicMail($templateSlug, $orderData));
-                $mailService->logMailable(
-                    $order->email,
-                    $logSubject,
-                    $isEft ? "Havale/EFT ödeme bilgileri müşteriye iletildi." : "Sipariş onay e-postası müşteriye iletildi.",
-                    'success',
-                    null,
-                    $order->id
-                );
-            } catch (\Throwable $e) {
-                Log::error("SendNewOrderNotificationJob: Customer email error: " . $e->getMessage());
-                $mailService->logMailable(
-                    $order->email,
-                    $isEft ? "Havale/EFT Sipariş Talebi Alındı (#{$order->id})" : "Siparişiniz Alındı (#{$order->id})",
-                    "Sipariş e-postası",
-                    'failed',
-                    $e->getMessage(),
-                    $order->id
-                );
-            }
-        }
-
-        // ── 5. Müşteriye Sipariş SMS Gönderimi ─────────────────────────
-        if ($notifyCustomerSms && !empty($order->phone)) {
-            try {
-                if ($isEft) {
-                    $customerMsg = "Degerli musterimiz, #" . $order->id . " nolu Havale/EFT siparis talebiniz alinmistir. Odemeniz banka hesabimiza ulasip admin tarafindan onaylandiginda siparisiniz hazirlanacaktir. AhsapEvim";
-                } else {
-                    $customerMsg = "Degerli musterimiz, #" . $order->id . " nolu siparisiniz basariyla alinmistir. Odemeniz onaylanmis olup siparisiniz en kisa surede hazirlanip kargolanacaktir. AhsapEvim";
+                    Mail::to($order->email)->send(new DynamicMail($templateSlug, $orderData));
+                    $mailService->logMailable(
+                        $order->email,
+                        $logSubject,
+                        "Sipariş onay e-postası müşteriye iletildi.",
+                        'success',
+                        null,
+                        $order->id
+                    );
+                } catch (\Throwable $e) {
+                    Log::error("SendNewOrderNotificationJob: Customer email error: " . $e->getMessage());
+                    $mailService->logMailable(
+                        $order->email,
+                        "Siparişiniz Alındı (#{$order->id})",
+                        "Sipariş e-postası",
+                        'failed',
+                        $e->getMessage(),
+                        $order->id
+                    );
                 }
-                $netgsm->sendSms($order->phone, $customerMsg, $order->id, 'automated');
-            } catch (\Throwable $e) {
-                Log::error("SendNewOrderNotificationJob: Customer SMS error: " . $e->getMessage());
+            }
+
+            // ── 5. Müşteriye Sipariş SMS Gönderimi (Kredi Kartı vb.) ────────
+            if ($notifyCustomerSms && !empty($order->phone)) {
+                try {
+                    $customerMsg = "Degerli musterimiz, #" . $order->id . " nolu siparisiniz basariyla alinmistir. Odemeniz onaylanmis olup siparisiniz en kisa surede hazirlanip kargolanacaktir. AhsapEvim";
+                    $netgsm->sendSms($order->phone, $customerMsg, $order->id, 'automated');
+                } catch (\Throwable $e) {
+                    Log::error("SendNewOrderNotificationJob: Customer SMS error: " . $e->getMessage());
+                }
             }
         }
 
