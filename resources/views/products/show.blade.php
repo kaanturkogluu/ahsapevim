@@ -256,15 +256,33 @@
 </div>
 
 <!-- Fotoğraflar Yükleniyor Yükleme Animasyonu (Loading Overlay) -->
-<div id="uploadLoadingOverlay" class="fixed inset-0 z-[100000] bg-black/80 backdrop-blur-md hidden flex-col items-center justify-center p-6 text-white text-center transition-all duration-300">
-    <div class="bg-[#29221C] border border-[#C87A53]/50 p-8 rounded-3xl shadow-2xl flex flex-col items-center max-w-sm w-full relative">
-        <div class="relative w-20 h-20 mb-5 flex items-center justify-center">
-            <div class="absolute inset-0 rounded-full border-4 border-[#C87A53]/30 animate-ping"></div>
+<div id="uploadLoadingOverlay" class="fixed inset-0 z-[100000] bg-black/85 backdrop-blur-md hidden flex-col items-center justify-center p-4 sm:p-6 text-white text-center transition-all duration-300">
+    <div class="bg-[#241E1A] border border-[#C87A53]/60 p-6 sm:p-8 rounded-3xl shadow-2xl flex flex-col items-center max-w-md w-full relative">
+        <!-- Yükleme İkonu ve Dönen Halka -->
+        <div class="relative w-20 h-20 mb-4 flex items-center justify-center">
+            <div class="absolute inset-0 rounded-full border-4 border-[#C87A53]/25 animate-ping"></div>
             <div class="w-16 h-16 rounded-full border-4 border-[#C87A53] border-t-transparent animate-spin"></div>
             <i class="fa-solid fa-cloud-arrow-up text-[#C87A53] text-2xl absolute"></i>
         </div>
-        <h3 class="text-base font-extrabold text-white mb-1.5">Fotoğraflarınız Yükleniyor...</h3>
-        <p class="text-xs text-gray-300 leading-relaxed">Yüksek kaliteli görselleriniz işlenip hazırlanıyor. Lütfen bekleyiniz...</p>
+
+        <h3 class="text-base sm:text-lg font-black text-white mb-1.5 font-serif">Fotoğraflarınız Yükleniyor...</h3>
+        <p class="text-xs text-amber-200/90 font-medium mb-4">Orijinal kalitedeki fotoğraflarınız güvenle bulut depolamaya aktarılıyor.</p>
+
+        <!-- Bilgilendirme Kutusu (İşlem süresi uyarısı) -->
+        <div class="w-full bg-[#1A1512] border border-amber-600/35 rounded-2xl p-3.5 text-left flex items-start gap-3 shadow-inner">
+            <div class="w-7 h-7 rounded-xl bg-[#C87A53]/25 text-[#C87A53] flex items-center justify-center text-xs shrink-0 mt-0.5">
+                <i class="fa-solid fa-circle-info"></i>
+            </div>
+            <div class="text-[11px] text-gray-300 leading-relaxed">
+                <strong class="text-amber-400 font-extrabold block text-xs mb-0.5">Önemli Bilgilendirme</strong>
+                İşlem süresi; yüklenen fotoğrafların dosya boyutuna ve internet bağlantı hızınıza bağlı olarak değişiklik göstermektedir. Lütfen işlem tamamlanana kadar sayfayı kapatmayınız veya yenilemeyiniz.
+            </div>
+        </div>
+
+        <!-- İlerleme Çizgisi Animasyonu -->
+        <div class="w-full bg-white/10 rounded-full h-1.5 mt-4 overflow-hidden">
+            <div class="bg-gradient-to-r from-amber-500 via-[#C87A53] to-amber-400 h-full w-full animate-pulse rounded-full"></div>
+        </div>
     </div>
 </div>
 

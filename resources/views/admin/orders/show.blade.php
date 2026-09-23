@@ -183,7 +183,11 @@
                 </div>
             </div>
 
-            <div>
+            <div class="flex items-center gap-2">
+                <button type="button" onclick="toggleYurticiGuide()" class="text-xs font-bold text-red-700 bg-red-100/80 hover:bg-red-200 border border-red-200 px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 shadow-2xs cursor-pointer" title="Kargo entegrasyonu kullanım adımlarını göster / gizle">
+                    <i class="fa-solid fa-circle-question text-[#ED1C24]"></i> Nasıl Kullanılır? (Rehber)
+                </button>
+
                 @if(!empty($order->yurtici_cargo_key))
                     @if($order->yurtici_status === 'cancelled')
                         <span class="px-2.5 py-1 bg-rose-100 text-rose-800 text-[11px] font-black rounded-full border border-rose-200">
@@ -204,6 +208,119 @@
                         Kargo Kaydı Bekleniyor
                     </span>
                 @endif
+            </div>
+        </div>
+
+        <!-- 📖 Kargo Entegrasyonu Nasıl Kullanılır? (Kullanım Rehberi) -->
+        <div id="yurticiGuideBox" class="{{ empty($order->yurtici_cargo_key) ? '' : 'hidden' }} mb-5 bg-gradient-to-br from-white via-red-50/30 to-amber-50/20 border border-red-200/90 rounded-2xl p-4 sm:p-5 shadow-xs transition-all">
+            <div class="flex items-center justify-between pb-3 border-b border-red-100 mb-3.5">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-lg bg-[#ED1C24] text-white flex items-center justify-center text-xs shadow-2xs">
+                        <i class="fa-solid fa-truck-ramp-box"></i>
+                    </div>
+                    <div>
+                        <h5 class="text-xs font-black text-gray-900 uppercase tracking-wider">
+                            Giden Kargo Entegrasyonu Nasıl Kullanılır? (4 Adımlı İş Akışı)
+                        </h5>
+                        <p class="text-[11px] text-gray-500">Siparişin paketlenmesinden kurye teslimine ve müşteri SMS bilgilendirmesine kadar tam süreç</p>
+                    </div>
+                </div>
+                <button type="button" onclick="toggleYurticiGuide()" class="text-gray-400 hover:text-gray-700 text-xs font-bold transition flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-gray-100 cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i> Kapat
+                </button>
+            </div>
+
+            <!-- 4 Adım Kartları -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs mb-3.5">
+                <!-- Adım 1 -->
+                <div class="bg-white p-3.5 rounded-xl border border-red-100 shadow-2xs flex flex-col justify-between hover:border-red-300 transition">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="w-6 h-6 rounded-full bg-red-100 text-[#ED1C24] font-black text-xs flex items-center justify-center">1</span>
+                            <span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-red-50 text-red-700 uppercase">Sevk Kaydı Açma</span>
+                        </div>
+                        <h6 class="font-extrabold text-gray-900 text-xs mb-1">1 Tıkla Kargo Kodu Alın</h6>
+                        <p class="text-[11px] text-gray-600 leading-snug">
+                            Aşağıdaki <strong>"Yurtiçi Kargo'ya Gönder"</strong> butonuna basın. Açılan pencerede desi ve ödeme tipini (GÖ: Gönderici Öder / AÖ: Alıcı Öder) seçin. SOAP servisi anında resmi <code>CargoKey (AHS-XXXX)</code> üretir.
+                        </p>
+                    </div>
+                    <div class="mt-2.5 pt-2 border-t border-gray-100 text-[10px] text-emerald-700 font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-circle-check"></i> Sipariş durumu "Kargolandı" olur
+                    </div>
+                </div>
+
+                <!-- Adım 2 -->
+                <div class="bg-white p-3.5 rounded-xl border border-red-100 shadow-2xs flex flex-col justify-between hover:border-blue-300 transition">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-black text-xs flex items-center justify-center">2</span>
+                            <span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 uppercase">Etiket Basımı</span>
+                        </div>
+                        <h6 class="font-extrabold text-gray-900 text-xs mb-1">Barkodlu Etiketi Basın</h6>
+                        <p class="text-[11px] text-gray-600 leading-snug">
+                            <strong>"Barkodlu Yurtiçi Etiketi Yazdır"</strong> butonuna tıklayın. Termal veya A4 formatta resmi Code128 kargo barkodunu yazdırıp ahşap kutu / paketin üzerine yapıştırın.
+                        </p>
+                    </div>
+                    <div class="mt-2.5 pt-2 border-t border-gray-100 text-[10px] text-blue-700 font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-barcode"></i> Şube ve Alıcı barkodu hazır
+                    </div>
+                </div>
+
+                <!-- Adım 3 -->
+                <div class="bg-white p-3.5 rounded-xl border border-red-100 shadow-2xs flex flex-col justify-between hover:border-amber-300 transition">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-800 font-black text-xs flex items-center justify-center">3</span>
+                            <span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 uppercase">Şube Okutması</span>
+                        </div>
+                        <h6 class="font-extrabold text-gray-900 text-xs mb-1">Kurye / Şube Çıkışı</h6>
+                        <p class="text-[11px] text-gray-600 leading-snug">
+                            Paketi Spil Şubesine teslim ettiğinizde veya kurye aldığında barkodu okutur. Yurtiçi sistemi <strong>12 haneli resmi takip numarasını</strong> otomatik atar.
+                        </p>
+                    </div>
+                    <div class="mt-2.5 pt-2 border-t border-gray-100 text-[10px] text-amber-800 font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-clock-rotate-left"></i> 12 haneli resmi takip atanır
+                    </div>
+                </div>
+
+                <!-- Adım 4 -->
+                <div class="bg-white p-3.5 rounded-xl border border-red-100 shadow-2xs flex flex-col justify-between hover:border-emerald-300 transition">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-black text-xs flex items-center justify-center">4</span>
+                            <span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 uppercase">Otomatik Bildirim</span>
+                        </div>
+                        <h6 class="font-extrabold text-gray-900 text-xs mb-1">Müşteriye SMS & E-Posta</h6>
+                        <p class="text-[11px] text-gray-600 leading-snug">
+                            12 haneli resmi takip kodu geldiği an müşteriye otomatik takip linkli SMS ve e-posta gider. Müşteri kargosunu doğrudan resmi Yurtiçi ekranından canlı takip edebilir.
+                        </p>
+                    </div>
+                    <div class="mt-2.5 pt-2 border-t border-gray-100 text-[10px] text-emerald-700 font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-paper-plane"></i> Müşteri tam bilgilendirilir
+                    </div>
+                </div>
+            </div>
+
+            <!-- Önemli İpuçları & Sıkça Sorulanlar -->
+            <div class="bg-white/90 rounded-xl p-3 border border-red-200/70 text-xs text-gray-700 space-y-1.5">
+                <div class="flex items-start gap-2">
+                    <i class="fa-solid fa-satellite-dish text-blue-600 mt-0.5 text-xs shrink-0"></i>
+                    <div>
+                        <strong>Canlı Kargo Takibi:</strong> Kargo çıktıktan sonra <em>"Canlı Kargo Durumu Sorgula"</em> butonuna basarak aktarma merkezlerini, dağıtım şubesini ve teslimat hareketlerini anlık zaman çizelgesi olarak görebilirsiniz.
+                    </div>
+                </div>
+                <div class="flex items-start gap-2">
+                    <i class="fa-solid fa-ban text-rose-600 mt-0.5 text-xs shrink-0"></i>
+                    <div>
+                        <strong>Kargo İptali & Düzeltme:</strong> Yanlış kayıt açtıysanız kurye okutmadan önce <em>"Kargoyu İptal Et"</em> butonu ile kaydı Yurtiçi web servisinden silebilir ve ardından sıfırdan yeniden oluşturabilirsiniz.
+                    </div>
+                </div>
+                <div class="flex items-start gap-2">
+                    <i class="fa-solid fa-robot text-purple-600 mt-0.5 text-xs shrink-0"></i>
+                    <div>
+                        <strong>Otomatik Senkronizasyon (Cron):</strong> Sunucudaki <code>php artisan yurtici:sync</code> komutu açık kargoların durumunu ve şubeden gelen 12 haneli takip kodlarını arka planda otomatik günceller.
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1006,6 +1123,13 @@ function toggleCancellationReason(status) {
 }
 
 // ── Yurtiçi Modal ve Canlı Sorgu Kontrolleri ──────────────────────────────
+function toggleYurticiGuide() {
+    const guideBox = document.getElementById('yurticiGuideBox');
+    if (guideBox) {
+        guideBox.classList.toggle('hidden');
+    }
+}
+
 function openCreateYurticiModal() {
     const modal = document.getElementById('createYurticiModal');
     if (modal) {
