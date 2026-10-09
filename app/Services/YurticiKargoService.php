@@ -510,7 +510,10 @@ class YurticiKargoService
                 $order->update(['status' => 'delivered']);
             }
         } elseif ($opStatus === 'CNL' || $opStatus === 'ISC') {
-            if ($order->yurtici_status !== 'cancelled') {
+            // Kargo daha önce teslim edildiyse (delivered), Yurtiçi API gecikmeli ISC/CNL
+            // döndürdüğünde yurtici_status'u iptal olarak EZMEYİZ.
+            // ISC = "Kargo Önceden İptal Edilmiş" bazen teslim sonrası da gelebilir.
+            if ($order->yurtici_status !== 'cancelled' && $order->yurtici_status !== 'delivered') {
                 $order->update(['yurtici_status' => 'cancelled']);
             }
         }
