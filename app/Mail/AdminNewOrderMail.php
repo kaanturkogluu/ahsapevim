@@ -67,6 +67,7 @@ class AdminNewOrderMail extends Mailable implements ShouldQueue
             'preparing' => 'Hazırlanıyor',
             'shipped'   => 'Kargoya Verildi',
             'completed' => 'Tamamlandı',
+            'delivered' => 'Tamamlandı',
             'cancelled' => 'İptal Edildi',
             'failed'    => 'Başarısız',
         ];

@@ -18,7 +18,7 @@ class RevenueController extends Controller
      * - 'completed'  : Teslim edildi / tamamlandı
      * 'pending' (EFT bekliyor), 'failed', 'cancelled' dahil edilmez.
      */
-    private array $paidStatuses = ['paid', 'preparing', 'shipped', 'completed'];
+    private array $paidStatuses = ['paid', 'preparing', 'shipped', 'completed', 'delivered'];
 
     public function index(Request $request)
     {

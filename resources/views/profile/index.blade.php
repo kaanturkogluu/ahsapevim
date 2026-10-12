@@ -183,6 +183,14 @@
                                                 <i class="fa-solid fa-clock text-[10px]"></i> Ödeme Bekliyor
                                             </span>
                                         @endif
+                                    @elseif($order->status === 'cancelled')
+                                        <span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full font-extrabold text-xs inline-flex items-center gap-1">
+                                            <i class="fa-solid fa-ban text-[10px]"></i> İptal Edildi
+                                        </span>
+                                    @elseif($order->status === 'failed')
+                                        <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full font-extrabold text-xs inline-flex items-center gap-1">
+                                            <i class="fa-solid fa-circle-xmark text-[10px]"></i> Başarısız / {{ $order->payment_error_reason ?: 'Ödeme Alınamadı' }}
+                                        </span>
                                     @else
                                         <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full font-extrabold text-xs inline-flex items-center gap-1">
                                             <i class="fa-solid fa-circle-xmark text-[10px]"></i> İptal / {{ $order->payment_error_reason ?: 'Yetersiz Bakiye' }}

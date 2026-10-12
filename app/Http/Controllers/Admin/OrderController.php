@@ -18,6 +18,8 @@ class OrderController extends Controller
         if ($request->filled('status')) {
             if ($request->status === 'paid') {
                 $query->whereIn('status', ['paid', 'preparing']);
+            } elseif ($request->status === 'completed') {
+                $query->whereIn('status', ['completed', 'delivered']);
             } else {
                 $query->where('status', $request->status);
             }
@@ -82,14 +84,14 @@ class OrderController extends Controller
         $oldTrackingCode = $order->cargo_tracking_code;
 
         $request->validate([
-            'status' => 'required|string|in:pending,paid,preparing,shipped,completed,cancelled,failed',
+            'status' => 'required|string|in:pending,paid,preparing,shipped,completed,delivered,cancelled,failed',
             'shipping_company_id' => 'nullable|exists:shipping_companies,id',
             'cargo_tracking_code' => 'nullable|string|max:100',
             'payment_error_reason' => 'nullable|string|max:500',
             'send_notification' => 'nullable',
         ]);
 
-        $newStatus = $request->status;
+        $newStatus = $request->status === 'delivered' ? 'completed' : $request->status;
         $hasNewTrackingCode = $request->filled('cargo_tracking_code') && ($oldTrackingCode !== $request->cargo_tracking_code);
         $hasTrackingCode = $request->filled('cargo_tracking_code');
 

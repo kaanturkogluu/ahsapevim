@@ -32,7 +32,7 @@ class NotifyAdminNewOrders extends Command
     {
         // Query paid orders created recently that haven't been notified yet
         $orders = Order::with('items.product')
-            ->whereIn('status', ['paid', 'preparing', 'shipped', 'completed'])
+            ->whereIn('status', ['paid', 'preparing', 'shipped', 'completed', 'delivered'])
             ->whereNull('admin_notified_at')
             ->orderBy('created_at', 'desc')
             ->get();

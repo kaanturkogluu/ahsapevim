@@ -91,7 +91,7 @@
                     <span class="flex items-center gap-1.5"><i class="fa-solid fa-truck-fast"></i> Kargo & Durum Bilgisi</span>
                     @if($order->status === 'shipped')
                         <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] rounded font-bold">Kargolandı</span>
-                    @elseif($order->status === 'completed')
+                    @elseif(in_array($order->status, ['completed', 'delivered']))
                         <span class="px-2 py-0.5 bg-purple-100 text-purple-700 text-[10px] rounded font-bold">Tamamlandı</span>
                     @elseif($order->status === 'paid' || $order->status === 'preparing')
                         <span class="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] rounded font-bold">Ödendi / Hazırlanıyor</span>
@@ -124,7 +124,7 @@
                             <option value="paid" {{ $order->status === 'paid' ? 'selected' : '' }}>Ödendi / Hazırlanıyor</option>
                             <option value="preparing" {{ $order->status === 'preparing' ? 'selected' : '' }}>Hazırlanıyor</option>
                             <option value="shipped" {{ $order->status === 'shipped' ? 'selected' : '' }}>Kargolandı (Kargoya Verildi)</option>
-                            <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Tamamlandı (Teslim Edildi)</option>
+                            <option value="completed" {{ in_array($order->status, ['completed', 'delivered']) ? 'selected' : '' }}>Tamamlandı (Teslim Edildi)</option>
                             <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Ödeme Bekliyor</option>
                             <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>İptal Edildi</option>
                             <option value="failed" {{ $order->status === 'failed' ? 'selected' : '' }}>Başarısız</option>
@@ -422,7 +422,7 @@
     @endphp
 
     <!-- Finansal Ödeme Detayları / Havale / İptal -->
-    @if($order->status === 'failed' || $order->status === 'cancelled' || !empty($order->payment_error_reason))
+    @if(in_array($order->status, ['failed', 'cancelled']) || (!in_array($order->status, ['paid', 'preparing', 'shipped', 'completed', 'delivered']) && !empty($order->payment_error_reason)))
         <div class="bg-rose-50 border border-rose-200 p-4 rounded-xl mb-6 shadow-2xs">
             <div class="flex items-center gap-2 text-rose-900 font-extrabold text-xs uppercase tracking-wider mb-1.5">
                 <i class="fa-solid fa-circle-xmark text-rose-600 text-sm"></i> Ödeme Durumu: İptal / Başarısız

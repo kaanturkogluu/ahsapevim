@@ -503,11 +503,18 @@ class YurticiKargoService
         }
         $data['smsSent'] = $smsSent;
 
-        // Update delivered status
-        if (($data['deliveryStatus'] === '1' || $opStatus === 'DLV') && $order->yurtici_status !== 'delivered') {
-            $order->update(['yurtici_status' => 'delivered']);
-            if (in_array($order->status, ['shipped', 'preparing'])) {
-                $order->update(['status' => 'delivered']);
+        // Update delivered / completed status
+        if ($data['deliveryStatus'] === '1' || $opStatus === 'DLV') {
+            $wasNotDelivered = ($order->yurtici_status !== 'delivered');
+            if ($wasNotDelivered) {
+                $order->update(['yurtici_status' => 'delivered']);
+            }
+            if (in_array($order->status, ['shipped', 'preparing', 'delivered'])) {
+                $order->update(['status' => 'completed']);
+
+                if ($wasNotDelivered) {
+                    $this->sendDeliveryCompletedNotifications($order);
+                }
             }
         } elseif ($opStatus === 'CNL' || $opStatus === 'ISC') {
             // Kargo daha önce teslim edildiyse (delivered), Yurtiçi API gecikmeli ISC/CNL
@@ -612,6 +619,66 @@ class YurticiKargoService
         }
 
         return false;
+    }
+
+    /**
+     * Send order completed notifications (Email and SMS) when delivery is confirmed
+     */
+    public function sendDeliveryCompletedNotifications(Order $order): void
+    {
+        try {
+            $order->refresh();
+
+            $lockKey = "send_delivery_completed_lock_{$order->id}";
+            $lock = \Illuminate\Support\Facades\Cache::lock($lockKey, 30);
+            if (!$lock->get()) {
+                return;
+            }
+
+            try {
+                // SMS Gönderimi (Eğer daha önce teslimat SMS'i gitmediyse)
+                $alreadySentSms = \App\Models\SmsLog::where('order_id', $order->id)
+                    ->where('status', 'success')
+                    ->where(function ($q) {
+                        $q->where('type', 'order_completed')
+                          ->orWhere('message', 'like', '%teslim edilmiştir%');
+                    })
+                    ->exists();
+
+                if (!$alreadySentSms && !empty($order->phone)) {
+                    $completedSms = "Sayın {$order->name}, #{$order->id} numaralı siparişiniz teslim edilmiştir. AhşapEvim'i tercih ettiğiniz için teşekkür ederiz.";
+                    app(\App\Services\NetgsmService::class)->sendSms($order->phone, $completedSms, $order->id, 'order_completed');
+                    Log::info("Müşteriye sipariş teslim edildi SMS'i gönderildi: Sipariş #{$order->id}");
+                }
+
+                // E-Posta Gönderimi
+                if (!empty($order->email)) {
+                    try {
+                        $emailData = [
+                            'user_name'           => $order->name,
+                            'user_email'          => $order->email,
+                            'order_id'            => $order->id,
+                            'tracking_code'       => $order->tracking_code ?: 'AHS-' . $order->id,
+                            'shipping_company'    => $order->shippingCompany?->name ?: 'Yurtiçi Kargo',
+                            'cargo_tracking_code' => $order->cargo_tracking_code ?: '',
+                            'cancellation_reason' => '',
+                            'total_amount'        => number_format($order->total_amount, 2, ',', '.'),
+                            'delivery_address'    => $order->address . ' (' . ($order->city ?: '') . ')',
+                            'product_details'     => '',
+                            'site_name'           => 'AhşapEvim',
+                        ];
+                        \Illuminate\Support\Facades\Mail::to($order->email)->queue(new \App\Mail\DynamicMail('order_completed', $emailData));
+                        app(\App\Services\MailService::class)->logMailable($order->email, "Siparişiniz Teslim Edildi (#{$order->id})", "Yurtiçi Kargo teslimat teyidi ile sipariş tamamlandı bildirimi gönderildi.", 'success', null, $order->id);
+                    } catch (\Throwable $mEx) {
+                        Log::error("Teslimat tamamlandı mail gönderim hatası (Sipariş #{$order->id}): " . $mEx->getMessage());
+                    }
+                }
+            } finally {
+                optional($lock)->release();
+            }
+        } catch (\Throwable $e) {
+            Log::error("Teslimat tamamlandı bildirim hatası (Sipariş #{$order->id}): " . $e->getMessage());
+        }
     }
 
     /**

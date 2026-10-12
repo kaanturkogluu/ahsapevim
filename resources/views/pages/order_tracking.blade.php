@@ -97,6 +97,14 @@
                                         <i class="fa-solid fa-clock text-sm"></i> İşleme Alındı / Bekliyor
                                     </span>
                                 @endif
+                            @elseif($order->status === 'cancelled')
+                                <span class="px-4 py-2 bg-rose-100 text-rose-700 rounded-xl font-extrabold text-xs inline-flex items-center gap-1.5 shadow-sm">
+                                    <i class="fa-solid fa-ban text-sm"></i> İptal Edildi
+                                </span>
+                            @elseif($order->status === 'failed')
+                                <span class="px-4 py-2 bg-red-100 text-red-700 rounded-xl font-extrabold text-xs inline-flex items-center gap-1.5 shadow-sm">
+                                    <i class="fa-solid fa-circle-xmark text-sm"></i> Başarısız
+                                </span>
                             @else
                                 <span class="px-4 py-2 bg-red-100 text-red-700 rounded-xl font-extrabold text-xs inline-flex items-center gap-1.5 shadow-sm">
                                     <i class="fa-solid fa-circle-xmark text-sm"></i> İptal / Başarısız
