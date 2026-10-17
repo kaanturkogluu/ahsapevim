@@ -22,19 +22,59 @@ class RevenueController extends Controller
 
     public function index(Request $request)
     {
-        // Temel metrikler – sadece ödemesi alınmış siparişler
-        $totalRevenue = Order::whereIn('status', $this->paidStatuses)->sum('total_amount');
+        // Temel metrikler – sadece ödemesi alınmış siparişler (Net Ciro)
+        $totalRevenue = (float) Order::whereIn('status', $this->paidStatuses)->sum('total_amount');
 
-        $thisMonthRevenue = Order::whereIn('status', $this->paidStatuses)
+        $thisMonthRevenue = (float) Order::whereIn('status', $this->paidStatuses)
                                 ->whereMonth('created_at', Carbon::now()->month)
                                 ->whereYear('created_at', Carbon::now()->year)
                                 ->sum('total_amount');
 
         $totalOrders = Order::whereIn('status', $this->paidStatuses)->count();
 
-        $totalProductsSold = OrderItem::join('orders', 'orders.id', '=', 'order_items.order_id')
+        $totalProductsSold = (int) OrderItem::join('orders', 'orders.id', '=', 'order_items.order_id')
             ->whereIn('orders.status', $this->paidStatuses)
             ->sum('order_items.quantity');
+
+        // İndirim ve Brüt Satış Hesaplamaları (Gelir Tablosu Doğrulama ve Denetimi)
+        $paidItems = OrderItem::join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->whereIn('orders.status', $this->paidStatuses)
+            ->whereNotNull('order_items.features')
+            ->select('order_items.quantity', 'order_items.features', 'orders.created_at as order_created_at')
+            ->get();
+
+        $totalDiscount = 0.0;
+        $thisMonthDiscount = 0.0;
+        $currentMonth = Carbon::now()->month;
+        $currentYear = Carbon::now()->year;
+
+        foreach ($paidItems as $item) {
+            $features = is_array($item->features) ? $item->features : json_decode($item->features ?? '[]', true);
+            if (!empty($features['cart_discount_amount'])) {
+                $discountAmount = (float) $features['cart_discount_amount'] * (int) $item->quantity;
+                $totalDiscount += $discountAmount;
+
+                $orderDate = Carbon::parse($item->order_created_at);
+                if ($orderDate->month === $currentMonth && $orderDate->year === $currentYear) {
+                    $thisMonthDiscount += $discountAmount;
+                }
+            }
+        }
+
+        $totalDiscount = round($totalDiscount, 2);
+        $thisMonthDiscount = round($thisMonthDiscount, 2);
+        $totalGrossRevenue = round($totalRevenue + $totalDiscount, 2);
+        $thisMonthGrossRevenue = round($thisMonthRevenue + $thisMonthDiscount, 2);
+
+        // Son indirimli sipariş kayıtları (Denetim tablosu için)
+        $discountedOrders = Order::with(['items.product'])
+            ->whereIn('status', $this->paidStatuses)
+            ->whereHas('items', function ($q) {
+                $q->where('features', 'like', '%cart_discount%');
+            })
+            ->latest()
+            ->take(20)
+            ->get();
 
         // Son 30 günlük günlük gelir verisi (grafik) - Tek sorguda grup olarak çekilir (N+1 engellendi)
         $startDate = Carbon::now()->subDays(29)->startOfDay();
@@ -58,8 +98,13 @@ class RevenueController extends Controller
         return view('admin.revenue.index', compact(
             'totalRevenue',
             'thisMonthRevenue',
+            'totalGrossRevenue',
+            'thisMonthGrossRevenue',
+            'totalDiscount',
+            'thisMonthDiscount',
             'totalOrders',
             'totalProductsSold',
+            'discountedOrders',
             'last30Days',
             'revenueData'
         ));

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
 use App\Jobs\SendNewOrderNotificationJob;
 use App\Services\IyzicoService;
 use App\Services\PaymentLogService;
@@ -34,7 +35,8 @@ class CheckoutController extends Controller
                         $restoredCart[$cartKey] = [
                             'product_id' => $item->product_id,
                             'name' => $item->product ? $item->product->name : 'Ahşap Ürün',
-                            'price' => $item->price,
+                            'price' => $features['original_price'] ?? $item->price,
+                            'cart_discount_rate' => $features['cart_discount_rate'] ?? ($item->product ? $item->product->effective_cart_discount_rate : 10),
                             'quantity' => $item->quantity,
                             'image' => $preview ? url($preview) : ($fImg ? url($fImg) : ($item->product ? $item->product->image : null)),
                             'custom_image_front' => $fImg ? url($fImg) : null,
@@ -80,25 +82,42 @@ class CheckoutController extends Controller
             return redirect()->back()->with('error', 'Girdiğiniz T.C. Kimlik Numarası matematiksel olarak geçersizdir. Lütfen kontrol ediniz.')->withInput();
         }
 
-        // Calculate items and total amount with cart discounts
+        // Calculate items and total amount with cart discounts (Fresh DB lookup to ensure data integrity)
         $calculatedCart = [];
         $totalAmount = 0;
         foreach ($cart as $key => $item) {
-            $discountRate = isset($item['cart_discount_rate']) ? (int) $item['cart_discount_rate'] : 10;
-            $unitPrice = (float) ($item['price'] ?? 0);
+            $productId = $item['product_id'] ?? null;
+            $product = $productId ? Product::find($productId) : null;
+
+            if ($product) {
+                $unitPrice = (float) $product->price;
+                $discountRate = (int) $product->effective_cart_discount_rate;
+            } else {
+                $unitPrice = (float) ($item['price'] ?? 0);
+                $discountRate = isset($item['cart_discount_rate']) ? (int) $item['cart_discount_rate'] : 10;
+            }
+
+            // Ensure discount rate is between 0 and 100
+            $discountRate = max(0, min(100, $discountRate));
             $itemDiscount = round($unitPrice * ($discountRate / 100), 2);
-            $finalUnitPrice = round($unitPrice - $itemDiscount, 2);
-            $qty = (int) ($item['quantity'] ?? 1);
+            $finalUnitPrice = max(0, round($unitPrice - $itemDiscount, 2));
+            $qty = max(1, (int) ($item['quantity'] ?? 1));
 
             $itemLineTotal = round($finalUnitPrice * $qty, 2);
             $totalAmount += $itemLineTotal;
 
+            $item['price'] = $unitPrice;
             $item['cart_discount_rate'] = $discountRate;
             $item['final_price'] = $finalUnitPrice;
             $item['unit_discount'] = $itemDiscount;
+            $item['quantity'] = $qty;
             $calculatedCart[$key] = $item;
         }
         $totalAmount = round($totalAmount, 2);
+
+        if ($totalAmount <= 0) {
+            return redirect()->route('cart.index')->with('error', 'Sepet tutarı geçersiz.');
+        }
 
         $paymentMethod = $request->input('payment_method', 'eft');
 
@@ -136,7 +155,7 @@ class CheckoutController extends Controller
                         'custom_preview'       => $item['custom_preview'] ?? null,
                         'is_gift'              => $item['is_gift'] ?? false,
                         'gift_note'            => $item['gift_note'] ?? null,
-                        'original_price'       => $item['price'] ?? $item['final_price'],
+                        'original_price'       => $item['price'],
                         'cart_discount_rate'   => $item['cart_discount_rate'],
                         'cart_discount_amount' => $item['unit_discount'],
                     ]
@@ -173,19 +192,22 @@ class CheckoutController extends Controller
 
         // ─── EFT / Havale ile Ödeme ──────────────────────────────────────────
         $order = Order::create([
-            'tracking_code'   => Order::generateTrackingCode(),
-            'user_id'         => auth()->id(),
-            'name'            => $request->name,
-            'email'           => $request->email,
-            'phone'           => $request->phone,
-            'address'         => $request->address,
-            'city'            => $request->city ?: 'Manisa',
-            'district'        => $request->district ?: 'Merkez',
-            'identity_number' => $request->identity_number ?: '11111111111',
-            'note'            => $request->note,
-            'total_amount'    => $totalAmount,
-            'status'          => 'pending',
-            'payment_id'      => 'EFT_' . time(),
+            'tracking_code'          => Order::generateTrackingCode(),
+            'user_id'                => auth()->id(),
+            'name'                   => $request->name,
+            'email'                  => $request->email,
+            'phone'                  => $request->phone,
+            'address'                => $request->address,
+            'city'                   => $request->city ?: 'Manisa',
+            'district'               => $request->district ?: 'Merkez',
+            'identity_number'        => $request->identity_number ?: '11111111111',
+            'note'                   => $request->note,
+            'total_amount'           => $totalAmount,
+            'paid_price'             => $totalAmount,
+            'merchant_payout_amount' => $totalAmount,
+            'installment'            => 1,
+            'status'                 => 'pending',
+            'payment_id'             => 'EFT_' . time(),
         ]);
 
         // Save order items with customization images
@@ -202,7 +224,7 @@ class CheckoutController extends Controller
                     'custom_preview'       => $item['custom_preview'] ?? null,
                     'is_gift'              => $item['is_gift'] ?? false,
                     'gift_note'            => $item['gift_note'] ?? null,
-                    'original_price'       => $item['price'] ?? $item['final_price'],
+                    'original_price'       => $item['price'],
                     'cart_discount_rate'   => $item['cart_discount_rate'],
                     'cart_discount_amount' => $item['unit_discount'],
                 ]

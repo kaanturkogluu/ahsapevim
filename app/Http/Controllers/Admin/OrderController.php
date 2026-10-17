@@ -110,6 +110,12 @@ class OrderController extends Controller
             $orderUpdateData['payment_error_reason'] = $request->payment_error_reason;
         }
 
+        // Finansal tutarlılık: Sipariş onaylandığında paid_price veya merchant_payout_amount boşsa total_amount ile doldur
+        if (in_array($newStatus, ['paid', 'preparing', 'shipped', 'completed']) && empty($order->paid_price)) {
+            $orderUpdateData['paid_price'] = $order->total_amount;
+            $orderUpdateData['merchant_payout_amount'] = $order->total_amount;
+        }
+
         $order->update($orderUpdateData);
 
         // Refresh order model with relationship

@@ -640,10 +640,40 @@
         </div>
     </div>
 
-    <!-- Toplam Tutar -->
-    <div class="bg-gray-100 p-4 rounded-xl flex items-center justify-between font-bold">
-        <span class="text-sm text-gray-700">Genel Toplam Tutar:</span>
-        <span class="text-xl font-black text-[#C87A53]">₺{{ number_format($order->total_amount, 2, ',', '.') }}</span>
+    @php
+        $calcGross = 0;
+        $calcDiscount = 0;
+        foreach($order->items as $it) {
+            $f = is_array($it->features) ? $it->features : json_decode($it->features ?? '[]', true);
+            $uPrice = (float) $it->price;
+            $oPrice = isset($f['original_price']) ? (float) $f['original_price'] : $uPrice;
+            $uDisc = isset($f['cart_discount_amount']) ? (float) $f['cart_discount_amount'] : max(0, $oPrice - $uPrice);
+            $calcGross += ($oPrice * $it->quantity);
+            $calcDiscount += ($uDisc * $it->quantity);
+        }
+    @endphp
+
+    <!-- Toplam Tutar ve İndirim Özeti -->
+    <div class="bg-gray-100 p-5 rounded-xl space-y-2 border border-gray-200">
+        @if($calcDiscount > 0)
+            <div class="flex items-center justify-between text-xs text-gray-600">
+                <span>Ürünler Ara Toplamı (Liste Fiyatı):</span>
+                <span class="font-bold text-gray-800">₺{{ number_format($calcGross, 2, ',', '.') }}</span>
+            </div>
+            <div class="flex items-center justify-between text-xs text-rose-600 font-bold">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-tags"></i> Sepette İndirim Toplamı:</span>
+                <span>-₺{{ number_format($calcDiscount, 2, ',', '.') }}</span>
+            </div>
+            <div class="border-t border-gray-200 pt-2 flex items-center justify-between font-bold">
+                <span class="text-sm text-gray-800">Tahsil Edilen Tutar (Net Ciro):</span>
+                <span class="text-xl font-black text-[#C87A53]">₺{{ number_format($order->total_amount, 2, ',', '.') }}</span>
+            </div>
+        @else
+            <div class="flex items-center justify-between font-bold">
+                <span class="text-sm text-gray-700">Genel Toplam Tutar:</span>
+                <span class="text-xl font-black text-[#C87A53]">₺{{ number_format($order->total_amount, 2, ',', '.') }}</span>
+            </div>
+        @endif
     </div>
 </div>
 
