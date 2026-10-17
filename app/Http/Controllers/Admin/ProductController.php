@@ -61,17 +61,22 @@ class ProductController extends Controller
         $slugCandidate = $request->filled('slug') ? $request->slug : $request->name;
         $slug = Product::generateUniqueSlug($slugCandidate);
 
+        $cartDiscountRate = ($request->filled('cart_discount_rate') || $request->has('cart_discount_rate')) && $request->cart_discount_rate !== '' && $request->cart_discount_rate !== null
+            ? (int) $request->cart_discount_rate 
+            : 10;
+
         $productData = [
-            'category_id'       => $request->category_id,
-            'name'              => $request->name,
-            'slug'              => $slug,
-            'price'             => $price,
-            'original_price'    => $originalPrice,
-            'stock'             => $request->stock,
-            'description'       => $request->description,
-            'image'             => $imagePath,
-            'features'          => $features,
-            'is_active'         => $request->has('is_active'),
+            'category_id'        => $request->category_id,
+            'name'               => $request->name,
+            'slug'               => $slug,
+            'price'              => $price,
+            'original_price'     => $originalPrice,
+            'cart_discount_rate' => $cartDiscountRate,
+            'stock'              => $request->stock,
+            'description'        => $request->description,
+            'image'              => $imagePath,
+            'features'           => $features,
+            'is_active'          => $request->has('is_active'),
         ];
 
         if ($request->filled('sort_order')) {
@@ -148,17 +153,22 @@ class ProductController extends Controller
         $slugCandidate = $request->filled('slug') ? $request->slug : $request->name;
         $slug = Product::generateUniqueSlug($slugCandidate, $product->id);
 
+        $cartDiscountRate = ($request->has('cart_discount_rate') && $request->cart_discount_rate !== '' && $request->cart_discount_rate !== null)
+            ? (int) $request->cart_discount_rate 
+            : 10;
+
         $updateData = [
-            'category_id'       => $request->category_id,
-            'name'              => $request->name,
-            'slug'              => $slug,
-            'price'             => $price,
-            'original_price'    => $originalPrice,
-            'stock'             => $request->stock,
-            'description'       => $request->description,
-            'image'             => $imagePath,
-            'features'          => $features,
-            'is_active'         => $request->has('is_active'),
+            'category_id'        => $request->category_id,
+            'name'               => $request->name,
+            'slug'               => $slug,
+            'price'              => $price,
+            'original_price'     => $originalPrice,
+            'cart_discount_rate' => $cartDiscountRate,
+            'stock'              => $request->stock,
+            'description'        => $request->description,
+            'image'              => $imagePath,
+            'features'           => $features,
+            'is_active'          => $request->has('is_active'),
         ];
 
         if ($request->filled('sort_order')) {
@@ -206,6 +216,7 @@ class ProductController extends Controller
             'category_id'        => 'required|exists:categories,id',
             'price'              => 'required|numeric|min:0',
             'discounted_price'   => 'nullable|numeric|min:0',
+            'cart_discount_rate' => 'nullable|integer|min:0|max:100',
             'stock'              => 'required|integer|min:0',
             'description'        => 'nullable|string',
             'image'              => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',

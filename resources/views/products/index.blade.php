@@ -131,6 +131,11 @@
                             <div class="mt-auto flex items-end justify-between">
                                 <div>
                                     <div class="text-brand font-extrabold text-lg leading-none">{{ number_format($product->price, 2, ',', '.') }} ₺</div>
+                                    @if($product->effective_cart_discount_rate > 0)
+                                        <div class="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-1.5 py-0.5 rounded mt-1 inline-flex items-center gap-1">
+                                            <i class="fa-solid fa-basket-shopping text-[9px]"></i> Sepette %{{ $product->effective_cart_discount_rate }} İndirim
+                                        </div>
+                                    @endif
                                     @if($product->original_price > $product->price)
                                         <div class="text-xs text-gray-400 line-through mt-0.5">{{ number_format($product->original_price, 2, ',', '.') }} ₺</div>
                                     @endif

@@ -87,6 +87,22 @@
                     </div>
                 </div>
 
+                <!-- Sepette İndirim Oranı Bloğu -->
+                <div class="p-4 bg-emerald-50/60 border border-emerald-200/70 rounded-xl space-y-2">
+                    <div class="flex items-center justify-between">
+                        <label class="block text-sm font-bold text-emerald-900 flex items-center gap-1.5">
+                            <i class="fa-solid fa-cart-shopping text-emerald-600"></i>
+                            Sepette İndirim Oranı (%) *
+                        </label>
+                        <span class="text-xs bg-emerald-600 text-white font-extrabold px-2.5 py-0.5 rounded-full">Varsayılan: %10</span>
+                    </div>
+                    <div class="relative">
+                        <input type="number" id="cartDiscountRate" name="cart_discount_rate" value="{{ old('cart_discount_rate', $product->cart_discount_rate ?? 10) }}" min="0" max="100" class="w-full text-sm border-gray-300 rounded-lg p-2.5 pl-8 border focus:border-emerald-500 focus:ring-0 outline-none font-bold text-emerald-950" placeholder="10">
+                        <span class="absolute left-3 top-2.5 text-emerald-700 font-extrabold text-sm">%</span>
+                    </div>
+                    <p class="text-[11px] text-emerald-800">Müşteri ürünü sepete eklediğinde ve ödeme sayfasında bu oran üzerinden <strong>%10 Sepette İndirim</strong> şeklinde indirim uygulanacaktır. İndirim olmasın isterseniz <strong>0</strong> yazabilirsiniz.</p>
+                </div>
+
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Ahşap Rengi/Türü</label>

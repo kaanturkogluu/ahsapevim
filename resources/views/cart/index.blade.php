@@ -23,10 +23,24 @@
                 <!-- Cart Items -->
                 <div class="w-full lg:w-3/4">
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                        @php $total = 0; @endphp
+                        @php 
+                            $subtotal = 0;
+                            $totalDiscount = 0;
+                            $grandTotal = 0;
+                            $total = 0;
+                        @endphp
                         @foreach($cart as $key => $item)
                             @php 
-                                $total += $item['price'] * $item['quantity']; 
+                                $rate = isset($item['cart_discount_rate']) ? (int) $item['cart_discount_rate'] : 10;
+                                $unitPrice = (float) ($item['price'] ?? 0);
+                                $itemDiscount = round($unitPrice * ($rate / 100), 2);
+                                $finalUnitPrice = round($unitPrice - $itemDiscount, 2);
+                                $itemQty = (int) ($item['quantity'] ?? 1);
+
+                                $subtotal += ($unitPrice * $itemQty);
+                                $totalDiscount += ($itemDiscount * $itemQty);
+                                $grandTotal += ($finalUnitPrice * $itemQty);
+
                                 $customImgUrl = !empty($item['custom_image']) ? (str_starts_with($item['custom_image'], 'http') ? $item['custom_image'] : url($item['custom_image'])) : null;
                                 $previewImgUrl = !empty($item['custom_preview']) ? (str_starts_with($item['custom_preview'], 'http') ? $item['custom_preview'] : url($item['custom_preview'])) : null;
                                 $mainImgUrl = !empty($item['image']) ? (str_starts_with($item['image'], 'http') ? $item['image'] : url($item['image'])) : url('/cerceve.png');
@@ -87,9 +101,19 @@
                                          </div>
                                      @endif
                                      
-                                     <div class="text-brand font-extrabold text-xl mt-2">
-                                        {{ number_format($item['price'], 2, ',', '.') }} TL
-                                    </div>
+                                     <div class="mt-2 flex flex-wrap items-center gap-2">
+                                        <div class="text-[#C87A53] font-extrabold text-xl">
+                                            {{ number_format($finalUnitPrice, 2, ',', '.') }} TL
+                                        </div>
+                                        @if($rate > 0)
+                                            <div class="text-xs text-gray-400 line-through">
+                                                {{ number_format($unitPrice, 2, ',', '.') }} TL
+                                            </div>
+                                            <span class="bg-emerald-100 text-emerald-800 text-[11px] font-black px-2 py-0.5 rounded-full border border-emerald-200">
+                                                Sepette %{{ $rate }} İndirim
+                                            </span>
+                                        @endif
+                                     </div>
                                 </div>
 
                                 <!-- Quantity -->
@@ -125,6 +149,7 @@
                                 </form>
                             </div>
                         @endforeach
+                        @php $total = $grandTotal; @endphp
                     </div>
                 </div>
 
@@ -135,8 +160,15 @@
                         
                         <div class="flex justify-between items-center mb-3 text-sm text-gray-600">
                             <span>Ürünler Toplamı</span>
-                            <span class="font-bold">{{ number_format($total, 2, ',', '.') }} TL</span>
+                            <span class="font-bold">{{ number_format($subtotal, 2, ',', '.') }} TL</span>
                         </div>
+
+                        @if($totalDiscount > 0)
+                            <div class="flex justify-between items-center mb-3 text-sm text-emerald-700 font-bold">
+                                <span class="flex items-center gap-1"><i class="fa-solid fa-tag"></i> Sepette İndirim</span>
+                                <span>-{{ number_format($totalDiscount, 2, ',', '.') }} TL</span>
+                            </div>
+                        @endif
                         
                         <div class="flex justify-between items-center mb-4 text-sm text-gray-600">
                             <span>Kargo Ücreti</span>
@@ -146,7 +178,7 @@
                         <div class="border-t border-gray-100 pt-4 mb-6">
                             <div class="flex justify-between items-center">
                                 <span class="text-base font-bold text-gray-800">Genel Toplam</span>
-                                <span class="text-2xl font-extrabold text-[#C87A53]">{{ number_format($total, 2, ',', '.') }} TL</span>
+                                <span class="text-2xl font-extrabold text-[#C87A53]">{{ number_format($grandTotal, 2, ',', '.') }} TL</span>
                             </div>
                         </div>
 

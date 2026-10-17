@@ -630,10 +630,20 @@
         </div>
 
         <!-- Drawer Footer -->
-        <div id="cartDrawerFooter" class="p-4 border-t border-amber-100 bg-[#FFFBF5] space-y-3 hidden">
-            <div class="flex justify-between items-center text-sm font-semibold text-gray-700">
-                <span>Ürünler Toplamı:</span>
-                <span id="cartDrawerSubtotal" class="text-xl font-black text-[#C87A53]">0,00 TL</span>
+        <div id="cartDrawerFooter" class="p-4 border-t border-amber-100 bg-[#FFFBF5] space-y-2.5 hidden">
+            <div class="space-y-1.5 text-xs text-gray-600">
+                <div class="flex justify-between items-center">
+                    <span>Ara Toplam:</span>
+                    <span id="cartDrawerSubtotal" class="font-bold text-gray-700">0,00 TL</span>
+                </div>
+                <div id="cartDrawerDiscountRow" class="flex justify-between items-center text-emerald-700 font-bold hidden">
+                    <span>Sepette İndirim:</span>
+                    <span id="cartDrawerDiscount">-0,00 TL</span>
+                </div>
+                <div class="flex justify-between items-center text-sm font-extrabold text-gray-900 pt-1.5 border-t border-amber-200/60">
+                    <span>Genel Toplam:</span>
+                    <span id="cartDrawerTotal" class="text-xl font-black text-[#C87A53]">0,00 TL</span>
+                </div>
             </div>
             <div class="text-[11.5px] text-emerald-700 font-bold bg-emerald-50 border border-emerald-200/80 p-2.5 rounded-xl flex items-center justify-center gap-2">
                 <i class="fa-solid fa-truck-fast text-emerald-600"></i> Tüm Siparişlerinizde Kargo Ücretsiz!
@@ -775,13 +785,28 @@
             }
 
             footer.classList.remove('hidden');
-            if (subtotalEl) subtotalEl.innerText = data.total;
+            if (subtotalEl) subtotalEl.innerText = data.subtotal || data.total;
+            const discountRow = document.getElementById('cartDrawerDiscountRow');
+            const discountEl = document.getElementById('cartDrawerDiscount');
+            const totalEl = document.getElementById('cartDrawerTotal');
+
+            if (totalEl) totalEl.innerText = data.total;
+            if (discountRow && discountEl) {
+                if (data.discount && data.discount !== '0,00 TL') {
+                    discountRow.classList.remove('hidden');
+                    discountEl.innerText = '-' + data.discount;
+                } else {
+                    discountRow.classList.add('hidden');
+                }
+            }
 
             let html = '';
             cartKeys.forEach(key => {
                 const item = data.cart[key];
-                const itemTotal = (item.price * item.quantity).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' TL';
-                const itemPriceFormatted = (item.price * 1).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' TL';
+                const rate = item.cart_discount_rate !== undefined ? parseInt(item.cart_discount_rate) : 10;
+                const unitPrice = parseFloat(item.price || 0);
+                const finalUnitPrice = item.final_price !== undefined ? parseFloat(item.final_price) : (rate > 0 ? (unitPrice * (1 - rate / 100)) : unitPrice);
+                const itemTotal = (finalUnitPrice * item.quantity).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' TL';
 
                 html += `
                     <div class="p-3 bg-white rounded-2xl border border-gray-150 shadow-sm flex items-center gap-3 relative group">
@@ -792,7 +817,14 @@
                             <h5 class="text-xs font-bold text-gray-800 truncate">${item.name}</h5>
                             ${item.custom_image ? '<span class="text-[10px] font-semibold text-amber-700 block mt-0.5"><i class="fa-solid fa-camera"></i> Özel Tasarımlı</span>' : ''}
                             ${(item.is_gift || item.gift_note) ? `<span class="text-[10px] font-extrabold text-amber-900 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-md inline-block mt-1"><i class="fa-solid fa-gift text-brand"></i> Hediye Notu: ${item.gift_note || 'Hediye Paketi'}</span>` : ''}
-                            <div class="text-[11px] text-gray-500 mt-1 font-semibold">${itemPriceFormatted}</div>
+                            
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="text-[11px] font-extrabold text-gray-900">${finalUnitPrice.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL</span>
+                                ${rate > 0 ? `
+                                    <span class="text-[10px] text-gray-400 line-through">${unitPrice.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL</span>
+                                    <span class="text-[9px] font-black bg-emerald-100 text-emerald-800 border border-emerald-200 px-1 py-0.2 rounded">%${rate} İndirim</span>
+                                ` : ''}
+                            </div>
                             
                             <div class="flex items-center gap-2 mt-2">
                                 <div class="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-gray-50">

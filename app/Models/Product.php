@@ -18,6 +18,7 @@ class Product extends Model
         'features',
         'is_active',
         'sort_order',
+        'cart_discount_rate',
     ];
 
     protected $casts = [
@@ -26,11 +27,35 @@ class Product extends Model
         'sort_order' => 'integer',
         'price' => 'decimal:2',
         'original_price' => 'decimal:2',
+        'cart_discount_rate' => 'integer',
     ];
 
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function getEffectiveCartDiscountRateAttribute()
+    {
+        return $this->cart_discount_rate !== null ? (int) $this->cart_discount_rate : 10;
+    }
+
+    public function getCartDiscountedPriceAttribute()
+    {
+        $rate = $this->effective_cart_discount_rate;
+        if ($rate > 0) {
+            return round($this->price * (1 - ($rate / 100)), 2);
+        }
+        return (float) $this->price;
+    }
+
+    public function getCartDiscountAmountAttribute()
+    {
+        $rate = $this->effective_cart_discount_rate;
+        if ($rate > 0) {
+            return round($this->price * ($rate / 100), 2);
+        }
+        return 0.0;
     }
 
     public function getDiscountPercentAttribute()

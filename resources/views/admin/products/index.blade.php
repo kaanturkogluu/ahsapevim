@@ -86,6 +86,11 @@
                                 <div class="text-xs text-gray-400 line-through">{{ number_format($product->original_price, 2, ',', '.') }} TL</div>
                             @endif
                             <div class="text-[#C87A53]">{{ number_format($product->price, 2, ',', '.') }} TL</div>
+                            @if($product->effective_cart_discount_rate > 0)
+                                <div class="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded inline-block mt-0.5">
+                                    Sepette %{{ $product->effective_cart_discount_rate }}
+                                </div>
+                            @endif
                         </td>
                         <td class="py-3.5 text-center font-semibold text-gray-600" data-label="Stok">{{ $product->stock }}</td>
                         <td class="py-3.5 text-center" data-label="Durum">

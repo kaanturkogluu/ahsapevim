@@ -90,13 +90,22 @@ class CartController extends Controller
         $displayImage = $frontImagePath 
             ?: ($singleImagePath ?: $product->image);
 
+        $cartDiscountRate = $product->effective_cart_discount_rate;
+        $unitPrice = (float) $product->price;
+        $discountAmount = round($unitPrice * ($cartDiscountRate / 100), 2);
+        $finalPrice = round($unitPrice - $discountAmount, 2);
+
         if (isset($cart[$cartKey])) {
             $cart[$cartKey]['quantity']++;
+            $cart[$cartKey]['cart_discount_rate'] = $cartDiscountRate;
+            $cart[$cartKey]['final_price'] = $finalPrice;
         } else {
             $cart[$cartKey] = [
                 'product_id' => $product->id,
                 'name' => $product->name,
                 'price' => $product->price,
+                'cart_discount_rate' => $cartDiscountRate,
+                'final_price' => $finalPrice,
                 'quantity' => 1,
                 'image' => $displayImage,
                 'custom_image_front' => $frontImagePath ?: ($singleImagePath ?: null),
@@ -131,11 +140,15 @@ class CartController extends Controller
     public function getCartData()
     {
         $cart = session()->get('cart', []);
+        $summary = $this->getCartSummary($cart);
+
         return response()->json([
             'status' => 'success',
-            'cart' => $cart,
+            'cart' => $summary['cart'],
             'count' => count($cart),
-            'total' => $this->calculateTotal($cart),
+            'subtotal' => number_format($summary['subtotal'], 2, ',', '.') . ' TL',
+            'discount' => number_format($summary['discount'], 2, ',', '.') . ' TL',
+            'total' => number_format($summary['total'], 2, ',', '.') . ' TL',
         ]);
     }
 
@@ -204,12 +217,38 @@ class CartController extends Controller
         return redirect()->back()->with('error', 'Ürün sepetten silinemedi.');
     }
 
+    private function getCartSummary($cart)
+    {
+        $subtotal = 0;
+        $discount = 0;
+        $total = 0;
+
+        foreach ($cart as $key => &$item) {
+            $discountRate = isset($item['cart_discount_rate']) ? (int) $item['cart_discount_rate'] : 10;
+            $item['cart_discount_rate'] = $discountRate;
+            $price = (float) ($item['price'] ?? 0);
+            $itemDiscount = round($price * ($discountRate / 100), 2);
+            $finalPrice = round($price - $itemDiscount, 2);
+            $item['final_price'] = $finalPrice;
+
+            $qty = (int) ($item['quantity'] ?? 1);
+            $subtotal += ($price * $qty);
+            $discount += ($itemDiscount * $qty);
+            $total += ($finalPrice * $qty);
+        }
+        unset($item);
+
+        return [
+            'cart' => $cart,
+            'subtotal' => $subtotal,
+            'discount' => $discount,
+            'total' => $total,
+        ];
+    }
+
     private function calculateTotal($cart)
     {
-        $total = 0;
-        foreach ($cart as $item) {
-            $total += ($item['price'] * $item['quantity']);
-        }
-        return number_format($total, 2, ',', '.') . ' TL';
+        $summary = $this->getCartSummary($cart);
+        return number_format($summary['total'], 2, ',', '.') . ' TL';
     }
 }

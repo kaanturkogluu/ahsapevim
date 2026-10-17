@@ -219,10 +219,24 @@
                     <h3 class="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-3 font-serif">Sipariş Özeti</h3>
                     
                     <div class="max-h-60 overflow-y-auto mb-6 divide-y divide-gray-100 pr-1">
-                        @php $total = 0; @endphp
+                        @php 
+                            $subtotal = 0; 
+                            $totalDiscount = 0;
+                            $grandTotal = 0;
+                            $total = 0;
+                        @endphp
                         @foreach($cart as $item)
                             @php 
-                                $total += $item['price'] * $item['quantity']; 
+                                $rate = isset($item['cart_discount_rate']) ? (int) $item['cart_discount_rate'] : 10;
+                                $unitPrice = (float) ($item['price'] ?? 0);
+                                $itemDiscount = round($unitPrice * ($rate / 100), 2);
+                                $finalUnitPrice = round($unitPrice - $itemDiscount, 2);
+                                $qty = (int) ($item['quantity'] ?? 1);
+
+                                $subtotal += ($unitPrice * $qty);
+                                $totalDiscount += ($itemDiscount * $qty);
+                                $grandTotal += ($finalUnitPrice * $qty);
+
                                 $customImgUrl = !empty($item['custom_image']) ? (str_starts_with($item['custom_image'], 'http') ? $item['custom_image'] : url($item['custom_image'])) : null;
                                 $itemImgUrl = !empty($item['image']) ? (str_starts_with($item['image'], 'http') ? $item['image'] : url($item['image'])) : url('/cerceve.png');
                             @endphp
@@ -242,19 +256,39 @@
                                             🎁 Hediye Notu: {{ $item['gift_note'] ?: 'Hediye Paketi' }}
                                         </div>
                                     @endif
-                                    <div class="text-xs text-gray-500 mt-0.5">{{ $item['quantity'] }} adet x {{ number_format($item['price'], 2, ',', '.') }} TL</div>
+                                    <div class="text-xs text-gray-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                                        <span>{{ $qty }} adet x {{ number_format($finalUnitPrice, 2, ',', '.') }} TL</span>
+                                        @if($rate > 0)
+                                            <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1 py-0.2 rounded">
+                                                %{{ $rate }} Sepet İndirimi
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
-                                <div class="text-sm font-bold text-gray-800">
-                                    {{ number_format($item['price'] * $item['quantity'], 2, ',', '.') }} TL
+                                <div class="text-sm font-bold text-gray-800 text-right">
+                                    <div>{{ number_format($finalUnitPrice * $qty, 2, ',', '.') }} TL</div>
+                                    @if($rate > 0)
+                                        <div class="text-[11px] text-gray-400 line-through font-normal">{{ number_format($unitPrice * $qty, 2, ',', '.') }} TL</div>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
+                        @php $total = $grandTotal; @endphp
                     </div>
                     
-                    <div class="flex justify-between items-center mb-3 text-sm text-gray-600">
+                    <div class="flex justify-between items-center mb-2.5 text-sm text-gray-600">
                         <span>Ürünler Toplamı</span>
-                        <span class="font-bold">{{ number_format($total, 2, ',', '.') }} TL</span>
+                        <span class="font-bold">{{ number_format($subtotal, 2, ',', '.') }} TL</span>
                     </div>
+
+                    @if($totalDiscount > 0)
+                        <div class="flex justify-between items-center mb-2.5 text-sm text-emerald-700 font-bold">
+                            <span class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-tag"></i> Sepette İndirim
+                            </span>
+                            <span>-{{ number_format($totalDiscount, 2, ',', '.') }} TL</span>
+                        </div>
+                    @endif
                     
                     <div class="flex justify-between items-center mb-4 text-sm text-gray-600">
                         <span>Kargo Ücreti</span>
@@ -264,7 +298,7 @@
                     <div class="border-t border-gray-100 pt-4">
                         <div class="flex justify-between items-center">
                             <span class="text-base font-bold text-gray-800">Genel Toplam</span>
-                            <span class="text-2xl font-extrabold text-[#C87A53]">{{ number_format($total, 2, ',', '.') }} TL</span>
+                            <span class="text-2xl font-extrabold text-[#C87A53]">{{ number_format($grandTotal, 2, ',', '.') }} TL</span>
                         </div>
                     </div>
                 </div>
@@ -606,7 +640,7 @@ function validateCheckoutForm(e) {
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof window.fbPixelTrack === 'function') {
         window.fbPixelTrack('InitiateCheckout', {
-            value: {{ (float)$total }},
+            value: {{ (float) ($grandTotal ?? ($total ?? 0)) }},
             currency: 'TRY',
             num_items: {{ count($cart) }}
         });

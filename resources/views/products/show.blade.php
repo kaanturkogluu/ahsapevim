@@ -141,6 +141,20 @@
                         @if($product->discount_percent > 0)
                             <div class="text-sm text-gray-400 line-through mt-1">{{ number_format($product->original_price, 2, ',', '.') }} TL</div>
                         @endif
+
+                        @if($product->effective_cart_discount_rate > 0)
+                            <div class="mt-2.5 p-2.5 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/80 rounded-xl flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="bg-emerald-600 text-white text-[11px] font-black px-2 py-0.5 rounded-md shadow-xs flex items-center gap-1">
+                                        <i class="fa-solid fa-basket-shopping text-[10px]"></i> %{{ $product->effective_cart_discount_rate }} İndirim
+                                    </span>
+                                    <span class="text-xs font-bold text-emerald-950">Sepette Fiyat:</span>
+                                </div>
+                                <span class="text-sm font-black text-emerald-700">
+                                    {{ number_format($product->cart_discounted_price, 2, ',', '.') }} TL
+                                </span>
+                            </div>
+                        @endif
                     </div>
 
                     <!-- FOTOĞRAF YÜKLEME ALANI (ZORUNLU) -->

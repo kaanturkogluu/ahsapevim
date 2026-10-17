@@ -554,8 +554,13 @@
 
                         <div>
                             <h5 class="text-sm font-bold text-gray-800">{{ $item->product ? $item->product->name : 'Ahşap Ürün' }}</h5>
-                            <div class="text-xs text-gray-500 mt-1">
-                                Adet: <strong class="text-gray-800">{{ $item->quantity }}</strong> × ₺{{ number_format($item->price, 2, ',', '.') }}
+                            <div class="text-xs text-gray-500 mt-1 flex items-center gap-2 flex-wrap">
+                                <span>Adet: <strong class="text-gray-800">{{ $item->quantity }}</strong> × ₺{{ number_format($item->price, 2, ',', '.') }}</span>
+                                @if(!empty($item->features['cart_discount_rate']))
+                                    <span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px] border border-emerald-200">
+                                        Sepette %{{ $item->features['cart_discount_rate'] }} İndirimli
+                                    </span>
+                                @endif
                             </div>
 
                             @if(!empty($item->features['is_gift']) || !empty($item->features['gift_note']))

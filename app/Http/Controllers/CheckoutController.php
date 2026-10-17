@@ -80,11 +80,25 @@ class CheckoutController extends Controller
             return redirect()->back()->with('error', 'Girdiğiniz T.C. Kimlik Numarası matematiksel olarak geçersizdir. Lütfen kontrol ediniz.')->withInput();
         }
 
-        // Calculate total amount
+        // Calculate items and total amount with cart discounts
+        $calculatedCart = [];
         $totalAmount = 0;
-        foreach ($cart as $item) {
-            $totalAmount += $item['price'] * $item['quantity'];
+        foreach ($cart as $key => $item) {
+            $discountRate = isset($item['cart_discount_rate']) ? (int) $item['cart_discount_rate'] : 10;
+            $unitPrice = (float) ($item['price'] ?? 0);
+            $itemDiscount = round($unitPrice * ($discountRate / 100), 2);
+            $finalUnitPrice = round($unitPrice - $itemDiscount, 2);
+            $qty = (int) ($item['quantity'] ?? 1);
+
+            $itemLineTotal = round($finalUnitPrice * $qty, 2);
+            $totalAmount += $itemLineTotal;
+
+            $item['cart_discount_rate'] = $discountRate;
+            $item['final_price'] = $finalUnitPrice;
+            $item['unit_discount'] = $itemDiscount;
+            $calculatedCart[$key] = $item;
         }
+        $totalAmount = round($totalAmount, 2);
 
         $paymentMethod = $request->input('payment_method', 'eft');
 
@@ -109,19 +123,22 @@ class CheckoutController extends Controller
             ]);
 
             // Sipariş kalemlerini kaydet
-            foreach ($cart as $item) {
+            foreach ($calculatedCart as $item) {
                 OrderItem::create([
                     'order_id'   => $order->id,
                     'product_id' => $item['product_id'],
                     'quantity'   => $item['quantity'],
-                    'price'      => $item['price'],
+                    'price'      => $item['final_price'],
                     'features'   => [
-                        'front_image'    => $item['custom_image_front'] ?? ($item['custom_image'] ?? null),
-                        'back_image'     => $item['custom_image_back'] ?? null,
-                        'custom_image'   => $item['custom_image'] ?? null,
-                        'custom_preview' => $item['custom_preview'] ?? null,
-                        'is_gift'        => $item['is_gift'] ?? false,
-                        'gift_note'      => $item['gift_note'] ?? null,
+                        'front_image'          => $item['custom_image_front'] ?? ($item['custom_image'] ?? null),
+                        'back_image'           => $item['custom_image_back'] ?? null,
+                        'custom_image'         => $item['custom_image'] ?? null,
+                        'custom_preview'       => $item['custom_preview'] ?? null,
+                        'is_gift'              => $item['is_gift'] ?? false,
+                        'gift_note'            => $item['gift_note'] ?? null,
+                        'original_price'       => $item['price'] ?? $item['final_price'],
+                        'cart_discount_rate'   => $item['cart_discount_rate'],
+                        'cart_discount_amount' => $item['unit_discount'],
                     ]
                 ]);
             }
@@ -172,19 +189,22 @@ class CheckoutController extends Controller
         ]);
 
         // Save order items with customization images
-        foreach ($cart as $key => $item) {
+        foreach ($calculatedCart as $key => $item) {
             OrderItem::create([
                 'order_id'   => $order->id,
                 'product_id' => $item['product_id'],
                 'quantity'   => $item['quantity'],
-                'price'      => $item['price'],
+                'price'      => $item['final_price'],
                 'features'   => [
-                    'front_image'    => $item['custom_image_front'] ?? ($item['custom_image'] ?? null),
-                    'back_image'     => $item['custom_image_back'] ?? null,
-                    'custom_image'   => $item['custom_image'] ?? null,
-                    'custom_preview' => $item['custom_preview'] ?? null,
-                    'is_gift'        => $item['is_gift'] ?? false,
-                    'gift_note'      => $item['gift_note'] ?? null,
+                    'front_image'          => $item['custom_image_front'] ?? ($item['custom_image'] ?? null),
+                    'back_image'           => $item['custom_image_back'] ?? null,
+                    'custom_image'         => $item['custom_image'] ?? null,
+                    'custom_preview'       => $item['custom_preview'] ?? null,
+                    'is_gift'              => $item['is_gift'] ?? false,
+                    'gift_note'            => $item['gift_note'] ?? null,
+                    'original_price'       => $item['price'] ?? $item['final_price'],
+                    'cart_discount_rate'   => $item['cart_discount_rate'],
+                    'cart_discount_amount' => $item['unit_discount'],
                 ]
             ]);
         }
